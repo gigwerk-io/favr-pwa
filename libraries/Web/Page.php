@@ -11,6 +11,30 @@
 class Web_Page
 {
     /**
+     * String value to keep track of token response json
+     * @var string
+     */
+    public $token_response_json;
+
+    /**
+     * Data source name
+     * @var string
+     */
+    public $dsn = 'mysql:dbname=local_favr;host=localhost';
+
+    /**
+     * Backend username
+     * @var string
+     */
+    public $username = 'haron';
+
+    /**
+     * Backend password
+     * @var string
+     */
+    public $password = 'Ha7780703';
+
+    /**
      * String value to keep track and validate product version
      * @var string
      */
@@ -112,7 +136,7 @@ class Web_Page
     {
         //Set up PDO connection
         try {
-            $db = new PDO("mysql:host=localhost;dbname=local_favr", "haron", "Ha7780703");
+            $db = new PDO($this->dsn, $this->username, $this->password);
             $db->setAttribute(PDO::MYSQL_ATTR_USE_BUFFERED_QUERY, true);
             return $db;
         } catch (PDOException $e) {
@@ -155,6 +179,30 @@ class Web_Page
      */
     function signInUser($signInUsernameEmail, $signInPass)
     {
+        // include our OAuth2 Server object
+        // error reporting (this is a demo, after all!)
+//        ini_set('display_errors',1);
+//        error_reporting(E_ALL);
+//
+//        // Autoloading (composer is preferred, but for this example let's just do this)
+//        require_once('../../oauth2-server-php/src/OAuth2/Autoloader.php');
+//        OAuth2\Autoloader::register();
+//
+//        // $dsn is the Data Source Name for your database, for exmaple "mysql:dbname=my_oauth2_db;host=localhost"
+//        $storage = new OAuth2\Storage\Pdo(array('dsn' => $this->dsn, 'username' => $this->username, 'password' => $this->password));
+//
+//        // Pass a storage object or array of storage objects to the OAuth2 server class
+//        $server = new OAuth2\Server($storage);
+//
+//        // Add the "Client Credentials" grant type (it is the simplest of the grant types)
+//        $server->addGrantType(new OAuth2\GrantType\ClientCredentials($storage));
+//
+//        // Add the "Authorization Code" grant type (this is where the oauth magic happens)
+//        $server->addGrantType(new OAuth2\GrantType\AuthorizationCode($storage));
+//
+//        // Handle a request for an OAuth2.0 Access Token and send the response to the client
+//        $this->token_response_json = $server->handleTokenRequest(OAuth2\Request::createFromGlobals())->send();
+
         $select_sign_in_query = "SELECT * 
                                  FROM users
                                  WHERE email='$signInUsernameEmail'
@@ -165,7 +213,8 @@ class Web_Page
 
         if (!empty($sign_in_row)) {
             // successful sign in
-            $this->user = $sign_in_row['username'];
+            $this->user = $sign_in_row;
+            $_SESSION['user_info'] = $sign_in_row;
 
             return true;
         } else {
@@ -433,7 +482,7 @@ class Web_Page
                         <li class="nav-item">
                             <a class="nav-link d-inline-flex" href="#">
                                 <i class="material-icons">person_outline</i>
-                                Profile
+                                Profile, Welcome: <?php echo $_SESSION['user_info']['username']; ?>
                             </a>
                         </li>
                     </ul>
@@ -489,7 +538,10 @@ class Web_Page
         <!-- FOOTER -->
         <footer class="container" style="max-width: 90%">
             <hr>
-            <p class="text-muted">&copy; 2018 Solken Technology, Inc</p>
+            <div class="row">
+                <p class="col-md-10 text-muted">&copy; 2018 Solken Technology, Inc</p>
+                <p class="col-md-2 float-right text-muted">v<?php echo $this->product_version; ?> Pre-Alpha</p>
+            </div>
         </footer>
 
         <!-- Loader -->

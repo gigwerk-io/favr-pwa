@@ -12,6 +12,10 @@ include($_SERVER['DOCUMENT_ROOT'] . "/favr-pwa/include/autoload.php");
 $PAGE_ID = 0;
 $USER = "guest";
 $ALERT_MESSAGE = "";
+
+
+$page = new Web_Page($PAGE_ID, $USER);
+
 if (isset($_GET['ALERT_MESSAGE'])) {
     $ALERT_MESSAGE = $_GET['ALERT_MESSAGE'];
     $ALERT_MESSAGE = "
@@ -20,9 +24,9 @@ if (isset($_GET['ALERT_MESSAGE'])) {
                 <strong>Success!</strong> $ALERT_MESSAGE
             </div>
         ";
-}
 
-$page = new Web_Page($PAGE_ID, $USER);
+    $page->signOutUser();
+}
 
 // Script to process user sign in
 if (isset($_POST['signIn'], $_POST['signInUsernameEmail'], $_POST['signInPass'])) {
