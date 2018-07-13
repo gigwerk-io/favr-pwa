@@ -120,12 +120,36 @@ class Web_Page
 
         $this->page_id = $page_id;
 
-        $_SESSION['user'] = $this->user = $user;
+        $_SESSION['user'] = $user;
+        $this->user = $user;
 
         // not permitted user
         if (empty($_SESSION['user']) && empty($this->user)) {
             header("Location: http://" . $_SERVER['HTTP_HOST'] . "/signin/");
+        } else {
+            // permitted user
+
+            // navbar logic
+            if (empty($_SESSION['navbar']) && empty($_GET['navbar'])) {
+                $_SESSION['navbar'] = "active_home";
+                $_GET['navbar'] = "active_home";
+            } else {
+                if (isset($_GET['navbar'])) {
+                    $_SESSION['navbar'] = $_GET['navbar'];
+                }
+            }
+
+            // nav scroller logic
+            if (empty($_SESSION['nav_scroller']) && empty($_GET['nav_scroller'])) {
+                $_SESSION['nav_scroller'] = "active_marketplace";
+                $_GET['nav_scroller'] = "active_marketplace";
+            } else {
+                if (isset($_GET['nav_scroller'])) {
+                    $_SESSION['nav_scroller'] = $_GET['nav_scroller'];
+                }
+            }
         }
+
     }
 
     /**
@@ -408,6 +432,181 @@ class Web_Page
     }
 
 
+
+    /**
+     * Render request favr web and mobile form
+     *
+     * @param $render_favr_request_form
+     *
+     * @return true
+     */
+    function renderFavrRequestForm($render_favr_request_form = true)
+    {
+        if ($render_favr_request_form) {
+            ?>
+            <div class="p-3 text-center request-favr-web">
+                <button class="btn btn-lg btn-primary" id="request-favr-web">
+                    <div class="d-inline-flex">
+                        <i class="material-icons">note_add</i>
+                        Request FAVR
+                    </div>
+                </button>
+            </div>
+
+            <form class="request-favr-mobile" action="" method="post">
+                <div class="my-3 p-3 bg-white rounded box-shadow">
+                    <h6 class="border-bottom border-gray pb-2 mb-0">Post a FAVR request in Marketplace</h6>
+                    <div class="media text-muted pt-3">
+                        <img data-src="holder.js/32x32?theme=thumb&bg=007bff&fg=007bff&size=1" alt=""
+                             class="mr-2 rounded">
+                        <div class="media-body pb-3 mb-0 small lh-125">
+                            <strong class="d-block text-gray-dark">@<?php echo $_SESSION['user_info']['username']; ?></strong>
+                            <div class="form-label-group">
+                                <textarea name="requestTaskDescription" class="form-control" placeholder="What is your task?"></textarea>
+                            </div>
+                            <div class="form-label-group">
+                                <input type="datetime-local" name="requestDate" id="inputDate" class="form-control"
+                                       placeholder="When do you want your FAVR?" required="">
+                                <label for="inputDate">When do you want your FAVR?</label>
+                            </div>
+                            <div class="form-label-group">
+                                <input type="time" name="requestTimeToAccomplish" id="inputTimeToAccomplish"
+                                       class="form-control"
+                                       placeholder="How long do you think it will take to accomplish the task?"
+                                       required="">
+                                <label for="inputTimeToAccomplish">How long do you think it will take?</label>
+                            </div>
+                            <div class="form-label-group">
+                                <input type="number" name="requestPrice" id="inputPricing" class="form-control"
+                                       placeholder="Set your price $" required="">
+                                <label for="inputPricing">Set your price $</label>
+                            </div>
+                            <input type="submit" name="requestFavr" class="btn btn-lg btn-primary btn-block"
+                                   value="Request FAVR">
+                        </div>
+                    </div>
+                </div>
+            </form>
+            <?php
+        }
+
+        return $render_favr_request_form;
+    }
+
+    /**
+     * Render marketplace favr request feed to home
+     *
+     * @param $userInfo // array with user details such as location
+     * @param $orderBy
+     * @param $orientation
+     *
+     * @return boolean
+     */
+    function renderFavrMarketplace($userInfo, $orderBy = "task_date", $orientation = "DESC", $limit="LIMIT 3")
+    {
+        $selectMarketplaceQuery = "SELECT *
+                                   FROM marketplace_favr_requests mfr
+                                   INNER JOIN users u
+                                   WHERE u.id = mfr.customer_id
+                                   ORDER BY $orderBy
+                                   $orientation
+                                   $limit
+        ";
+
+        $result = $this->db->query($selectMarketplaceQuery);
+        $rows = $result->fetchAll(PDO::FETCH_ASSOC);
+
+        if (!$result) {
+            // failed to render marketplace
+            return false;
+        } else {
+            foreach ($rows as $row) {
+                $freelancer_id = $row['freelancer_id'];
+                if ($freelancer_id != null) {
+                    $customer_id = $row['customer_id'];
+                    $customer_username = $row['username'];
+                    $customer_first_name = $row['first_name'];
+                    $task_description = $row['task_description'];
+                    $task_date = date("m/d/Y", strtotime($row['task_date']));
+                    $task_location = $row['task_location'];
+                    $task_time_to_accomplish = $row['task_time_to_accomplish'];
+                    $task_price = $row['task_price'];
+
+                    echo "<div class=\"media text-muted pt-3 border-bottom border-gray\">
+                            <div class='container'>
+                                <div class='row p-0'>
+                                    <img data-src=\"holder.js/32x32?theme=thumb&bg=007bff&fg=007bff&size=1\" alt=\"\" class=\"mr-2 rounded\">
+                                    <p class=\"media-body pb-3 mb-0 small lh-125\">
+                                        <strong class=\"d-block text-gray-dark\">@$customer_username</strong>
+                                         $task_description
+                                    </p>
+                                </div>
+                                <div class='row p-0'>
+                                    <div class='col-sm-12 small'>
+                                        <div class=\"float-left d-inline\">
+                                            <a href=\"#\">Expand</a>
+                                        </div>
+                                        <div class='float-right d-inline'>
+                                            $task_date
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                           
+                        </div>";
+                }
+            }
+            return true;
+        }
+    }
+
+    /**
+     * Process favr request from form and serve into database to display in marketplace
+     *
+     * @param $userInfo // array with user details such as location
+     * @param $inputDate
+     * @param $inputTimeToAccomplish
+     * @param $inputTaskDetails
+     * @param $inputPricing
+     * @param $inputScope // pre-alpha scope is public
+     *
+     * @return boolean // successful process or not print error
+     *
+     */
+    function processFavrRequestToDB($userInfo, $inputDate, $inputTimeToAccomplish, $inputTaskDetails, $inputPricing, $inputScope="public")
+    {
+        if (isset($userInfo, $inputDate, $inputTimeToAccomplish, $inputTaskDetails, $inputPricing, $inputScope)) {
+            $userId = $userInfo['id'];
+            $address = $userInfo['street'] . ", " . $userInfo['city'] . ", " . $userInfo['state_province'];
+
+            $request_query = "INSERT INTO `marketplace_favr_requests`
+                                  (
+                                    `customer_id`,
+                                    `task_description`,
+                                    `task_date`,
+                                    `task_location`,
+                                    `task_time_to_accomplish`,
+                                    `task_price`
+                                  )
+                              VALUES
+                                  (
+                                    '$userId',
+                                    '$inputTaskDetails',
+                                    '$inputDate',
+                                    '$address',
+                                    '$inputTimeToAccomplish',
+                                    '$inputPricing'
+                                  )         
+            ";
+
+            print_r($request_query);
+
+            return true;
+        } else {
+            return false;
+        }
+    }
+
     /**
      * Render page main navigation
      * @param $page_id
@@ -418,31 +617,24 @@ class Web_Page
 
         if ($render_main_navigation) {
             $active_home = "";
-            $active_products = "";
-            $active_reports = "";
+            $active_notifications = "";
+            $active_profile = "";
             $active_settings = "";
-            $active_tenants = "";
-            $active_files = "";
 
             // Handle page navigation presentation logic
-            switch ($page_id) {
-                case 0:
+            switch ($_SESSION['navbar']) {
+                case "active_home":
                     $active_home = "active";
                     break;
-                case 1:
-                    $active_products = "active";
+                case "active_notifications":
+                    $active_notifications = "active";
                     break;
-                case 2:
-                    $active_reports = "active";
+                case "active_profile":
+                    $active_profile = "active";
                     break;
-                case 3:
+                case "active_settings":
                     $active_settings = "active";
                     break;
-                case 4:
-                    $active_tenants = "active";
-                    break;
-                case 5:
-                    $active_files = "active";
                 default:
                     // none active
                     break;
@@ -455,9 +647,17 @@ class Web_Page
                 </div>
 
                 <button class="request-favr p-0 border-0" type="button">
-                    <a href="<?php echo $_SERVER['HTTP_HOST']; ?>/components/checkout/">
-                        <i class="material-icons" style="color: red; font-size: xx-large">swap_vertical_circle</i>
-                    </a>
+                <?php
+                    if ($_SESSION['nav_scroller'] != "active_marketplace") {
+                        echo "<a class=\"nav-link p-0\" href=\"$this->root_path/home/?nav_scroller=active_marketplace\">";
+                    }
+                ?>
+                        <i class="material-icons" style="color: red; font-size: xx-large">note_add</i>
+                <?php
+                    if ($_SESSION['nav_scroller'] != "active_marketplace") {
+                        echo "</a>";
+                    }
+                ?>
                 </button>
 
                 <!--                <a class="navbar-brand" href="#">FAVR</a>-->
@@ -467,22 +667,49 @@ class Web_Page
 
                 <div class="navbar-collapse offcanvas-collapse" id="navbarsExampleDefault">
                     <ul class="navbar-nav mr-auto">
-                        <li class="nav-item active">
-                            <a class="nav-link d-inline-flex" href="#">
-                                <i class="material-icons">shopping_cart</i>
-                                Marketplace <span class="sr-only">(current)</span>
+                        <li class="nav-item <?php echo $active_home; ?>">
+                            <a class="nav-link d-inline-flex" href="<?php echo $this->root_path; ?>/home/?navbar=active_home">
+                                <i class="material-icons">home</i>
+                                Home
+                                <?php
+                                    if (!empty($active_home)) {
+                                        echo "<span class=\"sr-only\">(current)</span>";
+                                    }
+                                ?>
                             </a>
                         </li>
-                        <li class="nav-item">
-                            <a class="nav-link d-inline-flex" href="#">
-                                <i class="material-icons">notifications_none</i>
+                        <li class="nav-item <?php echo $active_notifications; ?>">
+                            <a class="nav-link d-inline-flex" href="<?php echo $this->root_path; ?>/components/notifications/?navbar=active_notifications">
+                                <?php
+                                if (!empty($active_notifications)) {
+                                    echo "<i class=\"material-icons\">notifications</i>";
+                                } else {
+                                    echo "<i class=\"material-icons\">notifications_none</i>";
+                                }
+                                ?>
                                 Notifications
+                                <?php
+                                    if (!empty($active_notifications)) {
+                                        echo "<span class=\"sr-only\">(current)</span>";
+                                    }
+                                ?>
                             </a>
                         </li>
-                        <li class="nav-item">
-                            <a class="nav-link d-inline-flex" href="#">
-                                <i class="material-icons">person_outline</i>
-                                Profile, Welcome: <?php echo $_SESSION['user_info']['username']; ?>
+                        <li class="nav-item <?php echo $active_profile; ?>">
+                            <a class="nav-link d-inline-flex" href="<?php echo $this->root_path; ?>/components/profile/?navbar=active_profile">
+                                <?php
+                                if (!empty($active_profile)) {
+                                    echo "<i class=\"material-icons\">person</i>";
+                                } else {
+                                    echo "<i class=\"material-icons\">person_outline</i>";
+                                }
+                                ?>
+                                Profile, Welcome: <?php echo $_SESSION['user_info']['first_name']; ?>
+                                <?php
+                                    if (!empty($active_profile)) {
+                                        echo "<span class=\"sr-only\">(current)</span>";
+                                    }
+                                ?>
                             </a>
                         </li>
                     </ul>
@@ -491,10 +718,15 @@ class Web_Page
                     <!--                        <button class="btn btn-outline-danger my-2 my-sm-0" type="submit">Search</button>-->
                     <!--                    </form>-->
                     <ul class="navbar-nav ml-auto">
-                        <li class="nav-item">
-                            <a class="nav-link d-inline-flex" href="#">
+                        <li class="nav-item <?php echo $active_settings; ?>">
+                            <a class="nav-link d-inline-flex" href="<?php echo $this->root_path; ?>/components/settings/?navbar=active_settings">
                                 <i class="material-icons">settings</i>
                                 Settings
+                                <?php
+                                    if (!empty($active_settings)) {
+                                        echo "<span class=\"sr-only\">(current)</span>";
+                                    }
+                                ?>
                             </a>
                         </li>
                         <li class="nav-item">
@@ -507,23 +739,70 @@ class Web_Page
                 </div>
             </nav>
 
-            <div class="nav-scroller bg-white box-shadow">
-                <nav class="nav nav-underline">
-                    <a class="nav-link active" href="#">Marketplace</a>
-                    <a class="nav-link" href="#">
-                        Friends
-                        <span class="badge badge-pill red-bubble-notification align-text-bottom">27</span>
-                    </a>
-                    <a class="nav-link" href="#">Explore</a>
-                    <a class="nav-link" href="#">Suggestions</a>
-                    <a class="nav-link" href="#">Link</a>
-                    <a class="nav-link" href="#">Link</a>
-                    <a class="nav-link" href="#">Link</a>
-                    <a class="nav-link" href="#">Link</a>
-                    <a class="nav-link" href="#">Link</a>
-                </nav>
-            </div>
             <?php
+            if ($_SESSION['navbar'] == "active_home" || $_GET['navbar'] == "active_home") {
+                // Handle nav scroller presentation logic
+                $active_marketplace = "";
+                $active_friends = "";
+                $active_chat = "";
+
+                switch ($_SESSION['nav_scroller']) {
+                    case "active_marketplace":
+                        $active_marketplace = "active";
+                        break;
+                    case "active_friends":
+                        $active_friends = "active";
+                        break;
+                    case "active_chat":
+                        $active_chat = "active";
+                        break;
+                    default:
+                        // none active
+                        break;
+                }
+                ?>
+                <div class="nav-scroller bg-white box-shadow">
+                    <nav class="nav nav-underline">
+                        <a class="nav-link <?php echo $active_marketplace; ?>"
+                           href="<?php echo $this->root_path; ?>/home/?navbar=active_home&nav_scroller=active_marketplace">
+                            Marketplace
+                            <?php
+                            //                            if ($active_marketplace) {
+                            echo "<i class=\"material-icons\" style='font-size: 15px; padding-left: 2px;'>whatshot</i>";
+                            //                            } else {
+                            //                                echo "<i class=\"material-icons\">whatshot</i>";
+                            //                            }
+                            ?>
+                        </a>
+                        <a class="nav-link <?php echo $active_friends; ?>"
+                           href="<?php echo $this->root_path; ?>/home/friends/?navbar=active_home&nav_scroller=active_friends">
+                            Friends
+                            <?php
+                            if ($active_friends) {
+                                echo "<i class=\"material-icons\" style='font-size: 15px; padding-left: 2px;'>people</i>";
+                            } else {
+                                echo "<i class=\"material-icons\" style='font-size: 15px; padding-left: 2px;'>people_outline</i>";
+                            }
+                            ?>
+                            <!--                        <span class="badge badge-pill red-bubble-notification align-text-bottom">27</span>-->
+                        </a>
+                        <a class="nav-link d-inline-flex <?php echo $active_chat; ?>"
+                           href="<?php echo $this->root_path; ?>/home/chat/?navbar=active_home&nav_scroller=active_chat">
+                            Chat
+                            <?php
+                            if ($active_chat) {
+                                echo "<i class=\"material-icons\" style='font-size: 15px; padding-left: 2px;'>chat_bubble</i>";
+                            } else {
+                                echo "<i class=\"material-icons\" style='font-size: 15px; padding-left: 2px;'>chat_bubble_outline</i>";
+                            }
+                            ?>
+                        </a>
+                        <!--                    <a id="suggestions" onclick="focusNoScrollMethod()" class="nav-link -->
+                        <?php //echo  $active_suggestions; ?><!--" href="?nav_scroller=active_suggestions">Suggestions</a>-->
+                    </nav>
+                </div>
+                <?php
+            }
         }
     }
 
@@ -584,6 +863,14 @@ class Web_Page
         <script src="https://unpkg.com/feather-icons/dist/feather.min.js"></script>
         <script>
             feather.replace();
+
+            focusNoScrollMethod = function getFocusWithoutScrolling() {
+                document.getElementById("suggestions").focus({preventScroll:true});
+            }
+
+            function openRequestFromMobile() {
+                $('.request-favr-mobile').show();
+            }
 
             $(function () {
                 'use strict'

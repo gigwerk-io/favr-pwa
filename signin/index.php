@@ -55,6 +55,8 @@ $page->addStylesheet("<link rel='stylesheet' href='$page->root_path/assets/css/s
 $page->renderHeader(false);
 
 echo $ALERT_MESSAGE;
+
+print_r($_SESSION);
 ?>
     <div class="my-3 p-3 bg-white rounded box-shadow">
         <h6 class="pb-2 mb-0">
@@ -64,13 +66,13 @@ echo $ALERT_MESSAGE;
             </div>
         </h6>
         <form class="form-signin" method="post">
-            <div class="row">
-                <label for="inputUsernameEmail" class="sr-only">Email or Username</label>
+            <div class="form-label-group">
                 <input type="text" name="signInUsernameEmail" id="inputUsernameEmail" class="form-control" placeholder="Email or Username" required="">
+                <label for="inputUsernameEmail">Email or Username</label>
             </div>
-            <div class="row">
-                <label for="inputPassword" class="sr-only">Password</label>
+            <div class="form-label-group">
                 <input type="password" name="signInPass" id="inputPassword" class="form-control" placeholder="Password" required="">
+                <label for="inputPassword">Password</label>
             </div>
             <div class="row">
                 <div class="d-inline-flex">
