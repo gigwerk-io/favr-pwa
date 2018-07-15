@@ -125,9 +125,47 @@ class Web_Page
 
         // not permitted user
         if (empty($_SESSION['user']) && empty($this->user)) {
+            $_SESSION['user_info'] = array(
+                "id" => '-1'
+            );
             header("Location: http://" . $_SERVER['HTTP_HOST'] . "/signin/");
         } else {
             // permitted user
+            if (empty($_SESSION['user_info'])) {
+                $_SESSION['user_info'] = array(
+                  "id" => '-1'
+                );
+            }
+
+            // market filtering initial settings
+            if (empty($_SESSION['filter_marketplace_by']) && empty($_GET['filter_marketplace_by'])) {
+                $_SESSION['filter_marketplace_by'] = "task_date";
+                $_GET['filter_marketplace_by'] = "task_date";
+            } else {
+                if (isset($_GET['filter_marketplace_by'])) {
+                    $_SESSION['filter_marketplace_by'] = $_GET['filter_marketplace_by'];
+                }
+            }
+
+            if (empty($_SESSION['orient_marketplace_by']) && empty($_GET['orient_marketplace_by'])) {
+                $_SESSION['orient_marketplace_by'] = "DESC";
+                $_GET['orient_marketplace_by'] = "DESC";
+            } else {
+                if (isset($_GET['orient_marketplace_by'])) {
+                    $_SESSION['orient_marketplace_by'] = $_GET['orient_marketplace_by'];
+                }
+            }
+
+//            if (empty($_SESSION['limit_marketplace_by'])) {
+//                $_SESSION['limit_marketplace_by'] = "LIMIT 3";
+//                $_GET['limit_marketplace_by'] = "LIMIT 3";
+//            } else {
+            if (isset($_GET['limit_marketplace_by'])) {
+                $_SESSION['limit_marketplace_by'] = $_GET['limit_marketplace_by'];
+            } else if (!isset($_SESSION['limit_marketplace_by'])) {
+                $_SESSION['limit_marketplace_by'] = "LIMIT 3";
+            }
+//            }
 
             // navbar logic
             if (empty($_SESSION['navbar']) && empty($_GET['navbar'])) {
@@ -147,6 +185,11 @@ class Web_Page
                 if (isset($_GET['nav_scroller'])) {
                     $_SESSION['nav_scroller'] = $_GET['nav_scroller'];
                 }
+            }
+
+            // notification logic
+            if (empty($_SESSION['main_notifications'])) {
+                $this->processNotifications($_SESSION['user_info']);
             }
         }
 
@@ -432,13 +475,107 @@ class Web_Page
     }
 
 
+    /**
+     * Get user info by id
+     *
+     * @param $userID
+     *
+     * @return array // return array of userInfo if user exists NULL otherwise
+     */
+    function getUserInfo($userID)
+    {
+        $user_query = "SELECT * 
+                       FROM users
+                       WHERE id = '$userID'";
+        $result = $this->db->query($user_query);
+        $row = $result->fetch(PDO::FETCH_ASSOC);
+
+        return $row;
+    }
+
+    /**
+     * Render main notifications
+     *
+     * @param $userInfo
+     *
+     * @return boolean
+     */
+    function renderMainNotifications($userInfo)
+    {
+        $userID = $userInfo['id'];
+
+        $notifications_query = "SELECT *
+                                FROM marketplace_favr_requests mfr 
+                                INNER JOIN users u 
+                                WHERE mfr.customer_id = u.id
+                                AND mfr.customer_id = '$userID'
+                                AND mfr.freelancer_id IS NOT NULL
+                                AND NOT mfr.task_status = 'Completed'
+                                ";
+
+        $result = $this->db->query($notifications_query);
+        $rows = $result->fetchAll(PDO::FETCH_ASSOC);
+
+        if (!empty($rows)) {
+            // There are results
+
+            foreach ($rows as $row) {
+                $freelancer_id = $row['freelancer_id'];
+                $freelancer = $this->getUserInfo($freelancer_id);
+
+                $customer_id = $row['customer_id'];
+                $customer_username = $row['username'];
+                $customer_first_name = $row['first_name'];
+                $task_description = $row['task_description'];
+                $task_date = date("m/d/Y", strtotime($row['task_date']));
+                $task_location = $row['task_location'];
+                $task_time_to_accomplish = $row['task_time_to_accomplish'];
+                $task_price = $row['task_price'];
+
+                echo "<div class=\"my-3 p-3 bg-white rounded box-shadow\">
+                            <div class='pb-2 mb-0 border-bottom border-gray'>
+                                <img data-src=\"holder.js/32x32?theme=thumb&bg=007bff&fg=007bff&size=1\" alt=\"\" class=\"mr-2 rounded\">
+                                <strong style='font-size: 80%' class=\"d - block text - gray - dark\">@$customer_username</strong>
+                                <div class='float-right small' style='color: #1c7430'> $$task_price</div>
+                            </div>";
+                echo "<div class=\"media text-muted pt-3\">
+                            <div class='container'>
+                                <p class=\"media - body pb - 3 mb - 0 small lh - 125\">
+                                    <div class='small'>Task accepted by ". $freelancer['first_name'] ."</div>
+                                    <br>
+                                    $task_description
+                                </p>
+                                <div class='row p-0 border-top border-gray'>
+                                    <div class='col-sm-12 small'>
+                                        <div class=\"float-left d-inline\">
+                                            <a href=\"#\">Job is Done</a> | 
+                                            <a href='#' class='text-danger'>Cancel Request</a>
+                                        </div>
+                                        <div class='float-right d-inline'>
+                                            $task_date
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>";
+                echo "</div>";
+            }
+
+            return true;
+        } else {
+
+            echo "<p class='p-3 text-muted'>No notifications at the moment!</p>";
+
+            return false;
+        }
+    }
 
     /**
      * Render request favr web and mobile form
      *
      * @param $render_favr_request_form
      *
-     * @return true
+     * @return boolean
      */
     function renderFavrRequestForm($render_favr_request_form = true)
     {
@@ -466,7 +603,7 @@ class Web_Page
                             </div>
                             <div class="form-label-group">
                                 <input type="datetime-local" name="requestDate" id="inputDate" class="form-control"
-                                       placeholder="When do you want your FAVR?" required="">
+                                       placeholder="When do you want your FAVR?" value="<?php echo date("Y-m-d\TH:i", time()); ?>" required="">
                                 <label for="inputDate">When do you want your FAVR?</label>
                             </div>
                             <div class="form-label-group">
@@ -522,7 +659,7 @@ class Web_Page
         } else {
             foreach ($rows as $row) {
                 $freelancer_id = $row['freelancer_id'];
-                if ($freelancer_id != null) {
+                if ($freelancer_id == null) {
                     $customer_id = $row['customer_id'];
                     $customer_username = $row['username'];
                     $customer_first_name = $row['first_name'];
@@ -532,19 +669,29 @@ class Web_Page
                     $task_time_to_accomplish = $row['task_time_to_accomplish'];
                     $task_price = $row['task_price'];
 
-                    echo "<div class=\"media text-muted pt-3 border-bottom border-gray\">
+                    echo "<div class=\"my-3 p-3 bg-white rounded box-shadow\">
+                            <div class='pb-2 mb-0 border-bottom border-gray'>
+                                <img data-src=\"holder.js/32x32?theme=thumb&bg=007bff&fg=007bff&size=1\" alt=\"\" class=\"mr-2 rounded\">
+                                <strong style='font-size: 80%' class=\"d - block text - gray - dark\">@$customer_username</strong>
+                                <div class='float-right small' style='color: #1c7430'>$$task_price</div>     
+                            </div>";
+                    echo "<div class=\"media text-muted pt-3\">
                             <div class='container'>
-                                <div class='row p-0'>
-                                    <img data-src=\"holder.js/32x32?theme=thumb&bg=007bff&fg=007bff&size=1\" alt=\"\" class=\"mr-2 rounded\">
-                                    <p class=\"media-body pb-3 mb-0 small lh-125\">
-                                        <strong class=\"d-block text-gray-dark\">@$customer_username</strong>
-                                         $task_description
-                                    </p>
-                                </div>
-                                <div class='row p-0'>
+                                <p class=\"media - body pb - 3 mb - 0 small lh - 125\">
+                                    $task_description
+                                </p>
+                                <div class='row p-0 border-top border-gray'>
                                     <div class='col-sm-12 small'>
                                         <div class=\"float-left d-inline\">
-                                            <a href=\"#\">Expand</a>
+                                            ";
+
+                    if ($customer_id != $_SESSION['user_info']['id']) { // if not this user
+                        echo "<a href=\"#\">Accept Request</a>";
+                    } else {
+                        echo "<a href='#' class='text-danger'>Cancel Request</a>";
+                    }
+
+                    echo "
                                         </div>
                                         <div class='float-right d-inline'>
                                             $task_date
@@ -552,10 +699,11 @@ class Web_Page
                                     </div>
                                 </div>
                             </div>
-                           
                         </div>";
+                    echo "</div>";
                 }
             }
+
             return true;
         }
     }
@@ -579,7 +727,7 @@ class Web_Page
             $userId = $userInfo['id'];
             $address = $userInfo['street'] . ", " . $userInfo['city'] . ", " . $userInfo['state_province'];
 
-            $request_query = "INSERT INTO `marketplace_favr_requests`
+            $insert_request_query = "INSERT INTO `marketplace_favr_requests`
                                   (
                                     `customer_id`,
                                     `task_description`,
@@ -599,12 +747,69 @@ class Web_Page
                                   )         
             ";
 
-            print_r($request_query);
+//            print_r($request_query);
+
+            $result = $this->db->query($insert_request_query);
+
+            if ($result) {
+                return true;
+            } else {
+                return false;
+            }
+        } else {
+            return false;
+        }
+    }
+
+    /**
+     * Render notification count
+     *
+     * @param $notificationCount
+     *
+     * @return boolean // true if there's notifications false otherwise
+     */
+    function renderNotificationCount($notificationCount)
+    {
+        if ($notificationCount > 0) {
+
+            echo "<span style=\"height: 1rem\" class=\"badge badge-pill red-bubble-notification align-text-bottom\">$notificationCount</span>";
 
             return true;
         } else {
             return false;
         }
+    }
+
+    /**
+     * Process notifications
+     *
+     * @param $userInfo
+     *
+     * @return integer // return notification count
+     */
+    function processNotifications($userInfo)
+    {
+        $userID = $userInfo['id'];
+
+        $notifications_query = "SELECT COUNT(*)
+                                FROM marketplace_favr_requests mfr 
+                                INNER JOIN users u 
+                                WHERE mfr.customer_id = u.id
+                                AND mfr.customer_id = '$userID'
+                                AND mfr.freelancer_id IS NOT NULL
+                                AND NOT mfr.task_status = 'Completed'
+                                ";
+
+        $result = $this->db->query($notifications_query);
+        $row = $result->fetch(PDO::FETCH_ASSOC);
+
+//        if ($row['COUNT(*)'] == 0) {
+            $_SESSION['main_notifications'] = $row['COUNT(*)'];
+//        } else {
+//            $_SESSION['main_notifications'] += $row['COUNT(*)'];
+//        }
+
+        return $_SESSION['main_notifications'];
     }
 
     /**
@@ -642,21 +847,24 @@ class Web_Page
             ?>
             <nav class="navbar navbar-expand-md fixed-top navbar-dark bg-dark">
                 <div style="padding-top: 5px; padding-bottom: 5px">
-                    <img src="<?php echo $this->root_path; ?>/assets/brand/favr_logo_rd.png" height="30" width="100"
-                         class="navbar-brand" style="padding-top: 0; padding-bottom: 0">
+                    <a href="<?php echo $this->root_path; ?>/home/?navbar=active_home&nav_scroller=active_marketplace">
+                        <img src="<?php echo $this->root_path; ?>/assets/brand/favr_logo_rd.png" height="30" width="100"
+                             class="navbar-brand" style="padding-top: 0; padding-bottom: 0">
+                    </a>
                 </div>
 
                 <button class="request-favr p-0 border-0" type="button">
                 <?php
-                    if ($_SESSION['nav_scroller'] != "active_marketplace") {
-                        echo "<a class=\"nav-link p-0\" href=\"$this->root_path/home/?nav_scroller=active_marketplace\">";
+                    if ($_SESSION['nav_scroller'] == "active_marketplace" && $_SESSION['navbar'] == "active_home") {
+//                        echo "<a class=\"nav-link p-0\" href=\"$this->root_path/home/?navbar=active_home&nav_scroller=active_marketplace\">";
+                        echo "<i class=\"material-icons\" style=\"color: red; font-size: xx-large\">note_add</i>";
                     }
                 ?>
-                        <i class="material-icons" style="color: red; font-size: xx-large">note_add</i>
+<!--                        <i class="material-icons" style="color: red; font-size: xx-large">note_add</i>-->
                 <?php
-                    if ($_SESSION['nav_scroller'] != "active_marketplace") {
-                        echo "</a>";
-                    }
+//                    if ($_SESSION['nav_scroller'] != "active_marketplace" || $_SESSION['navbar'] != "active_home") {
+//                        echo "</a>";
+//                    }
                 ?>
                 </button>
 
@@ -689,6 +897,10 @@ class Web_Page
                                 ?>
                                 Notifications
                                 <?php
+                                    $notificationCount = $this->processNotifications($_SESSION['user_info']);
+
+                                    $this->renderNotificationCount($notificationCount);
+
                                     if (!empty($active_notifications)) {
                                         echo "<span class=\"sr-only\">(current)</span>";
                                     }
@@ -784,7 +996,6 @@ class Web_Page
                                 echo "<i class=\"material-icons\" style='font-size: 15px; padding-left: 2px;'>people_outline</i>";
                             }
                             ?>
-                            <!--                        <span class="badge badge-pill red-bubble-notification align-text-bottom">27</span>-->
                         </a>
                         <a class="nav-link d-inline-flex <?php echo $active_chat; ?>"
                            href="<?php echo $this->root_path; ?>/home/chat/?navbar=active_home&nav_scroller=active_chat">
