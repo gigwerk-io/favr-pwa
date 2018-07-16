@@ -506,10 +506,10 @@ class Web_Page
 
         $notifications_query = "SELECT *
                                 FROM marketplace_favr_requests mfr 
-                                INNER JOIN users u 
-                                WHERE mfr.customer_id = u.id
-                                AND mfr.customer_id = '$userID'
+                                WHERE mfr.customer_id = '$userID' 
                                 AND mfr.freelancer_id IS NOT NULL
+                                AND NOT mfr.task_status = 'Completed'
+                                OR mfr.freelancer_id = '$userID' 
                                 AND NOT mfr.task_status = 'Completed'
                                 ";
 
@@ -524,8 +524,9 @@ class Web_Page
                 $freelancer = $this->getUserInfo($freelancer_id);
 
                 $customer_id = $row['customer_id'];
-                $customer_username = $row['username'];
-                $customer_first_name = $row['first_name'];
+                $customer = $this->getUserInfo($customer_id);
+
+                $task_id = $row['id'];
                 $task_description = $row['task_description'];
                 $task_date = date("m/d/Y", strtotime($row['task_date']));
                 $task_location = $row['task_location'];
@@ -535,12 +536,12 @@ class Web_Page
                 echo "<div class=\"my-3 p-3 bg-white rounded box-shadow\">
                             <div class='pb-2 mb-0 border-bottom border-gray'>
                                 <img data-src=\"holder.js/32x32?theme=thumb&bg=007bff&fg=007bff&size=1\" alt=\"\" class=\"mr-2 rounded\">
-                                <strong style='font-size: 80%' class=\"d - block text - gray - dark\">@$customer_username</strong>
+                                <strong style='font-size: 80%' class=\"d - block text - gray - dark\">@". $customer['username'] ."</strong>
                                 <div class='float-right small' style='color: #1c7430'> $$task_price</div>
                             </div>";
                 echo "<div class=\"media text-muted pt-3\">
                             <div class='container'>
-                                <p class=\"media - body pb - 3 mb - 0 small lh - 125\">
+                                <p class=\"media-body pb-3 mb-0 small lh-125 text-dark\">
                                     <div class='small'>Task accepted by ". $freelancer['first_name'] ."</div>
                                     <br>
                                     $task_description
@@ -548,8 +549,10 @@ class Web_Page
                                 <div class='row p-0 border-top border-gray'>
                                     <div class='col-sm-12 small'>
                                         <div class=\"float-left d-inline\">
-                                            <a href=\"#\">Job is Done</a> | 
-                                            <a href='#' class='text-danger'>Cancel Request</a>
+                                            <a href=\"?navbar=active_notifications&completed_request_id=$task_id&freelancer_id=$freelancer_id&customer_id=$customer_id&ALERT_MESSAGE=The FAVR has been completed and payment is now in the process of disbursal!\">
+                                                Job is Done</a> | 
+                                            <a href='#' class='text-danger'>
+                                                Cancel Request</a>
                                         </div>
                                         <div class='float-right d-inline'>
                                             $task_date
@@ -641,10 +644,11 @@ class Web_Page
      */
     function renderFavrMarketplace($userInfo, $orderBy = "task_date", $orientation = "DESC", $limit="LIMIT 3")
     {
-        $selectMarketplaceQuery = "SELECT *
+        $selectMarketplaceQuery = "SELECT *, mfr.id as mfrid
                                    FROM marketplace_favr_requests mfr
                                    INNER JOIN users u
                                    WHERE u.id = mfr.customer_id
+                                   AND mfr.freelancer_id IS NULL
                                    ORDER BY $orderBy
                                    $orientation
                                    $limit
@@ -657,9 +661,10 @@ class Web_Page
             // failed to render marketplace
             return false;
         } else {
-            foreach ($rows as $row) {
-                $freelancer_id = $row['freelancer_id'];
-                if ($freelancer_id == null) {
+            if (!empty($rows)) {
+                foreach ($rows as $row) {
+                    $freelancer_id = $row['freelancer_id'];
+                    $task_id = $row['mfrid'];
                     $customer_id = $row['customer_id'];
                     $customer_username = $row['username'];
                     $customer_first_name = $row['first_name'];
@@ -670,38 +675,44 @@ class Web_Page
                     $task_price = $row['task_price'];
 
                     echo "<div class=\"my-3 p-3 bg-white rounded box-shadow\">
-                            <div class='pb-2 mb-0 border-bottom border-gray'>
-                                <img data-src=\"holder.js/32x32?theme=thumb&bg=007bff&fg=007bff&size=1\" alt=\"\" class=\"mr-2 rounded\">
-                                <strong style='font-size: 80%' class=\"d - block text - gray - dark\">@$customer_username</strong>
-                                <div class='float-right small' style='color: #1c7430'>$$task_price</div>     
-                            </div>";
+                        <div class='pb-2 mb-0 border-bottom border-gray'>
+                            <img data-src=\"holder.js/32x32?theme=thumb&bg=007bff&fg=007bff&size=1\" alt=\"\" class=\"mr-2 rounded\">
+                            <strong style='font-size: 80%' class=\"d - block text - gray - dark\">@$customer_username</strong>
+                            <div class='float-right small' style='color: #1c7430'>$$task_price</div>     
+                        </div>";
                     echo "<div class=\"media text-muted pt-3\">
-                            <div class='container'>
-                                <p class=\"media - body pb - 3 mb - 0 small lh - 125\">
-                                    $task_description
-                                </p>
-                                <div class='row p-0 border-top border-gray'>
-                                    <div class='col-sm-12 small'>
-                                        <div class=\"float-left d-inline\">
-                                            ";
+                        <div class='container'>
+                            <p class=\"media-body text-dark pb-3 mb-0 small lh-125\">
+                                $task_description
+                            </p>
+                            <div class='row p-0 border-top border-gray'>
+                                <div class='col-sm-12 small'>
+                                    <div class=\"float-left d-inline\">
+                                        ";
 
                     if ($customer_id != $_SESSION['user_info']['id']) { // if not this user
-                        echo "<a href=\"#\">Accept Request</a>";
+                        echo "<a href=\"$this->root_path/components/notifications/?navbar=active_notifications&accept_request_id=$task_id&ALERT_MESSAGE=You've signed up to take this task! You must complete it and verify it's completion with the task requester in order to disburse payment!\">
+                            Accept Request</a>";
                     } else {
-                        echo "<a href='#' class='text-danger'>Cancel Request</a>";
+                        echo "<a href=\"?nav_bar=active_home&d_request_id=$task_id&ALERT_MESSAGE=Your request has been deleted!\" class='text-danger'>
+                            Cancel Request</a>";
                     }
 
                     echo "
-                                        </div>
-                                        <div class='float-right d-inline'>
-                                            $task_date
-                                        </div>
+                                    </div>
+                                    <div class='float-right d-inline'>
+                                        $task_date
                                     </div>
                                 </div>
                             </div>
-                        </div>";
+                        </div>
+                    </div>";
                     echo "</div>";
+
                 }
+            } else {
+                echo "<p class='p-3 text-muted'>No FAVR requests at the moment!</p>";
+                return false;
             }
 
             return true;
@@ -762,6 +773,114 @@ class Web_Page
     }
 
     /**
+     * Process cancel pending request
+     *
+     * @param $requestID
+     * @param $customerID
+     * @param $freelancerID
+     *
+     * @return boolean
+     */
+//    function processCancelPendingRequest()
+//    {
+//
+//    }
+
+    /**
+     * Process complete request
+     *
+     * @param $requestID
+     * @param $customerID
+     * @param $freelancerID
+     *
+     * @return boolean
+     */
+    function processCompleteRequest($requestID, $customerID, $freelancerID)
+    {
+        if (isset($requestID, $customerID, $freelancerID)) {
+            // complete request
+            $update_request_query = "UPDATE marketplace_favr_requests 
+                                     SET task_status = 'Completed'
+                                     WHERE id = '$requestID'
+                                     AND customer_id = '$customerID'
+                                     AND freelancer_id = '$freelancerID'";
+
+            $result = $this->db->query($update_request_query);
+
+            if ($result) {
+                // successfully completed
+                return true;
+            } else {
+                // error when completing
+                return false;
+            }
+        } else {
+            // not set
+            return false;
+        }
+    }
+
+    /**
+     * Process delete request
+     *
+     * @param $requestID
+     * @param $customerID
+     *
+     * @return boolean
+     */
+    function processDeleteRequest($requestID, $customerID)
+    {
+        if (isset($requestID, $customerID)) {
+            // Delete request
+            $delete_request_query = "DELETE FROM marketplace_favr_requests
+                                     WHERE id = '$requestID'
+                                     AND customer_id = '$customerID'";
+            $result = $this->db->query($delete_request_query);
+
+            if ($result) {
+                // successfully deleted
+                return true;
+            } else {
+                // error when deleting
+                return false;
+            }
+        } else {
+            // Not set
+            return false;
+        }
+    }
+
+    /**
+     * Process accept request
+     *
+     * @param $requestID
+     * @param $freelancerID
+     *
+     * @return boolean
+     */
+    function processAcceptRequest($requestID, $freelancerID)
+    {
+        if (isset($requestID, $freelancerID)) {
+            // freelancer has accepted
+            $update_request_query = "UPDATE marketplace_favr_requests 
+                                     SET freelancer_id = '$freelancerID' 
+                                     WHERE id = '$requestID'";
+            $result = $this->db->query($update_request_query);
+
+            if ($result) {
+                // successfully accepted
+                return true;
+            } else {
+                // failed to accept
+                return false;
+            }
+        } else {
+            // not set
+            return false;
+        }
+    }
+
+    /**
      * Render notification count
      *
      * @param $notificationCount
@@ -793,10 +912,10 @@ class Web_Page
 
         $notifications_query = "SELECT COUNT(*)
                                 FROM marketplace_favr_requests mfr 
-                                INNER JOIN users u 
-                                WHERE mfr.customer_id = u.id
-                                AND mfr.customer_id = '$userID'
+                                WHERE mfr.customer_id = '$userID' 
                                 AND mfr.freelancer_id IS NOT NULL
+                                AND NOT mfr.task_status = 'Completed'
+                                OR mfr.freelancer_id = '$userID'
                                 AND NOT mfr.task_status = 'Completed'
                                 ";
 

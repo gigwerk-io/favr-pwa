@@ -5,6 +5,7 @@ include($_SERVER['DOCUMENT_ROOT'] . "/favr-pwa/include/autoload.php");
 // component constants
 $PAGE_ID = 1;
 $USER = "";
+$ALERT_MESSAGE = "";
 
 if (isset($_SESSION['user_info'])) {
     $USER = $_SESSION['user_info']['username']; // user is set from initial configuration
@@ -20,6 +21,22 @@ $page->renderHeader();
 if (isset($_POST['requestFavr'])) {
     $page->processFavrRequestToDB($_SESSION['user_info'], $_POST['requestDate'], $_POST['requestTimeToAccomplish'], $_POST['requestTaskDescription'], $_POST['requestPrice']);
 }
+
+if (isset($_GET['d_request_id'])) {
+    $page->processDeleteRequest($_GET['d_request_id'], $_SESSION['user_info']['id']);
+}
+
+if (isset($_GET['ALERT_MESSAGE'])) {
+    $ALERT_MESSAGE = $_GET['ALERT_MESSAGE'];
+    $ALERT_MESSAGE = "
+            <div class=\"my-3 p-3 alert alert-success alert-dismissible\" role=\"alert\">
+                <button type=\"button\" class=\"close\" data-dismiss=\"alert\" aria-label=\"Close\"><span aria-hidden=\"true\">&times;</span></button>
+                <strong>Success!</strong> $ALERT_MESSAGE
+            </div>
+        ";
+}
+
+echo $ALERT_MESSAGE;
 
 $page->renderFavrRequestForm($_SESSION['user_info'], $_SESSION['filter_marketplace_by'], $_SESSION['orient_marketplace_by'], $_SESSION['limit_marketplace_by']);
 ?>
