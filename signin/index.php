@@ -55,8 +55,6 @@ $page->addStylesheet("<link rel='stylesheet' href='$page->root_path/assets/css/s
 $page->renderHeader(false);
 
 echo $ALERT_MESSAGE;
-
-print_r($_SESSION);
 ?>
     <div class="my-3 p-3 bg-white rounded box-shadow">
         <h6 class="pb-2 mb-0">

@@ -38,7 +38,7 @@ class Web_Page
      * String value to keep track and validate product version
      * @var string
      */
-    public $product_version = "0.0.1";
+    public $product_version = "0.0.2";
 
     /**
      * Boolean to determine whether or not to render page main navigation/menu
@@ -187,9 +187,21 @@ class Web_Page
                 }
             }
 
+            // scope logic
+            if (empty($_SESSION['scope']) && empty($_GET['scope'])) {
+                $_SESSION['scope'] = "global";
+                $_GET['scope'] = "global";
+            } else {
+                if (isset($_GET['scope'])) {
+                    $_SESSION['scope'] = $_GET['scope'];
+                }
+            }
+
             // notification logic
             if (empty($_SESSION['main_notifications'])) {
-                $this->processNotifications($_SESSION['user_info']);
+                if ($_SESSION['user_info'] != null) {
+                    $this->processNotifications($_SESSION['user_info']);
+                }
             }
         }
 
@@ -225,7 +237,6 @@ class Web_Page
         unset($_POST);
         unset($_GET);
         unset($_COOKIE);
-        unset($this);
 
         if (session_destroy()) {
             return true;
@@ -275,6 +286,7 @@ class Web_Page
                                  WHERE email='$signInUsernameEmail'
                                  OR username='$signInUsernameEmail'
                                  AND password='$signInPass'";
+
         $sign_in_result = $this->db->query($select_sign_in_query);
         $sign_in_row = $sign_in_result->fetch(PDO::FETCH_ASSOC);
 
@@ -367,6 +379,21 @@ class Web_Page
         if (trim($add_script) != "") {
             $this->script .= $add_script;
         }
+    }
+
+    /**
+     * Render profile from userID
+     *
+     * @param $userID
+     *
+     * @return boolean
+     *
+     * @TODO implement this function as a universal solution to rendering profiles
+     * @TODO allow for image file upload but store image files in file system outside of document root
+     *
+     */
+    function renderFavrProfile($userID) {
+        return null;
     }
 
     /**
@@ -551,7 +578,7 @@ class Web_Page
                                         <div class=\"float-left d-inline\">
                                             <a href=\"?navbar=active_notifications&completed_request_id=$task_id&freelancer_id=$freelancer_id&customer_id=$customer_id&ALERT_MESSAGE=The FAVR has been completed and payment is now in the process of disbursal!\">
                                                 Job is Done</a> | 
-                                            <a href='#' class='text-danger'>
+                                            <a href='#' onclick='alert(\"Cancellation of an already accepted FAVR will cause a $5 fee to be charged to you! Are you sure you wish to proceed?\")' class='text-danger'>
                                                 Cancel Request</a>
                                         </div>
                                         <div class='float-right d-inline'>
@@ -612,17 +639,17 @@ class Web_Page
                             <div class="form-label-group">
                                 <input type="time" name="requestTimeToAccomplish" id="inputTimeToAccomplish"
                                        class="form-control"
-                                       placeholder="How long do you think it will take to accomplish the task?"
+                                       placeholder="How long do you think it will take till done?"
                                        required="">
-                                <label for="inputTimeToAccomplish">How long do you think it will take?</label>
+                                <label for="inputTimeToAccomplish">When will it be done by?</label>
                             </div>
                             <div class="form-label-group">
                                 <input type="number" name="requestPrice" id="inputPricing" class="form-control"
-                                       placeholder="Set your price $" required="">
+                                       placeholder="Set your price $" min="0.50" max="250.00" step="0.01" required="">
                                 <label for="inputPricing">Set your price $</label>
                             </div>
                             <input type="submit" name="requestFavr" class="btn btn-lg btn-primary btn-block"
-                                   value="Request FAVR">
+                                   value="Request FAVR" onclick="alert("This will be posted publically")">
                         </div>
                     </div>
                 </div>
@@ -636,15 +663,30 @@ class Web_Page
     /**
      * Render marketplace favr request feed to home
      *
-     * @param $userInfo // array with user details such as location
+     * @param $scope
      * @param $orderBy
      * @param $orientation
      *
      * @return boolean
      */
-    function renderFavrMarketplace($userInfo, $orderBy = "task_date", $orientation = "DESC", $limit="LIMIT 3")
+    function renderFavrMarketplace($scope="global", $orderBy = "task_date", $orientation = "DESC", $limit="LIMIT 3")
     {
-        $selectMarketplaceQuery = "SELECT *, mfr.id as mfrid
+        if ($scope == $_SESSION['user_info']['id']) {
+            $selectMarketplaceQuery = "
+                                   SELECT *, mfr.id as mfrid
+                                   FROM marketplace_favr_requests mfr
+                                   INNER JOIN users u
+                                   WHERE u.id = $scope
+                                   AND u.id = mfr.customer_id
+                                   AND mfr.freelancer_id IS NULL
+                                   ORDER BY $orderBy
+                                   $orientation
+                                   $limit
+            ";
+
+        } else if ($scope == "global") {
+            $selectMarketplaceQuery = "
+                                   SELECT *, mfr.id as mfrid
                                    FROM marketplace_favr_requests mfr
                                    INNER JOIN users u
                                    WHERE u.id = mfr.customer_id
@@ -652,15 +694,18 @@ class Web_Page
                                    ORDER BY $orderBy
                                    $orientation
                                    $limit
-        ";
+            ";
+        } else {
+            $selectMarketplaceQuery = "";
+        }
 
         $result = $this->db->query($selectMarketplaceQuery);
-        $rows = $result->fetchAll(PDO::FETCH_ASSOC);
 
         if (!$result) {
             // failed to render marketplace
             return false;
         } else {
+            $rows = $result->fetchAll(PDO::FETCH_ASSOC);
             if (!empty($rows)) {
                 foreach ($rows as $row) {
                     $freelancer_id = $row['freelancer_id'];
@@ -919,14 +964,14 @@ class Web_Page
                                 AND NOT mfr.task_status = 'Completed'
                                 ";
 
-        $result = $this->db->query($notifications_query);
-        $row = $result->fetch(PDO::FETCH_ASSOC);
+        if ($this->db != null) {
+            $result = $this->db->query($notifications_query);
+            $row = $result->fetch(PDO::FETCH_ASSOC);
 
-//        if ($row['COUNT(*)'] == 0) {
             $_SESSION['main_notifications'] = $row['COUNT(*)'];
-//        } else {
-//            $_SESSION['main_notifications'] += $row['COUNT(*)'];
-//        }
+        } else {
+            $_SESSION['main_notifications'] = 0;
+        }
 
         return $_SESSION['main_notifications'];
     }
@@ -976,7 +1021,9 @@ class Web_Page
                 <?php
                     if ($_SESSION['nav_scroller'] == "active_marketplace" && $_SESSION['navbar'] == "active_home") {
 //                        echo "<a class=\"nav-link p-0\" href=\"$this->root_path/home/?navbar=active_home&nav_scroller=active_marketplace\">";
-                        echo "<i class=\"material-icons\" style=\"color: red; font-size: xx-large\">note_add</i>";
+                        echo "<i class=\"material-icons\" style=\"color: red;\">note_add</i>";
+                    } else {
+                        echo "<div class='material-icons' style='visibility: hidden;'>note_add</div>";
                     }
                 ?>
 <!--                        <i class="material-icons" style="color: red; font-size: xx-large">note_add</i>-->
@@ -995,7 +1042,7 @@ class Web_Page
                 <div class="navbar-collapse offcanvas-collapse" id="navbarsExampleDefault">
                     <ul class="navbar-nav mr-auto">
                         <li class="nav-item <?php echo $active_home; ?>">
-                            <a class="nav-link d-inline-flex" href="<?php echo $this->root_path; ?>/home/?navbar=active_home">
+                            <a class="nav-link d-inline-flex" href="<?php echo $this->root_path; ?>/home/?navbar=active_home&nav_scroller=active_marketplace">
                                 <i class="material-icons">home</i>
                                 Home
                                 <?php

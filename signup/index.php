@@ -57,29 +57,29 @@ echo $ALERT_MESSAGE;
             </div>
         </h6>
         <form class="form-signin" action="" method="post">
-            <div class="row">
-                <label for="inputUsername" class="sr-only">Username</label>
+            <div class="form-label-group">
                 <input type="text" name="signUpUsername" id="inputUsername" class="form-control" placeholder="Username" required="">
+                <label for="inputUsername" >Username</label>
             </div>
-            <div class="row">
-                <label for="inputFirstName" class="sr-only">First name</label>
+            <div class="form-label-group">
                 <input type="text" name="signUpFirstName" id="inputFirstName" class="form-control" placeholder="First name" required="">
+                <label for="inputFirstName" >First name</label>
             </div>
-            <div class="row">
-                <label for="inputLastName" class="sr-only">Last name</label>
+            <div class="form-label-group">
                 <input type="text" name="signUpLastName" id="inputLastName" class="form-control" placeholder="Last name" required="">
+                <label for="inputLastName" >Last name</label>
             </div>
-            <div class="row">
-                <label for="inputEmail" class="sr-only">Email address</label>
+            <div class="form-label-group">
                 <input type="email" name="signUpEmail" id="inputEmail" class="form-control" placeholder="Email address" required="">
+                <label for="inputEmail" >Email address</label>
             </div>
-            <div class="row">
-                <label for="inputPassword" class="sr-only">Password</label>
+            <div class="form-label-group">
                 <input type="password" name="signUpPass" id="inputPassword" class="form-control" placeholder="Password" required="">
+                <label for="inputPassword" >Password</label>
             </div>
-            <div class="row">
-                <label for="inputConfirmPassword" class="sr-only">Password</label>
+            <div class="form-label-group">
                 <input type="password" name="signUpPassConfirm" id="inputConfirmPassword" class="form-control" placeholder="Re-enter Password" required="">
+                <label for="inputConfirmPassword" >Password</label>
             </div>
             <div class="row">
                 <div class="d-inline-flex">
