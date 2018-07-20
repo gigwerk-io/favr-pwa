@@ -8,6 +8,9 @@
 session_start();
 include($_SERVER['DOCUMENT_ROOT'] . "/favr-pwa/include/autoload.php");
 
+if (isset($_SESSION['user_info']) && $_SESSION['user_info']['id'] != -1) {
+    header("Location: ../home/");
+}
 // constants
 $PAGE_ID = 0;
 $USER = "guest";
@@ -16,16 +19,10 @@ $ALERT_MESSAGE = "";
 
 $page = new Web_Page($PAGE_ID, $USER);
 
-if (isset($_GET['ALERT_MESSAGE'])) {
-    $ALERT_MESSAGE = $_GET['ALERT_MESSAGE'];
-    $ALERT_MESSAGE = "
-            <div class=\"my-3 p-3 alert alert-success alert-dismissible\" role=\"alert\">
-                <button type=\"button\" class=\"close\" data-dismiss=\"alert\" aria-label=\"Close\"><span aria-hidden=\"true\">&times;</span></button>
-                <strong>Success!</strong> $ALERT_MESSAGE
-            </div>
-        ";
-
-    $page->signOutUser();
+if (isset($_GET['signout']) && $_GET['signout'] == true) {
+    if ($page->signOutUser()) {
+        header("Location: ../");
+    }
 }
 
 // Script to process user sign in
@@ -53,6 +50,16 @@ if (isset($_POST['signIn'], $_POST['signInUsernameEmail'], $_POST['signInPass'])
 $page->setTitle("Sign In");
 $page->addStylesheet("<link rel='stylesheet' href='$page->root_path/assets/css/signin.css' />");
 $page->renderHeader(false);
+
+if (isset($_GET['ALERT_MESSAGE'])) {
+    $ALERT_MESSAGE = $_GET['ALERT_MESSAGE'];
+    $ALERT_MESSAGE = "
+            <div class=\"my-3 p-3 alert alert-success alert-dismissible\" role=\"alert\">
+                <button type=\"button\" class=\"close\" data-dismiss=\"alert\" aria-label=\"Close\"><span aria-hidden=\"true\">&times;</span></button>
+                <strong>Success!</strong> $ALERT_MESSAGE
+            </div>
+        ";
+}
 
 echo $ALERT_MESSAGE;
 ?>

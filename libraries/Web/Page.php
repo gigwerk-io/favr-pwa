@@ -128,7 +128,7 @@ class Web_Page
             $_SESSION['user_info'] = array(
                 "id" => '-1'
             );
-            header("Location: http://" . $_SERVER['HTTP_HOST'] . "/signin/");
+            header("Location: http://" . $_SERVER['HTTP_HOST'] . "/favr-pwa/signin/");
         } else {
             // permitted user
             if (empty($_SESSION['user_info'])) {
@@ -411,6 +411,7 @@ class Web_Page
         <head>
             <meta charset="utf-8">
             <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+<!--            <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">-->
             <meta name="description" content="">
             <meta name="author" content="">
             <meta name="theme-color" content="#343a40"/>
@@ -723,7 +724,7 @@ class Web_Page
                         <div class='pb-2 mb-0 border-bottom border-gray'>
                             <img data-src=\"holder.js/32x32?theme=thumb&bg=007bff&fg=007bff&size=1\" alt=\"\" class=\"mr-2 rounded\">
                             <strong style='font-size: 80%' class=\"d - block text - gray - dark\">@$customer_username</strong>
-                            <div class='float-right small' style='color: #1c7430'>$$task_price</div>     
+                            <div class='float-right small' style='color: var(--green)'>$$task_price</div>     
                         </div>";
                     echo "<div class=\"media text-muted pt-3\">
                         <div class='container'>
@@ -983,7 +984,6 @@ class Web_Page
      */
     function renderMainNavigation($page_id, $render_main_navigation = true)
     {
-
         if ($render_main_navigation) {
             $active_home = "";
             $active_notifications = "";
@@ -1009,35 +1009,52 @@ class Web_Page
                     break;
             }
             ?>
-            <nav class="navbar navbar-expand-md fixed-top navbar-dark bg-dark">
-                <div style="padding-top: 5px; padding-bottom: 5px">
-                    <a href="<?php echo $this->root_path; ?>/home/?navbar=active_home&nav_scroller=active_marketplace">
-                        <img src="<?php echo $this->root_path; ?>/assets/brand/favr_logo_rd.png" height="30" width="100"
-                             class="navbar-brand" style="padding-top: 0; padding-bottom: 0">
-                    </a>
+            <nav class="navbar navbar-expand-md fixed-top navbar-dark bg-dark pb-2">
+                <button class="navbar-toggler pb-2 border-0" type="button" data-toggle="offcanvas">
+<!--                    <i class="material-icons" style="font-size: xx-large;color: var(--red)">menu</i>-->
+                    <span class="sr-only">Toggle navigation</span>
+                    <span></span>
+                    <span></span>
+                    <span></span>
+                </button>
+
+                <div class="request-favr pt-0 pr-0 pb-0 mr-0">
+                    <?php
+                    if ($_SESSION['nav_scroller'] != "active_marketplace" || $_SESSION['navbar'] != "active_home") {
+                        echo "
+                            <a href=\"$this->root_path/home/?navbar=active_home&nav_scroller=active_marketplace\">
+                        ";
+                    }
+                    ?>
+                    <img src="<?php echo $this->root_path; ?>/assets/brand/favr_logo_rd.png" height="21" width="70"
+                         class="navbar-brand mr-0" style="padding-top: 0; padding-bottom: 0">
+
+                    <?php
+                    if ($_SESSION['nav_scroller'] != "active_marketplace" || $_SESSION['navbar'] != "active_home") {
+                        echo "
+                            </a>
+                        ";
+                    }
+                    ?>
                 </div>
 
-                <button class="request-favr p-0 border-0" type="button">
-                <?php
-                    if ($_SESSION['nav_scroller'] == "active_marketplace" && $_SESSION['navbar'] == "active_home") {
-//                        echo "<a class=\"nav-link p-0\" href=\"$this->root_path/home/?navbar=active_home&nav_scroller=active_marketplace\">";
-                        echo "<i class=\"material-icons\" style=\"color: red;\">note_add</i>";
-                    } else {
-                        echo "<div class='material-icons' style='visibility: hidden;'>note_add</div>";
-                    }
-                ?>
-<!--                        <i class="material-icons" style="color: red; font-size: xx-large">note_add</i>-->
-                <?php
-//                    if ($_SESSION['nav_scroller'] != "active_marketplace" || $_SESSION['navbar'] != "active_home") {
-//                        echo "</a>";
-//                    }
-                ?>
+                <button class="profile-button pb-0 border-0 mr-0 pr-0" style="left: .1rem" type="button">
+                    <?php
+                        if ($_SESSION['navbar'] == "active_profile") {
+                            echo "
+                               <i class=\"material-icons\" style=\"color: red;border: 1px solid;border-radius: 1rem;\">person</i>
+                            ";
+                        } else {
+                            echo "
+                                  <a href='$this->root_path/components/profile/?navbar=active_profile'>
+                                     <i class=\"material-icons\" style=\"color: red;border: 1px solid;border-radius: 1rem;\">person_outline</i>
+                                  </a>";
+                        }
+                    ?>
                 </button>
 
                 <!--                <a class="navbar-brand" href="#">FAVR</a>-->
-                <button class="navbar-toggler p-0 border-0" type="button" data-toggle="offcanvas">
-                    <i class="material-icons" style="font-size: xx-large;color: var(--red)">menu</i>
-                </button>
+
 
                 <div class="navbar-collapse offcanvas-collapse" id="navbarsExampleDefault">
                     <ul class="navbar-nav mr-auto">
@@ -1046,9 +1063,9 @@ class Web_Page
                                 <i class="material-icons">home</i>
                                 Home
                                 <?php
-                                    if (!empty($active_home)) {
-                                        echo "<span class=\"sr-only\">(current)</span>";
-                                    }
+                                if (!empty($active_home)) {
+                                    echo "<span class=\"sr-only\">(current)</span>";
+                                }
                                 ?>
                             </a>
                         </li>
@@ -1063,13 +1080,13 @@ class Web_Page
                                 ?>
                                 Notifications
                                 <?php
-                                    $notificationCount = $this->processNotifications($_SESSION['user_info']);
+                                $notificationCount = $this->processNotifications($_SESSION['user_info']);
 
-                                    $this->renderNotificationCount($notificationCount);
+                                $this->renderNotificationCount($notificationCount);
 
-                                    if (!empty($active_notifications)) {
-                                        echo "<span class=\"sr-only\">(current)</span>";
-                                    }
+                                if (!empty($active_notifications)) {
+                                    echo "<span class=\"sr-only\">(current)</span>";
+                                }
                                 ?>
                             </a>
                         </li>
@@ -1084,9 +1101,9 @@ class Web_Page
                                 ?>
                                 Profile, Welcome: <?php echo $_SESSION['user_info']['first_name']; ?>
                                 <?php
-                                    if (!empty($active_profile)) {
-                                        echo "<span class=\"sr-only\">(current)</span>";
-                                    }
+                                if (!empty($active_profile)) {
+                                    echo "<span class=\"sr-only\">(current)</span>";
+                                }
                                 ?>
                             </a>
                         </li>
@@ -1101,14 +1118,14 @@ class Web_Page
                                 <i class="material-icons">settings</i>
                                 Settings
                                 <?php
-                                    if (!empty($active_settings)) {
-                                        echo "<span class=\"sr-only\">(current)</span>";
-                                    }
+                                if (!empty($active_settings)) {
+                                    echo "<span class=\"sr-only\">(current)</span>";
+                                }
                                 ?>
                             </a>
                         </li>
                         <li class="nav-item">
-                            <a class="nav-link d-inline-flex" href="<?php echo $this->root_path; ?>/signin/?ALERT_MESSAGE=Signed off, comeback again :)">
+                            <a class="nav-link d-inline-flex" href="<?php echo $this->root_path; ?>/signin/?signout=true">
                                 <i class="material-icons">exit_to_app</i>
                                 Sign out
                             </a>
@@ -1181,6 +1198,7 @@ class Web_Page
                 <?php
             }
         }
+
     }
 
     /**
@@ -1196,7 +1214,7 @@ class Web_Page
             <hr>
             <div class="row">
                 <p class="col-md-10 text-muted">&copy; 2018 Solken Technology, Inc</p>
-                <p class="col-md-2 float-right text-muted">v<?php echo $this->product_version; ?> Pre-Alpha</p>
+                <p class="col-md-2 float-right text-muted">v<?php echo $this->product_version; ?> Alpha</p>
             </div>
         </footer>
 
@@ -1236,6 +1254,9 @@ class Web_Page
         <!--                        crossorigin="anonymous"></script>-->
         <script src="<?php echo $this->root_path; ?>/assets/js/vendor/holder.min.js"></script>
 
+        <!-- Service Worker -->
+        <script src="<?php echo $this->root_path; ?>/assets/js/src/pwa.js"></script>
+
         <!-- Icons -->
         <script src="https://unpkg.com/feather-icons/dist/feather.min.js"></script>
         <script>
@@ -1253,8 +1274,9 @@ class Web_Page
                 'use strict'
 
                 $('[data-toggle="offcanvas"]').on('click', function () {
-                    $('.offcanvas-collapse').toggleClass('open')
-                })
+                    $('.offcanvas-collapse').toggleClass('open');
+                    $('.navbar-toggler').toggleClass('close')
+                });
             })
         </script>
 

@@ -38,6 +38,8 @@ if (isset($_GET['ALERT_MESSAGE'])) {
 
 echo $ALERT_MESSAGE;
 
+print_r($_SESSION);
+
 $page->renderFavrRequestForm($_SESSION['user_info'], $_SESSION['filter_marketplace_by'], $_SESSION['orient_marketplace_by'], $_SESSION['limit_marketplace_by']);
 ?>
 <div class="my-3 p-3">

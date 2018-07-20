@@ -8,13 +8,16 @@
 session_start();
 include($_SERVER['DOCUMENT_ROOT'] . "/favr-pwa/include/autoload.php");
 
+if (isset($_SESSION['user_info']) && $_SESSION['user_info']['id'] != -1) {
+    header("Location: ../home/");
+}
 //constants
 $PAGE_ID = 2;
 $USER = "guest";
 $ALERT_MESSAGE = "";
 
 $page = new Web_Page($PAGE_ID, $USER);
-$page->setTitle("Sign In");
+$page->setTitle("Sign Up");
 $page->addStylesheet("<link rel='stylesheet' href='$page->root_path/assets/css/signin.css' />");
 $page->renderHeader(false);
 
