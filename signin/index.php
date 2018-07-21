@@ -15,14 +15,62 @@ if (isset($_SESSION['user_info']) && $_SESSION['user_info']['id'] != -1) {
 $PAGE_ID = 0;
 $USER = "guest";
 $ALERT_MESSAGE = "";
-
+$CRUD_INDEX_DB = "";
+//
+//die(print_r($_SESSION));
 
 $page = new Web_Page($PAGE_ID, $USER);
 
+if (isset($_GET['d_idb']) && $_GET['d_idb'] = true) {
+    $CRUD_INDEX_DB = "
+        <script>
+        var db;
+    
+        var openRequest = indexedDB.open('favr_db', 1);
+        
+        openRequest.onupgradeneeded = function(e) {
+          var db = e.target.result;
+          console.log('running onupgradeneeded');
+          if (!db.objectStoreNames.contains('store')) {
+            var storeOS = db.createObjectStore('store',
+              {keyPath: 'id'});
+            storeOS.createIndex('id', 'id', {unique: true});
+          }
+        };
+        openRequest.onsuccess = function(e) {
+          console.log('running onsuccess');
+          db = e.target.result;
+          deleteItem();
+        };
+        openRequest.onerror = function(e) {
+          console.log('onerror!');
+          console.dir(e);
+        };
+        
+        function deleteItem() {
+          var transaction = db.transaction(['store'], 'readwrite');
+          var store = transaction.objectStore('store');
+          
+          var request = store.delete(0);
+          
+          request.onerror = function (ev) { 
+              console.log('Error', ev.target.result);
+           };
+          request.onsuccess = function (ev) {
+              console.log('[Delete]');
+          }
+        }
+        </script>
+    ";
+
+    $page->addScript($CRUD_INDEX_DB);
+}
+
 if (isset($_GET['signout']) && $_GET['signout'] == true) {
     if ($page->signOutUser()) {
-        header("Location: ../");
+        header("Location: ../signin/?d_idb=true");
     }
+    die("You have successfully signed out, come back again");
 }
 
 // Script to process user sign in

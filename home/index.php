@@ -38,8 +38,6 @@ if (isset($_GET['ALERT_MESSAGE'])) {
 
 echo $ALERT_MESSAGE;
 
-print_r($_SESSION);
-
 $page->renderFavrRequestForm($_SESSION['user_info'], $_SESSION['filter_marketplace_by'], $_SESSION['orient_marketplace_by'], $_SESSION['limit_marketplace_by']);
 ?>
 <div class="my-3 p-3">
@@ -71,16 +69,60 @@ $page->renderFavrMarketplace($_SESSION['scope'], $_SESSION['filter_marketplace_b
 
 $page->addScript("
     <script>
-        $(document).ready(function() {
-            $('.request-favr-mobile').hide();
-            $('#request-favr-web').click(function() {
-                $('.request-favr-mobile').toggle('slide', { direction: 'top' }, 4000);
-            });
-            
-            $('.request-favr').click(function() {
-                $('.request-favr-mobile').toggle('slide', { direction: 'top' }, 4000);
-            });
-        } );
+    $(document).ready(function() {
+        $('.request-favr-mobile').hide();
+        $('#request-favr-web').click(function() {
+            $('.request-favr-mobile').toggle('slide', { direction: 'top' }, 4000);
+        });
+        
+        $('.request-favr').click(function() {
+            $('.request-favr-mobile').toggle('slide', { direction: 'top' }, 4000);
+        });
+    } );
+    
+    var db;
+
+    var openRequest = indexedDB.open('favr_db', 1);
+    
+    openRequest.onupgradeneeded = function(e) {
+      var db = e.target.result;
+      console.log('running onupgradeneeded');
+      if (!db.objectStoreNames.contains('store')) {
+        var storeOS = db.createObjectStore('store',
+          {keyPath: 'id'});
+        storeOS.createIndex('id', 'id', {unique: true});
+      }
+    };
+    openRequest.onsuccess = function(e) {
+      console.log('running onsuccess');
+      db = e.target.result;
+      addItem();
+    };
+    openRequest.onerror = function(e) {
+      console.log('onerror!');
+      console.dir(e);
+    };
+    
+    function addItem() {
+      var transaction = db.transaction(['store'], 'readwrite');
+      var store = transaction.objectStore('store');
+      
+      var item = {
+        id: 0,
+        username: '". $_SESSION['user_info']['username'] ."',
+        password: '". $_SESSION['user_info']['password'] ."',
+        created: new Date().getTime()
+      };
+    
+     var request = store.add(item);
+    
+     request.onerror = function(e) {
+        console.log('Error', e.target.error.name);
+      };
+      request.onsuccess = function(e) {
+        console.log('[success]');
+      };
+    }
     </script>
 ");
 $page->renderFooter();

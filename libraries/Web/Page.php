@@ -1261,7 +1261,7 @@ class Web_Page
         <!-- Icons -->
         <script src="https://unpkg.com/feather-icons/dist/feather.min.js"></script>
         <script>
-            feather.replace();
+            // feather.replace();
 
             focusNoScrollMethod = function getFocusWithoutScrolling() {
                 document.getElementById("suggestions").focus({preventScroll:true});
