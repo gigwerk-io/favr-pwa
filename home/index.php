@@ -12,8 +12,6 @@ if (isset($_SESSION['user_info'])) {
 }
 
 $page = new Web_Page($PAGE_ID, $USER);
-$data = new Data_Table("$PAGE_ID", "friends-table", $page);
-$chart = new Data_Chart("$PAGE_ID", "rent-chart", $page);
 
 $page->setTitle("Home");
 $page->renderHeader();
@@ -40,6 +38,11 @@ echo $ALERT_MESSAGE;
 
 $page->renderFavrRequestForm($_SESSION['user_info'], $_SESSION['filter_marketplace_by'], $_SESSION['orient_marketplace_by'], $_SESSION['limit_marketplace_by']);
 ?>
+<div class="zoom">
+    <a class="zoom-fab zoom-btn-large text-center" id="zoomBtn">
+        <i style="padding: .8rem;background: transparent;color: var(--white);font-size: xx-large" class="material-icons">create</i>
+    </a>
+</div>
 <div class="my-3 p-3">
     <h6 class="border-bottom border-gray pb-2 mb-0">
         <small class="col-sm-6 pl-0">
@@ -70,6 +73,10 @@ $page->renderFavrMarketplace($_SESSION['scope'], $_SESSION['filter_marketplace_b
 $page->addScript("
     <script>
     $(document).ready(function() {
+        $('#zoomBtn').click(function() {
+          $('.request-favr-mobile').toggle('slide', { direction: 'top' }, 4000);
+        });
+
         $('.request-favr-mobile').hide();
         $('#request-favr-web').click(function() {
             $('.request-favr-mobile').toggle('slide', { direction: 'top' }, 4000);

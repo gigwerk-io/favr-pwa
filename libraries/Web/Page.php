@@ -382,6 +382,113 @@ class Web_Page
     }
 
     /**
+     * Render marketplace history for this specific user
+     *
+     * @param $id
+     * @param $orderBy
+     * @param $orientation
+     *
+     * @return boolean
+     */
+    function renderFavrProfileHistory($id, $orderBy = "task_date", $orientation = "DESC", $limit="")
+    {
+        if ($id == $_SESSION['user_info']['id']) {
+            $selectMarketplaceQuery = "
+                                   SELECT *, mfr.id as mfrid
+                                   FROM marketplace_favr_requests mfr
+                                   INNER JOIN users u
+                                   WHERE u.id = mfr.customer_id
+                                   AND u.id = $id
+                                   OR u.id = mfr.freelancer_id
+                                   AND u.id = $id
+                                   ORDER BY $orderBy
+                                   $orientation
+                                   $limit
+            ";
+
+        } else {
+            $selectMarketplaceQuery = "";
+        }
+
+        $result = $this->db->query($selectMarketplaceQuery);
+
+        if (!$result) {
+            // failed to render marketplace
+            echo "Something went wrong! :(";
+            return false;
+        } else {
+            $rows = $result->fetchAll(PDO::FETCH_ASSOC);
+            if (!empty($rows)) {
+                foreach ($rows as $row) {
+                    $freelancer_id = $row['freelancer_id'];
+                    $task_id = $row['mfrid'];
+                    $customer_id = $row['customer_id'];
+                    $customer = $this->getUserInfo($customer_id);
+                    $customer_username = $customer['username'];
+                    $customer_first_name = $customer['first_name'];
+                    $task_description = $row['task_description'];
+                    $task_date = date("m/d/Y", strtotime($row['task_date']));
+                    $task_location = $row['task_location'];
+                    $task_time_to_accomplish = $row['task_time_to_accomplish'];
+                    $task_price = $row['task_price'];
+                    $task_status = $row['task_status'];
+
+                    echo "<div class=\"my-3 p-3 bg-white rounded box-shadow\">
+                        <div class='pb-2 mb-0 border-bottom border-gray'>
+                            <img data-src=\"holder.js/32x32?theme=thumb&bg=007bff&fg=007bff&size=1\" alt=\"\" class=\"mr-2 rounded\">
+                            <strong style='font-size: 80%' class=\"d - block text - gray - dark\">@$customer_username</strong>
+                            <div class='float-right small' style='color: var(--green)'>$$task_price</div>     
+                        </div>";
+                    echo "<div class=\"media text-muted pt-3\">
+                        <div class='container'>
+                            <p class=\"media-body text-dark pb-3 mb-0 small lh-125\">
+                                $task_description
+                            </p>
+                            <div class='row p-0 border-top border-gray'>
+                                <div class='col-sm-12 small'>
+                                    <div class=\"float-left d-inline\">
+                                        ";
+
+                    if ($freelancer_id == $_SESSION['user_info']['id'] && $task_status == "Requested") { // if not this user
+                        echo "<p class='mb-0 d-inline-flex'>Accepted(Freelancer)</p>";
+                    } else if ($freelancer_id == $_SESSION['user_info']['id'] && $task_status == "In Progress") { // if not this user
+                        echo "<p class='mb-0 d-inline-flex'>In Progress(Freelancer)</p>";
+                    } else if ($freelancer_id == $_SESSION['user_info']['id'] && $task_status == "Completed") { // if not this user
+                        echo "<p class='mb-0 d-inline-flex'>You Completed</p>";
+                    } else if ($customer_id == $_SESSION['user_info']['id'] && $task_status == "Requested") { // if not this user
+                        echo "<p class='mb-0 d-inline-flex'>Requested</p> |";
+                        echo "<a href=\"?nav_bar=active_home&d_request_id=$task_id&ALERT_MESSAGE=Your request has been deleted!\" class='text-danger'>
+                            Cancel Request</a>";
+                    } else if ($customer_id == $_SESSION['user_info']['id'] && $task_status == "In Progress") { // if not this user
+                        echo "<p class='mb-0 d-inline-flex'>In Progress</p> |";
+                        echo "<a href=\"?nav_bar=active_home&d_request_id=$task_id&ALERT_MESSAGE=Your request has been deleted!\" class='text-danger'>
+                            Cancel Request</a>";
+                    } else {
+                        echo "<p class='mb-0 d-inline-flex'>Completed</p>";
+                    }
+
+                    echo "
+                                    </div>
+                                    <div class='float-right d-inline'>
+                                        $task_date
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>";
+                    echo "</div>";
+
+                }
+            } else {
+                echo "<p class='p-3 text-muted'>You don't have a FAVR history! <a href='$this->root_path/home/?navbar=active_home&nav_scroller=active_marketplace'>Go to marketplace</a> and request FAVRs :)</p>";
+                return false;
+            }
+
+            return true;
+        }
+    }
+
+    /**
      * Render profile from userID
      *
      * @param $userID
@@ -738,7 +845,7 @@ class Web_Page
                                         ";
 
                     if ($customer_id != $_SESSION['user_info']['id']) { // if not this user
-                        echo "<a href=\"$this->root_path/components/notifications/?navbar=active_notifications&accept_request_id=$task_id&ALERT_MESSAGE=You've signed up to take this task! You must complete it and verify it's completion with the task requester in order to disburse payment!\">
+                        echo "<a href=\"$this->root_path/components/notifications/?navbar=active_notifications&accept_request_id=$task_id&ALERT_MESSAGE=You've signed up to take this task! You must complete it and verify its completion with the task requester in order to disburse payment!\">
                             Accept Request</a>";
                     } else {
                         echo "<a href=\"?nav_bar=active_home&d_request_id=$task_id&ALERT_MESSAGE=Your request has been deleted!\" class='text-danger'>
@@ -1163,11 +1270,11 @@ class Web_Page
                            href="<?php echo $this->root_path; ?>/home/?navbar=active_home&nav_scroller=active_marketplace">
                             Marketplace
                             <?php
-                            //                            if ($active_marketplace) {
-                            echo "<i class=\"material-icons\" style='font-size: 15px; padding-left: 2px;'>whatshot</i>";
-                            //                            } else {
-                            //                                echo "<i class=\"material-icons\">whatshot</i>";
-                            //                            }
+                            if ($active_marketplace) {
+                                echo "<i class=\"material-icons\" style='color: var(--red);font-size: 15px; padding-left: 2px;'>whatshot</i>";
+                            } else {
+                                echo "<i class=\"material-icons\" style='font-size: 15px; padding-left: 2px;'>whatshot</i>";
+                            }
                             ?>
                         </a>
                         <a class="nav-link <?php echo $active_friends; ?>"
@@ -1175,7 +1282,7 @@ class Web_Page
                             Friends
                             <?php
                             if ($active_friends) {
-                                echo "<i class=\"material-icons\" style='font-size: 15px; padding-left: 2px;'>people</i>";
+                                echo "<i class=\"material-icons\" style='color: var(--red);font-size: 15px; padding-left: 2px;'>people</i>";
                             } else {
                                 echo "<i class=\"material-icons\" style='font-size: 15px; padding-left: 2px;'>people_outline</i>";
                             }
@@ -1186,7 +1293,7 @@ class Web_Page
                             Chat
                             <?php
                             if ($active_chat) {
-                                echo "<i class=\"material-icons\" style='font-size: 15px; padding-left: 2px;'>chat_bubble</i>";
+                                echo "<i class=\"material-icons\" style='color: var(--red);font-size: 15px; padding-left: 2px;'>chat_bubble</i>";
                             } else {
                                 echo "<i class=\"material-icons\" style='font-size: 15px; padding-left: 2px;'>chat_bubble_outline</i>";
                             }
