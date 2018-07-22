@@ -723,7 +723,7 @@ class Web_Page
             <div class="p-3 text-center request-favr-web">
                 <button class="btn btn-lg btn-primary" id="request-favr-web">
                     <div class="d-inline-flex">
-                        <i class="material-icons">note_add</i>
+                        <i class="material-icons">create</i>
                         Request FAVR
                     </div>
                 </button>
