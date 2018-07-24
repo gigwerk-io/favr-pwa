@@ -84,6 +84,7 @@ $page->addScript("
         
         $('.request-favr').click(function() {
             $('.request-favr-mobile').toggle('slide', { direction: 'top' }, 4000);
+            $('.zoom-fab').toggle();
         });
     } );
     

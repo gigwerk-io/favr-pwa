@@ -38,7 +38,13 @@ class Web_Page
      * String value to keep track and validate product version
      * @var string
      */
-    public $product_version = "0.0.2";
+    public $product_version = "0.1.1";
+
+    /**
+     * value to determine project root path
+     * @var string
+     */
+    public $root_path = "http://localhost/favr-pwa";
 
     /**
      * Boolean to determine whether or not to render page main navigation/menu
@@ -70,11 +76,7 @@ class Web_Page
      */
     public $db;
 
-    /**
-     * value to determine project root path
-     * @var string
-     */
-    public $root_path = "http://localhost/favr-pwa";
+
 
     /**
      * Value to identify user
@@ -437,29 +439,36 @@ class Web_Page
                         <div class='pb-2 mb-0 border-bottom border-gray'>
                             <img data-src=\"holder.js/32x32?theme=thumb&bg=007bff&fg=007bff&size=1\" alt=\"\" class=\"mr-2 rounded\">
                             <strong style='font-size: 80%' class=\"d - block text - gray - dark\">@$customer_username</strong>
-                            <div class='float-right small' style='color: var(--green)'>$$task_price</div>     
-                        </div>";
-                    echo "<div class=\"media text-muted pt-3\">
-                        <div class='container'>
-                            <p class=\"media-body text-dark pb-3 mb-0 small lh-125\">
-                                $task_description
-                            </p>
-                            <div class='row p-0 border-top border-gray'>
-                                <div class='col-sm-12 small'>
-                                    <div class=\"float-left d-inline\">
-                                        ";
+                            ";
 
-                    if ($freelancer_id == $_SESSION['user_info']['id'] && $task_status == "Requested") { // if not this user
+                    if ($freelancer_id == $id) {
+                        echo "<div class='float-right small' style='color: var(--green)'>+ $$task_price</div>";
+                    } else if ($customer_id == $id) {
+                        echo "<div class='float-right small' style='color: var(--red)'>- $$task_price</div>";
+                    }
+
+                    echo "</div>
+                        <div class=\"media text-muted pt-3\">
+                            <div class='container'>
+                                <p class=\"media-body text-dark pb-3 mb-0 small lh-125\">
+                                    $task_description
+                                </p>
+                                <div class='row p-0 border-top border-gray'>
+                                    <div class='col-sm-12 small'>
+                                        <div class=\"float-left d-inline\">
+                                            ";
+
+                    if ($freelancer_id == $id && $task_status == "Requested") { // if not this user
                         echo "<p class='mb-0 d-inline-flex'>Accepted(Freelancer)</p>";
-                    } else if ($freelancer_id == $_SESSION['user_info']['id'] && $task_status == "In Progress") { // if not this user
+                    } else if ($freelancer_id == $id && $task_status == "In Progress") { // if not this user
                         echo "<p class='mb-0 d-inline-flex'>In Progress(Freelancer)</p>";
-                    } else if ($freelancer_id == $_SESSION['user_info']['id'] && $task_status == "Completed") { // if not this user
+                    } else if ($freelancer_id == $id && $task_status == "Completed") { // if not this user
                         echo "<p class='mb-0 d-inline-flex'>You Completed</p>";
-                    } else if ($customer_id == $_SESSION['user_info']['id'] && $task_status == "Requested") { // if not this user
+                    } else if ($customer_id == $id && $task_status == "Requested") { // if not this user
                         echo "<p class='mb-0 d-inline-flex'>Requested</p> |";
                         echo "<a href=\"?nav_bar=active_home&d_request_id=$task_id&ALERT_MESSAGE=Your request has been deleted!\" class='text-danger'>
                             Cancel Request</a>";
-                    } else if ($customer_id == $_SESSION['user_info']['id'] && $task_status == "In Progress") { // if not this user
+                    } else if ($customer_id == $id && $task_status == "In Progress") { // if not this user
                         echo "<p class='mb-0 d-inline-flex'>In Progress</p> |";
                         echo "<a href=\"?nav_bar=active_home&d_request_id=$task_id&ALERT_MESSAGE=Your request has been deleted!\" class='text-danger'>
                             Cancel Request</a>";
@@ -668,14 +677,22 @@ class Web_Page
                 $task_location = $row['task_location'];
                 $task_time_to_accomplish = $row['task_time_to_accomplish'];
                 $task_price = $row['task_price'];
+                $task_status = $row['task_status'];
 
                 echo "<div class=\"my-3 p-3 bg-white rounded box-shadow\">
                             <div class='pb-2 mb-0 border-bottom border-gray'>
                                 <img data-src=\"holder.js/32x32?theme=thumb&bg=007bff&fg=007bff&size=1\" alt=\"\" class=\"mr-2 rounded\">
                                 <strong style='font-size: 80%' class=\"d - block text - gray - dark\">@". $customer['username'] ."</strong>
-                                <div class='float-right small' style='color: #1c7430'> $$task_price</div>
-                            </div>";
-                echo "<div class=\"media text-muted pt-3\">
+                                ";
+
+                if ($freelancer_id == $userID) {
+                    echo "<div class='float-right small' style='color: var(--green)'>+ $$task_price</div>";
+                } else if ($customer_id == $userID) {
+                    echo "<div class='float-right small' style='color: var(--red)'>- $$task_price</div>";
+                }
+
+                echo "</div>
+                        <div class=\"media text-muted pt-3\">
                             <div class='container'>
                                 <p class=\"media-body pb-3 mb-0 small lh-125 text-dark\">
                                     <div class='small'>Task accepted by ". $freelancer['first_name'] ."</div>
@@ -832,9 +849,15 @@ class Web_Page
                         <div class='pb-2 mb-0 border-bottom border-gray'>
                             <img data-src=\"holder.js/32x32?theme=thumb&bg=007bff&fg=007bff&size=1\" alt=\"\" class=\"mr-2 rounded\">
                             <strong style='font-size: 80%' class=\"d - block text - gray - dark\">@$customer_username</strong>
-                            <div class='float-right small' style='color: var(--green)'>$$task_price</div>     
-                        </div>";
-                    echo "<div class=\"media text-muted pt-3\">
+                            ";
+
+                    if ($customer_id == $_SESSION['user_info']['id']) {
+                        echo "<div class='float-right small' style='color: var(--red)'>- $$task_price</div>";
+                    } else {
+                        echo "<div class='float-right small' style='color: var(--dark)'>$$task_price</div>";
+                    }
+
+                    echo "</div><div class=\"media text-muted pt-3\">
                         <div class='container'>
                             <p class=\"media-body text-dark pb-3 mb-0 small lh-125\">
                                 $task_description
@@ -1094,6 +1117,7 @@ class Web_Page
     {
         if ($render_main_navigation) {
             $active_home = "";
+            $active_categories = "";
             $active_notifications = "";
             $active_profile = "";
             $active_settings = "";
@@ -1102,6 +1126,9 @@ class Web_Page
             switch ($_SESSION['navbar']) {
                 case "active_home":
                     $active_home = "active";
+                    break;
+                case "active_categories":
+                    $active_categories = "active";
                     break;
                 case "active_notifications":
                     $active_notifications = "active";
@@ -1175,6 +1202,12 @@ class Web_Page
                                     echo "<span class=\"sr-only\">(current)</span>";
                                 }
                                 ?>
+                            </a>
+                        </li>
+                        <li class="nav-item <?php echo $active_categories; ?>">
+                            <a class="nav-link d-inline-flex" href="<?php echo $this->root_path; ?>/components/categories/?navbar=active_categories">
+                                <i class="material-icons">dashboard</i>
+                                Categories
                             </a>
                         </li>
                         <li class="nav-item <?php echo $active_notifications; ?>">
@@ -1271,9 +1304,9 @@ class Web_Page
                             Marketplace
                             <?php
                             if ($active_marketplace) {
-                                echo "<i class=\"material-icons\" style='color: var(--red);font-size: 15px; padding-left: 2px;'>whatshot</i>";
+                                echo "<i class=\"material-icons\" style='color: var(--red);font-size: 15px;position:relative;top:.2rem;padding-left: 2px;'>store</i>";
                             } else {
-                                echo "<i class=\"material-icons\" style='font-size: 15px; padding-left: 2px;'>whatshot</i>";
+                                echo "<i class=\"material-icons\" style='font-size: 15px;position:relative;top:.2rem;padding-left: 2px;'>store</i>";
                             }
                             ?>
                         </a>
@@ -1282,9 +1315,9 @@ class Web_Page
                             Friends
                             <?php
                             if ($active_friends) {
-                                echo "<i class=\"material-icons\" style='color: var(--red);font-size: 15px; padding-left: 2px;'>people</i>";
+                                echo "<i class=\"material-icons\" style='color: var(--red);font-size: 15px; padding-left: 2px;position:relative;top:.1rem;'>people</i>";
                             } else {
-                                echo "<i class=\"material-icons\" style='font-size: 15px; padding-left: 2px;'>people_outline</i>";
+                                echo "<i class=\"material-icons\" style='font-size: 15px; padding-left: 2px;position:relative;top:.1rem;'>people_outline</i>";
                             }
                             ?>
                         </a>
@@ -1293,9 +1326,9 @@ class Web_Page
                             Chat
                             <?php
                             if ($active_chat) {
-                                echo "<i class=\"material-icons\" style='color: var(--red);font-size: 15px; padding-left: 2px;'>chat_bubble</i>";
+                                echo "<i class=\"material-icons\" style='color: var(--red);font-size: 15px; padding-left: 2px;position:relative;top:.2rem;'>chat_bubble</i>";
                             } else {
-                                echo "<i class=\"material-icons\" style='font-size: 15px; padding-left: 2px;'>chat_bubble_outline</i>";
+                                echo "<i class=\"material-icons\" style='font-size: 15px; padding-left: 2px;position:relative;top:.2rem;'>chat_bubble_outline</i>";
                             }
                             ?>
                         </a>
@@ -1322,7 +1355,7 @@ class Web_Page
             <hr>
             <div class="row">
                 <p class="col-md-10 text-muted">&copy; 2018 Solken Technology, Inc</p>
-                <p class="col-md-2 float-right text-muted">v<?php echo $this->product_version; ?> Alpha</p>
+                <p class="col-md-2 float-right text-muted">v<?php echo $this->product_version; ?> Beta</p>
             </div>
         </footer>
 

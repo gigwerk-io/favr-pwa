@@ -150,6 +150,10 @@ body {
         height: 70px;
     }
 
+    .zoom-fade {
+        opacity: .5;
+    }
+
     .zoom-fab {
         visibility: visible;
         display: inline-block;
@@ -169,6 +173,7 @@ body {
 
     .zoom-fab:hover {
         background-color: var(--dark);
+        opacity: .5;
         box-shadow: 0 3px 3px 0 rgba(0, 0, 0, 0.14), 0 1px 7px 0 rgba(0, 0, 0, 0.12), 0 3px 1px -1px rgba(0, 0, 0, 0.2);
     }
 
