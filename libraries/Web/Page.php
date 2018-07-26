@@ -466,11 +466,11 @@ class Web_Page
                         echo "<p class='mb-0 d-inline-flex'>You Completed</p>";
                     } else if ($customer_id == $id && $task_status == "Requested") { // if not this user
                         echo "<p class='mb-0 d-inline-flex'>Requested</p> |";
-                        echo "<a href=\"?nav_bar=active_home&d_request_id=$task_id&ALERT_MESSAGE=Your request has been deleted!\" class='text-danger'>
+                        echo "<a href=\"?nav_bar=active_profile&d_request_id=$id&ALERT_MESSAGE=Your request has been deleted!\" class='text-danger'>
                             Cancel Request</a>";
                     } else if ($customer_id == $id && $task_status == "In Progress") { // if not this user
                         echo "<p class='mb-0 d-inline-flex'>In Progress</p> |";
-                        echo "<a href=\"?nav_bar=active_home&d_request_id=$task_id&ALERT_MESSAGE=Your request has been deleted!\" class='text-danger'>
+                        echo "<a href=\"?nav_bar=active_profile&d_request_id=$id&ALERT_MESSAGE=Your request has been deleted!\" class='text-danger'>
                             Cancel Request</a>";
                     } else {
                         echo "<p class='mb-0 d-inline-flex'>Completed</p>";
@@ -604,7 +604,7 @@ class Web_Page
         $this->renderMainNavigation($this->page_id, $render_top_nav);
         ?>
 
-        <main role="main" class="container animate-bottom">
+        <main role="main" class="container animate-bottom" style="max-width: 750px">
         <?php
     }
 
@@ -746,7 +746,7 @@ class Web_Page
                 </button>
             </div>
 
-            <form class="request-favr-mobile" action="" method="post">
+            <form class="request-favr-mobile" action="" method="post" enctype="multipart/form-data">
                 <div class="my-3 p-3 bg-white rounded box-shadow">
                     <h6 class="border-bottom border-gray pb-2 mb-0">Post a FAVR request in Marketplace</h6>
                     <div class="media text-muted pt-3">
@@ -758,21 +758,60 @@ class Web_Page
                                 <textarea name="requestTaskDescription" class="form-control" placeholder="What is your task?"></textarea>
                             </div>
                             <div class="form-label-group">
-                                <input type="datetime-local" name="requestDate" id="inputDate" class="form-control"
-                                       placeholder="When do you want your FAVR?" value="<?php echo date("Y-m-d\TH:i", time()); ?>" required="">
-                                <label for="inputDate">When do you want your FAVR?</label>
-                            </div>
-                            <div class="form-label-group">
-                                <input type="time" name="requestTimeToAccomplish" id="inputTimeToAccomplish"
+                                <input type="number" pattern="\d*" step="1" min="1" max="5" name="requestFreelancerCount" id="inputCount"
                                        class="form-control"
-                                       placeholder="How long do you think it will take till done?"
-                                       required="">
-                                <label for="inputTimeToAccomplish">When will it be done by?</label>
+                                       placeholder="How many people do you need?" value="1" required="">
+                                <label for="inputCount">How many people do you need?</label>
                             </div>
                             <div class="form-label-group">
-                                <input type="number" name="requestPrice" id="inputPricing" class="form-control"
-                                       placeholder="Set your price $" min="0.50" max="250.00" step="0.01" required="">
-                                <label for="inputPricing">Set your price $</label>
+                                <input type="datetime-local" name="requestDate" id="inputDate"
+                                       class="form-control"
+                                       placeholder="When do you want your FAVR done by?" value="<?php echo date("Y-m-d\TH:i", time()); ?>" required="">
+                                <label for="inputDate">When do you want your FAVR done by?</label>
+                            </div>
+
+<!--                            TODO: Add informational popup telling the user we won't share sensitive information until freelancer accepts request -->
+
+                            <div class="form-label-group">
+                                <input type="text" name="requestStreetAddress" id="inputStreetAddress"
+                                       class="form-control"
+                                       placeholder="What's your street address?"
+                                       value="<?php echo $_SESSION['user_info']['street'] . ", " . $_SESSION['user_info']['city'] . ", " . $_SESSION['user_info']['state_province'] . ", " . $_SESSION['user_info']['zip']; ?>"
+                                       required="">
+                                <label for="inputStreetAddress">What's your street address?</label>
+                            </div>
+                            <label for="inputCategory">What category do you want your FAVR listed?</label>
+                            <div class="form-label-group">
+                                <select name="requestCategory" id="inputCategory"
+                                        class="form-control"
+                                        required="">
+                                    <option value="General Request" selected>General Request</option>
+                                    <option value="Home Improvement">Home Improvement</option>
+                                    <option value="Yard Work">Yard Work</option>
+                                </select>
+                            </div>
+                            <label for="inputDifficulty">What difficulty is the task?</label>
+                            <div class="form-label-group">
+                                <button id="easy-button" type="button" class="btn btn-success p-2 rounded" value="Easy">Easy 👌</button>
+                                <button id="medium-button" type="button" class="btn btn-warning p-2 rounded" value="Medium">Medium 💪🏿</button>
+                                <button id="hard-button" type="button" class="btn btn-danger p-2 rounded" value="Hard">Hard 🔥</button>
+                                <input id="difficulty" type="hidden" name="requestDifficulty">
+                            </div>
+                            <div class="input-group pb-3">
+                                <div class="input-group-prepend">
+                                    <span class="input-group-text" style="color: var(--green)">$</span>
+                                </div>
+                                <input type="number" name="requestPrice" id="inputPricing"
+                                       class="form-control"
+                                       style="border-radius: 0 5px 5px 0"
+                                       placeholder="Set your price ..." min="0.50" max="250.00" step="0.01" required="">
+<!--                                <label for="inputPricing">Set your price... </label>-->
+                            </div>
+                            <div class="form-label-group">
+                                <input type="file" name="requestPictures[]" id="inputPictures"
+                                       class="form-control"
+                                       placeholder="Attach picture(s)" multiple>
+                                <label for="inputPictures">Attach picture(s): at most 3 pictures</label>
                             </div>
                             <input type="submit" name="requestFavr" class="btn btn-lg btn-primary btn-block"
                                    value="Request FAVR" onclick="alert("This will be posted publically")">
@@ -834,8 +873,10 @@ class Web_Page
             $rows = $result->fetchAll(PDO::FETCH_ASSOC);
             if (!empty($rows)) {
                 foreach ($rows as $row) {
+                    $id = md5($row['mfrid']);
                     $freelancer_id = $row['freelancer_id'];
-                    $task_id = $row['mfrid'];
+                    $freelancer_accepted = count($freelancer_id);
+                    $task_freelancer_count = $row['task_freelancer_count'];
                     $customer_id = $row['customer_id'];
                     $customer_username = $row['username'];
                     $customer_first_name = $row['first_name'];
@@ -844,6 +885,8 @@ class Web_Page
                     $task_location = $row['task_location'];
                     $task_time_to_accomplish = $row['task_time_to_accomplish'];
                     $task_price = $row['task_price'];
+
+                    // hide shrink button and non essential form information
 
                     echo "<div class=\"my-3 p-3 bg-white rounded box-shadow\">
                         <div class='pb-2 mb-0 border-bottom border-gray'>
@@ -859,26 +902,61 @@ class Web_Page
 
                     echo "</div><div class=\"media text-muted pt-3\">
                         <div class='container'>
-                            <p class=\"media-body text-dark pb-3 mb-0 small lh-125\">
+                            <p id='$id' class=\"media-body text-dark pb-3 mb-0 small lh-125\">
                                 $task_description
+                                <div id='$id-location' class='pt-1 border-top small border-gray d-none'>
+                                    <label for='location'>Location:</label>
+                                    <p class='text-dark'>Within 3 Miles of your location.</p>
+                                </div>
+                                <div id='$id-freelancer-count' class='pt-1 small d-none'>
+                                    <label for='freelancer-count'>Amount of freelancer(s) wanted: (accepted/requested)</label>
+                                    <p class='text-dark'>$freelancer_accepted/$task_freelancer_count</p>
+                                </div>
                             </p>
                             <div class='row p-0 border-top border-gray'>
                                 <div class='col-sm-12 small'>
                                     <div class=\"float-left d-inline\">
+                                        <div id='$id-expand' class='text-info d-inline-flex'
+                                             style='cursor: pointer'
+                                             onclick=\"
+                                              $('.zoom').fadeOut();
+                                              $('#$id').animate({height: '4rem'});
+                                              $('#$id-location').removeClass('d-none');
+                                              $('#$id-freelancer-count').removeClass('d-none');
+                                              $('#$id-collapse').removeClass('d-none');
+                                              $('#$id-collapse').addClass('d-inline-flex');
+                                              $('#$id-expand').removeClass('d-inline-flex');
+                                              $('#$id-expand').addClass('d-none');
+                                              
+                                        \">Expand</div>
+                                         <div id='$id-collapse' class='text-info d-none'
+                                             style='cursor: pointer'
+                                             onclick=\"
+                                              $('#$id-location').addClass('d-none');
+                                              $('#$id-freelancer-count').addClass('d-none');
+                                              $('#$id').css({height: 'auto'});
+                                              $('#$id-collapse').removeClass('d-inline-flex');
+                                              $('#$id-collapse').addClass('d-none');
+                                              $('#$id-expand').removeClass('d-none');
+                                              $('#$id-expand').addClass('d-inline-flex');
+                                              $('.zoom').css({display: ''})
+                                        \">Collapse</div> | $task_date
                                         ";
-
-                    if ($customer_id != $_SESSION['user_info']['id']) { // if not this user
-                        echo "<a href=\"$this->root_path/components/notifications/?navbar=active_notifications&accept_request_id=$task_id&ALERT_MESSAGE=You've signed up to take this task! You must complete it and verify its completion with the task requester in order to disburse payment!\">
-                            Accept Request</a>";
-                    } else {
-                        echo "<a href=\"?nav_bar=active_home&d_request_id=$task_id&ALERT_MESSAGE=Your request has been deleted!\" class='text-danger'>
-                            Cancel Request</a>";
-                    }
 
                     echo "
                                     </div>
                                     <div class='float-right d-inline'>
-                                        $task_date
+                                       ";
+
+                    if ($customer_id != $_SESSION['user_info']['id']) { // if not this user
+                        echo "<a href=\"$this->root_path/components/notifications/?navbar=active_notifications&accept_request_id=$id&ALERT_MESSAGE=You've signed up to take this task! You must complete it and verify its completion with the task requester in order to disburse payment!\">
+                            Accept Request</a>";
+                    } else {
+                        echo "<a href=\"?nav_bar=active_home&d_request_id=$id&ALERT_MESSAGE=Your request has been deleted!\" class='text-danger'>
+                            Cancel Request</a>";
+                    }
+
+                    echo "
                                     </div>
                                 </div>
                             </div>
@@ -901,27 +979,34 @@ class Web_Page
      *
      * @param $userInfo // array with user details such as location
      * @param $inputDate
-     * @param $inputTimeToAccomplish
+     * @param $inputCategory
      * @param $inputTaskDetails
+     * @param $inputFreelancerCount
      * @param $inputPricing
+     * @param $inputLocation
+     * @param $inputDifficulty
+     * @param $inputPictures
      * @param $inputScope // pre-alpha scope is public
      *
      * @return boolean // successful process or not print error
      *
      */
-    function processFavrRequestToDB($userInfo, $inputDate, $inputTimeToAccomplish, $inputTaskDetails, $inputPricing, $inputScope="public")
+    function processFavrRequestToDB($userInfo, $inputDate, $inputCategory, $inputTaskDetails, $inputPricing, $inputFreelancerCount, $inputLocation, $inputDifficulty,  $inputPictures, $inputScope="public")
     {
-        if (isset($userInfo, $inputDate, $inputTimeToAccomplish, $inputTaskDetails, $inputPricing, $inputScope)) {
+//        die(print_r(serialize(array(2))));
+        if (isset($userInfo, $inputDate, $inputFreelancerCount, $inputCategory, $inputTaskDetails, $inputPricing, $inputScope)) {
             $userId = $userInfo['id'];
-            $address = $userInfo['street'] . ", " . $userInfo['city'] . ", " . $userInfo['state_province'];
+            $address = $inputLocation;
 
             $insert_request_query = "INSERT INTO `marketplace_favr_requests`
                                   (
                                     `customer_id`,
                                     `task_description`,
                                     `task_date`,
+                                    `task_freelancer_count`,
                                     `task_location`,
-                                    `task_time_to_accomplish`,
+                                    `task_category`,
+                                    `task_intensity`,
                                     `task_price`
                                   )
                               VALUES
@@ -929,10 +1014,12 @@ class Web_Page
                                     '$userId',
                                     '$inputTaskDetails',
                                     '$inputDate',
+                                    '$inputFreelancerCount',
                                     '$address',
-                                    '$inputTimeToAccomplish',
+                                    '$inputCategory',
+                                    '$inputDifficulty',
                                     '$inputPricing'
-                                  )         
+                                  )
             ";
 
 //            print_r($request_query);
@@ -940,6 +1027,10 @@ class Web_Page
             $result = $this->db->query($insert_request_query);
 
             if ($result) {
+                // TODO: process images into the server and backend
+                if (isset($inputPictures)) {
+                    die(print_r($inputPictures));
+                }
                 return true;
             } else {
                 return false;
@@ -1119,6 +1210,7 @@ class Web_Page
             $active_home = "";
             $active_categories = "";
             $active_notifications = "";
+            $active_search = "";
             $active_profile = "";
             $active_settings = "";
 
@@ -1135,6 +1227,9 @@ class Web_Page
                     break;
                 case "active_profile":
                     $active_profile = "active";
+                    break;
+                case "active_search":
+                    $active_search = "active";
                     break;
                 case "active_settings":
                     $active_settings = "active";
@@ -1206,7 +1301,7 @@ class Web_Page
                         </li>
                         <li class="nav-item <?php echo $active_categories; ?>">
                             <a class="nav-link d-inline-flex" href="<?php echo $this->root_path; ?>/components/categories/?navbar=active_categories">
-                                <i class="material-icons">dashboard</i>
+                                <i class="material-icons">layers</i>
                                 Categories
                             </a>
                         </li>
@@ -1248,11 +1343,26 @@ class Web_Page
                                 ?>
                             </a>
                         </li>
+                        <li class="mobile-search nav-item <?php echo $active_search; ?>">
+                            <a class="nav-link d-inline-flex" href="#">
+                                <i class="material-icons">search</i>
+                                Search
+                                <?php
+                                if (!empty($active_search)) {
+                                    echo "<span class=\"sr-only\">(current)</span>";
+                                }
+                                ?>
+                            </a>
+                        </li>
                     </ul>
-                    <!--                    <form class="form-inline my-2 my-lg-0">-->
-                    <!--                        <input class="form-control mr-sm-2" type="text" placeholder="Search" aria-label="Search">-->
-                    <!--                        <button class="btn btn-outline-danger my-2 my-sm-0" type="submit">Search</button>-->
-                    <!--                    </form>-->
+
+                    <!-- WEB ELEMENT ONLY -->
+                    <form class="web-search form-inline my-2 my-lg-0">
+                        <input style="border-radius: 5px 0 0 5px" class="form-control mr-sm-0" type="text" placeholder="Search" aria-label="Search">
+                        <button style="border-radius: 0 5px 5px 0" class="btn btn-outline-danger my-2 my-sm-0" type="submit">Search</button>
+                    </form>
+                    <!-- WEB ELEMENT ONLY -->
+
                     <ul class="navbar-nav ml-auto">
                         <li class="nav-item <?php echo $active_settings; ?>">
                             <a class="nav-link d-inline-flex" href="<?php echo $this->root_path; ?>/components/settings/?navbar=active_settings">
@@ -1351,7 +1461,7 @@ class Web_Page
         </main>
 
         <!-- FOOTER -->
-        <footer class="container" style="max-width: 90%">
+        <footer class="container" style="position: relative; float: bottom; max-width: 90%">
             <hr>
             <div class="row">
                 <p class="col-md-10 text-muted">&copy; 2018 Solken Technology, Inc</p>
@@ -1380,14 +1490,12 @@ class Web_Page
         <!--                        crossorigin="anonymous"></script>-->
 
         <!-- Placed at the end of the document so the pages load faster -->
-        <script src="https://code.jquery.com/jquery-3.2.1.slim.min.js"
-                integrity="sha384-KJ3o2DKtIkvYIK3UENzmM7KCkRr/rE9/Qpg6aAZGJwFDMVNA/GpGFF93hXpG5KkN"
-                crossorigin="anonymous"></script>
-        <!--                <script src="https://code.jquery.com/jquery-3.3.1.js"></script>-->
-        <script src="<?php echo $this->root_path; ?>/assets/js/vendor/jquery-slim.min.js"></script>
-        <script src="https://cdn.datatables.net/1.10.18/js/jquery.dataTables.min.js"></script>
-        <script src="https://cdn.datatables.net/1.10.18/js/dataTables.bootstrap4.min.js"></script>
-        <script>window.jQuery || document.write('<script src="<?php echo $this->root_path; ?>/assets/js/vendor/jquery-slim.min.js"><\/script>')</script>
+<!--        <script src="https://code.jquery.com/jquery-3.2.1.slim.min.js"-->
+<!--                integrity="sha384-KJ3o2DKtIkvYIK3UENzmM7KCkRr/rE9/Qpg6aAZGJwFDMVNA/GpGFF93hXpG5KkN"-->
+<!--                crossorigin="anonymous"></script>-->
+<!--        <script src="https://cdn.datatables.net/1.10.18/js/jquery.dataTables.min.js"></script>-->
+<!--        <script src="https://cdn.datatables.net/1.10.18/js/dataTables.bootstrap4.min.js"></script>-->
+        <script src="<?php echo $this->root_path; ?>/assets/js/vendor/jquery.min.js"></script>
         <script src="<?php echo $this->root_path; ?>/assets/js/vendor/popper.min.js"></script>
         <script src="<?php echo $this->root_path; ?>/dist/js/bootstrap.min.js"></script>
         <!--                <script src="https://cdnjs.cloudflare.com/ajax/libs/tether/1.4.0/js/tether.min.js"-->

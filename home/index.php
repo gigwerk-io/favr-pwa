@@ -17,7 +17,17 @@ $page->setTitle("Home");
 $page->renderHeader();
 
 if (isset($_POST['requestFavr'])) {
-    $page->processFavrRequestToDB($_SESSION['user_info'], $_POST['requestDate'], $_POST['requestTimeToAccomplish'], $_POST['requestTaskDescription'], $_POST['requestPrice']);
+    $successfulProcessToDB = $page->processFavrRequestToDB($_SESSION['user_info'], $_POST['requestDate'], $_POST['requestCategory'], $_POST['requestTaskDescription'], $_POST['requestPrice'], $_POST['requestFreelancerCount'], $_POST['requestStreetAddress'], $_POST['requestDifficulty'], $_FILES['requestPictures']);
+
+    if (!$successfulProcessToDB) {
+        $ALERT_MESSAGE = "There was a problem submitting your request to the server try again!";
+        $ALERT_MESSAGE = "
+            <div class=\"my-3 p-3 alert alert-warning alert-dismissible\" role=\"alert\">
+                <button type=\"button\" class=\"close\" data-dismiss=\"alert\" aria-label=\"Close\"><span aria-hidden=\"true\">&times;</span></button>
+                <strong>Whoops!</strong> $ALERT_MESSAGE
+            </div>
+        ";
+    }
 }
 
 if (isset($_GET['d_request_id'])) {
@@ -73,17 +83,48 @@ $page->renderFavrMarketplace($_SESSION['scope'], $_SESSION['filter_marketplace_b
 $page->addScript("
     <script>
     $(document).ready(function() {
+        $('#hard-button').click(function() {
+            $('#hard-button').removeClass('unfocus');
+            $('#hard-button').addClass('focus');
+            $('#medium-button').removeClass('focus');
+            $('#medium-button').addClass('unfocus');
+            $('#easy-button').removeClass('focus');
+            $('#easy-button').addClass('unfocus');
+            $('#difficulty').val('Hard');
+        });
+        
+        $('#medium-button').click(function() {
+            $('#hard-button').removeClass('focus');
+            $('#hard-button').addClass('unfocus');
+            $('#medium-button').removeClass('unfocus');
+            $('#medium-button').addClass('focus');
+            $('#easy-button').removeClass('focus');
+            $('#easy-button').addClass('unfocus');
+            $('#difficulty').val('Medium');
+        });
+        
+        $('#easy-button').click(function() {
+            $('#hard-button').removeClass('focus');
+            $('#hard-button').addClass('unfocus');
+            $('#medium-button').removeClass('focus');
+            $('#medium-button').addClass('unfocus');
+            $('#easy-button').removeClass('unfocus');
+            $('#easy-button').addClass('focus');
+            $('#difficulty').val('Easy');
+        });
+        
         $('#zoomBtn').click(function() {
-          $('.request-favr-mobile').toggle('slide', { direction: 'top' }, 4000);
+          $('.request-favr-mobile').toggle();
+          $('#zoomBtn').toggleClass('zoom-fade');
         });
 
         $('.request-favr-mobile').hide();
         $('#request-favr-web').click(function() {
-            $('.request-favr-mobile').toggle('slide', { direction: 'top' }, 4000);
+            $('.request-favr-mobile').toggle();
         });
         
         $('.request-favr').click(function() {
-            $('.request-favr-mobile').toggle('slide', { direction: 'top' }, 4000);
+            $('.request-favr-mobile').toggle();
             $('.zoom-fab').toggle();
         });
     } );

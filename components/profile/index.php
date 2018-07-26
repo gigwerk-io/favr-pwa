@@ -12,17 +12,33 @@ include($_SERVER['DOCUMENT_ROOT'] . "/favr-pwa/include/autoload.php");
 // component constants
 $PAGE_ID = 7;
 $USER = "";
+$ALERT_MESSAGE = "";
 
 if (isset($_SESSION['user_info'])) {
     $USER = $_SESSION['user_info']['username']; // user is set from initial configuration
 }
 
 $page = new Web_Page($PAGE_ID, $USER);
-$data = new Data_Table("$PAGE_ID", "friends-table", $page);
-$chart = new Data_Chart("$PAGE_ID", "rent-chart", $page);
+
+if (isset($_GET['d_request_id'])) {
+    $page->processDeleteRequest($_GET['d_request_id'], $_SESSION['user_info']['id']);
+}
+
+if (isset($_GET['ALERT_MESSAGE'])) {
+    $ALERT_MESSAGE = $_GET['ALERT_MESSAGE'];
+    $ALERT_MESSAGE = "
+            <div class=\"my-3 p-3 alert alert-success alert-dismissible\" role=\"alert\">
+                <button type=\"button\" class=\"close\" data-dismiss=\"alert\" aria-label=\"Close\"><span aria-hidden=\"true\">&times;</span></button>
+                <strong>Success!</strong> $ALERT_MESSAGE
+            </div>
+        ";
+}
 
 $page->setTitle("". $_SESSION['user_info']['username'] ."");
 $page->renderHeader();
+
+
+echo $ALERT_MESSAGE;
 ?>
 <!--    <img class="d-block img-fluid" src="data:image/svg+xml;charset=UTF-8,%3Csvg%20width%3D%22800%22%20height%3D%22400%22%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20viewBox%3D%220%200%20800%20400%22%20preserveAspectRatio%3D%22none%22%3E%3Cdefs%3E%3Cstyle%20type%3D%22text%2Fcss%22%3E%23holder_16404fff51b%20text%20%7B%20fill%3A%23333%3Bfont-weight%3Anormal%3Bfont-family%3AHelvetica%2C%20monospace%3Bfont-size%3A40pt%20%7D%20%3C%2Fstyle%3E%3C%2Fdefs%3E%3Cg%20id%3D%22holder_16404fff51b%22%3E%3Crect%20width%3D%22800%22%20height%3D%22400%22%20fill%3D%22%23555%22%3E%3C%2Frect%3E%3Cg%3E%3Ctext%20x%3D%22277%22%20y%3D%22218.3%22%3EComing%20soon%3C%2Ftext%3E%3C%2Fg%3E%3C%2Fg%3E%3C%2Fsvg%3E" alt="Coming soon">-->
     <div class="p-3 pb-0 bg-white box-shadow" style="margin-top: 3rem;">
