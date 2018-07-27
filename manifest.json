@@ -1,6 +1,6 @@
 {
-  "short_name": "FAVR",
-  "name": "FAVR App",
+  "short_name": "FAVR Lite",
+  "name": "FAVR Lite",
   "icons": [
     {
       "src": "assets/brand/launcher-icon-5x.png",
@@ -23,7 +23,7 @@
       "sizes": "700x512"
     }
   ],
-  "start_url": "index.php",
+  "start_url": "/favr-pwa/",
   "display": "standalone",
   "background_color": "#f5f5f5",
   "theme_color": "#343a40"

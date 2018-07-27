@@ -466,11 +466,11 @@ class Web_Page
                         echo "<p class='mb-0 d-inline-flex'>You Completed</p>";
                     } else if ($customer_id == $id && $task_status == "Requested") { // if not this user
                         echo "<p class='mb-0 d-inline-flex'>Requested</p> |";
-                        echo "<a href=\"?nav_bar=active_profile&d_request_id=$id&ALERT_MESSAGE=Your request has been deleted!\" class='text-danger'>
+                        echo "<a href=\"?navbar=active_profile&d_request_id=$task_id&ALERT_MESSAGE=Your request has been deleted!\" class='text-danger'>
                             Cancel Request</a>";
                     } else if ($customer_id == $id && $task_status == "In Progress") { // if not this user
                         echo "<p class='mb-0 d-inline-flex'>In Progress</p> |";
-                        echo "<a href=\"?nav_bar=active_profile&d_request_id=$id&ALERT_MESSAGE=Your request has been deleted!\" class='text-danger'>
+                        echo "<a href=\"?navbar=active_profile&d_request_id=$task_id&ALERT_MESSAGE=Your request has been deleted!\" class='text-danger'>
                             Cancel Request</a>";
                     } else {
                         echo "<p class='mb-0 d-inline-flex'>Completed</p>";
@@ -767,7 +767,7 @@ class Web_Page
                                 <input type="datetime-local" name="requestDate" id="inputDate"
                                        class="form-control"
                                        placeholder="When do you want your FAVR done by?" value="<?php echo date("Y-m-d\TH:i", time()); ?>" required="">
-                                <label for="inputDate">When do you want your FAVR done by?</label>
+                                <label for="inputDate">When do you want your FAVR?</label>
                             </div>
 
 <!--                            TODO: Add informational popup telling the user we won't share sensitive information until freelancer accepts request -->
@@ -807,11 +807,12 @@ class Web_Page
                                        placeholder="Set your price ..." min="0.50" max="250.00" step="0.01" required="">
 <!--                                <label for="inputPricing">Set your price... </label>-->
                             </div>
+                            <label for="inputPictures">Only image files < 5 Mb can be attached</label>
                             <div class="form-label-group">
                                 <input type="file" name="requestPictures[]" id="inputPictures"
                                        class="form-control"
                                        placeholder="Attach picture(s)" multiple>
-                                <label for="inputPictures">Attach picture(s): at most 3 pictures</label>
+                                <label for="inputPictures">Attach picture(s): at most 3...</label>
                             </div>
                             <input type="submit" name="requestFavr" class="btn btn-lg btn-primary btn-block"
                                    value="Request FAVR" onclick="alert("This will be posted publically")">
@@ -874,6 +875,7 @@ class Web_Page
             if (!empty($rows)) {
                 foreach ($rows as $row) {
                     $id = md5($row['mfrid']);
+                    $task_id = $row['mfrid'];
                     $freelancer_id = $row['freelancer_id'];
                     $freelancer_accepted = count($freelancer_id);
                     $task_freelancer_count = $row['task_freelancer_count'];
@@ -883,30 +885,49 @@ class Web_Page
                     $task_description = $row['task_description'];
                     $task_date = date("m/d/Y", strtotime($row['task_date']));
                     $task_location = $row['task_location'];
-                    $task_time_to_accomplish = $row['task_time_to_accomplish'];
+                    $task_time_to_accomplish = date('h:i A, l, m/d/Y', strtotime($task_date));
                     $task_price = $row['task_price'];
+                    $task_difficulty = $row['task_intensity'];
 
                     // hide shrink button and non essential form information
 
                     echo "<div class=\"my-3 p-3 bg-white rounded box-shadow\">
                         <div class='pb-2 mb-0 border-bottom border-gray'>
                             <img data-src=\"holder.js/32x32?theme=thumb&bg=007bff&fg=007bff&size=1\" alt=\"\" class=\"mr-2 rounded\">
-                            <strong style='font-size: 80%' class=\"d - block text - gray - dark\">@$customer_username</strong>
+                            <strong style='font-size: 80%' class=\"d - block text - gray - dark\">
+                                @$customer_username
+                            </strong>
                             ";
 
+                    // TODO: reference enum(Hard, Medium, Easy) as constants from Constants class
+                    if (isset($task_difficulty)) {
+                        if ($task_difficulty == "Easy") {
+                            echo "<button type=\"button\" class=\"ml-2 btn-sm btn btn-success p-1 rounded\" style='opacity: .9' value=\"Easy\" disabled>Easy 👌</button>";
+                        } else if ($task_difficulty == "Medium") {
+                            echo "<button type=\"button\" class=\"ml-2 btn-sm btn btn-warning p-1 rounded\" style='opacity: .9' value=\"Medium\" disabled>Medium 💪🏿</button>";
+                        } else if ($task_difficulty == "Hard") {
+                            echo "<button type=\"button\" class=\"ml-2 btn-sm btn btn-danger p-1 rounded\" style='opacity: .9' value=\"Hard\" disabled>Hard 🔥</button>";
+                        }
+                    }
+
                     if ($customer_id == $_SESSION['user_info']['id']) {
-                        echo "<div class='float-right small' style='color: var(--red)'>- $$task_price</div>";
+                        echo "<div class='float-right small' style='padding-top: .3rem;color: var(--red)'>- $$task_price</div>";
                     } else {
-                        echo "<div class='float-right small' style='color: var(--dark)'>$$task_price</div>";
+                        echo "<div class='float-right small' style='padding-top: .3rem;color: var(--dark)'>$$task_price</div>";
                     }
 
                     echo "</div><div class=\"media text-muted pt-3\">
                         <div class='container'>
-                            <p id='$id' class=\"media-body text-dark pb-3 mb-0 small lh-125\">
+                            <p id='$id' class=\"media-body text-dark mb-0 small lh-125\">
                                 $task_description
                                 <div id='$id-location' class='pt-1 border-top small border-gray d-none'>
                                     <label for='location'>Location:</label>
+                                    <!-- TODO: calculate location distance by zipcode -->
                                     <p class='text-dark'>Within 3 Miles of your location.</p>
+                                    <div id='$id-completeby' class='pt-1 border-top border-bottom border-gray'>
+                                        <label for='completeby'>Complete FAVR by:</label>
+                                        <p class='text-dark'>$task_time_to_accomplish</p>
+                                    </div>
                                 </div>
                                 <div id='$id-freelancer-count' class='pt-1 small d-none'>
                                     <label for='freelancer-count'>Amount of freelancer(s) wanted: (accepted/requested)</label>
@@ -949,10 +970,10 @@ class Web_Page
                                        ";
 
                     if ($customer_id != $_SESSION['user_info']['id']) { // if not this user
-                        echo "<a href=\"$this->root_path/components/notifications/?navbar=active_notifications&accept_request_id=$id&ALERT_MESSAGE=You've signed up to take this task! You must complete it and verify its completion with the task requester in order to disburse payment!\">
+                        echo "<a href=\"$this->root_path/components/notifications/?navbar=active_notifications&accept_request_id=$task_id&ALERT_MESSAGE=You've signed up to take this task! You must complete it and verify its completion with the task requester in order to disburse payment!\">
                             Accept Request</a>";
                     } else {
-                        echo "<a href=\"?nav_bar=active_home&d_request_id=$id&ALERT_MESSAGE=Your request has been deleted!\" class='text-danger'>
+                        echo "<a href=\"?nav_bar=active_home&d_request_id=$task_id&ALERT_MESSAGE=Your request has been deleted!\" class='text-danger'>
                             Cancel Request</a>";
                     }
 
@@ -1024,12 +1045,106 @@ class Web_Page
 
 //            print_r($request_query);
 
-            $result = $this->db->query($insert_request_query);
+//            $result = $this->db->query($insert_request_query);
+            $result = true;
 
             if ($result) {
                 // TODO: process images into the server and backend
                 if (isset($inputPictures)) {
-                    die(print_r($inputPictures));
+                    // check if atleast one image is set
+                    if (!empty($inputPictures['name'][0])) {
+//                        echo '<pre>';
+//                        die(print_r($inputPictures));
+
+                        // validate file is an image of type jpeg or png
+                        if ($inputPictures['type'][0] == "image/jpeg" || $inputPictures['type'][0] == "image/png") {
+                            // continue validating file size is below allowed size of 5 MB
+                            // TODO: file size allowed should be a constant set in a "constants" class
+                            if ($inputPictures['size'][0] <=  5242880) {
+                                // validate temp_name exists
+                                if (!empty($inputPictures['tmp_name'][0])) {
+                                    // validate no file errors were detected
+                                    if ($inputPictures['error'] == 0) {
+                                        echo '<pre>';
+                                        die(print_r($inputPictures));
+                                        // hash the image file with the following convention: $task_id-$customer_id-request-image$i
+                                        // TODO: constant value Requested statically used
+                                        $select_requested_task_query = "SELECT id 
+                                                              FROM marketplace_favr_requests
+                                                              WHERE customer_id = '$userId'
+                                                              AND task_date = '$inputDate'
+                                                              AND task_description = '$inputTaskDetails'
+                                                              AND task_location = '$address'
+                                                              AND task_category = '$inputCategory'
+                                                              AND task_status = 'Requested'
+                                                              AND task_intensity = '$inputDifficulty'
+                                                              AND task_price = '$inputPricing'
+                                                              AND task_freelancer_count = '$inputFreelancerCount'";
+
+                                        $result = $this->db->query($select_requested_task_query);
+                                        if ($result) {
+                                            $row = $result->fetch(PDO::FETCH_ASSOC);
+                                            $task_id = $row['id'];
+                                            $imageFileName = md5("$task_id-$userId-request-image0");
+                                            if ($inputPictures['type'] == 'image/jpeg') {
+                                                $imageFileName .= "$imageFileName.jpeg";
+                                            } else if ($inputPictures['type'] == 'image/png') {
+                                                $imageFileName .= "$imageFileName.png";
+                                            }
+                                            $imageFilePath = "/Applications/XAMPP/xamppfiles/favr-request-images/$imageFileName";
+
+                                            // copy image into backend and execute update query on request to update file paths
+                                            // TODO: constant values statically used image file paths
+                                            if (copy($inputPictures['tmp_name'], $imageFilePath)) {
+                                                // file copied to destination
+                                                $update_path_query = "UPDATE marketplace_favr_requests 
+                                                                      SET task_picture_path_1 = '$imageFilePath'
+                                                                      WHERE id = '$task_id'";
+                                                $result = $this->db->query($update_path_query);
+                                                if ($result) {
+                                                    // successful image validation and upload
+                                                    return true;
+                                                } else {
+                                                    // unsuccessful
+                                                    return false;
+                                                }
+                                            } else {
+                                                // failed to copy file to destination
+                                                return false;
+                                            }
+                                        } else {
+                                            // throw an error
+                                            return false;
+                                        }
+                                    } else {
+                                        // throw an error
+                                        return false;
+                                    }
+                                } else {
+                                    // throw an error
+                                    return false;
+                                }
+                            } else {
+                                // throw an error
+                                return false;
+                            }
+
+                        } else {
+                            // throw an error
+                            // TODO: improve error reporting for FAVR requests
+                            return false;
+                        }
+                    }
+
+//                    // check if there's a second image
+//                    if (!empty($inputPictures['name']['1'])) {
+//
+//                    }
+//
+//                    // check if there's a third image
+//                    if (!empty($inputPictures['name'][2])) {
+//
+//                    }
                 }
                 return true;
             } else {
