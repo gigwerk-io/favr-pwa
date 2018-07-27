@@ -11,6 +11,11 @@ if (isset($_SESSION['user_info'])) {
     $USER = $_SESSION['user_info']['username']; // user is set from initial configuration
 }
 
+// TODO: Constant variable statically used: active_home
+if (isset($_SESSION['navbar']) && $_SESSION['navbar'] != "active_home") {
+    $_SESSION['navbar'] = "active_home";
+}
+
 $page = new Web_Page($PAGE_ID, $USER);
 
 $page->setTitle("Home");

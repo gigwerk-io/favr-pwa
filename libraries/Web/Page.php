@@ -609,6 +609,7 @@ class Web_Page
     }
 
     /**
+     * TODO: implement set permissions to lock certain aspects and functionality of FAVR to certain users only
      * Set permissions for the page. Will render Access Denied page and kill the page if needed.
      * @param $restrict_id integer The component to which access should be restricted.
      * @param $restrict_class integer The user class to which access should be restricted.
@@ -636,6 +637,278 @@ class Web_Page
         $row = $result->fetch(PDO::FETCH_ASSOC);
 
         return $row;
+    }
+
+    /**
+     * Render page main navigation
+     * @param $page_id
+     * @param $render_main_navigation
+     */
+    function renderMainNavigation($page_id, $render_main_navigation = true)
+    {
+        if ($render_main_navigation) {
+            $active_home = "";
+            $active_categories = "";
+            $active_notifications = "";
+            $active_search = "";
+            $active_profile = "";
+            $active_settings = "";
+
+            // Handle page navigation presentation logic
+            switch ($_SESSION['navbar']) {
+                case "active_home":
+                    $active_home = "active";
+                    break;
+                case "active_categories":
+                    $active_categories = "active";
+                    break;
+                case "active_notifications":
+                    $active_notifications = "active";
+                    break;
+                case "active_profile":
+                    $active_profile = "active";
+                    break;
+                case "active_search":
+                    $active_search = "active";
+                    break;
+                case "active_settings":
+                    $active_settings = "active";
+                    break;
+                default:
+                    // none active
+                    break;
+            }
+            ?>
+            <nav class="navbar navbar-expand-md fixed-top navbar-dark bg-dark pb-2">
+                <button class="navbar-toggler pb-2 border-0" type="button" data-toggle="offcanvas">
+                    <!--                    <i class="material-icons" style="font-size: xx-large;color: var(--red)">menu</i>-->
+                    <span class="sr-only">Toggle navigation</span>
+                    <span></span>
+                    <span></span>
+                    <span></span>
+                </button>
+
+                <div class="request-favr pt-0 pr-0 pb-0 mr-0">
+                    <?php
+                    if ($_SESSION['nav_scroller'] != "active_marketplace" || $_SESSION['navbar'] != "active_home") {
+                        echo "
+                            <a href=\"$this->root_path/home/?navbar=active_home&nav_scroller=active_marketplace\">
+                        ";
+                    }
+                    ?>
+                    <img src="<?php echo $this->root_path; ?>/assets/brand/favr_logo_rd.png" height="21" width="70"
+                         class="navbar-brand mr-0" style="padding-top: 0; padding-bottom: 0">
+
+                    <?php
+                    if ($_SESSION['nav_scroller'] != "active_marketplace" || $_SESSION['navbar'] != "active_home") {
+                        echo "
+                            </a>
+                        ";
+                    }
+                    ?>
+                </div>
+
+                <button class="profile-button pb-0 border-0 mr-0 pr-0" style="left: .1rem" type="button">
+                    <?php
+                    if ($_SESSION['navbar'] == "active_profile") {
+                        echo "
+                               <i class=\"material-icons\" style=\"color: red;border: 1px solid;border-radius: 1rem;\">person</i>
+                            ";
+                    } else {
+                        echo "
+                                  <a href='$this->root_path/components/profile/?navbar=active_profile'>
+                                     <i class=\"material-icons\" style=\"color: red;border: 1px solid;border-radius: 1rem;\">person_outline</i>
+                                  </a>";
+                    }
+                    ?>
+                </button>
+
+                <!--                <a class="navbar-brand" href="#">FAVR</a>-->
+
+
+                <div class="navbar-collapse offcanvas-collapse" id="navbarsExampleDefault">
+                    <ul class="navbar-nav mr-auto">
+                        <li class="nav-item <?php echo $active_home; ?>">
+                            <a class="nav-link d-inline-flex" href="<?php echo $this->root_path; ?>/home/?navbar=active_home&nav_scroller=active_marketplace">
+                                <i class="material-icons">home</i>
+                                Home
+                                <?php
+                                if (!empty($active_home)) {
+                                    echo "<span class=\"sr-only\">(current)</span>";
+                                }
+                                ?>
+                            </a>
+                        </li>
+                        <li class="nav-item <?php echo $active_categories; ?>">
+                            <a class="nav-link d-inline-flex" href="<?php echo $this->root_path; ?>/components/categories/?navbar=active_categories">
+                                <i class="material-icons">layers</i>
+                                Categories
+                            </a>
+                        </li>
+                        <li class="nav-item <?php echo $active_notifications; ?>">
+                            <a class="nav-link d-inline-flex" href="<?php echo $this->root_path; ?>/components/notifications/?navbar=active_notifications">
+                                <?php
+                                if (!empty($active_notifications)) {
+                                    echo "<i class=\"material-icons\">notifications</i>";
+                                } else {
+                                    echo "<i class=\"material-icons\">notifications_none</i>";
+                                }
+                                ?>
+                                Notifications
+                                <?php
+                                $notificationCount = $this->processNotifications($_SESSION['user_info']);
+
+                                $this->renderNotificationCount($notificationCount);
+
+                                if (!empty($active_notifications)) {
+                                    echo "<span class=\"sr-only\">(current)</span>";
+                                }
+                                ?>
+                            </a>
+                        </li>
+                        <li class="nav-item <?php echo $active_profile; ?>">
+                            <a class="nav-link d-inline-flex" href="<?php echo $this->root_path; ?>/components/profile/?navbar=active_profile">
+                                <?php
+                                if (!empty($active_profile)) {
+                                    echo "<i class=\"material-icons\">person</i>";
+                                } else {
+                                    echo "<i class=\"material-icons\">person_outline</i>";
+                                }
+                                ?>
+                                Profile, Welcome: <?php echo $_SESSION['user_info']['first_name']; ?>
+                                <?php
+                                if (!empty($active_profile)) {
+                                    echo "<span class=\"sr-only\">(current)</span>";
+                                }
+                                ?>
+                            </a>
+                        </li>
+                        <li class="mobile-search nav-item <?php echo $active_search; ?>">
+                            <a class="nav-link d-inline-flex" href="#">
+                                <i class="material-icons">search</i>
+                                Search
+                                <?php
+                                if (!empty($active_search)) {
+                                    echo "<span class=\"sr-only\">(current)</span>";
+                                }
+                                ?>
+                            </a>
+                        </li>
+                    </ul>
+
+                    <!-- WEB ELEMENT ONLY -->
+                    <form class="web-search form-inline my-2 my-lg-0">
+                        <input style="border-radius: 5px 0 0 5px" class="form-control mr-sm-0" type="text" placeholder="Search" aria-label="Search">
+                        <button style="border-radius: 0 5px 5px 0" class="btn btn-outline-danger my-2 my-sm-0" type="submit">Search</button>
+                    </form>
+                    <!-- WEB ELEMENT ONLY -->
+
+                    <ul class="navbar-nav ml-auto">
+                        <li class="nav-item <?php echo $active_settings; ?>">
+                            <a class="nav-link d-inline-flex" href="<?php echo $this->root_path; ?>/components/settings/?navbar=active_settings">
+                                <i class="material-icons">settings</i>
+                                Settings
+                                <?php
+                                if (!empty($active_settings)) {
+                                    echo "<span class=\"sr-only\">(current)</span>";
+                                }
+                                ?>
+                            </a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link d-inline-flex" href="<?php echo $this->root_path; ?>/signin/?signout=true">
+                                <i class="material-icons">exit_to_app</i>
+                                Sign out
+                            </a>
+                        </li>
+                    </ul>
+                </div>
+            </nav>
+
+            <?php
+            if ($_SESSION['navbar'] == "active_home" || $_GET['navbar'] == "active_home") {
+                // Handle nav scroller presentation logic
+                $active_marketplace = "";
+                $active_friends = "";
+                $active_chat = "";
+
+                switch ($_SESSION['nav_scroller']) {
+                    case "active_marketplace":
+                        $active_marketplace = "active";
+                        break;
+                    case "active_friends":
+                        $active_friends = "active";
+                        break;
+                    case "active_chat":
+                        $active_chat = "active";
+                        break;
+                    default:
+                        // none active
+                        break;
+                }
+                ?>
+                <div class="nav-scroller bg-white box-shadow">
+                    <nav class="nav nav-underline">
+                        <a class="nav-link <?php echo $active_marketplace; ?>"
+                           href="<?php echo $this->root_path; ?>/home/?navbar=active_home&nav_scroller=active_marketplace">
+                            Marketplace
+                            <?php
+                            if ($active_marketplace) {
+                                echo "<i class=\"material-icons\" style='color: var(--red);font-size: 15px;position:relative;top:.2rem;padding-left: 2px;'>store</i>";
+                            } else {
+                                echo "<i class=\"material-icons\" style='font-size: 15px;position:relative;top:.2rem;padding-left: 2px;'>store</i>";
+                            }
+                            ?>
+                        </a>
+                        <a class="nav-link <?php echo $active_friends; ?>"
+                           href="<?php echo $this->root_path; ?>/home/friends/?navbar=active_home&nav_scroller=active_friends">
+                            Friends
+                            <?php
+                            if ($active_friends) {
+                                echo "<i class=\"material-icons\" style='color: var(--red);font-size: 15px; padding-left: 2px;position:relative;top:.1rem;'>people</i>";
+                            } else {
+                                echo "<i class=\"material-icons\" style='font-size: 15px; padding-left: 2px;position:relative;top:.1rem;'>people_outline</i>";
+                            }
+                            ?>
+                        </a>
+                        <a class="nav-link d-inline-flex <?php echo $active_chat; ?>"
+                           href="<?php echo $this->root_path; ?>/home/chat/?navbar=active_home&nav_scroller=active_chat">
+                            Chat
+                            <?php
+                            if ($active_chat) {
+                                echo "<i class=\"material-icons\" style='color: var(--red);font-size: 15px; padding-left: 2px;position:relative;top:.2rem;'>chat_bubble</i>";
+                            } else {
+                                echo "<i class=\"material-icons\" style='font-size: 15px; padding-left: 2px;position:relative;top:.2rem;'>chat_bubble_outline</i>";
+                            }
+                            ?>
+                        </a>
+                        <!--                    <a id="suggestions" onclick="focusNoScrollMethod()" class="nav-link -->
+                        <?php //echo  $active_suggestions; ?><!--" href="?nav_scroller=active_suggestions">Suggestions</a>-->
+                    </nav>
+                </div>
+                <?php
+            }
+        }
+
+    }
+
+    /**
+     * Render notification count
+     *
+     * @param $notificationCount
+     *
+     * @return boolean // true if there's notifications false otherwise
+     */
+    function renderNotificationCount($notificationCount)
+    {
+        if ($notificationCount > 0) {
+
+            echo "<span style=\"height: 1rem\" class=\"badge badge-pill red-bubble-notification align-text-bottom\">$notificationCount</span>";
+
+            return true;
+        } else {
+            return false;
+        }
     }
 
     /**
@@ -888,6 +1161,9 @@ class Web_Page
                     $task_time_to_accomplish = date('h:i A, l, m/d/Y', strtotime($task_date));
                     $task_price = $row['task_price'];
                     $task_difficulty = $row['task_intensity'];
+                    $task_pic_path_1 = $row['task_picture_path_1'];
+                    $task_pic_path_2 = $row['task_picture_path_2'];
+                    $task_pic_path_3 = $row['task_picture_path_3'];
 
                     // hide shrink button and non essential form information
 
@@ -932,7 +1208,24 @@ class Web_Page
                                 <div id='$id-freelancer-count' class='pt-1 small d-none'>
                                     <label for='freelancer-count'>Amount of freelancer(s) wanted: (accepted/requested)</label>
                                     <p class='text-dark'>$freelancer_accepted/$task_freelancer_count</p>
-                                </div>
+                                </div>";
+                    echo "
+                                <div id='$id-image1' class='pt-1 border-top border-gray small d-none'>
+                                    <label for='image1'>Attached Image 1:</label>
+                                    <img src='$this->root_path/image.php?i=$task_pic_path_1&i_t=image/jpeg' height='30%' width='30%'>
+                                </div>";
+                    echo "
+                                <div id='$id-image2' class='pt-1 border-top border-gray small d-none'>
+                                    <label for='image1'>Attached Image 2:</label>
+                                    <img src='$this->root_path/image.php?i=$task_pic_path_2&i_t=image/jpeg' height='30%' width='30%'>
+                                </div>";
+                    echo "
+                                <div id='$id-image3' class='pt-1 border-top border-gray small d-none'>
+                                    <label for='image1'>Attached Image 3:</label>
+                                    <img src='$this->root_path/image.php?i=$task_pic_path_3&i_t=image/jpeg' height='30%' width='30%'>
+                                </div>";
+
+                    echo "
                             </p>
                             <div class='row p-0 border-top border-gray'>
                                 <div class='col-sm-12 small'>
@@ -947,7 +1240,21 @@ class Web_Page
                                               $('#$id-collapse').removeClass('d-none');
                                               $('#$id-collapse').addClass('d-inline-flex');
                                               $('#$id-expand').removeClass('d-inline-flex');
-                                              $('#$id-expand').addClass('d-none');
+                                              $('#$id-expand').addClass('d-none');";
+
+                    if (!empty($task_pic_path_1)) {
+                        echo "$('#$id-image1').removeClass('d-none');";
+                    }
+
+                    if (!empty($task_pic_path_2)) {
+                        echo "$('#$id-image2').removeClass('d-none');";
+                    }
+
+                    if (!empty($task_pic_path_3)) {
+                        echo "$('#$id-image3').removeClass('d-none');";
+                    }
+
+                    echo "
                                               
                                         \">Expand</div>
                                          <div id='$id-collapse' class='text-info d-none'
@@ -959,7 +1266,22 @@ class Web_Page
                                               $('#$id-collapse').removeClass('d-inline-flex');
                                               $('#$id-collapse').addClass('d-none');
                                               $('#$id-expand').removeClass('d-none');
-                                              $('#$id-expand').addClass('d-inline-flex');
+                                              $('#$id-expand').addClass('d-inline-flex');";
+
+                    if (!empty($task_pic_path_1)) {
+                        echo "$('#$id-image1').addClass('d-none');";
+                    }
+
+                    if (!empty($task_pic_path_2)) {
+                        echo "$('#$id-image2').addClass('d-none');";
+                    }
+
+                    if (!empty($task_pic_path_3)) {
+                        echo "$('#$id-image3').addClass('d-none');";
+                    }
+
+                    echo "
+                                              
                                               $('.zoom').css({display: ''})
                                         \">Collapse</div> | $task_date
                                         ";
@@ -993,6 +1315,91 @@ class Web_Page
 
             return true;
         }
+    }
+
+    /**
+     * Render page footer at the end of the page
+     */
+    function renderFooter()
+    {
+        ?>
+        </main>
+
+        <!-- FOOTER -->
+        <footer class="container" style="position: relative; float: bottom; max-width: 90%">
+            <hr>
+            <div class="row">
+                <p class="col-md-10 text-muted">&copy; 2018 Solken Technology, Inc</p>
+                <p class="col-md-2 float-right text-muted">v<?php echo $this->product_version; ?> Beta</p>
+            </div>
+        </footer>
+
+        <!-- Loader -->
+        <script>
+            var timeOut;
+
+            function pageLoader() {
+                timeOut = setTimeout(showPage, 1500);
+            }
+
+            function showPage() {
+                document.getElementById("loader").style.display = "none";
+                // document.getElementById("myDiv").style.display = "block";
+            }
+        </script>
+
+        <!-- Bootstrap core JavaScript
+        ================================================== -->
+        <!--                <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/js/bootstrap.min.js"-->
+        <!--                        integrity="sha384-JZR6Spejh4U02d8jOt6vLEHfe/JQGiRRSQQxSfFWpi1MquVdAyjUar5+76PVCmYl"-->
+        <!--                        crossorigin="anonymous"></script>-->
+
+        <!-- Placed at the end of the document so the pages load faster -->
+        <!--        <script src="https://code.jquery.com/jquery-3.2.1.slim.min.js"-->
+        <!--                integrity="sha384-KJ3o2DKtIkvYIK3UENzmM7KCkRr/rE9/Qpg6aAZGJwFDMVNA/GpGFF93hXpG5KkN"-->
+        <!--                crossorigin="anonymous"></script>-->
+        <!--        <script src="https://cdn.datatables.net/1.10.18/js/jquery.dataTables.min.js"></script>-->
+        <!--        <script src="https://cdn.datatables.net/1.10.18/js/dataTables.bootstrap4.min.js"></script>-->
+        <script src="<?php echo $this->root_path; ?>/assets/js/vendor/jquery.min.js"></script>
+        <script src="<?php echo $this->root_path; ?>/assets/js/vendor/popper.min.js"></script>
+        <script src="<?php echo $this->root_path; ?>/dist/js/bootstrap.min.js"></script>
+        <!--                <script src="https://cdnjs.cloudflare.com/ajax/libs/tether/1.4.0/js/tether.min.js"-->
+        <!--                        integrity="sha384-DztdAPBWPRXSA/3eYEEUWrWCy7G5KFbe8fFjk5JAIxUYHKkDx6Qin1DkWx51bBrb"-->
+        <!--                        crossorigin="anonymous"></script>-->
+        <script src="<?php echo $this->root_path; ?>/assets/js/vendor/holder.min.js"></script>
+
+        <!-- Service Worker -->
+        <script src="<?php echo $this->root_path; ?>/assets/js/src/pwa.js"></script>
+
+        <!-- Icons -->
+        <script src="https://unpkg.com/feather-icons/dist/feather.min.js"></script>
+        <script>
+            // feather.replace();
+
+            focusNoScrollMethod = function getFocusWithoutScrolling() {
+                document.getElementById("suggestions").focus({preventScroll:true});
+            }
+
+            function openRequestFromMobile() {
+                $('.request-favr-mobile').show();
+            }
+
+            $(function () {
+                'use strict'
+
+                $('[data-toggle="offcanvas"]').on('click', function () {
+                    $('.offcanvas-collapse').toggleClass('open');
+                    $('.navbar-toggler').toggleClass('close')
+                });
+            })
+        </script>
+
+        <!-- Page scripts -->
+    <?php echo $this->script; ?>
+        </body>
+        </html>
+
+        <?php
     }
 
     /**
@@ -1043,73 +1450,77 @@ class Web_Page
                                   )
             ";
 
-//            print_r($request_query);
-
-//            $result = $this->db->query($insert_request_query);
-            $result = true;
+            $result = $this->db->query($insert_request_query);
+//            $result = true;
 
             if ($result) {
+                // process attached images logic
+
                 // TODO: process images into the server and backend
                 if (isset($inputPictures)) {
-                    // check if atleast one image is set
-                    if (!empty($inputPictures['name'][0])) {
-//                        echo '<pre>';
-//                        die(print_r($inputPictures));
+                    $select_requested_task_query = "SELECT id 
+                                                  FROM marketplace_favr_requests
+                                                  WHERE customer_id = '$userId'
+                                                  AND task_date = '$inputDate'
+                                                  AND task_description = '$inputTaskDetails'
+                                                  AND task_location = '$address'
+                                                  AND task_category = '$inputCategory'
+                                                  AND task_status = 'Requested'
+                                                  AND task_intensity = '$inputDifficulty'
+                                                  AND task_price = '$inputPricing'
+                                                  AND task_freelancer_count = '$inputFreelancerCount'";
 
-                        // validate file is an image of type jpeg or png
-                        if ($inputPictures['type'][0] == "image/jpeg" || $inputPictures['type'][0] == "image/png") {
-                            // continue validating file size is below allowed size of 5 MB
-                            // TODO: file size allowed should be a constant set in a "constants" class
-                            if ($inputPictures['size'][0] <=  5242880) {
-                                // validate temp_name exists
-                                if (!empty($inputPictures['tmp_name'][0])) {
-                                    // validate no file errors were detected
-                                    if ($inputPictures['error'] == 0) {
-                                        echo '<pre>';
-                                        die(print_r($inputPictures));
-                                        // hash the image file with the following convention: $task_id-$customer_id-request-image$i
-                                        // TODO: constant value Requested statically used
-                                        $select_requested_task_query = "SELECT id 
-                                                              FROM marketplace_favr_requests
-                                                              WHERE customer_id = '$userId'
-                                                              AND task_date = '$inputDate'
-                                                              AND task_description = '$inputTaskDetails'
-                                                              AND task_location = '$address'
-                                                              AND task_category = '$inputCategory'
-                                                              AND task_status = 'Requested'
-                                                              AND task_intensity = '$inputDifficulty'
-                                                              AND task_price = '$inputPricing'
-                                                              AND task_freelancer_count = '$inputFreelancerCount'";
+                    $result = $this->db->query($select_requested_task_query);
+                    if ($result) {
+                        $row = $result->fetch(PDO::FETCH_ASSOC);
+                        $task_id = $row['id'];
+                        // TODO: maximum images allowed constant statically used
 
-                                        $result = $this->db->query($select_requested_task_query);
-                                        if ($result) {
-                                            $row = $result->fetch(PDO::FETCH_ASSOC);
-                                            $task_id = $row['id'];
-                                            $imageFileName = md5("$task_id-$userId-request-image0");
-                                            if ($inputPictures['type'] == 'image/jpeg') {
-                                                $imageFileName .= "$imageFileName.jpeg";
-                                            } else if ($inputPictures['type'] == 'image/png') {
-                                                $imageFileName .= "$imageFileName.png";
-                                            }
-                                            $imageFilePath = "/Applications/XAMPP/xamppfiles/favr-request-images/$imageFileName";
+                        for ($i = 0; $i < 3; $i++) {
+                            // check if atleast one image is set
+                            if (!empty($inputPictures['name'][$i])) {
+                                // validate file is an image of type jpeg or png
+                                if ($inputPictures['type'][$i] == "image/jpeg" || $inputPictures['type'][$i] == "image/png") {
+                                    // continue validating file size is below allowed size of 5 MB
+                                    // TODO: file size allowed should be a constant set in a "constants" class
+                                    if ($inputPictures['size'][$i] <=  5242880) {
+                                        // validate temp_name exists
+                                        if (!empty($inputPictures['tmp_name'][$i])) {
+                                            // validate no file errors were detected
+                                            if ($inputPictures['error'][$i] == 0) {
+                                                // hash the image file with the following convention: $task_id-$customer_id-request-image$i
+                                                $imageFileName = md5("$task_id-$userId-request-image$i");
+                                                if ($inputPictures['type'][$i] == 'image/jpeg') {
+                                                    $imageFileName = "$imageFileName.jpeg";
+                                                } else if ($inputPictures['type'][$i] == 'image/png') {
+                                                    $imageFileName = "$imageFileName.png";
+                                                }
+                                                // TODO: constant values statically used root image file path
+                                                $imageFilePath = "/Applications/XAMPP/xamppfiles/favr-request-images/$imageFileName";
 
-                                            // copy image into backend and execute update query on request to update file paths
-                                            // TODO: constant values statically used image file paths
-                                            if (copy($inputPictures['tmp_name'], $imageFilePath)) {
-                                                // file copied to destination
-                                                $update_path_query = "UPDATE marketplace_favr_requests 
-                                                                      SET task_picture_path_1 = '$imageFilePath'
-                                                                      WHERE id = '$task_id'";
-                                                $result = $this->db->query($update_path_query);
-                                                if ($result) {
-                                                    // successful image validation and upload
-                                                    return true;
+                                                // copy image into backend and execute update query on request to update file paths
+                                                // TODO: constant values statically used image file paths
+                                                if (copy($inputPictures['tmp_name'][$i], $imageFilePath)) {
+    //                                                    echo "<pre>";
+    //                                                    die(print_r($inputPictures));
+                                                    // file copied to destination
+                                                    $x = $i + 1;
+                                                    $task_picture_path_x = "task_picture_path_$x";
+                                                    $update_path_query = "UPDATE marketplace_favr_requests 
+                                                                          SET $task_picture_path_x = '$imageFileName'
+                                                                          WHERE id = '$task_id'";
+
+                                                    $result = $this->db->query($update_path_query);
+                                                    if (!$result) {
+                                                        // unsuccessful
+                                                        return false;
+                                                    }
                                                 } else {
-                                                    // unsuccessful
+                                                    // failed to copy file to destination
                                                     return false;
                                                 }
                                             } else {
-                                                // failed to copy file to destination
+                                                // throw an error
                                                 return false;
                                             }
                                         } else {
@@ -1120,31 +1531,17 @@ class Web_Page
                                         // throw an error
                                         return false;
                                     }
+
                                 } else {
                                     // throw an error
+                                    // TODO: improve error reporting for FAVR requests
                                     return false;
                                 }
-                            } else {
-                                // throw an error
-                                return false;
                             }
-
-                        } else {
-                            // throw an error
-                            // TODO: improve error reporting for FAVR requests
-                            return false;
                         }
+                    } else {
+                        return false;
                     }
-
-//                    // check if there's a second image
-//                    if (!empty($inputPictures['name']['1'])) {
-//
-//                    }
-//
-//                    // check if there's a third image
-//                    if (!empty($inputPictures['name'][2])) {
-//
-//                    }
                 }
                 return true;
             } else {
@@ -1156,6 +1553,7 @@ class Web_Page
     }
 
     /**
+     * TODO: needs logic development
      * Process cancel pending request
      *
      * @param $requestID
@@ -1264,25 +1662,6 @@ class Web_Page
     }
 
     /**
-     * Render notification count
-     *
-     * @param $notificationCount
-     *
-     * @return boolean // true if there's notifications false otherwise
-     */
-    function renderNotificationCount($notificationCount)
-    {
-        if ($notificationCount > 0) {
-
-            echo "<span style=\"height: 1rem\" class=\"badge badge-pill red-bubble-notification align-text-bottom\">$notificationCount</span>";
-
-            return true;
-        } else {
-            return false;
-        }
-    }
-
-    /**
      * Process notifications
      *
      * @param $userInfo
@@ -1312,343 +1691,5 @@ class Web_Page
         }
 
         return $_SESSION['main_notifications'];
-    }
-
-    /**
-     * Render page main navigation
-     * @param $page_id
-     * @param $render_main_navigation
-     */
-    function renderMainNavigation($page_id, $render_main_navigation = true)
-    {
-        if ($render_main_navigation) {
-            $active_home = "";
-            $active_categories = "";
-            $active_notifications = "";
-            $active_search = "";
-            $active_profile = "";
-            $active_settings = "";
-
-            // Handle page navigation presentation logic
-            switch ($_SESSION['navbar']) {
-                case "active_home":
-                    $active_home = "active";
-                    break;
-                case "active_categories":
-                    $active_categories = "active";
-                    break;
-                case "active_notifications":
-                    $active_notifications = "active";
-                    break;
-                case "active_profile":
-                    $active_profile = "active";
-                    break;
-                case "active_search":
-                    $active_search = "active";
-                    break;
-                case "active_settings":
-                    $active_settings = "active";
-                    break;
-                default:
-                    // none active
-                    break;
-            }
-            ?>
-            <nav class="navbar navbar-expand-md fixed-top navbar-dark bg-dark pb-2">
-                <button class="navbar-toggler pb-2 border-0" type="button" data-toggle="offcanvas">
-<!--                    <i class="material-icons" style="font-size: xx-large;color: var(--red)">menu</i>-->
-                    <span class="sr-only">Toggle navigation</span>
-                    <span></span>
-                    <span></span>
-                    <span></span>
-                </button>
-
-                <div class="request-favr pt-0 pr-0 pb-0 mr-0">
-                    <?php
-                    if ($_SESSION['nav_scroller'] != "active_marketplace" || $_SESSION['navbar'] != "active_home") {
-                        echo "
-                            <a href=\"$this->root_path/home/?navbar=active_home&nav_scroller=active_marketplace\">
-                        ";
-                    }
-                    ?>
-                    <img src="<?php echo $this->root_path; ?>/assets/brand/favr_logo_rd.png" height="21" width="70"
-                         class="navbar-brand mr-0" style="padding-top: 0; padding-bottom: 0">
-
-                    <?php
-                    if ($_SESSION['nav_scroller'] != "active_marketplace" || $_SESSION['navbar'] != "active_home") {
-                        echo "
-                            </a>
-                        ";
-                    }
-                    ?>
-                </div>
-
-                <button class="profile-button pb-0 border-0 mr-0 pr-0" style="left: .1rem" type="button">
-                    <?php
-                        if ($_SESSION['navbar'] == "active_profile") {
-                            echo "
-                               <i class=\"material-icons\" style=\"color: red;border: 1px solid;border-radius: 1rem;\">person</i>
-                            ";
-                        } else {
-                            echo "
-                                  <a href='$this->root_path/components/profile/?navbar=active_profile'>
-                                     <i class=\"material-icons\" style=\"color: red;border: 1px solid;border-radius: 1rem;\">person_outline</i>
-                                  </a>";
-                        }
-                    ?>
-                </button>
-
-                <!--                <a class="navbar-brand" href="#">FAVR</a>-->
-
-
-                <div class="navbar-collapse offcanvas-collapse" id="navbarsExampleDefault">
-                    <ul class="navbar-nav mr-auto">
-                        <li class="nav-item <?php echo $active_home; ?>">
-                            <a class="nav-link d-inline-flex" href="<?php echo $this->root_path; ?>/home/?navbar=active_home&nav_scroller=active_marketplace">
-                                <i class="material-icons">home</i>
-                                Home
-                                <?php
-                                if (!empty($active_home)) {
-                                    echo "<span class=\"sr-only\">(current)</span>";
-                                }
-                                ?>
-                            </a>
-                        </li>
-                        <li class="nav-item <?php echo $active_categories; ?>">
-                            <a class="nav-link d-inline-flex" href="<?php echo $this->root_path; ?>/components/categories/?navbar=active_categories">
-                                <i class="material-icons">layers</i>
-                                Categories
-                            </a>
-                        </li>
-                        <li class="nav-item <?php echo $active_notifications; ?>">
-                            <a class="nav-link d-inline-flex" href="<?php echo $this->root_path; ?>/components/notifications/?navbar=active_notifications">
-                                <?php
-                                if (!empty($active_notifications)) {
-                                    echo "<i class=\"material-icons\">notifications</i>";
-                                } else {
-                                    echo "<i class=\"material-icons\">notifications_none</i>";
-                                }
-                                ?>
-                                Notifications
-                                <?php
-                                $notificationCount = $this->processNotifications($_SESSION['user_info']);
-
-                                $this->renderNotificationCount($notificationCount);
-
-                                if (!empty($active_notifications)) {
-                                    echo "<span class=\"sr-only\">(current)</span>";
-                                }
-                                ?>
-                            </a>
-                        </li>
-                        <li class="nav-item <?php echo $active_profile; ?>">
-                            <a class="nav-link d-inline-flex" href="<?php echo $this->root_path; ?>/components/profile/?navbar=active_profile">
-                                <?php
-                                if (!empty($active_profile)) {
-                                    echo "<i class=\"material-icons\">person</i>";
-                                } else {
-                                    echo "<i class=\"material-icons\">person_outline</i>";
-                                }
-                                ?>
-                                Profile, Welcome: <?php echo $_SESSION['user_info']['first_name']; ?>
-                                <?php
-                                if (!empty($active_profile)) {
-                                    echo "<span class=\"sr-only\">(current)</span>";
-                                }
-                                ?>
-                            </a>
-                        </li>
-                        <li class="mobile-search nav-item <?php echo $active_search; ?>">
-                            <a class="nav-link d-inline-flex" href="#">
-                                <i class="material-icons">search</i>
-                                Search
-                                <?php
-                                if (!empty($active_search)) {
-                                    echo "<span class=\"sr-only\">(current)</span>";
-                                }
-                                ?>
-                            </a>
-                        </li>
-                    </ul>
-
-                    <!-- WEB ELEMENT ONLY -->
-                    <form class="web-search form-inline my-2 my-lg-0">
-                        <input style="border-radius: 5px 0 0 5px" class="form-control mr-sm-0" type="text" placeholder="Search" aria-label="Search">
-                        <button style="border-radius: 0 5px 5px 0" class="btn btn-outline-danger my-2 my-sm-0" type="submit">Search</button>
-                    </form>
-                    <!-- WEB ELEMENT ONLY -->
-
-                    <ul class="navbar-nav ml-auto">
-                        <li class="nav-item <?php echo $active_settings; ?>">
-                            <a class="nav-link d-inline-flex" href="<?php echo $this->root_path; ?>/components/settings/?navbar=active_settings">
-                                <i class="material-icons">settings</i>
-                                Settings
-                                <?php
-                                if (!empty($active_settings)) {
-                                    echo "<span class=\"sr-only\">(current)</span>";
-                                }
-                                ?>
-                            </a>
-                        </li>
-                        <li class="nav-item">
-                            <a class="nav-link d-inline-flex" href="<?php echo $this->root_path; ?>/signin/?signout=true">
-                                <i class="material-icons">exit_to_app</i>
-                                Sign out
-                            </a>
-                        </li>
-                    </ul>
-                </div>
-            </nav>
-
-            <?php
-            if ($_SESSION['navbar'] == "active_home" || $_GET['navbar'] == "active_home") {
-                // Handle nav scroller presentation logic
-                $active_marketplace = "";
-                $active_friends = "";
-                $active_chat = "";
-
-                switch ($_SESSION['nav_scroller']) {
-                    case "active_marketplace":
-                        $active_marketplace = "active";
-                        break;
-                    case "active_friends":
-                        $active_friends = "active";
-                        break;
-                    case "active_chat":
-                        $active_chat = "active";
-                        break;
-                    default:
-                        // none active
-                        break;
-                }
-                ?>
-                <div class="nav-scroller bg-white box-shadow">
-                    <nav class="nav nav-underline">
-                        <a class="nav-link <?php echo $active_marketplace; ?>"
-                           href="<?php echo $this->root_path; ?>/home/?navbar=active_home&nav_scroller=active_marketplace">
-                            Marketplace
-                            <?php
-                            if ($active_marketplace) {
-                                echo "<i class=\"material-icons\" style='color: var(--red);font-size: 15px;position:relative;top:.2rem;padding-left: 2px;'>store</i>";
-                            } else {
-                                echo "<i class=\"material-icons\" style='font-size: 15px;position:relative;top:.2rem;padding-left: 2px;'>store</i>";
-                            }
-                            ?>
-                        </a>
-                        <a class="nav-link <?php echo $active_friends; ?>"
-                           href="<?php echo $this->root_path; ?>/home/friends/?navbar=active_home&nav_scroller=active_friends">
-                            Friends
-                            <?php
-                            if ($active_friends) {
-                                echo "<i class=\"material-icons\" style='color: var(--red);font-size: 15px; padding-left: 2px;position:relative;top:.1rem;'>people</i>";
-                            } else {
-                                echo "<i class=\"material-icons\" style='font-size: 15px; padding-left: 2px;position:relative;top:.1rem;'>people_outline</i>";
-                            }
-                            ?>
-                        </a>
-                        <a class="nav-link d-inline-flex <?php echo $active_chat; ?>"
-                           href="<?php echo $this->root_path; ?>/home/chat/?navbar=active_home&nav_scroller=active_chat">
-                            Chat
-                            <?php
-                            if ($active_chat) {
-                                echo "<i class=\"material-icons\" style='color: var(--red);font-size: 15px; padding-left: 2px;position:relative;top:.2rem;'>chat_bubble</i>";
-                            } else {
-                                echo "<i class=\"material-icons\" style='font-size: 15px; padding-left: 2px;position:relative;top:.2rem;'>chat_bubble_outline</i>";
-                            }
-                            ?>
-                        </a>
-                        <!--                    <a id="suggestions" onclick="focusNoScrollMethod()" class="nav-link -->
-                        <?php //echo  $active_suggestions; ?><!--" href="?nav_scroller=active_suggestions">Suggestions</a>-->
-                    </nav>
-                </div>
-                <?php
-            }
-        }
-
-    }
-
-    /**
-     * Render page footer at the end of the page
-     */
-    function renderFooter()
-    {
-        ?>
-        </main>
-
-        <!-- FOOTER -->
-        <footer class="container" style="position: relative; float: bottom; max-width: 90%">
-            <hr>
-            <div class="row">
-                <p class="col-md-10 text-muted">&copy; 2018 Solken Technology, Inc</p>
-                <p class="col-md-2 float-right text-muted">v<?php echo $this->product_version; ?> Beta</p>
-            </div>
-        </footer>
-
-        <!-- Loader -->
-        <script>
-            var timeOut;
-
-            function pageLoader() {
-                timeOut = setTimeout(showPage, 1500);
-            }
-
-            function showPage() {
-                document.getElementById("loader").style.display = "none";
-                // document.getElementById("myDiv").style.display = "block";
-            }
-        </script>
-
-        <!-- Bootstrap core JavaScript
-        ================================================== -->
-        <!--                <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/js/bootstrap.min.js"-->
-        <!--                        integrity="sha384-JZR6Spejh4U02d8jOt6vLEHfe/JQGiRRSQQxSfFWpi1MquVdAyjUar5+76PVCmYl"-->
-        <!--                        crossorigin="anonymous"></script>-->
-
-        <!-- Placed at the end of the document so the pages load faster -->
-<!--        <script src="https://code.jquery.com/jquery-3.2.1.slim.min.js"-->
-<!--                integrity="sha384-KJ3o2DKtIkvYIK3UENzmM7KCkRr/rE9/Qpg6aAZGJwFDMVNA/GpGFF93hXpG5KkN"-->
-<!--                crossorigin="anonymous"></script>-->
-<!--        <script src="https://cdn.datatables.net/1.10.18/js/jquery.dataTables.min.js"></script>-->
-<!--        <script src="https://cdn.datatables.net/1.10.18/js/dataTables.bootstrap4.min.js"></script>-->
-        <script src="<?php echo $this->root_path; ?>/assets/js/vendor/jquery.min.js"></script>
-        <script src="<?php echo $this->root_path; ?>/assets/js/vendor/popper.min.js"></script>
-        <script src="<?php echo $this->root_path; ?>/dist/js/bootstrap.min.js"></script>
-        <!--                <script src="https://cdnjs.cloudflare.com/ajax/libs/tether/1.4.0/js/tether.min.js"-->
-        <!--                        integrity="sha384-DztdAPBWPRXSA/3eYEEUWrWCy7G5KFbe8fFjk5JAIxUYHKkDx6Qin1DkWx51bBrb"-->
-        <!--                        crossorigin="anonymous"></script>-->
-        <script src="<?php echo $this->root_path; ?>/assets/js/vendor/holder.min.js"></script>
-
-        <!-- Service Worker -->
-        <script src="<?php echo $this->root_path; ?>/assets/js/src/pwa.js"></script>
-
-        <!-- Icons -->
-        <script src="https://unpkg.com/feather-icons/dist/feather.min.js"></script>
-        <script>
-            // feather.replace();
-
-            focusNoScrollMethod = function getFocusWithoutScrolling() {
-                document.getElementById("suggestions").focus({preventScroll:true});
-            }
-
-            function openRequestFromMobile() {
-                $('.request-favr-mobile').show();
-            }
-
-            $(function () {
-                'use strict'
-
-                $('[data-toggle="offcanvas"]').on('click', function () {
-                    $('.offcanvas-collapse').toggleClass('open');
-                    $('.navbar-toggler').toggleClass('close')
-                });
-            })
-        </script>
-
-        <!-- Page scripts -->
-    <?php echo $this->script; ?>
-        </body>
-        </html>
-
-        <?php
     }
 }
