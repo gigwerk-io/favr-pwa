@@ -1023,7 +1023,10 @@ class Web_Page
                 <div class="my-3 p-3 bg-white rounded box-shadow">
                     <h6 class="border-bottom border-gray pb-2 mb-0">Post a FAVR request in Marketplace</h6>
                     <div class="media text-muted pt-3">
-                        <img data-src="holder.js/32x32?theme=thumb&bg=007bff&fg=007bff&size=1" alt=""
+                        <img src="data:image/svg+xml;charset=UTF-8,%3Csvg%20width%3D%22128%22%20height%3D%22128%22%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20viewBox%3D%220%200%20128%20128%22%20preserveAspectRatio%3D%22none%22%3E%3Cdefs%3E%3Cstyle%20type%3D%22text%2Fcss%22%3E%23holder_164a9f2d749%20text%20%7B%20fill%3A%23007bff%3Bfont-weight%3Abold%3Bfont-family%3AArial%2C%20Helvetica%2C%20Open%20Sans%2C%20sans-serif%2C%20monospace%3Bfont-size%3A6pt%20%7D%20%3C%2Fstyle%3E%3C%2Fdefs%3E%3Cg%20id%3D%22holder_164a9f2d749%22%3E%3Crect%20width%3D%22128%22%20height%3D%22128%22%20fill%3D%22%23007bff%22%3E%3C%2Frect%3E%3Cg%3E%3Ctext%20x%3D%2248.4296875%22%20y%3D%2266.7%22%3E128x128%3C%2Ftext%3E%3C%2Fg%3E%3C%2Fg%3E%3C%2Fsvg%3E"
+                             alt="profile picture"
+                             height="32"
+                             width="32"
                              class="mr-2 rounded">
                         <div class="media-body pb-3 mb-0 small lh-125">
                             <strong class="d-block text-gray-dark">@<?php echo $_SESSION['user_info']['username']; ?></strong>
@@ -1161,15 +1164,25 @@ class Web_Page
                     $task_time_to_accomplish = date('h:i A, l, m/d/Y', strtotime($task_date));
                     $task_price = $row['task_price'];
                     $task_difficulty = $row['task_intensity'];
-                    $task_pic_path_1 = $row['task_picture_path_1'];
-                    $task_pic_path_2 = $row['task_picture_path_2'];
-                    $task_pic_path_3 = $row['task_picture_path_3'];
+
+                    $task1_img_data_array = unserialize($row['task_picture_path_1']);
+                    $task1_img_name = $task1_img_data_array['name'];
+                    $task1_img_type = $task1_img_data_array['type'];
+
+                    $task2_img_data_array = unserialize($row['task_picture_path_2']);
+                    $task2_img_name = $task2_img_data_array['name'];
+                    $task2_img_type = $task2_img_data_array['type'];
+
+                    $task3_img_data_array = unserialize($row['task_picture_path_3']);
+                    $task3_img_name = $task3_img_data_array['name'];
+                    $task3_img_type = $task3_img_data_array['type'];
 
                     // hide shrink button and non essential form information
 
                     echo "<div class=\"my-3 p-3 bg-white rounded box-shadow\">
                         <div class='pb-2 mb-0 border-bottom border-gray'>
-                            <img data-src=\"holder.js/32x32?theme=thumb&bg=007bff&fg=007bff&size=1\" alt=\"\" class=\"mr-2 rounded\">
+                            <img src=\"data:image/svg+xml;charset=UTF-8,%3Csvg%20width%3D%22128%22%20height%3D%22128%22%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20viewBox%3D%220%200%20128%20128%22%20preserveAspectRatio%3D%22none%22%3E%3Cdefs%3E%3Cstyle%20type%3D%22text%2Fcss%22%3E%23holder_164a9f2d749%20text%20%7B%20fill%3A%23007bff%3Bfont-weight%3Abold%3Bfont-family%3AArial%2C%20Helvetica%2C%20Open%20Sans%2C%20sans-serif%2C%20monospace%3Bfont-size%3A6pt%20%7D%20%3C%2Fstyle%3E%3C%2Fdefs%3E%3Cg%20id%3D%22holder_164a9f2d749%22%3E%3Crect%20width%3D%22128%22%20height%3D%22128%22%20fill%3D%22%23007bff%22%3E%3C%2Frect%3E%3Cg%3E%3Ctext%20x%3D%2248.4296875%22%20y%3D%2266.7%22%3E128x128%3C%2Ftext%3E%3C%2Fg%3E%3C%2Fg%3E%3C%2Fsvg%3E\" 
+                                height='32' width='32' alt=\"\" class=\"mr-2 rounded\">
                             <strong style='font-size: 80%' class=\"d - block text - gray - dark\">
                                 @$customer_username
                             </strong>
@@ -1212,17 +1225,20 @@ class Web_Page
                     echo "
                                 <div id='$id-image1' class='pt-1 border-top border-gray small d-none'>
                                     <label for='image1'>Attached Image 1:</label>
-                                    <img src='$this->root_path/image.php?i=$task_pic_path_1&i_t=image/jpeg' height='30%' width='30%'>
+                                    <img src='data:image/svg+xml;charset=UTF-8,%3Csvg%20width%3D%22128%22%20height%3D%22128%22%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20viewBox%3D%220%200%20128%20128%22%20preserveAspectRatio%3D%22none%22%3E%3Cdefs%3E%3Cstyle%20type%3D%22text%2Fcss%22%3E%23holder_164a9f2d749%20text%20%7B%20fill%3A%23007bff%3Bfont-weight%3Abold%3Bfont-family%3AArial%2C%20Helvetica%2C%20Open%20Sans%2C%20sans-serif%2C%20monospace%3Bfont-size%3A6pt%20%7D%20%3C%2Fstyle%3E%3C%2Fdefs%3E%3Cg%20id%3D%22holder_164a9f2d749%22%3E%3Crect%20width%3D%22128%22%20height%3D%22128%22%20fill%3D%22%23007bff%22%3E%3C%2Frect%3E%3Cg%3E%3Ctext%20x%3D%2248.4296875%22%20y%3D%2266.7%22%3E128x128%3C%2Ftext%3E%3C%2Fg%3E%3C%2Fg%3E%3C%2Fsvg%3E' 
+                                        data-src='$this->root_path/image.php?i=$task1_img_name&i_t=$task1_img_type' height='30%' width='30%'>
                                 </div>";
                     echo "
                                 <div id='$id-image2' class='pt-1 border-top border-gray small d-none'>
                                     <label for='image1'>Attached Image 2:</label>
-                                    <img src='$this->root_path/image.php?i=$task_pic_path_2&i_t=image/jpeg' height='30%' width='30%'>
+                                    <img src='data:image/svg+xml;charset=UTF-8,%3Csvg%20width%3D%22128%22%20height%3D%22128%22%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20viewBox%3D%220%200%20128%20128%22%20preserveAspectRatio%3D%22none%22%3E%3Cdefs%3E%3Cstyle%20type%3D%22text%2Fcss%22%3E%23holder_164a9f2d749%20text%20%7B%20fill%3A%23007bff%3Bfont-weight%3Abold%3Bfont-family%3AArial%2C%20Helvetica%2C%20Open%20Sans%2C%20sans-serif%2C%20monospace%3Bfont-size%3A6pt%20%7D%20%3C%2Fstyle%3E%3C%2Fdefs%3E%3Cg%20id%3D%22holder_164a9f2d749%22%3E%3Crect%20width%3D%22128%22%20height%3D%22128%22%20fill%3D%22%23007bff%22%3E%3C%2Frect%3E%3Cg%3E%3Ctext%20x%3D%2248.4296875%22%20y%3D%2266.7%22%3E128x128%3C%2Ftext%3E%3C%2Fg%3E%3C%2Fg%3E%3C%2Fsvg%3E' 
+                                        data-src='$this->root_path/image.php?i=$task2_img_name&i_t=$task2_img_type' height='30%' width='30%'>
                                 </div>";
                     echo "
                                 <div id='$id-image3' class='pt-1 border-top border-gray small d-none'>
                                     <label for='image1'>Attached Image 3:</label>
-                                    <img src='$this->root_path/image.php?i=$task_pic_path_3&i_t=image/jpeg' height='30%' width='30%'>
+                                    <img src='data:image/svg+xml;charset=UTF-8,%3Csvg%20width%3D%22128%22%20height%3D%22128%22%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20viewBox%3D%220%200%20128%20128%22%20preserveAspectRatio%3D%22none%22%3E%3Cdefs%3E%3Cstyle%20type%3D%22text%2Fcss%22%3E%23holder_164a9f2d749%20text%20%7B%20fill%3A%23007bff%3Bfont-weight%3Abold%3Bfont-family%3AArial%2C%20Helvetica%2C%20Open%20Sans%2C%20sans-serif%2C%20monospace%3Bfont-size%3A6pt%20%7D%20%3C%2Fstyle%3E%3C%2Fdefs%3E%3Cg%20id%3D%22holder_164a9f2d749%22%3E%3Crect%20width%3D%22128%22%20height%3D%22128%22%20fill%3D%22%23007bff%22%3E%3C%2Frect%3E%3Cg%3E%3Ctext%20x%3D%2248.4296875%22%20y%3D%2266.7%22%3E128x128%3C%2Ftext%3E%3C%2Fg%3E%3C%2Fg%3E%3C%2Fsvg%3E' 
+                                    data-src='$this->root_path/image.php?i=$task3_img_name&i_t=$task3_img_type' height='30%' width='30%'>
                                 </div>";
 
                     echo "
@@ -1242,15 +1258,15 @@ class Web_Page
                                               $('#$id-expand').removeClass('d-inline-flex');
                                               $('#$id-expand').addClass('d-none');";
 
-                    if (!empty($task_pic_path_1)) {
+                    if (!empty($task1_img_data_array)) {
                         echo "$('#$id-image1').removeClass('d-none');";
                     }
 
-                    if (!empty($task_pic_path_2)) {
+                    if (!empty($task2_img_data_array)) {
                         echo "$('#$id-image2').removeClass('d-none');";
                     }
 
-                    if (!empty($task_pic_path_3)) {
+                    if (!empty($task3_img_data_array)) {
                         echo "$('#$id-image3').removeClass('d-none');";
                     }
 
@@ -1268,15 +1284,15 @@ class Web_Page
                                               $('#$id-expand').removeClass('d-none');
                                               $('#$id-expand').addClass('d-inline-flex');";
 
-                    if (!empty($task_pic_path_1)) {
+                    if (!empty($task1_img_data_array)) {
                         echo "$('#$id-image1').addClass('d-none');";
                     }
 
-                    if (!empty($task_pic_path_2)) {
+                    if (!empty($task2_img_data_array)) {
                         echo "$('#$id-image2').addClass('d-none');";
                     }
 
-                    if (!empty($task_pic_path_3)) {
+                    if (!empty($task3_img_data_array)) {
                         echo "$('#$id-image3').addClass('d-none');";
                     }
 
@@ -1495,6 +1511,8 @@ class Web_Page
                                                 } else if ($inputPictures['type'][$i] == 'image/png') {
                                                     $imageFileName = "$imageFileName.png";
                                                 }
+                                                $imageFileType = $inputPictures['type'][$i];
+
                                                 // TODO: constant values statically used root image file path
                                                 $imageFilePath = "/Applications/XAMPP/xamppfiles/favr-request-images/$imageFileName";
 
@@ -1506,8 +1524,15 @@ class Web_Page
                                                     // file copied to destination
                                                     $x = $i + 1;
                                                     $task_picture_path_x = "task_picture_path_$x";
+                                                    $imageDataArray = array('name' => "$imageFileName",
+                                                                            'type' => "$imageFileType",
+                                                                            'size' => $inputPictures['size'][$i],
+                                                                            'task_id' => $task_id);
+
+                                                    $imageDataArray = serialize($imageDataArray);
+
                                                     $update_path_query = "UPDATE marketplace_favr_requests 
-                                                                          SET $task_picture_path_x = '$imageFileName'
+                                                                          SET $task_picture_path_x = '$imageDataArray'
                                                                           WHERE id = '$task_id'";
 
                                                     $result = $this->db->query($update_path_query);
