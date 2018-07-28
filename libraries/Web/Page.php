@@ -360,6 +360,37 @@ class Web_Page
     }
 
     /**
+     * TODO: implement set permissions to lock certain aspects and functionality of FAVR to certain users only
+     * Set permissions for the page. Will render Access Denied page and kill the page if needed.
+     * @param $restrict_id integer The component to which access should be restricted.
+     * @param $restrict_class integer The user class to which access should be restricted.
+     * @param $restrict_user string Whether or not the page should be restricted to a certain user.
+     */
+    function setPermissions($restrict_id, $restrict_class, $restrict_user)
+    {
+        return;
+    }
+
+
+    /**
+     * Get user info by id
+     *
+     * @param $userID
+     *
+     * @return array // return array of userInfo if user exists NULL otherwise
+     */
+    function getUserInfo($userID)
+    {
+        $user_query = "SELECT * 
+                       FROM users
+                       WHERE id = '$userID'";
+        $result = $this->db->query($user_query);
+        $row = $result->fetch(PDO::FETCH_ASSOC);
+
+        return $row;
+    }
+
+    /**
      * Set any stylesheets that need to be loaded in the header.
      * Must be called before renderHeader.
      * @param $add_stylesheet string The stylesheet to load.
@@ -381,6 +412,102 @@ class Web_Page
         if (trim($add_script) != "") {
             $this->script .= $add_script;
         }
+    }
+
+    /**
+     * Render page header
+     * @param $render_top_nav
+     */
+    function renderHeader($render_top_nav = true)
+    {
+        if (empty($_SESSION['user'])) {
+            header("location: $this->root_path/signin/ ");
+        }
+        ?>
+        <!doctype html>
+        <html lang="en">
+        <head>
+            <meta charset="utf-8">
+            <!--            <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">-->
+            <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
+            <meta name="HandheldFriendly" content="true" />
+            <meta name="description" content="Post job requests at your price and have access to verified freelancers for open tasks. Chat with friends and trade FAVRs.">
+            <meta name="author" content="Solken Technoloy LLC: Solomon Antoione, Haron Arama, D'Angelo Tines, and Ken Nguyen">
+            <meta name="theme-color" content="#343a40"/>
+            <meta name="msapplication-TileColor" content="#da532c">
+            <meta name="theme-color" content="#f5f5f5">
+            <link rel="icon" href="<?php echo $this->root_path; ?>/assets/brand/favicon.ico">
+
+            <title><?php echo $this->page_title; ?></title>
+
+            <!-- Manifest -->
+            <link rel="manifest" href="<?php echo $this->root_path; ?>/manifest.json">
+
+            <meta name="apple-mobile-web-app-capable" content="yes">
+            <meta name="apple-mobile-web-app-status-bar-style" content="default">
+            <meta name="apple-mobile-web-app-title" content="FAVR">
+
+            <!-- iOS -->
+            <link rel="apple-touch-startup-image"
+                  href="<?php echo $this->root_path; ?>/assets/brand/splash/launch-640x1136.png"
+                  media="(device-width: 320px) and (device-height: 568px) and (-webkit-device-pixel-ratio: 2) and (orientation: portrait)">
+            <link rel="apple-touch-startup-image"
+                  href="<?php echo $this->root_path; ?>/assets/brand/splash/launch-750x1294.png"
+                  media="(device-width: 375px) and (device-height: 667px) and (-webkit-device-pixel-ratio: 2) and (orientation: portrait)">
+            <link rel="apple-touch-startup-image"
+                  href="<?php echo $this->root_path; ?>/assets/brand/splash/launch-1242x2148.png"
+                  media="(device-width: 414px) and (device-height: 736px) and (-webkit-device-pixel-ratio: 3) and (orientation: portrait)">
+            <link rel="apple-touch-startup-image"
+                  href="<?php echo $this->root_path; ?>/assets/brand/splash/launch-1125x2436.png"
+                  media="(device-width: 375px) and (device-height: 812px) and (-webkit-device-pixel-ratio: 3) and (orientation: portrait)">
+            <link rel="apple-touch-startup-image"
+                  href="<?php echo $this->root_path; ?>/assets/brand/splash/launch-1536x2048.png"
+                  media="(min-device-width: 768px) and (max-device-width: 1024px) and (-webkit-min-device-pixel-ratio: 2) and (orientation: portrait)">
+            <link rel="apple-touch-startup-image"
+                  href="<?php echo $this->root_path; ?>/assets/brand/splash/launch-1668x2224.png"
+                  media="(min-device-width: 834px) and (max-device-width: 834px) and (-webkit-min-device-pixel-ratio: 2) and (orientation: portrait)">
+            <link rel="apple-touch-startup-image"
+                  href="<?php echo $this->root_path; ?>/assets/brand/splash/launch-2048x2732.png"
+                  media="(min-device-width: 1024px) and (max-device-width: 1024px) and (-webkit-min-device-pixel-ratio: 2) and (orientation: portrait)">
+            <link rel="apple-touch-icon" sizes="180x180"
+                  href="<?php echo $this->root_path; ?>/assets/brand/apple-touch-icon.png">
+
+            <link rel="icon" type="image/png" sizes="32x32"
+                  href="<?php echo $this->root_path; ?>/assets/brand/favicon-32x32.png">
+            <link rel="icon" type="image/png" sizes="16x16"
+                  href="<?php echo $this->root_path; ?>/assets/brand/favicon-16x16.png">
+
+            <link rel="mask-icon" href="<?php echo $this->root_path; ?>/assets/brand/safari-pinned-tab.svg"
+                  color="#343a40">
+
+
+            <!-- Bootstrap core CSS -->
+            <link rel="stylesheet" href="<?php echo $this->root_path; ?>/dist/css/bootstrap.min.css"/>
+
+            <!-- Data tables CSS -->
+            <link rel="stylesheet" href="https://cdn.datatables.net/1.10.18/css/dataTables.bootstrap4.min.css"/>
+
+            <!-- Loader CSS -->
+            <link rel="stylesheet" href="<?php echo $this->root_path; ?>/assets/css/loader.css"/>
+            <!--                <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/css/bootstrap.min.css"-->
+            <!--                      integrity="sha384-Gn5384xqQ1aoWXA+058RXPxPg6fy4IWvTNh0E263XmFcJlSAwiGgFAW/dAiS6JXm"-->
+            <!--                      crossorigin="anonymous">-->
+
+            <!-- Custom styles for this template -->
+            <?php echo $this->stylesheet; ?>
+            <link href="<?php echo $this->root_path; ?>/assets/css/main.css" rel="stylesheet">
+        </head>
+
+        <body class="bg-light" onload="pageLoader()">
+
+        <div id="loader"></div>
+
+        <?php
+        $this->renderMainNavigation($this->page_id, $render_top_nav);
+        ?>
+
+        <main role="main" class="container animate-bottom" style="max-width: 750px">
+        <?php
     }
 
     /**
@@ -510,133 +637,6 @@ class Web_Page
      */
     function renderFavrProfile($userID) {
         return null;
-    }
-
-    /**
-     * Render page header
-     * @param $render_top_nav
-     */
-    function renderHeader($render_top_nav = true)
-    {
-        if (empty($_SESSION['user'])) {
-            header("location: $this->root_path/signin/ ");
-        }
-        ?>
-        <!doctype html>
-        <html lang="en">
-        <head>
-            <meta charset="utf-8">
-<!--            <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">-->
-            <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
-            <meta name="HandheldFriendly" content="true" />
-            <meta name="description" content="">
-            <meta name="author" content="">
-            <meta name="theme-color" content="#343a40"/>
-            <meta name="msapplication-TileColor" content="#da532c">
-            <meta name="theme-color" content="#f5f5f5">
-            <link rel="icon" href="<?php echo $this->root_path; ?>/assets/brand/favicon.ico">
-
-            <title><?php echo $this->page_title; ?></title>
-
-            <!-- Manifest -->
-            <link rel="manifest" href="<?php echo $this->root_path; ?>/manifest.json">
-
-            <meta name="apple-mobile-web-app-capable" content="yes">
-            <meta name="apple-mobile-web-app-status-bar-style" content="default">
-            <meta name="apple-mobile-web-app-title" content="FAVR">
-
-            <!-- iOS -->
-            <link rel="apple-touch-startup-image"
-                  href="<?php echo $this->root_path; ?>/assets/brand/splash/launch-640x1136.png"
-                  media="(device-width: 320px) and (device-height: 568px) and (-webkit-device-pixel-ratio: 2) and (orientation: portrait)">
-            <link rel="apple-touch-startup-image"
-                  href="<?php echo $this->root_path; ?>/assets/brand/splash/launch-750x1294.png"
-                  media="(device-width: 375px) and (device-height: 667px) and (-webkit-device-pixel-ratio: 2) and (orientation: portrait)">
-            <link rel="apple-touch-startup-image"
-                  href="<?php echo $this->root_path; ?>/assets/brand/splash/launch-1242x2148.png"
-                  media="(device-width: 414px) and (device-height: 736px) and (-webkit-device-pixel-ratio: 3) and (orientation: portrait)">
-            <link rel="apple-touch-startup-image"
-                  href="<?php echo $this->root_path; ?>/assets/brand/splash/launch-1125x2436.png"
-                  media="(device-width: 375px) and (device-height: 812px) and (-webkit-device-pixel-ratio: 3) and (orientation: portrait)">
-            <link rel="apple-touch-startup-image"
-                  href="<?php echo $this->root_path; ?>/assets/brand/splash/launch-1536x2048.png"
-                  media="(min-device-width: 768px) and (max-device-width: 1024px) and (-webkit-min-device-pixel-ratio: 2) and (orientation: portrait)">
-            <link rel="apple-touch-startup-image"
-                  href="<?php echo $this->root_path; ?>/assets/brand/splash/launch-1668x2224.png"
-                  media="(min-device-width: 834px) and (max-device-width: 834px) and (-webkit-min-device-pixel-ratio: 2) and (orientation: portrait)">
-            <link rel="apple-touch-startup-image"
-                  href="<?php echo $this->root_path; ?>/assets/brand/splash/launch-2048x2732.png"
-                  media="(min-device-width: 1024px) and (max-device-width: 1024px) and (-webkit-min-device-pixel-ratio: 2) and (orientation: portrait)">
-            <link rel="apple-touch-icon" sizes="180x180"
-                  href="<?php echo $this->root_path; ?>/assets/brand/apple-touch-icon.png">
-
-            <link rel="icon" type="image/png" sizes="32x32"
-                  href="<?php echo $this->root_path; ?>/assets/brand/favicon-32x32.png">
-            <link rel="icon" type="image/png" sizes="16x16"
-                  href="<?php echo $this->root_path; ?>/assets/brand/favicon-16x16.png">
-
-            <link rel="mask-icon" href="<?php echo $this->root_path; ?>/assets/brand/safari-pinned-tab.svg"
-                  color="#343a40">
-
-
-            <!-- Bootstrap core CSS -->
-            <link rel="stylesheet" href="<?php echo $this->root_path; ?>/dist/css/bootstrap.min.css"/>
-
-            <!-- Data tables CSS -->
-            <link rel="stylesheet" href="https://cdn.datatables.net/1.10.18/css/dataTables.bootstrap4.min.css"/>
-
-            <!-- Loader CSS -->
-            <link rel="stylesheet" href="<?php echo $this->root_path; ?>/assets/css/loader.css"/>
-            <!--                <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/css/bootstrap.min.css"-->
-            <!--                      integrity="sha384-Gn5384xqQ1aoWXA+058RXPxPg6fy4IWvTNh0E263XmFcJlSAwiGgFAW/dAiS6JXm"-->
-            <!--                      crossorigin="anonymous">-->
-
-            <!-- Custom styles for this template -->
-            <?php echo $this->stylesheet; ?>
-            <link href="<?php echo $this->root_path; ?>/assets/css/main.css" rel="stylesheet">
-        </head>
-
-        <body class="bg-light" onload="pageLoader()">
-
-        <div id="loader"></div>
-
-        <?php
-        $this->renderMainNavigation($this->page_id, $render_top_nav);
-        ?>
-
-        <main role="main" class="container animate-bottom" style="max-width: 750px">
-        <?php
-    }
-
-    /**
-     * TODO: implement set permissions to lock certain aspects and functionality of FAVR to certain users only
-     * Set permissions for the page. Will render Access Denied page and kill the page if needed.
-     * @param $restrict_id integer The component to which access should be restricted.
-     * @param $restrict_class integer The user class to which access should be restricted.
-     * @param $restrict_user string Whether or not the page should be restricted to a certain user.
-     */
-    function setPermissions($restrict_id, $restrict_class, $restrict_user)
-    {
-        return;
-    }
-
-
-    /**
-     * Get user info by id
-     *
-     * @param $userID
-     *
-     * @return array // return array of userInfo if user exists NULL otherwise
-     */
-    function getUserInfo($userID)
-    {
-        $user_query = "SELECT * 
-                       FROM users
-                       WHERE id = '$userID'";
-        $result = $this->db->query($user_query);
-        $row = $result->fetch(PDO::FETCH_ASSOC);
-
-        return $row;
     }
 
     /**
@@ -1114,25 +1114,27 @@ class Web_Page
     function renderFavrMarketplace($scope="global", $orderBy = "task_date", $orientation = "DESC", $limit="LIMIT 3")
     {
         if ($scope == $_SESSION['user_info']['id']) {
+            // TODO: constant Requested used statically here
             $selectMarketplaceQuery = "
                                    SELECT *, mfr.id as mfrid
                                    FROM marketplace_favr_requests mfr
                                    INNER JOIN users u
                                    WHERE u.id = $scope
                                    AND u.id = mfr.customer_id
-                                   AND mfr.freelancer_id IS NULL
+                                   AND mfr.task_status = 'Requested'
                                    ORDER BY $orderBy
                                    $orientation
                                    $limit
             ";
 
         } else if ($scope == "global") {
+            // TODO: constant Requested used statically here
             $selectMarketplaceQuery = "
                                    SELECT *, mfr.id as mfrid
                                    FROM marketplace_favr_requests mfr
                                    INNER JOIN users u
                                    WHERE u.id = mfr.customer_id
-                                   AND mfr.freelancer_id IS NULL
+                                   AND mfr.task_status = 'Requested'
                                    ORDER BY $orderBy
                                    $orientation
                                    $limit
@@ -1152,8 +1154,8 @@ class Web_Page
                 foreach ($rows as $row) {
                     $id = md5($row['mfrid']);
                     $task_id = $row['mfrid'];
-                    $freelancer_id = $row['freelancer_id'];
-                    $freelancer_accepted = count($freelancer_id);
+                    $freelancer_ids_array = unserialize($row['freelancer_id']);
+                    $freelancer_accepted = count($freelancer_ids_array);
                     $task_freelancer_count = $row['task_freelancer_count'];
                     $customer_id = $row['customer_id'];
                     $customer_username = $row['username'];
@@ -1200,9 +1202,9 @@ class Web_Page
                     }
 
                     if ($customer_id == $_SESSION['user_info']['id']) {
-                        echo "<div class='float-right small' style='padding-top: .3rem;color: var(--red)'>- $$task_price</div>";
+                        echo "<div class='float-right small font-weight-bold' style='padding-top: .3rem;color: var(--red)'>- $$task_price</div>";
                     } else {
-                        echo "<div class='float-right small' style='padding-top: .3rem;color: var(--dark)'>$$task_price</div>";
+                        echo "<div class='float-right small font-weight-bold' style='padding-top: .3rem;color: var(--dark)'>$$task_price</div>";
                     }
 
                     echo "</div><div class=\"media text-muted pt-3\">
@@ -1272,7 +1274,7 @@ class Web_Page
 
                     echo "
                                               
-                                        \">Expand</div>
+                                        \">Details</div>
                                          <div id='$id-collapse' class='text-info d-none'
                                              style='cursor: pointer'
                                              onclick=\"
@@ -1308,8 +1310,23 @@ class Web_Page
                                        ";
 
                     if ($customer_id != $_SESSION['user_info']['id']) { // if not this user
-                        echo "<a href=\"$this->root_path/components/notifications/?navbar=active_notifications&accept_request_id=$task_id&ALERT_MESSAGE=You've signed up to take this task! You must complete it and verify its completion with the task requester in order to disburse payment!\">
-                            Accept Request</a>";
+                        $freelancerAccepted = false;
+                        $freelancer_id = null;
+                        foreach ($freelancer_ids_array as $freelancerID) {
+                            if ($_SESSION['user_info']['id'] == $freelancerID) {
+                                $freelancerAccepted = true;
+                                $freelancer_id = $freelancerID;
+                                break;
+                            }
+                        }
+
+                        if ($freelancerAccepted) {
+                            echo "<a class='text-danger' href='$this->root_path/components/notifications/?navbar=active_notifications&withdraw_request_id=$task_id&freelancer_id=$freelancer_id&ALERT_MESSAGE='>
+                                Withdraw</a>";
+                        } else {
+                            echo "<a href=\"$this->root_path/components/notifications/?navbar=active_notifications&accept_request_id=$task_id&ALERT_MESSAGE=You've signed up to take this task! The task requester has been notified of your interest and is reviewing your offer to help: they can accept or reject your offer to help! You'll be notified of their decision; you can withdraw your offer to help before they decide. \">
+                                Accept Request</a>";
+                        }
                     } else {
                         echo "<a href=\"?nav_bar=active_home&d_request_id=$task_id&ALERT_MESSAGE=Your request has been deleted!\" class='text-danger'>
                             Cancel Request</a>";
@@ -1437,7 +1454,6 @@ class Web_Page
      */
     function processFavrRequestToDB($userInfo, $inputDate, $inputCategory, $inputTaskDetails, $inputPricing, $inputFreelancerCount, $inputLocation, $inputDifficulty,  $inputPictures, $inputScope="public")
     {
-//        die(print_r(serialize(array(2))));
         if (isset($userInfo, $inputDate, $inputFreelancerCount, $inputCategory, $inputTaskDetails, $inputPricing, $inputScope)) {
             $userId = $userInfo['id'];
             $address = $inputLocation;
@@ -1467,7 +1483,7 @@ class Web_Page
             ";
 
             $result = $this->db->query($insert_request_query);
-//            $result = true;
+//            $result = true; // for testing
 
             if ($result) {
                 // process attached images logic
@@ -1578,21 +1594,49 @@ class Web_Page
     }
 
     /**
-     * TODO: needs logic development
+     * TODO: needs logic development and implementation
      * Process cancel pending request
      *
      * @param $requestID
-     * @param $customerID
      * @param $freelancerID
+     * @param $customerID
      *
      * @return boolean
      */
-//    function processCancelPendingRequest()
-//    {
-//
-//    }
+    function processCancelPendingRequest($requestID,  $freelancerID = null, $customerID = null)
+    {
+        if (isset($requestID) && ($freelancerID != null || $customerID != null)) {
+            $select_task_query = "SELECT freelancer_id 
+                                  FROM marketplace_favr_requests
+                                  WHERE id = '$requestID'";
+            $result = $this->db->query($select_task_query);
+            if ($result) {
+                $row = $result->fetch(PDO::FETCH_ASSOC);
+                $freelancer_ids_array = unserialize($row['freelancer_id']);
+                echo '<pre>';
+                print_r($freelancer_ids_array);
+                echo '</pre>';
+                if (($key = array_search($freelancerID, $freelancer_ids_array)) !== false) {
+                    unset($freelancer_ids_array[$key]); // remove the freelancer from the list of sign ups
+                } else {
+                    return false;
+                }
+
+                echo '<br><pre>';
+                die(print_r($freelancer_ids_array));
+            }
+//            $update_task_query = "UPDATE marketplace_favr_requests
+//                                  SET
+//                                  WHERE id = '$requestID'";
+            return true;
+        } else {
+            return false;
+        }
+    }
 
     /**
+     * TODO: delete images from server corresponding to task id and this user, and keep data as virtual receipt in system
+     * TODO: update database image columns to null after completion of task
      * Process complete request
      *
      * @param $requestID
@@ -1627,7 +1671,8 @@ class Web_Page
     }
 
     /**
-     * Process delete request
+     * Image naming convention: task_id-customer_id-request-image#.x hashed by md5
+     * Process delete request and task associated images
      *
      * @param $requestID
      * @param $customerID
@@ -1637,6 +1682,56 @@ class Web_Page
     function processDeleteRequest($requestID, $customerID)
     {
         if (isset($requestID, $customerID)) {
+            // Delete images
+            $select_request_query = "SELECT *
+                                     FROM marketplace_favr_requests
+                                     WHERE id = '$requestID'
+                                     AND customer_id = '$customerID'";
+
+            $result = $this->db->query($select_request_query);
+            if ($result) {
+                $row = $result->fetch(PDO::FETCH_ASSOC);
+                $task1_image_array = unserialize($row['task_picture_path_1']);
+                $task2_image_array = unserialize($row['task_picture_path_2']);
+                $task3_image_array = unserialize($row['task_picture_path_3']);
+
+                if (!empty($task1_image_array)) {
+                    $imageName = $task1_image_array['name'];
+
+                    // TODO: constant used image folder path
+                    if (file_exists("/Applications/XAMPP/xamppfiles/favr-request-images/$imageName")) {
+                        $removeImage = unlink("/Applications/XAMPP/xamppfiles/favr-request-images/$imageName");
+                        if (!$removeImage) {
+                            return false;
+                        }
+                    }
+                }
+
+                if (!empty($task2_image_array)) {
+                    $imageName = $task2_image_array['name'];
+
+                    // TODO: constant used image folder path
+                    if (file_exists("/Applications/XAMPP/xamppfiles/favr-request-images/$imageName")) {
+                        $removeImage = unlink("/Applications/XAMPP/xamppfiles/favr-request-images/$imageName");
+                        if (!$removeImage) {
+                            return false;
+                        }
+                    }
+                }
+
+                if (!empty($task3_image_array)) {
+                    $imageName = $task3_image_array['name'];
+
+                    // TODO: constant used image folder path
+                    if (file_exists("/Applications/XAMPP/xamppfiles/favr-request-images/$imageName")) {
+                        $removeImage = unlink("/Applications/XAMPP/xamppfiles/favr-request-images/$imageName");
+                        if (!$removeImage) {
+                            return false;
+                        }
+                    }
+                }
+            }
+
             // Delete request
             $delete_request_query = "DELETE FROM marketplace_favr_requests
                                      WHERE id = '$requestID'
@@ -1659,27 +1754,64 @@ class Web_Page
     /**
      * Process accept request
      *
+     * Flow: Marketplace -> Verified freelancer accepts -> Notify customer -> customer accepts -> Notify freelancer -> Change status of request to pending job
+     *                                                      |-> freelancer or customer rejects -> Marketplace
+     *
      * @param $requestID
      * @param $freelancerID
      *
      * @return boolean
      */
-    function processAcceptRequest($requestID, $freelancerID)
+    function processFreelancerAcceptRequest($requestID, $freelancerID)
     {
         if (isset($requestID, $freelancerID)) {
             // freelancer has accepted
-            $update_request_query = "UPDATE marketplace_favr_requests 
-                                     SET freelancer_id = '$freelancerID' 
+            $select_request_query = "SELECT * 
+                                     FROM marketplace_favr_requests
                                      WHERE id = '$requestID'";
-            $result = $this->db->query($update_request_query);
-
+            $result = $this->db->query($select_request_query);
             if ($result) {
-                // successfully accepted
-                return true;
-            } else {
-                // failed to accept
-                return false;
+                $row = $result->fetch(PDO::FETCH_ASSOC);
+                $freelancer_count = $row['task_freelancer_count'];
+                $freelancer_ids_array = unserialize($row['freelancer_id']);
+                $setTaskStatusPending = ""; // still need more freelancers
+
+                // ensure there's not already enough freelancers signed up for this job
+                if (sizeof($freelancer_ids_array) < $freelancer_count) {
+                    // ensure that this user has not already accepted to work this request
+                    foreach ($freelancer_ids_array as $freelancer_id) {
+                        if ($freelancer_id == $freelancerID) {
+                            // This should never happen
+                            // TODO: handle error reporting for this critical error
+                            return false;
+                        }
+                    }
+                    array_push($freelancer_ids_array, $freelancerID);
+                } else if (sizeof($freelancer_ids_array) > $freelancer_count) { // This cannot ever happen
+                    // TODO: handle error reporting for this critical error
+                    return false;
+                } else if (sizeof($freelancer_ids_array) == $freelancer_count) {
+                    $setTaskStatusPending = ", task_status = 'Pending Approval' "; // Has enough freelancers notify customer pending their approval
+                }
+
+                $freelancer_ids_array = serialize($freelancer_ids_array);
+
+                $update_request_query = "UPDATE marketplace_favr_requests 
+                                         SET freelancer_id = '$freelancer_ids_array'
+                                         $setTaskStatusPending
+                                         WHERE id = '$requestID'";
+                $result = $this->db->query($update_request_query);
+
+                if ($result) {
+                    // successfully accepted
+                    return true;
+                } else {
+                    // failed to accept
+                    return false;
+                }
             }
+
+
         } else {
             // not set
             return false;

@@ -19,20 +19,21 @@ if (isset($_SESSION['user_info'])) {
 }
 
 $page = new Web_Page($PAGE_ID, $USER);
-$data = new Data_Table("$PAGE_ID", "friends-table", $page);
-$chart = new Data_Chart("$PAGE_ID", "rent-chart", $page);
 
-$page->setTitle("Notifications");
-$page->renderHeader();
-
+if (isset($_GET['withdraw_request_id'], $_GET['freelancer_id'])) {
+    $page->processCancelPendingRequest($_GET['withdraw_request_id'], $_GET['freelancer_id']);
+}
 
 if (isset($_GET['accept_request_id'])) {
-    $page->processAcceptRequest($_GET['accept_request_id'], $_SESSION['user_info']['id']);
+    $page->processFreelancerAcceptRequest($_GET['accept_request_id'], $_SESSION['user_info']['id']);
 }
 
 if (isset($_GET['completed_request_id'], $_GET['freelancer_id'], $_GET['customer_id'])) {
     $page->processCompleteRequest($_GET['completed_request_id'], $_GET['customer_id'], $_GET['freelancer_id']);
 }
+
+$page->setTitle("Notifications");
+$page->renderHeader();
 
 if (isset($_GET['ALERT_MESSAGE'])) {
     $ALERT_MESSAGE = $_GET['ALERT_MESSAGE'];
@@ -51,4 +52,3 @@ echo $ALERT_MESSAGE;
 $page->renderMainNotifications($_SESSION['user_info']);
 
 $page->renderFooter();
-?>

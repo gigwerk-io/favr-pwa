@@ -51,6 +51,11 @@ if (isset($_GET['ALERT_MESSAGE'])) {
 
 echo $ALERT_MESSAGE;
 
+//$array = unserialize("a:0:{}");
+////array_push($array, 3);
+//
+//die(print_r(count($array)));
+
 $page->renderFavrRequestForm($_SESSION['user_info'], $_SESSION['filter_marketplace_by'], $_SESSION['orient_marketplace_by'], $_SESSION['limit_marketplace_by']);
 ?>
 <div class="zoom">
@@ -135,11 +140,13 @@ $page->addScript("
         $('.request-favr-mobile').hide();
         $('#request-favr-web').click(function() {
             $('.request-favr-mobile').toggle();
+            $('.request-favr-mobile').focus();
         });
         
         $('.request-favr').click(function() {
             $('.request-favr-mobile').toggle();
             $('.zoom-fab').toggle();
+            $('.request-favr-mobile').focus();
         });
     } );
     
