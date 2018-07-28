@@ -20,19 +20,19 @@ class Web_Page
      * Data source name
      * @var string
      */
-    public $dsn = 'mysql:dbname=local_favr;host=localhost';
+    public $dsn = 'mysql:dbname=local_favr;host=favr.cgfeyejwt7qv.us-east-2.rds.amazonaws.com';
 
     /**
      * Backend username
      * @var string
      */
-    public $username = 'haron';
+    public $username = 'Solomon04';
 
     /**
      * Backend password
      * @var string
      */
-    public $password = 'Ha7780703';
+    public $password = 'Nomolos.99';
 
     /**
      * String value to keep track and validate product version
@@ -44,7 +44,7 @@ class Web_Page
      * value to determine project root path
      * @var string
      */
-    public $root_path = "http://localhost/favr-pwa";
+    public $root_path = "https://askfavr.com/favr-pwa";
 
     /**
      * Boolean to determine whether or not to render page main navigation/menu

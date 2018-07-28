@@ -2,10 +2,6 @@
 <project version="4">
   <component name="ChangeListManager">
     <list default="true" id="3a16668b-218a-4ebf-810d-5852cbb6f97c" name="Default" comment="">
-      <change beforePath="$PROJECT_DIR$/.idea/dataSources/8f6a7b9e-6d4d-4558-8e2b-bff664179da2.xml" afterPath="$PROJECT_DIR$/.idea/dataSources/8f6a7b9e-6d4d-4558-8e2b-bff664179da2.xml" />
-      <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" afterPath="$PROJECT_DIR$/.idea/workspace.xml" />
-      <change beforePath="$PROJECT_DIR$/components/notifications/index.php" afterPath="$PROJECT_DIR$/components/notifications/index.php" />
-      <change beforePath="$PROJECT_DIR$/home/index.php" afterPath="$PROJECT_DIR$/home/index.php" />
       <change beforePath="$PROJECT_DIR$/libraries/Web/Page.php" afterPath="$PROJECT_DIR$/libraries/Web/Page.php" />
     </list>
     <option name="EXCLUDED_CONVERTED_TO_IGNORED" value="true" />
@@ -49,18 +45,18 @@
   </component>
   <component name="FileEditorManager">
     <leaf>
-      <file leaf-file-name="Page.php" pinned="false" current-in-tab="false">
+      <file leaf-file-name="Page.php" pinned="false" current-in-tab="true">
         <entry file="file://$PROJECT_DIR$/libraries/Web/Page.php">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="437">
-              <caret line="1626" column="13" lean-forward="false" selection-start-line="1626" selection-start-column="13" selection-end-line="1626" selection-end-column="13" />
+            <state relative-caret-position="292">
+              <caret line="46" column="44" lean-forward="false" selection-start-line="46" selection-start-column="44" selection-end-line="46" selection-end-column="44" />
               <folding>
                 <element signature="e#6#117#0#PHP" expanded="true" />
                 <element signature="n#__construct#0;n#Web_Page#0;n#!!top" expanded="false" />
                 <element signature="n#connect#0;n#Web_Page#0;n#!!top" expanded="false" />
                 <element signature="n#signOutUser#0;n#Web_Page#0;n#!!top" expanded="false" />
                 <element signature="n#signInUser#0;n#Web_Page#0;n#!!top" expanded="false" />
-                <element signature="e#7102#7137#0#PHP" expanded="false" />
+                <element signature="e#7146#7181#0#PHP" expanded="false" />
                 <element signature="n#signUpUser#0;n#Web_Page#0;n#!!top" expanded="false" />
                 <element signature="n#setTitle#0;n#Web_Page#0;n#!!top" expanded="false" />
                 <element signature="n#setPermissions#0;n#Web_Page#0;n#!!top" expanded="false" />
@@ -68,72 +64,120 @@
                 <element signature="n#addStylesheet#0;n#Web_Page#0;n#!!top" expanded="false" />
                 <element signature="n#addScript#0;n#Web_Page#0;n#!!top" expanded="false" />
                 <element signature="n#renderHeader#0;n#Web_Page#0;n#!!top" expanded="false" />
-                <element signature="e#18035#18059#0#HTML" expanded="true" />
+                <element signature="e#18079#18103#0#HTML" expanded="true" />
                 <element signature="n#renderFavrProfileHistory#0;n#Web_Page#0;n#!!top" expanded="false" />
                 <element signature="n#renderFavrProfile#0;n#Web_Page#0;n#!!top" expanded="false" />
                 <element signature="n#renderMainNavigation#0;n#Web_Page#0;n#!!top" expanded="false" />
-                <element signature="e#32080#32114#0#HTML" expanded="true" />
-                <element signature="e#32230#32264#0#HTML" expanded="true" />
+                <element signature="e#32124#32158#0#HTML" expanded="true" />
+                <element signature="e#32274#32308#0#HTML" expanded="true" />
                 <element signature="n#renderNotificationCount#0;n#Web_Page#0;n#!!top" expanded="false" />
                 <element signature="n#renderMainNotifications#0;n#Web_Page#0;n#!!top" expanded="false" />
                 <element signature="n#renderFavrRequestForm#0;n#Web_Page#0;n#!!top" expanded="false" />
-                <element signature="e#42925#43635#0#HTML" expanded="true" />
-                <element signature="e#47711#47738#0#HTML" expanded="true" />
-                <element signature="e#47977#48011#0#HTML" expanded="true" />
+                <element signature="e#42969#43679#0#HTML" expanded="true" />
+                <element signature="e#47755#47782#0#HTML" expanded="true" />
+                <element signature="e#48021#48055#0#HTML" expanded="true" />
                 <element signature="n#renderFooter#0;n#Web_Page#0;n#!!top" expanded="false" />
-                <element signature="e#65959#66016#0#HTML" expanded="true" />
+                <element signature="e#66003#66060#0#HTML" expanded="true" />
                 <element signature="n#processCompleteRequest#0;n#Web_Page#0;n#!!top" expanded="false" />
                 <element signature="n#processDeleteRequest#0;n#Web_Page#0;n#!!top" expanded="false" />
                 <element signature="n#processNotifications#0;n#Web_Page#0;n#!!top" expanded="false" />
-                <marker date="1532793302811" expanded="true" signature="49676:50148" ph="SELECT *, mf... marketplace_favr_requests" />
-                <marker date="1532793302811" expanded="true" signature="50348:50617" ph="SELECT *, mf... marketplace_favr_requests" />
-                <marker date="1532793302811" expanded="true" signature="50348:50767" ph="SELECT *, mf... marketplace_favr_requests" />
-                <marker date="1532793302811" expanded="true" signature="52910:54037" ph="..." />
-                <marker date="1532793302811" expanded="true" signature="52984:54037" ph="..." />
-                <marker date="1532793302811" expanded="true" signature="53025:53729" ph="data:" />
-                <marker date="1532793302811" expanded="true" signature="53731:53819" ph="..." />
-                <marker date="1532793302811" expanded="true" signature="53864:53878" ph="..." />
-                <marker date="1532793302811" expanded="true" signature="53918:54008" ph="..." />
-                <marker date="1532793302811" expanded="true" signature="54364:54375" ph="..." />
-                <marker date="1532793302811" expanded="true" signature="54602:54613" ph="..." />
-                <marker date="1532793302811" expanded="true" signature="54843:54854" ph="..." />
-                <marker date="1532793302811" expanded="true" signature="55105:55141" ph="..." />
-                <marker date="1532793302811" expanded="true" signature="55280:55317" ph="..." />
-                <marker date="1532793302811" expanded="true" signature="55431:56719" ph="..." />
-                <marker date="1532793302811" expanded="true" signature="55479:56358" ph="..." />
-                <marker date="1532793302811" expanded="true" signature="55569:55927" ph="..." />
-                <marker date="1532793302811" expanded="true" signature="55724:55927" ph="..." />
-                <marker date="1532793302811" expanded="true" signature="56096:56319" ph="..." />
-                <marker date="1532793302811" expanded="true" signature="56448:56719" ph="..." />
-                <marker date="1532793302811" expanded="true" signature="56851:57867" ph="..." />
-                <marker date="1532793302811" expanded="true" signature="56981:57685" ph="data:" />
-                <marker date="1532793302811" expanded="true" signature="57686:57828" ph="..." />
-                <marker date="1532793302811" expanded="true" signature="57999:59015" ph="..." />
-                <marker date="1532793302811" expanded="true" signature="58129:58833" ph="data:" />
-                <marker date="1532793302811" expanded="true" signature="58834:58976" ph="..." />
-                <marker date="1532793302811" expanded="true" signature="59147:60159" ph="..." />
-                <marker date="1532793302811" expanded="true" signature="59277:59981" ph="data:" />
-                <marker date="1532793302811" expanded="true" signature="59982:60120" ph="..." />
-                <marker date="1532793302811" expanded="true" signature="60295:61338" ph="..." />
-                <marker date="1532793302811" expanded="true" signature="60357:61338" ph="..." />
-                <marker date="1532793302811" expanded="true" signature="60429:61338" ph="..." />
-                <marker date="1532793302811" expanded="true" signature="60523:61338" ph="..." />
-                <marker date="1532793302811" expanded="true" signature="60576:60591" ph="..." />
-                <marker date="1532793302811" expanded="true" signature="62018:62755" ph="..." />
-                <marker date="1532793302811" expanded="true" signature="62071:62086" ph="..." />
-                <marker date="1532793302811" expanded="true" signature="63611:63651" ph="..." />
-                <marker date="1532793302811" expanded="true" signature="64482:64527" ph="..." />
-                <marker date="1532793302811" expanded="true" signature="64989:65040" ph="..." />
-                <marker date="1532793302811" expanded="true" signature="65248:65295" ph="..." />
-                <marker date="1532793302811" expanded="true" signature="70348:71419" ph="INSERT INTO `marketplace_favr_requests`... " />
-                <marker date="1532793302811" expanded="true" signature="71787:72653" ph="SELECT id FR... marketplace_favr_requests" />
-                <marker date="1532793302811" expanded="true" signature="76344:76592" ph="UPDATE marketplace_favr_requests... " />
-                <marker date="1532793302811" expanded="true" signature="78885:79029" ph="SELECT freel... marketplace_favr_requests" />
-                <marker date="1532793302811" expanded="true" signature="79776:79908" ph="UPDATE marketplace_favr_requests... " />
-                <marker date="1532793302811" expanded="true" signature="81232:81471" ph="/** * Proces... " />
-                <marker date="1532793302811" expanded="true" signature="85084:85207" ph="SELECT * FRO... marketplace_favr_requests" />
-                <marker date="1532793302811" expanded="true" signature="85084:85222" ph="SELECT * FRO... marketplace_favr_requests" />
-                <marker date="1532793302811" expanded="true" signature="86859:87105" ph="UPDATE marketplace_favr_requests... " />
+                <marker date="1532799133013" expanded="true" signature="8521:8770" ph="SELECT * FRO... users" />
+                <marker date="1532799133013" expanded="true" signature="9847:10462" ph="INSERT INTO users... " />
+                <marker date="1532799133013" expanded="true" signature="11703:11790" ph="SELECT * FRO... users" />
+                <marker date="1532799133013" expanded="true" signature="18537:19050" ph="SELECT *, mf... marketplace_favr_requests" />
+                <marker date="1532799133013" expanded="true" signature="20325:20689" ph="..." />
+                <marker date="1532799133013" expanded="true" signature="20399:20689" ph="..." />
+                <marker date="1532799133013" expanded="true" signature="20578:20592" ph="..." />
+                <marker date="1532799133013" expanded="true" signature="20811:20830" ph="..." />
+                <marker date="1532799133013" expanded="true" signature="20977:20994" ph="..." />
+                <marker date="1532799133013" expanded="true" signature="21135:21632" ph="..." />
+                <marker date="1532799133013" expanded="true" signature="21187:21632" ph="..." />
+                <marker date="1532799133013" expanded="true" signature="21277:21368" ph="..." />
+                <marker date="1532799133013" expanded="true" signature="21445:21632" ph="..." />
+                <marker date="1532799133013" expanded="true" signature="21511:21632" ph="..." />
+                <marker date="1532799133013" expanded="true" signature="21587:21632" ph="..." />
+                <marker date="1532799133013" expanded="true" signature="22544:22591" ph="..." />
+                <marker date="1532799133013" expanded="true" signature="22933:22980" ph="..." />
+                <marker date="1532799133013" expanded="true" signature="23251:23345" ph="..." />
+                <marker date="1532799133013" expanded="true" signature="26449:26474" ph="..." />
+                <marker date="1532799133013" expanded="true" signature="27334:27383" ph="..." />
+                <marker date="1532799133013" expanded="true" signature="27590:27773" ph="..." />
+                <marker date="1532799133013" expanded="true" signature="27665:27714" ph="..." />
+                <marker date="1532799133013" expanded="true" signature="34954:35034" ph="..." />
+                <marker date="1532799133013" expanded="true" signature="35158:35220" ph="..." />
+                <marker date="1532799133013" expanded="true" signature="35721:35802" ph="..." />
+                <marker date="1532799133013" expanded="true" signature="35927:35990" ph="..." />
+                <marker date="1532799133013" expanded="true" signature="36499:36580" ph="..." />
+                <marker date="1532799133013" expanded="true" signature="36710:36773" ph="..." />
+                <marker date="1532799133013" expanded="true" signature="37543:37555" ph="..." />
+                <marker date="1532799133013" expanded="true" signature="37973:38388" ph="SELECT * FRO... marketplace_favr_requests" />
+                <marker date="1532799133013" expanded="true" signature="39359:39748" ph="..." />
+                <marker date="1532799133013" expanded="true" signature="39437:39748" ph="..." />
+                <marker date="1532799133013" expanded="true" signature="39624:39638" ph="..." />
+                <marker date="1532799133013" expanded="true" signature="39866:39885" ph="..." />
+                <marker date="1532799133013" expanded="true" signature="40028:40045" ph="..." />
+                <marker date="1532799133013" expanded="true" signature="40178:41762" ph="..." />
+                <marker date="1532799133013" expanded="true" signature="40230:41731" ph="..." />
+                <marker date="1532799133013" expanded="true" signature="40320:40357" ph="..." />
+                <marker date="1532799133013" expanded="true" signature="40639:41696" ph="..." />
+                <marker date="1532799133013" expanded="true" signature="40705:41657" ph="..." />
+                <marker date="1532799133013" expanded="true" signature="40781:41437" ph="..." />
+                <marker date="1532799133013" expanded="true" signature="41041:41105" ph="..." />
+                <marker date="1532799133013" expanded="true" signature="41323:41390" ph="..." />
+                <marker date="1532799133013" expanded="true" signature="41512:41614" ph="..." />
+                <marker date="1532799133013" expanded="true" signature="49720:50192" ph="SELECT *, mf... marketplace_favr_requests" />
+                <marker date="1532799133013" expanded="true" signature="50392:50661" ph="SELECT *, mf... marketplace_favr_requests" />
+                <marker date="1532799133013" expanded="true" signature="50392:50811" ph="SELECT *, mf... marketplace_favr_requests" />
+                <marker date="1532799133013" expanded="true" signature="52954:54081" ph="..." />
+                <marker date="1532799133013" expanded="true" signature="53028:54081" ph="..." />
+                <marker date="1532799133013" expanded="true" signature="53069:53773" ph="data:" />
+                <marker date="1532799133013" expanded="true" signature="53775:53863" ph="..." />
+                <marker date="1532799133013" expanded="true" signature="53908:53922" ph="..." />
+                <marker date="1532799133013" expanded="true" signature="53962:54052" ph="..." />
+                <marker date="1532799133013" expanded="true" signature="54408:54419" ph="..." />
+                <marker date="1532799133013" expanded="true" signature="54646:54657" ph="..." />
+                <marker date="1532799133013" expanded="true" signature="54887:54898" ph="..." />
+                <marker date="1532799133013" expanded="true" signature="55149:55185" ph="..." />
+                <marker date="1532799133013" expanded="true" signature="55324:55361" ph="..." />
+                <marker date="1532799133013" expanded="true" signature="55475:56763" ph="..." />
+                <marker date="1532799133013" expanded="true" signature="55523:56402" ph="..." />
+                <marker date="1532799133013" expanded="true" signature="55613:55971" ph="..." />
+                <marker date="1532799133013" expanded="true" signature="55768:55971" ph="..." />
+                <marker date="1532799133013" expanded="true" signature="56140:56363" ph="..." />
+                <marker date="1532799133013" expanded="true" signature="56492:56763" ph="..." />
+                <marker date="1532799133013" expanded="true" signature="56895:57911" ph="..." />
+                <marker date="1532799133013" expanded="true" signature="57025:57729" ph="data:" />
+                <marker date="1532799133013" expanded="true" signature="57730:57872" ph="..." />
+                <marker date="1532799133013" expanded="true" signature="58043:59059" ph="..." />
+                <marker date="1532799133013" expanded="true" signature="58173:58877" ph="data:" />
+                <marker date="1532799133013" expanded="true" signature="58878:59020" ph="..." />
+                <marker date="1532799133013" expanded="true" signature="59191:60203" ph="..." />
+                <marker date="1532799133013" expanded="true" signature="59321:60025" ph="data:" />
+                <marker date="1532799133013" expanded="true" signature="60026:60164" ph="..." />
+                <marker date="1532799133013" expanded="true" signature="60339:61382" ph="..." />
+                <marker date="1532799133013" expanded="true" signature="60401:61382" ph="..." />
+                <marker date="1532799133013" expanded="true" signature="60473:61382" ph="..." />
+                <marker date="1532799133013" expanded="true" signature="60567:61382" ph="..." />
+                <marker date="1532799133013" expanded="true" signature="60620:60635" ph="..." />
+                <marker date="1532799133013" expanded="true" signature="62062:62799" ph="..." />
+                <marker date="1532799133013" expanded="true" signature="62115:62130" ph="..." />
+                <marker date="1532799133013" expanded="true" signature="63655:63695" ph="..." />
+                <marker date="1532799133013" expanded="true" signature="64526:64571" ph="..." />
+                <marker date="1532799133013" expanded="true" signature="65033:65084" ph="..." />
+                <marker date="1532799133013" expanded="true" signature="65292:65339" ph="..." />
+                <marker date="1532799133013" expanded="true" signature="70392:71463" ph="INSERT INTO `marketplace_favr_requests`... " />
+                <marker date="1532799133013" expanded="true" signature="71831:72697" ph="SELECT id FR... marketplace_favr_requests" />
+                <marker date="1532799133013" expanded="true" signature="76388:76636" ph="UPDATE marketplace_favr_requests... " />
+                <marker date="1532799133013" expanded="true" signature="78929:79073" ph="SELECT freel... marketplace_favr_requests" />
+                <marker date="1532799133013" expanded="true" signature="79820:79952" ph="UPDATE marketplace_favr_requests... " />
+                <marker date="1532799133013" expanded="true" signature="80614:80917" ph="UPDATE marketplace_favr_requests... " />
+                <marker date="1532799133013" expanded="true" signature="81276:81515" ph="/** * Proces... " />
+                <marker date="1532799133013" expanded="true" signature="81693:81899" ph="SELECT * FRO... marketplace_favr_requests" />
+                <marker date="1532799133013" expanded="true" signature="83998:84165" ph="DELETE FROM marketplace_favr_requests... " />
+                <marker date="1532799133013" expanded="true" signature="85128:85251" ph="SELECT * FRO... marketplace_favr_requests" />
+                <marker date="1532799133013" expanded="true" signature="85128:85266" ph="SELECT * FRO... marketplace_favr_requests" />
+                <marker date="1532799133013" expanded="true" signature="86903:87149" ph="UPDATE marketplace_favr_requests... " />
+                <marker date="1532799133013" expanded="true" signature="87799:88220" ph="SELECT COUNT... marketplace_favr_requests" />
               </folding>
             </state>
           </provider>
@@ -148,7 +192,7 @@
           </provider>
         </entry>
       </file>
-      <file leaf-file-name="marketplace_favr_requests" pinned="false" current-in-tab="true">
+      <file leaf-file-name="marketplace_favr_requests" pinned="false" current-in-tab="false">
         <entry file="das://src:table:/e8adb104/8f6a7b9e-6d4d-4558-8e2b-bff664179da2/local_favr.marketplace_favr_requests">
           <provider selected="true" editor-type-id="text-editor">
             <state relative-caret-position="225">
@@ -390,9 +434,9 @@
         <option value="$PROJECT_DIR$/image.php" />
         <option value="$PROJECT_DIR$/home/index.php" />
         <option value="$PROJECT_DIR$/components/notifications/index.php" />
-        <option value="$PROJECT_DIR$/libraries/Web/Page.php" />
         <option value="src:table:/e8adb104/8f6a7b9e-6d4d-4558-8e2b-bff664179da2/local_favr.users" />
         <option value="src:table:/e8adb104/8f6a7b9e-6d4d-4558-8e2b-bff664179da2/local_favr.marketplace_favr_requests" />
+        <option value="$PROJECT_DIR$/libraries/Web/Page.php" />
       </list>
     </option>
   </component>
@@ -544,7 +588,7 @@
       <option name="presentableId" value="Default" />
       <updated>1530572773461</updated>
       <workItem from="1530572776384" duration="52228000" />
-      <workItem from="1531357098908" duration="218909000" />
+      <workItem from="1531357098908" duration="219334000" />
     </task>
     <servers />
   </component>
@@ -581,7 +625,7 @@
     </history-entry>
   </component>
   <component name="TimeTrackingManager">
-    <option name="totallyTimeSpent" value="271137000" />
+    <option name="totallyTimeSpent" value="271562000" />
   </component>
   <component name="ToolWindowManager">
     <frame x="0" y="0" width="1440" height="900" extended-state="0" />
@@ -1108,94 +1152,6 @@
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/libraries/Web/Page.php">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="437">
-          <caret line="1626" column="13" lean-forward="false" selection-start-line="1626" selection-start-column="13" selection-end-line="1626" selection-end-column="13" />
-          <folding>
-            <element signature="e#6#117#0#PHP" expanded="true" />
-            <element signature="n#__construct#0;n#Web_Page#0;n#!!top" expanded="false" />
-            <element signature="n#connect#0;n#Web_Page#0;n#!!top" expanded="false" />
-            <element signature="n#signOutUser#0;n#Web_Page#0;n#!!top" expanded="false" />
-            <element signature="n#signInUser#0;n#Web_Page#0;n#!!top" expanded="false" />
-            <element signature="e#7102#7137#0#PHP" expanded="false" />
-            <element signature="n#signUpUser#0;n#Web_Page#0;n#!!top" expanded="false" />
-            <element signature="n#setTitle#0;n#Web_Page#0;n#!!top" expanded="false" />
-            <element signature="n#setPermissions#0;n#Web_Page#0;n#!!top" expanded="false" />
-            <element signature="n#getUserInfo#0;n#Web_Page#0;n#!!top" expanded="false" />
-            <element signature="n#addStylesheet#0;n#Web_Page#0;n#!!top" expanded="false" />
-            <element signature="n#addScript#0;n#Web_Page#0;n#!!top" expanded="false" />
-            <element signature="n#renderHeader#0;n#Web_Page#0;n#!!top" expanded="false" />
-            <element signature="e#18035#18059#0#HTML" expanded="true" />
-            <element signature="n#renderFavrProfileHistory#0;n#Web_Page#0;n#!!top" expanded="false" />
-            <element signature="n#renderFavrProfile#0;n#Web_Page#0;n#!!top" expanded="false" />
-            <element signature="n#renderMainNavigation#0;n#Web_Page#0;n#!!top" expanded="false" />
-            <element signature="e#32080#32114#0#HTML" expanded="true" />
-            <element signature="e#32230#32264#0#HTML" expanded="true" />
-            <element signature="n#renderNotificationCount#0;n#Web_Page#0;n#!!top" expanded="false" />
-            <element signature="n#renderMainNotifications#0;n#Web_Page#0;n#!!top" expanded="false" />
-            <element signature="n#renderFavrRequestForm#0;n#Web_Page#0;n#!!top" expanded="false" />
-            <element signature="e#42925#43635#0#HTML" expanded="true" />
-            <element signature="e#47711#47738#0#HTML" expanded="true" />
-            <element signature="e#47977#48011#0#HTML" expanded="true" />
-            <element signature="n#renderFooter#0;n#Web_Page#0;n#!!top" expanded="false" />
-            <element signature="e#65959#66016#0#HTML" expanded="true" />
-            <element signature="n#processCompleteRequest#0;n#Web_Page#0;n#!!top" expanded="false" />
-            <element signature="n#processDeleteRequest#0;n#Web_Page#0;n#!!top" expanded="false" />
-            <element signature="n#processNotifications#0;n#Web_Page#0;n#!!top" expanded="false" />
-            <marker date="1532793302811" expanded="true" signature="49676:50148" ph="SELECT *, mf... marketplace_favr_requests" />
-            <marker date="1532793302811" expanded="true" signature="50348:50617" ph="SELECT *, mf... marketplace_favr_requests" />
-            <marker date="1532793302811" expanded="true" signature="50348:50767" ph="SELECT *, mf... marketplace_favr_requests" />
-            <marker date="1532793302811" expanded="true" signature="52910:54037" ph="..." />
-            <marker date="1532793302811" expanded="true" signature="52984:54037" ph="..." />
-            <marker date="1532793302811" expanded="true" signature="53025:53729" ph="data:" />
-            <marker date="1532793302811" expanded="true" signature="53731:53819" ph="..." />
-            <marker date="1532793302811" expanded="true" signature="53864:53878" ph="..." />
-            <marker date="1532793302811" expanded="true" signature="53918:54008" ph="..." />
-            <marker date="1532793302811" expanded="true" signature="54364:54375" ph="..." />
-            <marker date="1532793302811" expanded="true" signature="54602:54613" ph="..." />
-            <marker date="1532793302811" expanded="true" signature="54843:54854" ph="..." />
-            <marker date="1532793302811" expanded="true" signature="55105:55141" ph="..." />
-            <marker date="1532793302811" expanded="true" signature="55280:55317" ph="..." />
-            <marker date="1532793302811" expanded="true" signature="55431:56719" ph="..." />
-            <marker date="1532793302811" expanded="true" signature="55479:56358" ph="..." />
-            <marker date="1532793302811" expanded="true" signature="55569:55927" ph="..." />
-            <marker date="1532793302811" expanded="true" signature="55724:55927" ph="..." />
-            <marker date="1532793302811" expanded="true" signature="56096:56319" ph="..." />
-            <marker date="1532793302811" expanded="true" signature="56448:56719" ph="..." />
-            <marker date="1532793302811" expanded="true" signature="56851:57867" ph="..." />
-            <marker date="1532793302811" expanded="true" signature="56981:57685" ph="data:" />
-            <marker date="1532793302811" expanded="true" signature="57686:57828" ph="..." />
-            <marker date="1532793302811" expanded="true" signature="57999:59015" ph="..." />
-            <marker date="1532793302811" expanded="true" signature="58129:58833" ph="data:" />
-            <marker date="1532793302811" expanded="true" signature="58834:58976" ph="..." />
-            <marker date="1532793302811" expanded="true" signature="59147:60159" ph="..." />
-            <marker date="1532793302811" expanded="true" signature="59277:59981" ph="data:" />
-            <marker date="1532793302811" expanded="true" signature="59982:60120" ph="..." />
-            <marker date="1532793302811" expanded="true" signature="60295:61338" ph="..." />
-            <marker date="1532793302811" expanded="true" signature="60357:61338" ph="..." />
-            <marker date="1532793302811" expanded="true" signature="60429:61338" ph="..." />
-            <marker date="1532793302811" expanded="true" signature="60523:61338" ph="..." />
-            <marker date="1532793302811" expanded="true" signature="60576:60591" ph="..." />
-            <marker date="1532793302811" expanded="true" signature="62018:62755" ph="..." />
-            <marker date="1532793302811" expanded="true" signature="62071:62086" ph="..." />
-            <marker date="1532793302811" expanded="true" signature="63611:63651" ph="..." />
-            <marker date="1532793302811" expanded="true" signature="64482:64527" ph="..." />
-            <marker date="1532793302811" expanded="true" signature="64989:65040" ph="..." />
-            <marker date="1532793302811" expanded="true" signature="65248:65295" ph="..." />
-            <marker date="1532793302811" expanded="true" signature="70348:71419" ph="INSERT INTO `marketplace_favr_requests`... " />
-            <marker date="1532793302811" expanded="true" signature="71787:72653" ph="SELECT id FR... marketplace_favr_requests" />
-            <marker date="1532793302811" expanded="true" signature="76344:76592" ph="UPDATE marketplace_favr_requests... " />
-            <marker date="1532793302811" expanded="true" signature="78885:79029" ph="SELECT freel... marketplace_favr_requests" />
-            <marker date="1532793302811" expanded="true" signature="79776:79908" ph="UPDATE marketplace_favr_requests... " />
-            <marker date="1532793302811" expanded="true" signature="81232:81471" ph="/** * Proces... " />
-            <marker date="1532793302811" expanded="true" signature="85084:85207" ph="SELECT * FRO... marketplace_favr_requests" />
-            <marker date="1532793302811" expanded="true" signature="85084:85222" ph="SELECT * FRO... marketplace_favr_requests" />
-            <marker date="1532793302811" expanded="true" signature="86859:87105" ph="UPDATE marketplace_favr_requests... " />
-          </folding>
-        </state>
-      </provider>
-    </entry>
     <entry file="das://table:/e8adb104/8f6a7b9e-6d4d-4558-8e2b-bff664179da2/local_favr.marketplace_favr_requests">
       <provider selected="true" editor-type-id="com.intellij.database.editor.DatabaseTableFileEditorProvider">
         <state>
@@ -1208,6 +1164,142 @@
         <state relative-caret-position="225">
           <caret line="15" column="96" lean-forward="false" selection-start-line="15" selection-start-column="96" selection-end-line="15" selection-end-column="96" />
           <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/libraries/Web/Page.php">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="292">
+          <caret line="46" column="44" lean-forward="false" selection-start-line="46" selection-start-column="44" selection-end-line="46" selection-end-column="44" />
+          <folding>
+            <element signature="e#6#117#0#PHP" expanded="true" />
+            <element signature="n#__construct#0;n#Web_Page#0;n#!!top" expanded="false" />
+            <element signature="n#connect#0;n#Web_Page#0;n#!!top" expanded="false" />
+            <element signature="n#signOutUser#0;n#Web_Page#0;n#!!top" expanded="false" />
+            <element signature="n#signInUser#0;n#Web_Page#0;n#!!top" expanded="false" />
+            <element signature="e#7146#7181#0#PHP" expanded="false" />
+            <element signature="n#signUpUser#0;n#Web_Page#0;n#!!top" expanded="false" />
+            <element signature="n#setTitle#0;n#Web_Page#0;n#!!top" expanded="false" />
+            <element signature="n#setPermissions#0;n#Web_Page#0;n#!!top" expanded="false" />
+            <element signature="n#getUserInfo#0;n#Web_Page#0;n#!!top" expanded="false" />
+            <element signature="n#addStylesheet#0;n#Web_Page#0;n#!!top" expanded="false" />
+            <element signature="n#addScript#0;n#Web_Page#0;n#!!top" expanded="false" />
+            <element signature="n#renderHeader#0;n#Web_Page#0;n#!!top" expanded="false" />
+            <element signature="e#18079#18103#0#HTML" expanded="true" />
+            <element signature="n#renderFavrProfileHistory#0;n#Web_Page#0;n#!!top" expanded="false" />
+            <element signature="n#renderFavrProfile#0;n#Web_Page#0;n#!!top" expanded="false" />
+            <element signature="n#renderMainNavigation#0;n#Web_Page#0;n#!!top" expanded="false" />
+            <element signature="e#32124#32158#0#HTML" expanded="true" />
+            <element signature="e#32274#32308#0#HTML" expanded="true" />
+            <element signature="n#renderNotificationCount#0;n#Web_Page#0;n#!!top" expanded="false" />
+            <element signature="n#renderMainNotifications#0;n#Web_Page#0;n#!!top" expanded="false" />
+            <element signature="n#renderFavrRequestForm#0;n#Web_Page#0;n#!!top" expanded="false" />
+            <element signature="e#42969#43679#0#HTML" expanded="true" />
+            <element signature="e#47755#47782#0#HTML" expanded="true" />
+            <element signature="e#48021#48055#0#HTML" expanded="true" />
+            <element signature="n#renderFooter#0;n#Web_Page#0;n#!!top" expanded="false" />
+            <element signature="e#66003#66060#0#HTML" expanded="true" />
+            <element signature="n#processCompleteRequest#0;n#Web_Page#0;n#!!top" expanded="false" />
+            <element signature="n#processDeleteRequest#0;n#Web_Page#0;n#!!top" expanded="false" />
+            <element signature="n#processNotifications#0;n#Web_Page#0;n#!!top" expanded="false" />
+            <marker date="1532799133013" expanded="true" signature="8521:8770" ph="SELECT * FRO... users" />
+            <marker date="1532799133013" expanded="true" signature="9847:10462" ph="INSERT INTO users... " />
+            <marker date="1532799133013" expanded="true" signature="11703:11790" ph="SELECT * FRO... users" />
+            <marker date="1532799133013" expanded="true" signature="18537:19050" ph="SELECT *, mf... marketplace_favr_requests" />
+            <marker date="1532799133013" expanded="true" signature="20325:20689" ph="..." />
+            <marker date="1532799133013" expanded="true" signature="20399:20689" ph="..." />
+            <marker date="1532799133013" expanded="true" signature="20578:20592" ph="..." />
+            <marker date="1532799133013" expanded="true" signature="20811:20830" ph="..." />
+            <marker date="1532799133013" expanded="true" signature="20977:20994" ph="..." />
+            <marker date="1532799133013" expanded="true" signature="21135:21632" ph="..." />
+            <marker date="1532799133013" expanded="true" signature="21187:21632" ph="..." />
+            <marker date="1532799133013" expanded="true" signature="21277:21368" ph="..." />
+            <marker date="1532799133013" expanded="true" signature="21445:21632" ph="..." />
+            <marker date="1532799133013" expanded="true" signature="21511:21632" ph="..." />
+            <marker date="1532799133013" expanded="true" signature="21587:21632" ph="..." />
+            <marker date="1532799133013" expanded="true" signature="22544:22591" ph="..." />
+            <marker date="1532799133013" expanded="true" signature="22933:22980" ph="..." />
+            <marker date="1532799133013" expanded="true" signature="23251:23345" ph="..." />
+            <marker date="1532799133013" expanded="true" signature="26449:26474" ph="..." />
+            <marker date="1532799133013" expanded="true" signature="27334:27383" ph="..." />
+            <marker date="1532799133013" expanded="true" signature="27590:27773" ph="..." />
+            <marker date="1532799133013" expanded="true" signature="27665:27714" ph="..." />
+            <marker date="1532799133013" expanded="true" signature="34954:35034" ph="..." />
+            <marker date="1532799133013" expanded="true" signature="35158:35220" ph="..." />
+            <marker date="1532799133013" expanded="true" signature="35721:35802" ph="..." />
+            <marker date="1532799133013" expanded="true" signature="35927:35990" ph="..." />
+            <marker date="1532799133013" expanded="true" signature="36499:36580" ph="..." />
+            <marker date="1532799133013" expanded="true" signature="36710:36773" ph="..." />
+            <marker date="1532799133013" expanded="true" signature="37543:37555" ph="..." />
+            <marker date="1532799133013" expanded="true" signature="37973:38388" ph="SELECT * FRO... marketplace_favr_requests" />
+            <marker date="1532799133013" expanded="true" signature="39359:39748" ph="..." />
+            <marker date="1532799133013" expanded="true" signature="39437:39748" ph="..." />
+            <marker date="1532799133013" expanded="true" signature="39624:39638" ph="..." />
+            <marker date="1532799133013" expanded="true" signature="39866:39885" ph="..." />
+            <marker date="1532799133013" expanded="true" signature="40028:40045" ph="..." />
+            <marker date="1532799133013" expanded="true" signature="40178:41762" ph="..." />
+            <marker date="1532799133013" expanded="true" signature="40230:41731" ph="..." />
+            <marker date="1532799133013" expanded="true" signature="40320:40357" ph="..." />
+            <marker date="1532799133013" expanded="true" signature="40639:41696" ph="..." />
+            <marker date="1532799133013" expanded="true" signature="40705:41657" ph="..." />
+            <marker date="1532799133013" expanded="true" signature="40781:41437" ph="..." />
+            <marker date="1532799133013" expanded="true" signature="41041:41105" ph="..." />
+            <marker date="1532799133013" expanded="true" signature="41323:41390" ph="..." />
+            <marker date="1532799133013" expanded="true" signature="41512:41614" ph="..." />
+            <marker date="1532799133013" expanded="true" signature="49720:50192" ph="SELECT *, mf... marketplace_favr_requests" />
+            <marker date="1532799133013" expanded="true" signature="50392:50661" ph="SELECT *, mf... marketplace_favr_requests" />
+            <marker date="1532799133013" expanded="true" signature="50392:50811" ph="SELECT *, mf... marketplace_favr_requests" />
+            <marker date="1532799133013" expanded="true" signature="52954:54081" ph="..." />
+            <marker date="1532799133013" expanded="true" signature="53028:54081" ph="..." />
+            <marker date="1532799133013" expanded="true" signature="53069:53773" ph="data:" />
+            <marker date="1532799133013" expanded="true" signature="53775:53863" ph="..." />
+            <marker date="1532799133013" expanded="true" signature="53908:53922" ph="..." />
+            <marker date="1532799133013" expanded="true" signature="53962:54052" ph="..." />
+            <marker date="1532799133013" expanded="true" signature="54408:54419" ph="..." />
+            <marker date="1532799133013" expanded="true" signature="54646:54657" ph="..." />
+            <marker date="1532799133013" expanded="true" signature="54887:54898" ph="..." />
+            <marker date="1532799133013" expanded="true" signature="55149:55185" ph="..." />
+            <marker date="1532799133013" expanded="true" signature="55324:55361" ph="..." />
+            <marker date="1532799133013" expanded="true" signature="55475:56763" ph="..." />
+            <marker date="1532799133013" expanded="true" signature="55523:56402" ph="..." />
+            <marker date="1532799133013" expanded="true" signature="55613:55971" ph="..." />
+            <marker date="1532799133013" expanded="true" signature="55768:55971" ph="..." />
+            <marker date="1532799133013" expanded="true" signature="56140:56363" ph="..." />
+            <marker date="1532799133013" expanded="true" signature="56492:56763" ph="..." />
+            <marker date="1532799133013" expanded="true" signature="56895:57911" ph="..." />
+            <marker date="1532799133013" expanded="true" signature="57025:57729" ph="data:" />
+            <marker date="1532799133013" expanded="true" signature="57730:57872" ph="..." />
+            <marker date="1532799133013" expanded="true" signature="58043:59059" ph="..." />
+            <marker date="1532799133013" expanded="true" signature="58173:58877" ph="data:" />
+            <marker date="1532799133013" expanded="true" signature="58878:59020" ph="..." />
+            <marker date="1532799133013" expanded="true" signature="59191:60203" ph="..." />
+            <marker date="1532799133013" expanded="true" signature="59321:60025" ph="data:" />
+            <marker date="1532799133013" expanded="true" signature="60026:60164" ph="..." />
+            <marker date="1532799133013" expanded="true" signature="60339:61382" ph="..." />
+            <marker date="1532799133013" expanded="true" signature="60401:61382" ph="..." />
+            <marker date="1532799133013" expanded="true" signature="60473:61382" ph="..." />
+            <marker date="1532799133013" expanded="true" signature="60567:61382" ph="..." />
+            <marker date="1532799133013" expanded="true" signature="60620:60635" ph="..." />
+            <marker date="1532799133013" expanded="true" signature="62062:62799" ph="..." />
+            <marker date="1532799133013" expanded="true" signature="62115:62130" ph="..." />
+            <marker date="1532799133013" expanded="true" signature="63655:63695" ph="..." />
+            <marker date="1532799133013" expanded="true" signature="64526:64571" ph="..." />
+            <marker date="1532799133013" expanded="true" signature="65033:65084" ph="..." />
+            <marker date="1532799133013" expanded="true" signature="65292:65339" ph="..." />
+            <marker date="1532799133013" expanded="true" signature="70392:71463" ph="INSERT INTO `marketplace_favr_requests`... " />
+            <marker date="1532799133013" expanded="true" signature="71831:72697" ph="SELECT id FR... marketplace_favr_requests" />
+            <marker date="1532799133013" expanded="true" signature="76388:76636" ph="UPDATE marketplace_favr_requests... " />
+            <marker date="1532799133013" expanded="true" signature="78929:79073" ph="SELECT freel... marketplace_favr_requests" />
+            <marker date="1532799133013" expanded="true" signature="79820:79952" ph="UPDATE marketplace_favr_requests... " />
+            <marker date="1532799133013" expanded="true" signature="80614:80917" ph="UPDATE marketplace_favr_requests... " />
+            <marker date="1532799133013" expanded="true" signature="81276:81515" ph="/** * Proces... " />
+            <marker date="1532799133013" expanded="true" signature="81693:81899" ph="SELECT * FRO... marketplace_favr_requests" />
+            <marker date="1532799133013" expanded="true" signature="83998:84165" ph="DELETE FROM marketplace_favr_requests... " />
+            <marker date="1532799133013" expanded="true" signature="85128:85251" ph="SELECT * FRO... marketplace_favr_requests" />
+            <marker date="1532799133013" expanded="true" signature="85128:85266" ph="SELECT * FRO... marketplace_favr_requests" />
+            <marker date="1532799133013" expanded="true" signature="86903:87149" ph="UPDATE marketplace_favr_requests... " />
+            <marker date="1532799133013" expanded="true" signature="87799:88220" ph="SELECT COUNT... marketplace_favr_requests" />
+          </folding>
         </state>
       </provider>
     </entry>
