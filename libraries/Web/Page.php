@@ -130,7 +130,7 @@ class Web_Page
             $_SESSION['user_info'] = array(
                 "id" => '-1'
             );
-            header("Location: http://" . $_SERVER['HTTP_HOST'] . "/favr-pwa/signin/");
+            header("Location: https://askfavr.com/favr-pwa/signin/");
         } else {
             // permitted user
             if (empty($_SESSION['user_info'])) {
