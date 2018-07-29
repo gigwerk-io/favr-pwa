@@ -20,19 +20,19 @@ class Web_Page
      * Data source name
      * @var string
      */
-    public $dsn = 'mysql:dbname=local_favr;host=favr.cgfeyejwt7qv.us-east-2.rds.amazonaws.com';
+    public $dsn = 'mysql:dbname=local_favr;host=localhost';
 
     /**
      * Backend username
      * @var string
      */
-    public $username = 'Solomon04';
+    public $username = 'haron';
 
     /**
      * Backend password
      * @var string
      */
-    public $password = 'Nomolos.99';
+    public $password = 'Ha7780703';
 
     /**
      * String value to keep track and validate product version
@@ -44,7 +44,7 @@ class Web_Page
      * value to determine project root path
      * @var string
      */
-    public $root_path = "https://askfavr.com/favr-pwa";
+    public $root_path = "http://localhost/favr-pwa";
 
     /**
      * Boolean to determine whether or not to render page main navigation/menu
@@ -499,8 +499,7 @@ class Web_Page
         </head>
 
         <body class="bg-light" onload="pageLoader()">
-
-        <div id="loader"></div>
+            <div id="loader"></div>
 
         <?php
         $this->renderMainNavigation($this->page_id, $render_top_nav);
@@ -821,6 +820,7 @@ class Web_Page
                                 Sign out
                             </a>
                         </li>
+                        <div class="mobile-footer p-1 ml-1 text-white fixed-bottom small">&copy;2018 FAVR, Inc v<?php echo $this->product_version; ?> Beta</div>
                     </ul>
                 </div>
             </nav>
@@ -1321,7 +1321,7 @@ class Web_Page
                         }
 
                         if ($freelancerAccepted) {
-                            echo "<a class='text-danger' href='$this->root_path/components/notifications/?navbar=active_notifications&withdraw_request_id=$task_id&freelancer_id=$freelancer_id&ALERT_MESSAGE='>
+                            echo "<a class='text-danger' href=\"$this->root_path/components/notifications/?navbar=active_notifications&withdraw_request_id=$task_id&freelancer_id=$freelancer_id&ALERT_MESSAGE=You've withdrawn from this task: the customer has been notified!\">
                                 Withdraw</a>";
                         } else {
                             echo "<a href=\"$this->root_path/components/notifications/?navbar=active_notifications&accept_request_id=$task_id&ALERT_MESSAGE=You've signed up to take this task! The task requester has been notified of your interest and is reviewing your offer to help: they can accept or reject your offer to help! You'll be notified of their decision; you can withdraw your offer to help before they decide. \">
@@ -1352,21 +1352,27 @@ class Web_Page
 
     /**
      * Render page footer at the end of the page
+     *
+     * @param $setFooter
      */
-    function renderFooter()
+    function renderFooter($setFooter = true)
     {
         ?>
         </main>
-
+        <?php
+            if ($setFooter) {
+        ?>
         <!-- FOOTER -->
-        <footer class="container" style="position: relative; float: bottom; max-width: 90%">
+        <footer class="container ml-5 pl-5" style="position: relative; float: bottom; max-width: 90%">
             <hr>
             <div class="row">
-                <p class="col-md-10 text-muted">&copy; 2018 Solken Technology, Inc</p>
+                <p class="col-md-10 text-muted">&copy; 2018 FAVR, Inc</p>
                 <p class="col-md-2 float-right text-muted">v<?php echo $this->product_version; ?> Beta</p>
             </div>
         </footer>
-
+        <?php
+            }
+        ?>
         <!-- Loader -->
         <script>
             var timeOut;
@@ -1613,22 +1619,36 @@ class Web_Page
             if ($result) {
                 $row = $result->fetch(PDO::FETCH_ASSOC);
                 $freelancer_ids_array = unserialize($row['freelancer_id']);
-                echo '<pre>';
-                print_r($freelancer_ids_array);
-                echo '</pre>';
+
+//                echo '<pre>';
+//                print_r($freelancer_ids_array);
+//                echo '</pre>';
+
                 if (($key = array_search($freelancerID, $freelancer_ids_array)) !== false) {
                     unset($freelancer_ids_array[$key]); // remove the freelancer from the list of sign ups
+
+                    $freelancer_ids_array = serialize($freelancer_ids_array);
+
+                    $update_task_query = "UPDATE marketplace_favr_requests
+                                          SET freelancer_id = '$freelancer_ids_array',
+                                              task_status = 'Requested'
+                                          WHERE id = '$requestID'";
+
+                    $result = $this->db->query($update_task_query);
+                    if ($result) {
+                        return true;
+                    } else {
+                        return false;
+                    }
                 } else {
                     return false;
                 }
 
-                echo '<br><pre>';
-                die(print_r($freelancer_ids_array));
+//                echo '<br><pre>';
+//                die(print_r($freelancer_ids_array));
+            } else {
+                return false;
             }
-//            $update_task_query = "UPDATE marketplace_favr_requests
-//                                  SET
-//                                  WHERE id = '$requestID'";
-            return true;
         } else {
             return false;
         }
@@ -1790,7 +1810,9 @@ class Web_Page
                 } else if (sizeof($freelancer_ids_array) > $freelancer_count) { // This cannot ever happen
                     // TODO: handle error reporting for this critical error
                     return false;
-                } else if (sizeof($freelancer_ids_array) == $freelancer_count) {
+                }
+
+                if (sizeof($freelancer_ids_array) == $freelancer_count) {
                     $setTaskStatusPending = ", task_status = 'Pending Approval' "; // Has enough freelancers notify customer pending their approval
                 }
 

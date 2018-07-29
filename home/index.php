@@ -7,6 +7,8 @@ $PAGE_ID = 1;
 $USER = "";
 $ALERT_MESSAGE = "";
 
+//header("Location: ../assets/css/main.css");
+
 if (isset($_SESSION['user_info'])) {
     $USER = $_SESSION['user_info']['username']; // user is set from initial configuration
 }
