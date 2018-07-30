@@ -26,7 +26,7 @@ $page->renderHeader();
 ?>
     <div class="messaging m-0 p-0">
         <div class="inbox_msg">
-            <div class="web-messaging-contact inbox_people">
+            <div class="inbox_people">
                 <div class="headind_srch">
                     <div class="recent_heading">
                         <h4>Recent</h4>
@@ -64,7 +64,7 @@ $page->renderHeader();
                     </div>
                 </div>
             </div>
-            <div class="mesgs p-0">
+            <div class="web-messaging-contact mesgs p-0">
                 <div class="msg_history p-2 pt-5">
                     <div class="incoming_msg">
                         <div class="incoming_msg_img"><img src="https://ptetutorials.com/images/user-profile.png"

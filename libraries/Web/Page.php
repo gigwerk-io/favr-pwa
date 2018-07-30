@@ -20,31 +20,31 @@ class Web_Page
      * Data source name
      * @var string
      */
-    public $dsn = 'mysql:dbname=local_favr;host=localhost';
+    public $dsn = Data_Constants::DB_DSN;
 
     /**
      * Backend username
      * @var string
      */
-    public $username = 'haron';
+    public $username = Data_Constants::DB_USERNAME;
 
     /**
      * Backend password
      * @var string
      */
-    public $password = 'Ha7780703';
+    public $password = Data_Constants::DB_PASSWORD;
 
     /**
      * String value to keep track and validate product version
      * @var string
      */
-    public $product_version = "0.1.1";
+    public $product_version = Data_Constants::PRODUCT_VERSION;
 
     /**
      * value to determine project root path
      * @var string
      */
-    public $root_path = "http://localhost/favr-pwa";
+    public $root_path = Data_Constants::ROOT_PATH;
 
     /**
      * Boolean to determine whether or not to render page main navigation/menu
@@ -130,7 +130,7 @@ class Web_Page
             $_SESSION['user_info'] = array(
                 "id" => '-1'
             );
-            header("Location: http://" . $_SERVER['HTTP_HOST'] . "/favr-pwa/signin/");
+            header("Location: $this->root_path/signin/");
         } else {
             // permitted user
             if (empty($_SESSION['user_info'])) {
@@ -1114,27 +1114,29 @@ class Web_Page
     function renderFavrMarketplace($scope="global", $orderBy = "task_date", $orientation = "DESC", $limit="LIMIT 3")
     {
         if ($scope == $_SESSION['user_info']['id']) {
-            // TODO: constant Requested used statically here
+
+            $requested = Data_Constants::DB_TASK_STATUS_REQUESTED;
             $selectMarketplaceQuery = "
                                    SELECT *, mfr.id as mfrid
                                    FROM marketplace_favr_requests mfr
                                    INNER JOIN users u
                                    WHERE u.id = $scope
                                    AND u.id = mfr.customer_id
-                                   AND mfr.task_status = 'Requested'
+                                   AND mfr.task_status = '$requested'
                                    ORDER BY $orderBy
                                    $orientation
                                    $limit
             ";
 
         } else if ($scope == "global") {
-            // TODO: constant Requested used statically here
+
+            $requested = Data_Constants::DB_TASK_STATUS_REQUESTED;
             $selectMarketplaceQuery = "
                                    SELECT *, mfr.id as mfrid
                                    FROM marketplace_favr_requests mfr
                                    INNER JOIN users u
                                    WHERE u.id = mfr.customer_id
-                                   AND mfr.task_status = 'Requested'
+                                   AND mfr.task_status = '$requested'
                                    ORDER BY $orderBy
                                    $orientation
                                    $limit
@@ -1190,13 +1192,12 @@ class Web_Page
                             </strong>
                             ";
 
-                    // TODO: reference enum(Hard, Medium, Easy) as constants from Constants class
                     if (isset($task_difficulty)) {
-                        if ($task_difficulty == "Easy") {
+                        if ($task_difficulty == Data_Constants::DB_TASK_INTENSITY_EASY) {
                             echo "<button type=\"button\" class=\"ml-2 btn-sm btn btn-success p-1 rounded\" style='opacity: .9' value=\"Easy\" disabled>Easy 👌</button>";
-                        } else if ($task_difficulty == "Medium") {
+                        } else if ($task_difficulty == Data_Constants::DB_TASK_INTENSITY_MEDIUM) {
                             echo "<button type=\"button\" class=\"ml-2 btn-sm btn btn-warning p-1 rounded\" style='opacity: .9' value=\"Medium\" disabled>Medium 💪🏿</button>";
-                        } else if ($task_difficulty == "Hard") {
+                        } else if ($task_difficulty == Data_Constants::DB_TASK_INTENSITY_HARD) {
                             echo "<button type=\"button\" class=\"ml-2 btn-sm btn btn-danger p-1 rounded\" style='opacity: .9' value=\"Hard\" disabled>Hard 🔥</button>";
                         }
                     }
@@ -1494,7 +1495,6 @@ class Web_Page
             if ($result) {
                 // process attached images logic
 
-                // TODO: process images into the server and backend
                 if (isset($inputPictures)) {
                     $select_requested_task_query = "SELECT id 
                                                   FROM marketplace_favr_requests
@@ -1512,16 +1512,14 @@ class Web_Page
                     if ($result) {
                         $row = $result->fetch(PDO::FETCH_ASSOC);
                         $task_id = $row['id'];
-                        // TODO: maximum images allowed constant statically used
 
-                        for ($i = 0; $i < 3; $i++) {
+                        for ($i = 0; $i < Data_Constants::MAXIMUM_IMAGE_UPLOAD_COUNT; $i++) {
                             // check if atleast one image is set
                             if (!empty($inputPictures['name'][$i])) {
                                 // validate file is an image of type jpeg or png
                                 if ($inputPictures['type'][$i] == "image/jpeg" || $inputPictures['type'][$i] == "image/png") {
                                     // continue validating file size is below allowed size of 5 MB
-                                    // TODO: file size allowed should be a constant set in a "constants" class
-                                    if ($inputPictures['size'][$i] <=  5242880) {
+                                    if ($inputPictures['size'][$i] <=  Data_Constants::MAXIMUM_IMAGE_UPLOAD_SIZE) {
                                         // validate temp_name exists
                                         if (!empty($inputPictures['tmp_name'][$i])) {
                                             // validate no file errors were detected
@@ -1535,11 +1533,9 @@ class Web_Page
                                                 }
                                                 $imageFileType = $inputPictures['type'][$i];
 
-                                                // TODO: constant values statically used root image file path
-                                                $imageFilePath = "/Applications/XAMPP/xamppfiles/favr-request-images/$imageFileName";
+                                                $imageFilePath =  Data_Constants::IMAGE_UPLOAD_FILE_PATH . "$imageFileName";
 
                                                 // copy image into backend and execute update query on request to update file paths
-                                                // TODO: constant values statically used image file paths
                                                 if (copy($inputPictures['tmp_name'][$i], $imageFilePath)) {
     //                                                    echo "<pre>";
     //                                                    die(print_r($inputPictures));
@@ -1718,9 +1714,8 @@ class Web_Page
                 if (!empty($task1_image_array)) {
                     $imageName = $task1_image_array['name'];
 
-                    // TODO: constant used image folder path
-                    if (file_exists("/Applications/XAMPP/xamppfiles/favr-request-images/$imageName")) {
-                        $removeImage = unlink("/Applications/XAMPP/xamppfiles/favr-request-images/$imageName");
+                    if (file_exists(Data_Constants::IMAGE_UPLOAD_FILE_PATH . "$imageName")) {
+                        $removeImage = unlink(Data_Constants::IMAGE_UPLOAD_FILE_PATH . "$imageName");
                         if (!$removeImage) {
                             return false;
                         }
@@ -1730,9 +1725,8 @@ class Web_Page
                 if (!empty($task2_image_array)) {
                     $imageName = $task2_image_array['name'];
 
-                    // TODO: constant used image folder path
-                    if (file_exists("/Applications/XAMPP/xamppfiles/favr-request-images/$imageName")) {
-                        $removeImage = unlink("/Applications/XAMPP/xamppfiles/favr-request-images/$imageName");
+                    if (file_exists(Data_Constants::IMAGE_UPLOAD_FILE_PATH . "$imageName")) {
+                        $removeImage = unlink(Data_Constants::IMAGE_UPLOAD_FILE_PATH . "$imageName");
                         if (!$removeImage) {
                             return false;
                         }
@@ -1742,9 +1736,8 @@ class Web_Page
                 if (!empty($task3_image_array)) {
                     $imageName = $task3_image_array['name'];
 
-                    // TODO: constant used image folder path
-                    if (file_exists("/Applications/XAMPP/xamppfiles/favr-request-images/$imageName")) {
-                        $removeImage = unlink("/Applications/XAMPP/xamppfiles/favr-request-images/$imageName");
+                    if (file_exists(Data_Constants::IMAGE_UPLOAD_FILE_PATH . "$imageName")) {
+                        $removeImage = unlink(Data_Constants::IMAGE_UPLOAD_FILE_PATH . "$imageName");
                         if (!$removeImage) {
                             return false;
                         }

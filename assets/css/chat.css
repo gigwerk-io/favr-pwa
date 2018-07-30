@@ -220,10 +220,16 @@ img {
     .web-messaging-contact {
         display: none;
     }
+    .inbox_people {
+        width: 100%;
+    }
+    .web-messaging {
+        display: none;
+    }
     .mesgs {
         width: 100%;
     }
     .messaging {
-        top: 5rem;
+        top: 6rem;
     }
 }
