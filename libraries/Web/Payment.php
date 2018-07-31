@@ -61,7 +61,7 @@ class Web_Payment
      */
     public function select(int $id)
     {
-        $result = $this->db->query("SELECT * FROM marketplace_favr_requests");
+        $result = $this->db->query("SELECT * FROM marketplace_favr_requests WHERE id=$id");
         $row = $result->fetch(PDO::FETCH_ASSOC);
         $this->price = $row['task_price'];
     }
