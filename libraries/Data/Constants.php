@@ -25,13 +25,25 @@ class Data_Constants
     const DB_TASK_INTENSITY_EASY = "Easy";
 
     // database connection constants
-    const DB_DSN = "mysql:dbname=local_favr;host=localhost";
-    const DB_USERNAME = "haron";
-    const DB_PASSWORD = "Ha7780703";
+    const DB_DSN = "mysql:dbname=local_favr;host=favr.cgfeyejwt7qv.us-east-2.rds.amazonaws.com";
+    const DB_USERNAME = "Solomon04";
+    const DB_PASSWORD = "Nomolos.99";
 
     // Product version
     const PRODUCT_VERSION = "0.1.1";
 
     // Root path
-    const ROOT_PATH = "http://localhost/favr-pwa";
+    const ROOT_PATH = "http://askfavr.com/favr-pwa";
+
+    //Stipe API
+    const STRIPE_PUBLIC = 'pk_test_WRhN4BKmkqctL2nrjCPJCTXi'; 
+    const STRIPE_SECRET = 'sk_test_AfPrHBd85yRDmJmdW4uK3a9Y';
+
+    //Twilio
+    const TWILIO_SID = 'AC67883f19920b3894df25adca46a047f4';
+    const TWILIO_API  = '43e7aaf5082f72883769685c809838cf'; 
+
+    //Sendgrid
+    const SG_API = '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';
+
 }
