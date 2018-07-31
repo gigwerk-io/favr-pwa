@@ -76,8 +76,6 @@ class Web_Page
      */
     public $db;
 
-
-
     /**
      * Value to identify user
      * @var string
@@ -105,10 +103,10 @@ class Web_Page
     /**
      * Constructor for the page. Sets up most of the properties of this object.
      *
-     * @param $page_id
-     * @param $page_title
-     * @param $user
-     * @param $render_main_navigation
+     * @param int $page_id
+     * @param string $page_title
+     * @param string $user
+     * @param boolean $render_main_navigation
      */
     function __construct($page_id, $user = "", $page_title = "FAVR", $render_main_navigation = true)
     {
@@ -250,8 +248,8 @@ class Web_Page
     /**
      * Sign in a user and return if the operation was successful or not
      *
-     * @param $signInUsernameEmail
-     * @param $signInPass
+     * @param string $signInUsernameEmail
+     * @param string $signInPass
      *
      * @return boolean
      *
@@ -307,12 +305,12 @@ class Web_Page
     /**
      * Sign up a user and return if the operation was successful or not
      *
-     * @param $signUpUsername
-     * @param $signUpEmail
-     * @param $signUpFirstName
-     * @param $signUpLastName
-     * @param $signUpPass
-     * @param $signUpPassConfirm
+     * @param string $signUpUsername
+     * @param string $signUpEmail
+     * @param string $signUpFirstName
+     * @param string $signUpLastName
+     * @param string $signUpPass
+     * @param string $signUpPassConfirm
      *
      * @return boolean
      *
@@ -350,7 +348,7 @@ class Web_Page
     /**
      * Set the title of the page.
      * Must be called before renderHeader.
-     * @param $page_title string The title of the page.
+     * @param string $page_title // The title of the page.
      */
     function setTitle($page_title)
     {
@@ -375,7 +373,7 @@ class Web_Page
     /**
      * Get user info by id
      *
-     * @param $userID
+     * @param int $userID
      *
      * @return array // return array of userInfo if user exists NULL otherwise
      */
@@ -393,7 +391,7 @@ class Web_Page
     /**
      * Set any stylesheets that need to be loaded in the header.
      * Must be called before renderHeader.
-     * @param $add_stylesheet string The stylesheet to load.
+     * @param string $add_stylesheet string The stylesheet to load.
      */
     function addStylesheet($add_stylesheet)
     {
@@ -405,7 +403,7 @@ class Web_Page
     /**
      * Set any stylesheets that need to be loaded in the header.
      * Must be called before renderHeader.
-     * @param $add_script string The stylesheet to load.
+     * @param string $add_script string The stylesheet to load.
      */
     function addScript($add_script)
     {
@@ -416,7 +414,7 @@ class Web_Page
 
     /**
      * Render page header
-     * @param $render_top_nav
+     * @param boolean $render_top_nav
      */
     function renderHeader($render_top_nav = true)
     {
@@ -512,9 +510,9 @@ class Web_Page
     /**
      * Render marketplace history for this specific user
      *
-     * @param $id
-     * @param $orderBy
-     * @param $orientation
+     * @param int $id
+     * @param string $orderBy
+     * @param string $orientation
      *
      * @return boolean
      */
@@ -626,12 +624,12 @@ class Web_Page
     /**
      * Render profile from userID
      *
-     * @param $userID
+     * @param int $userID
      *
      * @return boolean
      *
-     * @TODO implement this function as a universal solution to rendering profiles
-     * @TODO allow for image file upload but store image files in file system outside of document root
+     * TODO implement this function as a universal solution to rendering profiles
+     * TODO allow for image file upload but store image files in file system outside of document root
      *
      */
     function renderFavrProfile($userID) {
@@ -640,8 +638,8 @@ class Web_Page
 
     /**
      * Render page main navigation
-     * @param $page_id
-     * @param $render_main_navigation
+     * @param int $page_id
+     * @param boolean $render_main_navigation
      */
     function renderMainNavigation($page_id, $render_main_navigation = true)
     {
@@ -895,7 +893,7 @@ class Web_Page
     /**
      * Render notification count
      *
-     * @param $notificationCount
+     * @param int $notificationCount
      *
      * @return boolean // true if there's notifications false otherwise
      */
@@ -912,24 +910,26 @@ class Web_Page
     }
 
     /**
+     * TODO: use client side store to keep freelancer array and accepted task information
      * Render main notifications
      *
-     * @param $userInfo
+     * @param array $userInfo
      *
      * @return boolean
      */
     function renderMainNotifications($userInfo)
     {
         $userID = $userInfo['id'];
-
-        $notifications_query = "SELECT *
+        $completed = Data_Constants::DB_TASK_STATUS_COMPLETED;
+        $notifications_query = "SELECT * 
                                 FROM marketplace_favr_requests mfr 
-                                WHERE mfr.customer_id = '$userID' 
-                                AND mfr.freelancer_id IS NOT NULL
-                                AND NOT mfr.task_status = 'Completed'
-                                OR mfr.freelancer_id = '$userID' 
-                                AND NOT mfr.task_status = 'Completed'
-                                ";
+                                INNER JOIN marketplace_favr_freelancers mff 
+                                WHERE mff.request_id = mfr.id
+                                AND mff.user_id = $userID 
+                                AND NOT mfr.task_status = '$completed'
+                                OR mfr.customer_id = $userID 
+                                AND mfr.freelancer_id IS NULL 
+                                AND NOT mfr.task_status = '$completed'";
 
         $result = $this->db->query($notifications_query);
         $rows = $result->fetchAll(PDO::FETCH_ASSOC);
@@ -938,7 +938,7 @@ class Web_Page
             // There are results
 
             foreach ($rows as $row) {
-                $freelancer_id = $row['freelancer_id'];
+                $freelancer_id = $row['user_id'];
                 $freelancer = $this->getUserInfo($freelancer_id);
 
                 $customer_id = $row['customer_id'];
@@ -1002,7 +1002,7 @@ class Web_Page
     /**
      * Render request favr web and mobile form
      *
-     * @param $render_favr_request_form
+     * @param boolean $render_favr_request_form
      *
      * @return boolean
      */
@@ -1105,9 +1105,10 @@ class Web_Page
     /**
      * Render marketplace favr request feed to home
      *
-     * @param $scope
-     * @param $orderBy
-     * @param $orientation
+     * @param mixed $scope // default string otherwise an int
+     * @param string $orderBy
+     * @param string $orientation
+     * @param string $limit
      *
      * @return boolean
      */
@@ -1156,8 +1157,8 @@ class Web_Page
                 foreach ($rows as $row) {
                     $id = md5($row['mfrid']);
                     $task_id = $row['mfrid'];
-                    $freelancer_ids_array = unserialize($row['freelancer_id']);
-                    $freelancer_accepted = count($freelancer_ids_array);
+                    $freelancer_id = $row['freelancer_id'];
+                    $freelancer_accepted = $row['task_freelancer_accepted'];
                     $task_freelancer_count = $row['task_freelancer_count'];
                     $customer_id = $row['customer_id'];
                     $customer_username = $row['username'];
@@ -1203,9 +1204,9 @@ class Web_Page
                     }
 
                     if ($customer_id == $_SESSION['user_info']['id']) {
-                        echo "<div class='float-right small font-weight-bold' style='padding-top: .3rem;color: var(--red)'>- $$task_price</div>";
+                        echo "<div class='float-right small' style='padding-top: .3rem;color: var(--red)'>- $$task_price</div>";
                     } else {
-                        echo "<div class='float-right small font-weight-bold' style='padding-top: .3rem;color: var(--dark)'>$$task_price</div>";
+                        echo "<div class='float-right small' style='padding-top: .3rem;color: var(--dark)'>$$task_price</div>";
                     }
 
                     echo "</div><div class=\"media text-muted pt-3\">
@@ -1313,12 +1314,16 @@ class Web_Page
                     if ($customer_id != $_SESSION['user_info']['id']) { // if not this user
                         $freelancerAccepted = false;
                         $freelancer_id = null;
-                        foreach ($freelancer_ids_array as $freelancerID) {
-                            if ($_SESSION['user_info']['id'] == $freelancerID) {
-                                $freelancerAccepted = true;
-                                $freelancer_id = $freelancerID;
-                                break;
-                            }
+                        $user_id = $_SESSION['user_info']['id'];
+                        $select_freelancers_query = "SELECT * 
+                                                     FROM marketplace_favr_freelancers
+                                                     WHERE request_id = $id
+                                                     AND user_id = $user_id";
+                        $result = $this->db->query($select_freelancers_query);
+                        if ($result) {
+                            $row = $result->fetch(PDO::FETCH_ASSOC);
+                            $freelancerAccepted = true;
+                            $freelancer_id = $row['user_id'];
                         }
 
                         if ($freelancerAccepted) {
@@ -1354,7 +1359,7 @@ class Web_Page
     /**
      * Render page footer at the end of the page
      *
-     * @param $setFooter
+     * @param boolean $setFooter
      */
     function renderFooter($setFooter = true)
     {
@@ -1445,16 +1450,16 @@ class Web_Page
     /**
      * Process favr request from form and serve into database to display in marketplace
      *
-     * @param $userInfo // array with user details such as location
-     * @param $inputDate
-     * @param $inputCategory
-     * @param $inputTaskDetails
-     * @param $inputFreelancerCount
-     * @param $inputPricing
-     * @param $inputLocation
-     * @param $inputDifficulty
-     * @param $inputPictures
-     * @param $inputScope // pre-alpha scope is public
+     * @param array $userInfo // array with user details such as location
+     * @param string $inputDate
+     * @param string $inputCategory
+     * @param string $inputTaskDetails
+     * @param int $inputFreelancerCount
+     * @param double $inputPricing
+     * @param string $inputLocation
+     * @param string $inputDifficulty
+     * @param array $inputPictures
+     * @param mixed $inputScope // pre-alpha scope is public
      *
      * @return boolean // successful process or not print error
      *
@@ -1599,9 +1604,9 @@ class Web_Page
      * TODO: needs logic development and implementation
      * Process cancel pending request
      *
-     * @param $requestID
-     * @param $freelancerID
-     * @param $customerID
+     * @param int $requestID
+     * @param int $freelancerID
+     * @param int $customerID
      *
      * @return boolean
      */
@@ -1655,9 +1660,9 @@ class Web_Page
      * TODO: update database image columns to null after completion of task
      * Process complete request
      *
-     * @param $requestID
-     * @param $customerID
-     * @param $freelancerID
+     * @param int $requestID
+     * @param int $customerID
+     * @param int $freelancerID
      *
      * @return boolean
      */
@@ -1690,8 +1695,8 @@ class Web_Page
      * Image naming convention: task_id-customer_id-request-image#.x hashed by md5
      * Process delete request and task associated images
      *
-     * @param $requestID
-     * @param $customerID
+     * @param int $requestID
+     * @param int $customerID
      *
      * @return boolean
      */
@@ -1770,10 +1775,10 @@ class Web_Page
      * Flow: Marketplace -> Verified freelancer accepts -> Notify customer -> customer accepts -> Notify freelancer -> Change status of request to pending job
      *                                                      |-> freelancer or customer rejects -> Marketplace
      *
-     * @param $requestID
-     * @param $freelancerID
+     * @param int $requestID
+     * @param int $freelancerID
      *
-     * @return boolean
+     * @return mixed
      */
     function processFreelancerAcceptRequest($requestID, $freelancerID)
     {
@@ -1781,52 +1786,70 @@ class Web_Page
             // freelancer has accepted
             $select_request_query = "SELECT * 
                                      FROM marketplace_favr_requests
-                                     WHERE id = '$requestID'";
+                                     WHERE id = $requestID";
             $result = $this->db->query($select_request_query);
             if ($result) {
                 $row = $result->fetch(PDO::FETCH_ASSOC);
+                $freelancer_accepted = $row['task_freelancer_accepted'];
                 $freelancer_count = $row['task_freelancer_count'];
-                $freelancer_ids_array = unserialize($row['freelancer_id']);
+                $freelancer_id = $row['freelancer_id'];
+                $request_id = $row['id'];
                 $setTaskStatusPending = ""; // still need more freelancers
 
                 // ensure there's not already enough freelancers signed up for this job
-                if (sizeof($freelancer_ids_array) < $freelancer_count) {
-                    // ensure that this user has not already accepted to work this request
-                    foreach ($freelancer_ids_array as $freelancer_id) {
-                        if ($freelancer_id == $freelancerID) {
-                            // This should never happen
-                            // TODO: handle error reporting for this critical error
+                if ($freelancer_accepted < $freelancer_count) {
+                    $select_freelancers_query = "INSERT INTO marketplace_favr_freelancers
+                                                 (
+                                                    request_id, 
+                                                    user_id
+                                                 ) 
+                                                 VALUES
+                                                 (
+                                                    $request_id,
+                                                    $freelancerID
+                                                 )";
+
+                    $result = $this->db->query($select_freelancers_query);
+                    if ($result) {
+                        $freelancer_accepted += 1; // add user to freelancer queue
+
+                        $update_request_query = "UPDATE marketplace_favr_requests
+                                                 SET task_freelancer_accepted = $freelancer_accepted
+                                                 WHERE id = $request_id";
+
+                        $result = $this->db->query($update_request_query);
+//                        die(print_r($result));
+                        if (!$result) {
                             return false;
                         }
+
+                    } else {
+                        return false;
                     }
-                    array_push($freelancer_ids_array, $freelancerID);
-                } else if (sizeof($freelancer_ids_array) > $freelancer_count) { // This cannot ever happen
-                    // TODO: handle error reporting for this critical error
+                }
+
+                if ($freelancer_accepted == $freelancer_count) {
+                    $setTaskStatusPending = Data_Constants::DB_TASK_STATUS_PENDING_APPROVAL;
+
+                    $update_request_query = "UPDATE marketplace_favr_requests
+                                             SET task_status = '$setTaskStatusPending'
+                                             WHERE id = $request_id";
+
+                    $result = $this->db->query($update_request_query);
+                    if ($result) {
+                        return $freelancerID;
+                    } else {
+                        return false;
+                    }
+                }
+
+                if ($freelancer_accepted > $freelancer_count) {
+                    // impossible
                     return false;
                 }
 
-                if (sizeof($freelancer_ids_array) == $freelancer_count) {
-                    $setTaskStatusPending = ", task_status = 'Pending Approval' "; // Has enough freelancers notify customer pending their approval
-                }
-
-                $freelancer_ids_array = serialize($freelancer_ids_array);
-
-                $update_request_query = "UPDATE marketplace_favr_requests 
-                                         SET freelancer_id = '$freelancer_ids_array'
-                                         $setTaskStatusPending
-                                         WHERE id = '$requestID'";
-                $result = $this->db->query($update_request_query);
-
-                if ($result) {
-                    // successfully accepted
-                    return true;
-                } else {
-                    // failed to accept
-                    return false;
-                }
+                return $freelancerID;
             }
-
-
         } else {
             // not set
             return false;
@@ -1836,7 +1859,7 @@ class Web_Page
     /**
      * Process notifications
      *
-     * @param $userInfo
+     * @param array $userInfo
      *
      * @return integer // return notification count
      */

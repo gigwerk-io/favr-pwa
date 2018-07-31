@@ -89,8 +89,8 @@ $page->renderFavrRequestForm($_SESSION['user_info'], $_SESSION['filter_marketpla
     </small>
 </div>
 <?php
-$page->renderFavrMarketplace($_SESSION['scope'], $_SESSION['filter_marketplace_by'], $_SESSION['orient_marketplace_by'], $_SESSION['limit_marketplace_by']);
 
+$page->renderFavrMarketplace($_SESSION['scope'], $_SESSION['filter_marketplace_by'], $_SESSION['orient_marketplace_by'], $_SESSION['limit_marketplace_by']);
 
 $page->addScript("
     <script>

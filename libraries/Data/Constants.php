@@ -15,14 +15,14 @@ class Data_Constants
 
     // database marketplace task status constants
     const DB_TASK_STATUS_REQUESTED = "Requested";
-    const DB_TASK_STATUS_IN_PROGRESS = "In Progress";
     const DB_TASK_STATUS_PENDING_APPROVAL = "Pending Approval";
+    const DB_TASK_STATUS_IN_PROGRESS = "In Progress";
     const DB_TASK_STATUS_COMPLETED = "Completed";
 
     // database marketplace task difficulty constants
-    const DB_TASK_INTENSITY_EASY = "Easy";
-    const DB_TASK_INTENSITY_MEDIUM = "Medium";
     const DB_TASK_INTENSITY_HARD = "Hard";
+    const DB_TASK_INTENSITY_MEDIUM = "Medium";
+    const DB_TASK_INTENSITY_EASY = "Easy";
 
     // database connection constants
     const DB_DSN = "mysql:dbname=local_favr;host=localhost";
