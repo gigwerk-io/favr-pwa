@@ -13,6 +13,11 @@ require '../Api/Stripe/init.php';
 class Web_Payment
 {
     /**
+     * @var PDO
+     */
+    public $db;
+
+    /**
      * Data source name
      * @var string
      */
@@ -29,6 +34,15 @@ class Web_Payment
      * @var string
      */
     public $password = Data_Constants::DB_PASSWORD;
+
+    /**
+     * @var float
+     */
+    public $price;
+
+    function __construct() {
+        $this->db = $this->connect();
+    }
 
     function connect()
     {
@@ -47,7 +61,9 @@ class Web_Payment
      */
     public function select(int $id)
     {
-        //select specific request based off of the id
+        $result = $this->db->query("SELECT * FROM marketplace_favr_requests");
+        $row = $result->fetch(PDO::FETCH_ASSOC);
+        $this->price = $row['task_price'];
     }
 
     /**
@@ -70,7 +86,8 @@ class Web_Payment
      */
     public function update(int $id)
     {
-        //update status from pending approval to in progress based off the id
+        $this->db->query("UPDATE marketplace_favr_requests SET task_status='In Progress' WHERE id=$id");
     }
 
+    // select($id)->charge($_POST['token'], $this->price)->update($id);
 }
