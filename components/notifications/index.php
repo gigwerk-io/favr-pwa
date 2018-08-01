@@ -24,8 +24,14 @@ if (isset($_GET['withdraw_request_id'], $_GET['freelancer_id'])) {
     $page->processCancelPendingRequest($_GET['withdraw_request_id'], $_GET['freelancer_id']);
 }
 
-if (isset($_GET['accept_request_id'])) {
-    $page->processFreelancerAcceptRequest($_GET['accept_request_id'], $_SESSION['user_info']['id']);
+if (isset($_GET['accept_freelancer_request_id'])) {
+    $page->processFreelancerAcceptRequest($_GET['accept_freelancer_request_id'], $_SESSION['user_info']['id']);
+}
+
+if (isset($_GET['accept_customer_request_id'], $_GET['freelancer_id'])) {
+    $page->processCustomerAcceptRequest($_GET['accept_customer_request_id'], $_GET['freelancer_id'], $_SESSION['user_info']['id']);
+} else if (isset($_GET['reject_customer_request_id'], $_GET['freelancer_id'])) {
+    $page->processCancelPendingRequest($_GET['reject_customer_request_id'], $_GET['freelancer_id'], $_SESSION['user_info']['id']);
 }
 
 if (isset($_GET['completed_request_id'], $_GET['freelancer_id'], $_GET['customer_id'])) {
@@ -50,5 +56,16 @@ echo $ALERT_MESSAGE;
 
 
 $page->renderMainNotifications($_SESSION['user_info']);
-
+$page->addScript("
+<script>
+    window.addEventListener('load', function(){
+        var allimages= document.getElementsByTagName('img');
+        for (var i=0; i<allimages.length; i++) {
+            if (allimages[i].getAttribute('data-src')) {
+                allimages[i].setAttribute('src', allimages[i].getAttribute('data-src'));
+            }
+        }
+    }, false);    
+</script>
+");
 $page->renderFooter();
