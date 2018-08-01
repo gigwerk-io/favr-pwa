@@ -553,7 +553,7 @@ class Web_Page
                     $customer_username = $customer['username'];
                     $customer_first_name = $customer['first_name'];
                     $task_description = $row['task_description'];
-                    $task_date = date("m/d/Y", strtotime($row['task_date']));
+                    $task_date = date("n/j/Y", strtotime($row['task_date']));
                     $task_location = $row['task_location'];
                     $task_time_to_accomplish = $row['task_time_to_accomplish'];
                     $task_price = $row['task_price'];
@@ -942,9 +942,9 @@ class Web_Page
             if (!empty($rows)) {
                 // There are results
                 foreach ($rows as $row) {
-                    $id = md5($row['mfrid']);
-                    $task_id = $row['mfrid'];
                     $freelancer_id = $row['mffuserid'];
+                    $id = md5($row['mfrid'] . "-$freelancer_id"); // div id
+                    $task_id = $row['mfrid'];
                     $freelancerInfo = $this->getUserInfo($freelancer_id);
                     $freelancer_username = $freelancerInfo['username'];
                     $freelancer_accepted = $row['task_freelancer_accepted'];
@@ -956,9 +956,9 @@ class Web_Page
                     $customer_first_name = $customerInfo['first_name'];
 
                     $task_description = $row['task_description'];
-                    $task_date = date("m/d/Y", strtotime($row['task_date']));
+                    $task_date = date("n/j/Y", strtotime($row['task_date']));
                     $task_location = $row['task_location'];
-                    $task_time_to_accomplish = date('h:i A, l, m/d/Y', strtotime($task_date));
+                    $task_time_to_accomplish = date('h:i A, l, n/j/Y', strtotime($task_date));
                     $task_price = $row['task_price'];
                     $task_difficulty = $row['task_intensity'];
                     $task_status = $row['task_status'];
@@ -1015,9 +1015,17 @@ class Web_Page
                             <p id='$id' class=\"media-body text-dark mb-0 small lh-125\">
                                 $task_description
                                 <div id='$id-location' class='pt-1 border-top small border-gray d-none'>
-                                    <label for='location'>Location:</label>
-                                    <!-- TODO: calculate location distance by zipcode -->
-                                    <p class='text-dark'>Within 3 Miles of your location.</p>
+                                    <label for='location'>Location:</label>";
+
+                    // share location of customer to freelancer if task is in progress
+                    if ($task_status == Data_Constants::DB_TASK_STATUS_IN_PROGRESS) {
+                        echo "<p class='text-dark'>$task_location</p>";
+                    } else {
+                        echo "<!-- TODO: calculate location distance by zipcode -->
+                                    <p class='text-dark'>Within 3 Miles of your location.</p>";
+                    }
+
+                    echo "
                                     <div id='$id-completeby' class='pt-1 border-top border-bottom border-gray'>
                                         <label for='completeby'>Complete FAVR by:</label>
                                         <p class='text-dark'>$task_time_to_accomplish</p>
@@ -1109,7 +1117,6 @@ class Web_Page
 
                     echo "
                                     </div>
-                                    <div class='float-right d-inline'>
                                        ";
 
                     if ($customer_id != $_SESSION['user_info']['id']) { // if not this user
@@ -1130,11 +1137,27 @@ class Web_Page
                         }
 
                         if ($freelancerAccepted) {
-                            echo "<a class='text-danger' href=\"$this->root_path/components/notifications/?navbar=active_notifications&withdraw_request_id=$task_id&freelancer_id=$freelancer_id&ALERT_MESSAGE=You've withdrawn from this task: the customer has been notified!\">
-                                Withdraw</a>";
+                            if ($task_status == Data_Constants::DB_TASK_STATUS_PENDING_APPROVAL || $task_status == Data_Constants::DB_TASK_STATUS_REQUESTED) {
+                                echo "<div class='float-right d-inline'>
+                                    <p class='d-inline-flex mb-1'>
+                                    Status: You Accepted</p>
+                                  </div>";
+                            } else {
+                                echo "<div class='float-right d-inline'>
+                                    <p class='d-inline-flex mb-1'>
+                                    Status: $task_status</p>
+                                  </div>";
+                            }
+
+                            echo "<div class='d-block mt-4 border-gray border-top text-center'>
+                                    <a class='text-danger' href=\"$this->root_path/components/notifications/?navbar=active_notifications&withdraw_request_id=$task_id&freelancer_id=$freelancer_id&ALERT_MESSAGE=You've withdrawn from this task: the customer has been notified!\">
+                                    Withdraw From Task</a>
+                                  </div>";
                         } else {
-                            echo "<a href=\"$this->root_path/components/notifications/?navbar=active_notifications&accept_freelancer_request_id=$task_id&ALERT_MESSAGE=You've signed up to take this task! The task requester has been notified of your interest and is reviewing your offer to help: they can accept or reject your offer to help! You'll be notified of their decision; you can withdraw your offer to help before they decide. \">
-                                Accept Request</a>";
+                            echo "<div class='float-right d-inline'>
+                                    <a href=\"$this->root_path/components/notifications/?navbar=active_notifications&accept_freelancer_request_id=$task_id&ALERT_MESSAGE=You've signed up to take this task! The task requester has been notified of your interest and is reviewing your offer to help: they can accept or reject your offer to help! You'll be notified of their decision; you can withdraw your offer to help before they decide. \">
+                                    Accept Request</a>
+                                  </div>";
                         }
                     } else {
                         $select_freelancers_query = "SELECT * 
@@ -1145,19 +1168,39 @@ class Web_Page
                         $row = $result->fetch(PDO::FETCH_ASSOC);
                         if (!empty($row)) {
                             if ($row['approved'] == 1) { // this user is approved
-                                echo "<p class='d-inline-flex'>Status: $task_status</p>";
+                                echo "<div class='float-right d-inline'>
+                                        <p class='d-inline-flex mb-1'>
+                                        Status: $task_status</p>
+                                      </div>";
+
+                                echo "<div class='d-block mt-4 border-gray border-top text-center'>";
+                                if ($task_status == Data_Constants::DB_TASK_STATUS_REQUESTED || $task_status == Data_Constants::DB_TASK_STATUS_PENDING_APPROVAL) {
+                                    echo "<a href='#' class='mt-0 text-danger'>
+                                        Cancel Request</a>
+                                        ";
+                                } else {
+                                    echo "<a onclick='confirm(\"Are you sure you want to cancel this request you will be a charged a $5 service fee for each freelancer you requested help from?\")' href='#' class='mt-0 text-danger'>
+                                        Cancel Request</a>
+                                        ";
+                                }
+                                echo "</div>";
                             } else { // user has not been approved yet
     //                        echo "<p>Respond</p>";
-                                echo "<a href=\"$this->root_path/components/notifications/?navbar=active_notifications&accept_customer_request_id=$task_id&freelancer_id=$freelancer_id&ALERT_MESSAGE=You've approved this freelancer for this task!\" class='text-success'>
+                                echo "<div class='float-right d-inline'><a href=\"$this->root_path/components/notifications/?navbar=active_notifications&accept_customer_request_id=$task_id&freelancer_id=$freelancer_id&ALERT_MESSAGE=You've approved this freelancer for this task!\" class='text-success'>
                                 Accept</a> | ";
                                 echo "<a href=\"$this->root_path/components/notifications/?navbar=active_notifications&reject_customer_request_id=$task_id&freelancer_id=$freelancer_id&ALERT_MESSAGE=You've rejected this freelancer for this task! They've been notified!\" class='text-danger'>
-                                Reject</a>";
+                                Reject</a></div>";
+
+                                echo "<div class='d-block mt-4 border-gray border-top text-center'>
+                                        <a href='#' class='mt-3 text-danger'>
+                                            Cancel Request</a>
+                                        </div>
+                                ";
                             }
                         }
                     }
 
                     echo "
-                                    </div>
                                 </div>
                             </div>
                         </div>
@@ -1340,9 +1383,9 @@ class Web_Page
                     $customer_username = $row['username'];
                     $customer_first_name = $row['first_name'];
                     $task_description = $row['task_description'];
-                    $task_date = date("m/d/Y", strtotime($row['task_date']));
+                    $task_date = date("n/j/Y", strtotime($row['task_date']));
                     $task_location = $row['task_location'];
-                    $task_time_to_accomplish = date('h:i A, l, m/d/Y', strtotime($task_date));
+                    $task_time_to_accomplish = date('h:i A, l, n/j/Y', strtotime($task_date));
                     $task_price = $row['task_price'];
                     $task_difficulty = $row['task_intensity'];
 
@@ -1405,21 +1448,44 @@ class Web_Page
                     echo "
                                 <div id='$id-image1' class='pt-1 border-top border-gray small d-none'>
                                     <label for='image1'>Attached Image 1:</label>
-                                    <img src='data:image/svg+xml;charset=UTF-8,%3Csvg%20width%3D%22128%22%20height%3D%22128%22%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20viewBox%3D%220%200%20128%20128%22%20preserveAspectRatio%3D%22none%22%3E%3Cdefs%3E%3Cstyle%20type%3D%22text%2Fcss%22%3E%23holder_164a9f2d749%20text%20%7B%20fill%3A%23007bff%3Bfont-weight%3Abold%3Bfont-family%3AArial%2C%20Helvetica%2C%20Open%20Sans%2C%20sans-serif%2C%20monospace%3Bfont-size%3A6pt%20%7D%20%3C%2Fstyle%3E%3C%2Fdefs%3E%3Cg%20id%3D%22holder_164a9f2d749%22%3E%3Crect%20width%3D%22128%22%20height%3D%22128%22%20fill%3D%22%23007bff%22%3E%3C%2Frect%3E%3Cg%3E%3Ctext%20x%3D%2248.4296875%22%20y%3D%2266.7%22%3E128x128%3C%2Ftext%3E%3C%2Fg%3E%3C%2Fg%3E%3C%2Fsvg%3E' 
-                                        data-src='$this->root_path/image.php?i=$task1_img_name&i_t=$task1_img_type' height='30%' width='30%'>
+                                    <img id='$id-img1' style='cursor: pointer' src='data:image/svg+xml;charset=UTF-8,%3Csvg%20width%3D%22128%22%20height%3D%22128%22%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20viewBox%3D%220%200%20128%20128%22%20preserveAspectRatio%3D%22none%22%3E%3Cdefs%3E%3Cstyle%20type%3D%22text%2Fcss%22%3E%23holder_164a9f2d749%20text%20%7B%20fill%3A%23007bff%3Bfont-weight%3Abold%3Bfont-family%3AArial%2C%20Helvetica%2C%20Open%20Sans%2C%20sans-serif%2C%20monospace%3Bfont-size%3A6pt%20%7D%20%3C%2Fstyle%3E%3C%2Fdefs%3E%3Cg%20id%3D%22holder_164a9f2d749%22%3E%3Crect%20width%3D%22128%22%20height%3D%22128%22%20fill%3D%22%23007bff%22%3E%3C%2Frect%3E%3Cg%3E%3Ctext%20x%3D%2248.4296875%22%20y%3D%2266.7%22%3E128x128%3C%2Ftext%3E%3C%2Fg%3E%3C%2Fg%3E%3C%2Fsvg%3E' 
+                                        data-src='$this->root_path/image.php?i=$task1_img_name&i_t=$task1_img_type' height='30%' width='30%' alt='FAVR image 1'>
                                 </div>";
+                    // Image 1 modal
+                    echo "
+                            <div id=\"$id-image1-modal\" class=\"modal\">
+                              <span id='$id-close1' class=\"modal-close\">&times;</span>
+                              <img class=\"modal-content\" id=\"$id-image1-modal-content\">
+                              <div id=\"$id-caption1\" class='caption'></div>
+                            </div>";
+
                     echo "
                                 <div id='$id-image2' class='pt-1 border-top border-gray small d-none'>
-                                    <label for='image1'>Attached Image 2:</label>
-                                    <img src='data:image/svg+xml;charset=UTF-8,%3Csvg%20width%3D%22128%22%20height%3D%22128%22%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20viewBox%3D%220%200%20128%20128%22%20preserveAspectRatio%3D%22none%22%3E%3Cdefs%3E%3Cstyle%20type%3D%22text%2Fcss%22%3E%23holder_164a9f2d749%20text%20%7B%20fill%3A%23007bff%3Bfont-weight%3Abold%3Bfont-family%3AArial%2C%20Helvetica%2C%20Open%20Sans%2C%20sans-serif%2C%20monospace%3Bfont-size%3A6pt%20%7D%20%3C%2Fstyle%3E%3C%2Fdefs%3E%3Cg%20id%3D%22holder_164a9f2d749%22%3E%3Crect%20width%3D%22128%22%20height%3D%22128%22%20fill%3D%22%23007bff%22%3E%3C%2Frect%3E%3Cg%3E%3Ctext%20x%3D%2248.4296875%22%20y%3D%2266.7%22%3E128x128%3C%2Ftext%3E%3C%2Fg%3E%3C%2Fg%3E%3C%2Fsvg%3E' 
+                                    <label for='image2'>Attached Image 2:</label>
+                                    <img id='$id-img2' style='cursor: pointer' src='data:image/svg+xml;charset=UTF-8,%3Csvg%20width%3D%22128%22%20height%3D%22128%22%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20viewBox%3D%220%200%20128%20128%22%20preserveAspectRatio%3D%22none%22%3E%3Cdefs%3E%3Cstyle%20type%3D%22text%2Fcss%22%3E%23holder_164a9f2d749%20text%20%7B%20fill%3A%23007bff%3Bfont-weight%3Abold%3Bfont-family%3AArial%2C%20Helvetica%2C%20Open%20Sans%2C%20sans-serif%2C%20monospace%3Bfont-size%3A6pt%20%7D%20%3C%2Fstyle%3E%3C%2Fdefs%3E%3Cg%20id%3D%22holder_164a9f2d749%22%3E%3Crect%20width%3D%22128%22%20height%3D%22128%22%20fill%3D%22%23007bff%22%3E%3C%2Frect%3E%3Cg%3E%3Ctext%20x%3D%2248.4296875%22%20y%3D%2266.7%22%3E128x128%3C%2Ftext%3E%3C%2Fg%3E%3C%2Fg%3E%3C%2Fsvg%3E' 
                                         data-src='$this->root_path/image.php?i=$task2_img_name&i_t=$task2_img_type' height='30%' width='30%'>
                                 </div>";
+                    // Image 2 modal
+                    echo "
+                            <div id=\"$id-image2-modal\" class=\"modal\">
+                              <span id='$id-close2' class=\"modal-close\">&times;</span>
+                              <img class=\"modal-content\" id=\"$id-image2-modal-content\" alt='FAVR image 2'>
+                              <div id=\"$id-caption2\" class='caption'></div>
+                            </div>";
+
                     echo "
                                 <div id='$id-image3' class='pt-1 border-top border-gray small d-none'>
-                                    <label for='image1'>Attached Image 3:</label>
-                                    <img src='data:image/svg+xml;charset=UTF-8,%3Csvg%20width%3D%22128%22%20height%3D%22128%22%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20viewBox%3D%220%200%20128%20128%22%20preserveAspectRatio%3D%22none%22%3E%3Cdefs%3E%3Cstyle%20type%3D%22text%2Fcss%22%3E%23holder_164a9f2d749%20text%20%7B%20fill%3A%23007bff%3Bfont-weight%3Abold%3Bfont-family%3AArial%2C%20Helvetica%2C%20Open%20Sans%2C%20sans-serif%2C%20monospace%3Bfont-size%3A6pt%20%7D%20%3C%2Fstyle%3E%3C%2Fdefs%3E%3Cg%20id%3D%22holder_164a9f2d749%22%3E%3Crect%20width%3D%22128%22%20height%3D%22128%22%20fill%3D%22%23007bff%22%3E%3C%2Frect%3E%3Cg%3E%3Ctext%20x%3D%2248.4296875%22%20y%3D%2266.7%22%3E128x128%3C%2Ftext%3E%3C%2Fg%3E%3C%2Fg%3E%3C%2Fsvg%3E' 
-                                    data-src='$this->root_path/image.php?i=$task3_img_name&i_t=$task3_img_type' height='30%' width='30%'>
+                                    <label for='image3'>Attached Image 3:</label>
+                                    <img id='$id-img3' style='cursor: pointer' src='data:image/svg+xml;charset=UTF-8,%3Csvg%20width%3D%22128%22%20height%3D%22128%22%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20viewBox%3D%220%200%20128%20128%22%20preserveAspectRatio%3D%22none%22%3E%3Cdefs%3E%3Cstyle%20type%3D%22text%2Fcss%22%3E%23holder_164a9f2d749%20text%20%7B%20fill%3A%23007bff%3Bfont-weight%3Abold%3Bfont-family%3AArial%2C%20Helvetica%2C%20Open%20Sans%2C%20sans-serif%2C%20monospace%3Bfont-size%3A6pt%20%7D%20%3C%2Fstyle%3E%3C%2Fdefs%3E%3Cg%20id%3D%22holder_164a9f2d749%22%3E%3Crect%20width%3D%22128%22%20height%3D%22128%22%20fill%3D%22%23007bff%22%3E%3C%2Frect%3E%3Cg%3E%3Ctext%20x%3D%2248.4296875%22%20y%3D%2266.7%22%3E128x128%3C%2Ftext%3E%3C%2Fg%3E%3C%2Fg%3E%3C%2Fsvg%3E' 
+                                    data-src='$this->root_path/image.php?i=$task3_img_name&i_t=$task3_img_type' height='30%' width='30%' alt='FAVR image 3'>
                                 </div>";
+                    // Image 3 modal
+                    echo "
+                            <div id=\"$id-image3-modal\" class=\"modal\">
+                              <span id='$id-close3' class=\"modal-close\">&times;</span>
+                              <img class=\"modal-content\" id=\"$id-image3-modal-content\">
+                              <div id=\"$id-caption3\" class='caption'></div>
+                            </div>";
 
                     echo "
                             </p>
@@ -1437,6 +1503,24 @@ class Web_Page
                                               $('#$id-collapse').addClass('d-inline-flex');
                                               $('#$id-expand').removeClass('d-inline-flex');
                                               $('#$id-expand').addClass('d-none');";
+
+                    for ($i = 1; $i <= Data_Constants::MAXIMUM_IMAGE_UPLOAD_COUNT; $i++) {
+                        echo "
+                            var modal = document.getElementById('$id-image$i-modal');
+                            var img = document.getElementById('$id-img$i');
+                            var modalImg = document.getElementById('$id-image$i-modal-content');
+                            var captionText = document.getElementById('$id-caption$i');
+                            img.onclick = function(){
+                                modal.style.display = 'block';
+                                modalImg.src = this.src;
+                                captionText.innerHTML = this.alt;
+                            }
+                            var span = document.getElementById('$id-close$i');
+                            span.onclick = function() { 
+                                modal.style.display = 'none';
+                            }
+                         ";
+                    }
 
                     if (!empty($task1_img_data_array)) {
                         echo "$('#$id-image1').removeClass('d-none');";
@@ -1811,13 +1895,13 @@ class Web_Page
 
                         // freelancer has been removed from task
                         $freelancer_accepted -= 1;
-                        $set_task_status = "";
+//                        $set_task_status = "";
+                        $requested = Data_Constants::DB_TASK_STATUS_REQUESTED;
+                        $set_task_status = ", task_status = '$requested'";
 
                         // update request to null if freelancers accepted is 0 and set status back to requested
                         if ($freelancer_accepted == 0) {
                             $freelancer_id = "NULL";
-                            $requested = Data_Constants::DB_TASK_STATUS_REQUESTED;
-                            $set_task_status = ", task_status = '$requested'";
                         }
 
                         $update_request_query = "UPDATE marketplace_favr_requests

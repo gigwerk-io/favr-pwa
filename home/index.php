@@ -60,8 +60,8 @@ echo $ALERT_MESSAGE;
 
 $page->renderFavrRequestForm($_SESSION['user_info'], $_SESSION['filter_marketplace_by'], $_SESSION['orient_marketplace_by'], $_SESSION['limit_marketplace_by']);
 ?>
-<div class="zoom">
-    <a class="zoom-fab zoom-btn-large text-center" id="zoomBtn">
+<div class="favr-fab">
+    <a class="favr-fab-fab favr-fab-btn-large text-center" id="favr-fabBtn">
         <i style="padding: .8rem;background: transparent;color: var(--white);font-size: xx-large" class="material-icons">create</i>
     </a>
 </div>
@@ -84,8 +84,9 @@ $page->renderFavrRequestForm($_SESSION['user_info'], $_SESSION['filter_marketpla
             <a href="?filter_marketplace_by=<?php echo $_SESSION['filter_marketplace_by']; ?>&orient_marketplace_by=DESC&limit_marketplace_by=<?php echo $_SESSION['limit_marketplace_by']; ?>">Desc</a>
         </small>
     </h6>
-    <small class="d-block text-right mt-3">
-        <a href="?filter_marketplace_by=<?php echo $_SESSION['filter_marketplace_by']; ?>&orient_marketplace_by=<?php echo $_SESSION['orient_marketplace_by']; ?>&limit_marketplace_by=">All updates</a>
+    <small class="d-block mt-3">
+        <a href="?filter_marketplace_by=<?php echo $_SESSION['filter_marketplace_by']; ?>&orient_marketplace_by=<?php echo $_SESSION['orient_marketplace_by']; ?>&limit_marketplace_by=<?php echo $_SESSION['limit_marketplace_by']; ?>" class="float-left">Refresh</a>
+        <a href="?filter_marketplace_by=<?php echo $_SESSION['filter_marketplace_by']; ?>&orient_marketplace_by=<?php echo $_SESSION['orient_marketplace_by']; ?>&limit_marketplace_by=" class="float-right">All updates</a>
     </small>
 </div>
 <?php
@@ -134,9 +135,9 @@ $page->addScript("
             $('#difficulty').val('Easy');
         });
         
-        $('#zoomBtn').click(function() {
+        $('#favr-fabBtn').click(function() {
           $('.request-favr-mobile').toggle();
-          $('#zoomBtn').toggleClass('zoom-fade');
+          $('#favr-fabBtn').toggleClass('favr-fab-fade');
         });
 
         $('.request-favr-mobile').hide();
@@ -147,7 +148,7 @@ $page->addScript("
         
         $('.request-favr').click(function() {
             $('.request-favr-mobile').toggle();
-            $('.zoom-fab').toggle();
+            $('.favr-fab-fab').toggle();
             $('.request-favr-mobile').focus();
         });
     } );

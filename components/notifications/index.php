@@ -52,9 +52,20 @@ if (isset($_GET['ALERT_MESSAGE'])) {
 }
 
 echo $ALERT_MESSAGE;
-
-
-
+?>
+    <div class="my-1 p-2">
+        <h6 class="border-bottom border-gray pb-2 mb-0">
+            <small class="d-inline text-left font-italic text-muted">
+                <p>"Frankie says ..." - Frankie Goes To Hollywood</p>
+            </small>
+            <small class="d-inline text-right">
+                <a href="?navbar=active_notifications">Refresh</a>
+            </small>
+<!--            <small class="col-sm-6 pl-0"></small>-->
+<!--            <small class="col-sm-6 pl-0"></small>-->
+        </h6>
+    </div>
+<?php
 $page->renderMainNotifications($_SESSION['user_info']);
 $page->addScript("
 <script>

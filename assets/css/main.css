@@ -127,20 +127,20 @@ body {
     color: var(--white) !important;
 }
 
-.zoom {
+.favr-fab {
     visibility: hidden;
     display: none;
 }
 
-.zoom-fab {
+.favr-fab-fab {
     visibility: hidden;
 }
 
-.zoom-menu {
+.favr-fab-menu {
     visibility: hidden;
 }
 
-.zoom-card {
+.favr-fab-card {
     visibility: hidden;
 }
 
@@ -165,6 +165,84 @@ body {
     display: none;
 }
 
+/* The Modal (background) */
+.modal {
+    display: none; /* Hidden by default */
+    position: fixed; /* Stay in place */
+    z-index: 1033; /* Sit on top */
+    padding-top: 100px; /* Location of the box */
+    left: 0;
+    top: 0;
+    width: 100%; /* Full width */
+    height: 100%; /* Full height */
+    overflow: auto; /* Enable scroll if needed */
+    background-color: rgb(0,0,0); /* Fallback color */
+    background-color: rgba(0,0,0,0.9); /* Black w/ opacity */
+}
+
+/* Modal Content (image) */
+.modal-content {
+    margin: auto;
+    display: block;
+    width: 80%;
+    max-width: 700px;
+}
+
+/* Caption of Modal Image */
+.caption {
+    margin: auto;
+    display: block;
+    width: 80%;
+    max-width: 700px;
+    text-align: center;
+    color: #ccc;
+    padding: 10px 0;
+    height: 150px;
+}
+
+/* Add Animation */
+.modal-content, #caption {
+    -webkit-animation-name: zoom;
+    -webkit-animation-duration: 0.6s;
+    animation-name: zoom;
+    animation-duration: 0.6s;
+}
+
+@-webkit-keyframes zoom {
+    from {-webkit-transform:scale(0)}
+    to {-webkit-transform:scale(1)}
+}
+
+@keyframes zoom {
+    from {transform:scale(0)}
+    to {transform:scale(1)}
+}
+
+/* The Close Button */
+.modal-close {
+    position: absolute;
+    top: 15px;
+    right: 35px;
+    color: #f1f1f1;
+    font-size: 40px;
+    font-weight: bold;
+    transition: 0.3s;
+}
+
+.modal-close:hover,
+.modal-close:focus {
+    color: #bbb;
+    text-decoration: none;
+    cursor: pointer;
+}
+
+/* 100% Image Width on Smaller Screens */
+@media only screen and (max-width: 767.98px){
+    .modal-content {
+        width: 100%;
+    }
+}
+
 @media (max-width: 767.98px) {
     .web-search {
         visibility: hidden;
@@ -176,7 +254,7 @@ body {
         display: inherit;
     }
 
-    .zoom {
+    .favr-fab {
         visibility: visible;
         display: inherit;
         position: fixed;
@@ -187,12 +265,12 @@ body {
         z-index: 42;
     }
 
-    .zoom-fade {
+    .favr-fab-fade {
         background-color: var(--dark) !important;
         opacity: .5;
     }
 
-    .zoom-fab {
+    .favr-fab-fab {
         visibility: visible;
         display: inline-block;
         width: 40px;
@@ -209,18 +287,18 @@ body {
         color: #FFF;
     }
 
-    /*.zoom-fab:hover {*/
+    /*.favr-fab-fab:hover {*/
     /**/
     /*opacity: .5;*/
     /*box-shadow: 0 3px 3px 0 rgba(0, 0, 0, 0.14), 0 1px 7px 0 rgba(0, 0, 0, 0.12), 0 3px 1px -1px rgba(0, 0, 0, 0.2);*/
     /*}*/
-    .zoom-btn-large {
+    .favr-fab-btn-large {
         width: 60px;
         height: 60px;
         line-height: 60px;
     }
 
-    .zoom-menu {
+    .favr-fab-menu {
         visibility: visible;
         position: absolute;
         right: 70px;
@@ -233,12 +311,12 @@ body {
         text-align: right;
     }
 
-    .zoom-menu li {
+    .favr-fab-menu li {
         display: inline-block;
         margin-right: 10px;
     }
 
-    .zoom-card {
+    .favr-fab-card {
         visibility: visible;
         position: absolute;
         right: 150px;
@@ -251,7 +329,7 @@ body {
         color: #FFF;
     }
 
-    .zoom-card ul {
+    .favr-fab-card ul {
         -webkit-padding-start: 0;
         list-style: none;
         text-align: left;
