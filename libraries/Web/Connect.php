@@ -33,8 +33,14 @@ class Web_Connect{
      */
     public $password = Data_Constants::DB_PASSWORD;
 
+    /**
+     * @var int
+     */
     public $id;
 
+    /**
+     * @var string
+     */
     private $code;
     /**
      * @var string
