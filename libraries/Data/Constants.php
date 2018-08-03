@@ -16,6 +16,7 @@ class Data_Constants
     // database marketplace task status constants
     const DB_TASK_STATUS_REQUESTED = "Requested";
     const DB_TASK_STATUS_PENDING_APPROVAL = "Pending Approval";
+    const DB_TASK_STATUS_PAID = "Paid";
     const DB_TASK_STATUS_IN_PROGRESS = "In Progress";
     const DB_TASK_STATUS_COMPLETED = "Completed";
 

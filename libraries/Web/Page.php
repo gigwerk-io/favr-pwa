@@ -427,7 +427,7 @@ class Web_Page
         <head>
             <meta charset="utf-8">
             <!--            <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">-->
-            <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
+            <meta name="viewport" content="width=device-width, initial-scale=1.0, minimum-scale=1.0, maximum-scale=5.0, shrink-to-fit=yes, user-scalable=yes" />
             <meta name="HandheldFriendly" content="true" />
             <meta name="description" content="Post job requests at your price and have access to verified freelancers for open tasks. Chat with friends and trade FAVRs.">
             <meta name="author" content="Solken Technoloy LLC: Solomon Antoione, Haron Arama, D'Angelo Tines, and Ken Nguyen">
@@ -694,7 +694,7 @@ class Web_Page
                     }
                     ?>
                     <img src="<?php echo $this->root_path; ?>/assets/brand/favr_logo_rd.png" height="21" width="70"
-                         class="navbar-brand mr-0" style="padding-top: 0; padding-bottom: 0">
+                         class="navbar-brand mr-0" style="padding-top: 0; padding-bottom: 0" alt="Logo">
 
                     <?php
                     if ($_SESSION['nav_scroller'] != "active_marketplace" || $_SESSION['navbar'] != "active_home") {
@@ -818,7 +818,9 @@ class Web_Page
                                 Sign out
                             </a>
                         </li>
-                        <div class="mobile-footer p-1 ml-1 text-white fixed-bottom small">&copy;2018 FAVR, Inc v<?php echo $this->product_version; ?> Beta</div>
+                        <li class="mobile-footer p-1 ml-1 text-white fixed-bottom small">
+                            <div>&copy;2018 FAVR, Inc v<?php echo $this->product_version; ?> Beta</div>
+                        </li>
                     </ul>
                 </div>
             </nav>
@@ -958,7 +960,7 @@ class Web_Page
                     $task_description = $row['task_description'];
                     $task_date = date("n/j/Y", strtotime($row['task_date']));
                     $task_location = $row['task_location'];
-                    $task_time_to_accomplish = date('h:i A, l, n/j/Y', strtotime($task_date));
+                    $task_time_to_accomplish = date('h:i A, l, n/j/Y', strtotime($row['task_date']));
                     $task_price = $row['task_price'];
                     $task_difficulty = $row['task_intensity'];
                     $task_status = $row['task_status'];
@@ -1017,8 +1019,8 @@ class Web_Page
                                 <div id='$id-location' class='pt-1 border-top small border-gray d-none'>
                                     <label for='location'>Location:</label>";
 
-                    // share location of customer to freelancer if task is in progress
-                    if ($task_status == Data_Constants::DB_TASK_STATUS_IN_PROGRESS) {
+                    // share location of customer to freelancer if task is in progress or paid for
+                    if ($task_status == Data_Constants::DB_TASK_STATUS_PAID || $task_status == Data_Constants::DB_TASK_STATUS_IN_PROGRESS) {
                         echo "<p class='text-dark'>$task_location</p>";
                     } else {
                         echo "<!-- TODO: calculate location distance by zipcode -->
@@ -1038,22 +1040,44 @@ class Web_Page
                     echo "
                                 <div id='$id-image1' class='pt-1 border-top border-gray small d-none'>
                                     <label for='image1'>Attached Image 1:</label>
-                                    <img src='data:image/svg+xml;charset=UTF-8,%3Csvg%20width%3D%22128%22%20height%3D%22128%22%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20viewBox%3D%220%200%20128%20128%22%20preserveAspectRatio%3D%22none%22%3E%3Cdefs%3E%3Cstyle%20type%3D%22text%2Fcss%22%3E%23holder_164a9f2d749%20text%20%7B%20fill%3A%23007bff%3Bfont-weight%3Abold%3Bfont-family%3AArial%2C%20Helvetica%2C%20Open%20Sans%2C%20sans-serif%2C%20monospace%3Bfont-size%3A6pt%20%7D%20%3C%2Fstyle%3E%3C%2Fdefs%3E%3Cg%20id%3D%22holder_164a9f2d749%22%3E%3Crect%20width%3D%22128%22%20height%3D%22128%22%20fill%3D%22%23007bff%22%3E%3C%2Frect%3E%3Cg%3E%3Ctext%20x%3D%2248.4296875%22%20y%3D%2266.7%22%3E128x128%3C%2Ftext%3E%3C%2Fg%3E%3C%2Fg%3E%3C%2Fsvg%3E' 
-                                        data-src='$this->root_path/image.php?i=$task1_img_name&i_t=$task1_img_type' height='30%' width='30%'>
+                                    <img id='$id-img1' style='cursor: pointer' src='data:image/svg+xml;charset=UTF-8,%3Csvg%20width%3D%22128%22%20height%3D%22128%22%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20viewBox%3D%220%200%20128%20128%22%20preserveAspectRatio%3D%22none%22%3E%3Cdefs%3E%3Cstyle%20type%3D%22text%2Fcss%22%3E%23holder_164a9f2d749%20text%20%7B%20fill%3A%23007bff%3Bfont-weight%3Abold%3Bfont-family%3AArial%2C%20Helvetica%2C%20Open%20Sans%2C%20sans-serif%2C%20monospace%3Bfont-size%3A6pt%20%7D%20%3C%2Fstyle%3E%3C%2Fdefs%3E%3Cg%20id%3D%22holder_164a9f2d749%22%3E%3Crect%20width%3D%22128%22%20height%3D%22128%22%20fill%3D%22%23007bff%22%3E%3C%2Frect%3E%3Cg%3E%3Ctext%20x%3D%2248.4296875%22%20y%3D%2266.7%22%3E128x128%3C%2Ftext%3E%3C%2Fg%3E%3C%2Fg%3E%3C%2Fsvg%3E' 
+                                        data-src='$this->root_path/image.php?i=$task1_img_name&i_t=$task1_img_type' height='30%' width='30%' alt='FAVR image 1'>
                                 </div>";
+                    // Image 1 modal
+                    echo "
+                            <div id=\"$id-image1-modal\" class=\"modal\">
+                              <span id='$id-close1' class=\"modal-close\">&times;</span>
+                              <img class=\"modal-content\" id=\"$id-image1-modal-content\">
+                              <div id=\"$id-caption1\" class='caption'></div>
+                            </div>";
+
                     echo "
                                 <div id='$id-image2' class='pt-1 border-top border-gray small d-none'>
-                                    <label for='image1'>Attached Image 2:</label>
-                                    <img src='data:image/svg+xml;charset=UTF-8,%3Csvg%20width%3D%22128%22%20height%3D%22128%22%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20viewBox%3D%220%200%20128%20128%22%20preserveAspectRatio%3D%22none%22%3E%3Cdefs%3E%3Cstyle%20type%3D%22text%2Fcss%22%3E%23holder_164a9f2d749%20text%20%7B%20fill%3A%23007bff%3Bfont-weight%3Abold%3Bfont-family%3AArial%2C%20Helvetica%2C%20Open%20Sans%2C%20sans-serif%2C%20monospace%3Bfont-size%3A6pt%20%7D%20%3C%2Fstyle%3E%3C%2Fdefs%3E%3Cg%20id%3D%22holder_164a9f2d749%22%3E%3Crect%20width%3D%22128%22%20height%3D%22128%22%20fill%3D%22%23007bff%22%3E%3C%2Frect%3E%3Cg%3E%3Ctext%20x%3D%2248.4296875%22%20y%3D%2266.7%22%3E128x128%3C%2Ftext%3E%3C%2Fg%3E%3C%2Fg%3E%3C%2Fsvg%3E' 
-                                        data-src='$this->root_path/image.php?i=$task2_img_name&i_t=$task2_img_type' height='30%' width='30%'>
+                                    <label for='image2'>Attached Image 2:</label>
+                                    <img id='$id-img2' style='cursor: pointer' src='data:image/svg+xml;charset=UTF-8,%3Csvg%20width%3D%22128%22%20height%3D%22128%22%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20viewBox%3D%220%200%20128%20128%22%20preserveAspectRatio%3D%22none%22%3E%3Cdefs%3E%3Cstyle%20type%3D%22text%2Fcss%22%3E%23holder_164a9f2d749%20text%20%7B%20fill%3A%23007bff%3Bfont-weight%3Abold%3Bfont-family%3AArial%2C%20Helvetica%2C%20Open%20Sans%2C%20sans-serif%2C%20monospace%3Bfont-size%3A6pt%20%7D%20%3C%2Fstyle%3E%3C%2Fdefs%3E%3Cg%20id%3D%22holder_164a9f2d749%22%3E%3Crect%20width%3D%22128%22%20height%3D%22128%22%20fill%3D%22%23007bff%22%3E%3C%2Frect%3E%3Cg%3E%3Ctext%20x%3D%2248.4296875%22%20y%3D%2266.7%22%3E128x128%3C%2Ftext%3E%3C%2Fg%3E%3C%2Fg%3E%3C%2Fsvg%3E' 
+                                        data-src='$this->root_path/image.php?i=$task2_img_name&i_t=$task2_img_type' height='30%' width='30%' alt='FAVR image 2'>
                                 </div>";
+                    // Image 2 modal
+                    echo "
+                            <div id=\"$id-image2-modal\" class=\"modal\">
+                              <span id='$id-close2' class=\"modal-close\">&times;</span>
+                              <img class=\"modal-content\" id=\"$id-image2-modal-content\" alt='FAVR image 2'>
+                              <div id=\"$id-caption2\" class='caption'></div>
+                            </div>";
+
                     echo "
                                 <div id='$id-image3' class='pt-1 border-top border-gray small d-none'>
-                                    <label for='image1'>Attached Image 3:</label>
-                                    <img src='data:image/svg+xml;charset=UTF-8,%3Csvg%20width%3D%22128%22%20height%3D%22128%22%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20viewBox%3D%220%200%20128%20128%22%20preserveAspectRatio%3D%22none%22%3E%3Cdefs%3E%3Cstyle%20type%3D%22text%2Fcss%22%3E%23holder_164a9f2d749%20text%20%7B%20fill%3A%23007bff%3Bfont-weight%3Abold%3Bfont-family%3AArial%2C%20Helvetica%2C%20Open%20Sans%2C%20sans-serif%2C%20monospace%3Bfont-size%3A6pt%20%7D%20%3C%2Fstyle%3E%3C%2Fdefs%3E%3Cg%20id%3D%22holder_164a9f2d749%22%3E%3Crect%20width%3D%22128%22%20height%3D%22128%22%20fill%3D%22%23007bff%22%3E%3C%2Frect%3E%3Cg%3E%3Ctext%20x%3D%2248.4296875%22%20y%3D%2266.7%22%3E128x128%3C%2Ftext%3E%3C%2Fg%3E%3C%2Fg%3E%3C%2Fsvg%3E' 
-                                    data-src='$this->root_path/image.php?i=$task3_img_name&i_t=$task3_img_type' height='30%' width='30%'>
+                                    <label for='image3'>Attached Image 3:</label>
+                                    <img id='$id-img3' style='cursor: pointer' src='data:image/svg+xml;charset=UTF-8,%3Csvg%20width%3D%22128%22%20height%3D%22128%22%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20viewBox%3D%220%200%20128%20128%22%20preserveAspectRatio%3D%22none%22%3E%3Cdefs%3E%3Cstyle%20type%3D%22text%2Fcss%22%3E%23holder_164a9f2d749%20text%20%7B%20fill%3A%23007bff%3Bfont-weight%3Abold%3Bfont-family%3AArial%2C%20Helvetica%2C%20Open%20Sans%2C%20sans-serif%2C%20monospace%3Bfont-size%3A6pt%20%7D%20%3C%2Fstyle%3E%3C%2Fdefs%3E%3Cg%20id%3D%22holder_164a9f2d749%22%3E%3Crect%20width%3D%22128%22%20height%3D%22128%22%20fill%3D%22%23007bff%22%3E%3C%2Frect%3E%3Cg%3E%3Ctext%20x%3D%2248.4296875%22%20y%3D%2266.7%22%3E128x128%3C%2Ftext%3E%3C%2Fg%3E%3C%2Fg%3E%3C%2Fsvg%3E' 
+                                    data-src='$this->root_path/image.php?i=$task3_img_name&i_t=$task3_img_type' height='30%' width='30%' alt='FAVR image 3'>
                                 </div>";
-
+                    // Image 3 modal
+                    echo "
+                            <div id=\"$id-image3-modal\" class=\"modal\">
+                              <span id='$id-close3' class=\"modal-close\">&times;</span>
+                              <img class=\"modal-content\" id=\"$id-image3-modal-content\">
+                              <div id=\"$id-caption3\" class='caption'></div>
+                            </div>";
                     echo "
                             </p>
                             <div class='row p-0 border-top border-gray'>
@@ -1062,7 +1086,6 @@ class Web_Page
                                         <div id='$id-expand' class='text-info d-inline-flex'
                                              style='cursor: pointer'
                                              onclick=\"
-                                              $('.zoom').fadeOut();
                                               $('#$id').animate({height: '4rem'});
                                               $('#$id-location').removeClass('d-none');
                                               $('#$id-freelancer-count').removeClass('d-none');
@@ -1070,6 +1093,24 @@ class Web_Page
                                               $('#$id-collapse').addClass('d-inline-flex');
                                               $('#$id-expand').removeClass('d-inline-flex');
                                               $('#$id-expand').addClass('d-none');";
+
+                    for ($i = 1; $i <= Data_Constants::MAXIMUM_IMAGE_UPLOAD_COUNT; $i++) {
+                        echo "
+                            var modal = document.getElementById('$id-image$i-modal');
+                            var img = document.getElementById('$id-img$i');
+                            var modalImg = document.getElementById('$id-image$i-modal-content');
+                            var captionText = document.getElementById('$id-caption$i');
+                            img.onclick = function(){
+                                modal.style.display = 'block';
+                                modalImg.src = this.src;
+                                captionText.innerHTML = this.alt;
+                            }
+                            var span = document.getElementById('$id-close$i');
+                            span.onclick = function() { 
+                                modal.style.display = 'none';
+                            }
+                         ";
+                    }
 
                     if (!empty($task1_img_data_array)) {
                         echo "$('#$id-image1').removeClass('d-none');";
@@ -1110,10 +1151,9 @@ class Web_Page
                     }
 
                     echo "
-                                              
-                                              $('.zoom').css({display: ''})
-                                        \">Collapse</div> | $task_date
+                                        \">Collapse</div>
                                         ";
+
 
                     echo "
                                     </div>
@@ -1144,12 +1184,22 @@ class Web_Page
                                   </div>";
                             } else {
                                 echo "<div class='float-right d-inline'>
-                                    <p class='d-inline-flex mb-1'>
-                                    Status: $task_status</p>
-                                  </div>";
+                                        <p class='d-inline-flex mb-1'>
+                                        ";
+                                // TODO: use class defined constants here to validate verified freelancers from regular customers
+                                if ($task_status == Data_Constants::DB_TASK_STATUS_PAID && $customer_id == $_SESSION['user_info']['id']) {
+                                    echo "Status: Help en-route";
+                                } else if ($task_status == Data_Constants::DB_TASK_STATUS_PAID && $customer_id != $_SESSION['user_info']['id']) {
+                                    echo "Status: Go to location";
+                                } else {
+                                    echo "Status: $task_status";
+                                }
+
+                                echo "  </p>
+                                      </div>";
                             }
 
-                            echo "<div class='d-block mt-4 border-gray border-top text-center'>
+                            echo "<div class='d-block mt-4 pt-2 border-gray border-top text-center'>
                                     <a class='text-danger' href=\"$this->root_path/components/notifications/?navbar=active_notifications&withdraw_request_id=$task_id&freelancer_id=$freelancer_id&ALERT_MESSAGE=You've withdrawn from this task: the customer has been notified!\">
                                     Withdraw From Task</a>
                                   </div>";
@@ -1170,10 +1220,34 @@ class Web_Page
                             if ($row['approved'] == 1) { // this user is approved
                                 echo "<div class='float-right d-inline'>
                                         <p class='d-inline-flex mb-1'>
-                                        Status: $task_status</p>
+                                        ";
+                                // TODO: use class defined constants here to validate verified freelancers from regular customers
+                                if ($task_status == Data_Constants::DB_TASK_STATUS_PAID && $customer_id == $_SESSION['user_info']['id']) {
+                                    echo "Status: Help en-route";
+                                } else if ($task_status == Data_Constants::DB_TASK_STATUS_PAID && $customer_id != $_SESSION['user_info']['id']) {
+                                    echo "Status: Go to location";
+                                } else {
+                                    echo "Status: $task_status";
+                                }
+
+                                echo "  </p>
                                       </div>";
 
-                                echo "<div class='d-block mt-4 border-gray border-top text-center'>";
+                                if ($task_status == Data_Constants::DB_TASK_STATUS_PAID) {
+                                    echo "<div class='d-block mt-4 pt-2 mb-0 border-gray border-top text-center'>
+                                            <a href='#' class='text-info'>
+                                                 Freelancer Arrived</a>
+                                          </div>
+                                    ";
+                                } else if ($task_status == Data_Constants::DB_TASK_STATUS_IN_PROGRESS) {
+                                    echo "<div class='d-block mt-4 pt-2 mb-0 pt-2 border-gray border-top text-center'>
+                                            <a href='#' class='text-info'>
+                                                 Request Completed</a>
+                                          </div>
+                                    ";
+                                }
+
+                                echo "<div class='d-block mt-2 pt-2 border-gray border-top text-center'>";
                                 if ($task_status == Data_Constants::DB_TASK_STATUS_REQUESTED || $task_status == Data_Constants::DB_TASK_STATUS_PENDING_APPROVAL) {
                                     echo "<a href='#' class='mt-0 text-danger'>
                                         Cancel Request</a>
@@ -1186,15 +1260,15 @@ class Web_Page
                                 echo "</div>";
                             } else { // user has not been approved yet
     //                        echo "<p>Respond</p>";
-                                echo "<div class='float-right d-inline'><a href=\"$this->root_path/components/notifications/?navbar=active_notifications&accept_customer_request_id=$task_id&freelancer_id=$freelancer_id&ALERT_MESSAGE=You've approved this freelancer for this task!\" class='text-success'>
+                                echo "<div class='float-right d-inline'><a href=\"$this->root_path/components/notifications/?navbar=active_notifications&accept_customer_request_id=$task_id&freelancer_id=$freelancer_id&ALERT_MESSAGE=You've approved this freelancer for this task! Mark that they've arrived when they start doing your FAVR!\" class='text-success'>
                                 Accept</a> | ";
                                 echo "<a href=\"$this->root_path/components/notifications/?navbar=active_notifications&reject_customer_request_id=$task_id&freelancer_id=$freelancer_id&ALERT_MESSAGE=You've rejected this freelancer for this task! They've been notified!\" class='text-danger'>
                                 Reject</a></div>";
 
-                                echo "<div class='d-block mt-4 border-gray border-top text-center'>
+                                echo "<div class='d-block mt-4 pt-2 border-gray border-top text-center'>
                                         <a href='#' class='mt-3 text-danger'>
                                             Cancel Request</a>
-                                        </div>
+                                      </div>
                                 ";
                             }
                         }
@@ -1261,7 +1335,7 @@ class Web_Page
                             <div class="form-label-group">
                                 <input type="datetime-local" name="requestDate" id="inputDate"
                                        class="form-control"
-                                       placeholder="When do you want your FAVR done by?" value="<?php echo date("Y-m-d\TH:i", time()); ?>" required="">
+                                       placeholder="When do you want your FAVR?" value="<?php echo date("Y-m-d\TH:i", time()); ?>" required="">
                                 <label for="inputDate">When do you want your FAVR?</label>
                             </div>
 
@@ -1385,7 +1459,7 @@ class Web_Page
                     $task_description = $row['task_description'];
                     $task_date = date("n/j/Y", strtotime($row['task_date']));
                     $task_location = $row['task_location'];
-                    $task_time_to_accomplish = date('h:i A, l, n/j/Y', strtotime($task_date));
+                    $task_time_to_accomplish = date('h:i A, l, n/j/Y', strtotime($row['task_date']));
                     $task_price = $row['task_price'];
                     $task_difficulty = $row['task_intensity'];
 
@@ -1463,13 +1537,13 @@ class Web_Page
                                 <div id='$id-image2' class='pt-1 border-top border-gray small d-none'>
                                     <label for='image2'>Attached Image 2:</label>
                                     <img id='$id-img2' style='cursor: pointer' src='data:image/svg+xml;charset=UTF-8,%3Csvg%20width%3D%22128%22%20height%3D%22128%22%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20viewBox%3D%220%200%20128%20128%22%20preserveAspectRatio%3D%22none%22%3E%3Cdefs%3E%3Cstyle%20type%3D%22text%2Fcss%22%3E%23holder_164a9f2d749%20text%20%7B%20fill%3A%23007bff%3Bfont-weight%3Abold%3Bfont-family%3AArial%2C%20Helvetica%2C%20Open%20Sans%2C%20sans-serif%2C%20monospace%3Bfont-size%3A6pt%20%7D%20%3C%2Fstyle%3E%3C%2Fdefs%3E%3Cg%20id%3D%22holder_164a9f2d749%22%3E%3Crect%20width%3D%22128%22%20height%3D%22128%22%20fill%3D%22%23007bff%22%3E%3C%2Frect%3E%3Cg%3E%3Ctext%20x%3D%2248.4296875%22%20y%3D%2266.7%22%3E128x128%3C%2Ftext%3E%3C%2Fg%3E%3C%2Fg%3E%3C%2Fsvg%3E' 
-                                        data-src='$this->root_path/image.php?i=$task2_img_name&i_t=$task2_img_type' height='30%' width='30%'>
+                                        data-src='$this->root_path/image.php?i=$task2_img_name&i_t=$task2_img_type' height='30%' width='30%' alt='FAVR image 2'>
                                 </div>";
                     // Image 2 modal
                     echo "
                             <div id=\"$id-image2-modal\" class=\"modal\">
                               <span id='$id-close2' class=\"modal-close\">&times;</span>
-                              <img class=\"modal-content\" id=\"$id-image2-modal-content\" alt='FAVR image 2'>
+                              <img class=\"modal-content\" id=\"$id-image2-modal-content\">
                               <div id=\"$id-caption2\" class='caption'></div>
                             </div>";
 
@@ -1495,7 +1569,7 @@ class Web_Page
                                         <div id='$id-expand' class='text-info d-inline-flex'
                                              style='cursor: pointer'
                                              onclick=\"
-                                              $('.zoom').fadeOut();
+                                              $('.favr-fab').fadeOut();
                                               $('#$id').animate({height: '4rem'});
                                               $('#$id-location').removeClass('d-none');
                                               $('#$id-freelancer-count').removeClass('d-none');
@@ -1562,7 +1636,7 @@ class Web_Page
 
                     echo "
                                               
-                                              $('.zoom').css({display: ''})
+                                              $('.favr-fab').css({display: ''})
                                         \">Collapse</div> | $task_date
                                         ";
 
@@ -2145,7 +2219,7 @@ class Web_Page
     /**
      * Process accept request
      *
-     * Flow: Marketplace -> Verified freelancer accepts -> Notify customer -> customer accepts -> Notify freelancer -> Change status of request to pending job
+     * Flow: Marketplace -> Verified freelancer accepts -> Notify customer -> customer accepts -> Notify freelancer -> Change status of request to paid job
      *                                                      |-> freelancer or customer rejects -> Marketplace
      *
      * @param int $requestID
@@ -2180,7 +2254,7 @@ class Web_Page
 
                     $result = $this->db->query($update_freelancer_query);
                     if ($result) {
-                        // set status of task to in progress if enough help has been found and approved
+                        // set status of task to paid if enough help has been found and approved
                         if ($freelancer_accepted == $freelancer_count) {
                             $select_freelancer_query = "SELECT COUNT(*)
                                                         FROM marketplace_favr_freelancers
@@ -2191,9 +2265,9 @@ class Web_Page
                                 $row = $result->fetch(PDO::FETCH_ASSOC);
                                 $approvedCount = $row['COUNT(*)'];
                                 if ($approvedCount == $freelancer_count) { // user has approved all freelancers
-                                    $InProgress = Data_Constants::DB_TASK_STATUS_IN_PROGRESS;
+                                    $paid = Data_Constants::DB_TASK_STATUS_PAID;
                                     $update_request_query = "UPDATE marketplace_favr_requests
-                                                             SET task_status = '$InProgress'
+                                                             SET task_status = '$paid'
                                                              WHERE id = $request_id";
 
                                     $result = $this->db->query($update_request_query);

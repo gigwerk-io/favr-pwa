@@ -95,6 +95,28 @@ $page->renderFavrMarketplace($_SESSION['scope'], $_SESSION['filter_marketplace_b
 
 $page->addScript("
     <script>
+    $(function(){
+        var dtToday = new Date();
+        
+        var month = dtToday.getMonth() + 1;
+        var day = dtToday.getDate();
+        var year = dtToday.getFullYear();
+        var hour = dtToday.getHours();
+        var minute = dtToday.getMinutes();
+        
+        if (month < 10)
+            month = '0' + month.toString();
+        if (day < 10)
+            day = '0' + day.toString();
+        if (hour < 10)
+            hour = '0' + hour.toString();
+        if (minute < 10)
+            minute = dtToday.getMinutes();
+        
+        var maxDate = year + '-' + month + '-' + day + '\T' + hour + ':' + minute;
+        $('#inputDate').attr('min', maxDate);
+    });
+    
     window.addEventListener('load', function(){
         var allimages= document.getElementsByTagName('img');
         for (var i=0; i<allimages.length; i++) {
