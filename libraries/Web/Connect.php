@@ -33,6 +33,9 @@ class Web_Connect{
      */
     public $password = Data_Constants::DB_PASSWORD;
 
+    public $id;
+
+    private $code;
     /**
      * @var string
      */
@@ -40,6 +43,8 @@ class Web_Connect{
 
     function __construct() {
         $this->db = $this->connect();
+        $this->code = $_GET['code'];
+        $this->id = $_SESSION['user_info']['id'];
     }
 
     function connect()
@@ -87,5 +92,8 @@ class Web_Connect{
     public function update(int $id)
     {
         $this->db->query("UPDATE users SET payment_id='$this->payment_id' WHERE id=$id");
+        //$this->savePaymentAccount($this->code)->update($this->id);
     }
+
+
 }
