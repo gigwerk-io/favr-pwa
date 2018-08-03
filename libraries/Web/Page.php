@@ -20,31 +20,31 @@ class Web_Page
      * Data source name
      * @var string
      */
-    public $dsn = 'mysql:dbname=local_favr;host=favr.cgfeyejwt7qv.us-east-2.rds.amazonaws.com';
+    public $dsn = Data_Constants::DB_DSN;
 
     /**
      * Backend username
      * @var string
      */
-    public $username = 'Solomon04';
+    public $username = Data_Constants::DB_USERNAME;
 
     /**
      * Backend password
      * @var string
      */
-    public $password = 'Nomolos.99';
+    public $password = Data_Constants::DB_PASSWORD;
 
     /**
      * String value to keep track and validate product version
      * @var string
      */
-    public $product_version = "0.1.1";
+    public $product_version = Data_Constants::PRODUCT_VERSION;
 
     /**
      * value to determine project root path
      * @var string
      */
-    public $root_path = "https://askfavr.com/favr-pwa";
+    public $root_path = Data_Constants::ROOT_PATH;
 
     /**
      * Boolean to determine whether or not to render page main navigation/menu
@@ -76,8 +76,6 @@ class Web_Page
      */
     public $db;
 
-
-
     /**
      * Value to identify user
      * @var string
@@ -105,10 +103,10 @@ class Web_Page
     /**
      * Constructor for the page. Sets up most of the properties of this object.
      *
-     * @param $page_id
-     * @param $page_title
-     * @param $user
-     * @param $render_main_navigation
+     * @param int $page_id
+     * @param string $page_title
+     * @param string $user
+     * @param boolean $render_main_navigation
      */
     function __construct($page_id, $user = "", $page_title = "FAVR", $render_main_navigation = true)
     {
@@ -130,7 +128,7 @@ class Web_Page
             $_SESSION['user_info'] = array(
                 "id" => '-1'
             );
-            header("Location: https://askfavr.com/favr-pwa/signin/");
+            header("Location: $this->root_path/signin/");
         } else {
             // permitted user
             if (empty($_SESSION['user_info'])) {
@@ -250,8 +248,8 @@ class Web_Page
     /**
      * Sign in a user and return if the operation was successful or not
      *
-     * @param $signInUsernameEmail
-     * @param $signInPass
+     * @param string $signInUsernameEmail
+     * @param string $signInPass
      *
      * @return boolean
      *
@@ -307,12 +305,12 @@ class Web_Page
     /**
      * Sign up a user and return if the operation was successful or not
      *
-     * @param $signUpUsername
-     * @param $signUpEmail
-     * @param $signUpFirstName
-     * @param $signUpLastName
-     * @param $signUpPass
-     * @param $signUpPassConfirm
+     * @param string $signUpUsername
+     * @param string $signUpEmail
+     * @param string $signUpFirstName
+     * @param string $signUpLastName
+     * @param string $signUpPass
+     * @param string $signUpPassConfirm
      *
      * @return boolean
      *
@@ -350,7 +348,7 @@ class Web_Page
     /**
      * Set the title of the page.
      * Must be called before renderHeader.
-     * @param $page_title string The title of the page.
+     * @param string $page_title // The title of the page.
      */
     function setTitle($page_title)
     {
@@ -375,7 +373,7 @@ class Web_Page
     /**
      * Get user info by id
      *
-     * @param $userID
+     * @param int $userID
      *
      * @return array // return array of userInfo if user exists NULL otherwise
      */
@@ -393,7 +391,7 @@ class Web_Page
     /**
      * Set any stylesheets that need to be loaded in the header.
      * Must be called before renderHeader.
-     * @param $add_stylesheet string The stylesheet to load.
+     * @param string $add_stylesheet string The stylesheet to load.
      */
     function addStylesheet($add_stylesheet)
     {
@@ -405,7 +403,7 @@ class Web_Page
     /**
      * Set any stylesheets that need to be loaded in the header.
      * Must be called before renderHeader.
-     * @param $add_script string The stylesheet to load.
+     * @param string $add_script string The stylesheet to load.
      */
     function addScript($add_script)
     {
@@ -416,7 +414,7 @@ class Web_Page
 
     /**
      * Render page header
-     * @param $render_top_nav
+     * @param boolean $render_top_nav
      */
     function renderHeader($render_top_nav = true)
     {
@@ -499,8 +497,7 @@ class Web_Page
         </head>
 
         <body class="bg-light" onload="pageLoader()">
-
-        <div id="loader"></div>
+            <div id="loader"></div>
 
         <?php
         $this->renderMainNavigation($this->page_id, $render_top_nav);
@@ -513,9 +510,9 @@ class Web_Page
     /**
      * Render marketplace history for this specific user
      *
-     * @param $id
-     * @param $orderBy
-     * @param $orientation
+     * @param int $id
+     * @param string $orderBy
+     * @param string $orientation
      *
      * @return boolean
      */
@@ -556,7 +553,7 @@ class Web_Page
                     $customer_username = $customer['username'];
                     $customer_first_name = $customer['first_name'];
                     $task_description = $row['task_description'];
-                    $task_date = date("m/d/Y", strtotime($row['task_date']));
+                    $task_date = date("n/j/Y", strtotime($row['task_date']));
                     $task_location = $row['task_location'];
                     $task_time_to_accomplish = $row['task_time_to_accomplish'];
                     $task_price = $row['task_price'];
@@ -627,12 +624,12 @@ class Web_Page
     /**
      * Render profile from userID
      *
-     * @param $userID
+     * @param int $userID
      *
      * @return boolean
      *
-     * @TODO implement this function as a universal solution to rendering profiles
-     * @TODO allow for image file upload but store image files in file system outside of document root
+     * TODO implement this function as a universal solution to rendering profiles
+     * TODO allow for image file upload but store image files in file system outside of document root
      *
      */
     function renderFavrProfile($userID) {
@@ -641,8 +638,8 @@ class Web_Page
 
     /**
      * Render page main navigation
-     * @param $page_id
-     * @param $render_main_navigation
+     * @param int $page_id
+     * @param boolean $render_main_navigation
      */
     function renderMainNavigation($page_id, $render_main_navigation = true)
     {
@@ -821,6 +818,7 @@ class Web_Page
                                 Sign out
                             </a>
                         </li>
+                        <div class="mobile-footer p-1 ml-1 text-white fixed-bottom small">&copy;2018 FAVR, Inc v<?php echo $this->product_version; ?> Beta</div>
                     </ul>
                 </div>
             </nav>
@@ -895,7 +893,7 @@ class Web_Page
     /**
      * Render notification count
      *
-     * @param $notificationCount
+     * @param int $notificationCount
      *
      * @return boolean // true if there's notifications false otherwise
      */
@@ -912,97 +910,318 @@ class Web_Page
     }
 
     /**
+     * TODO: use client side store to keep freelancer array and accepted task information
      * Render main notifications
      *
-     * @param $userInfo
+     * @param array $userInfo
      *
      * @return boolean
      */
     function renderMainNotifications($userInfo)
     {
         $userID = $userInfo['id'];
-
-        $notifications_query = "SELECT *
+        $completed = Data_Constants::DB_TASK_STATUS_COMPLETED;
+        $notifications_query = "SELECT *, mff.user_id AS mffuserid, mfr.id AS mfrid
                                 FROM marketplace_favr_requests mfr 
-                                WHERE mfr.customer_id = '$userID' 
-                                AND mfr.freelancer_id IS NOT NULL
-                                AND NOT mfr.task_status = 'Completed'
-                                OR mfr.freelancer_id = '$userID' 
-                                AND NOT mfr.task_status = 'Completed'
-                                ";
+                                JOIN marketplace_favr_freelancers mff 
+                                ON mff.request_id = mfr.id
+                                JOIN users u
+                                ON u.id = mff.user_id
+                                AND mff.user_id = $userID 
+                                AND NOT mfr.task_status = '$completed'
+                                OR mfr.customer_id = $userID 
+                                AND u.id = mfr.customer_id
+                                AND NOT mfr.task_status = '$completed'";
 
         $result = $this->db->query($notifications_query);
-        $rows = $result->fetchAll(PDO::FETCH_ASSOC);
+        if (!$result) {
+            // failed to render notifications
+            return false;
+        } else {
+            $rows = $result->fetchAll(PDO::FETCH_ASSOC);
+            if (!empty($rows)) {
+                // There are results
+                foreach ($rows as $row) {
+                    $freelancer_id = $row['mffuserid'];
+                    $id = md5($row['mfrid'] . "-$freelancer_id"); // div id
+                    $task_id = $row['mfrid'];
+                    $freelancerInfo = $this->getUserInfo($freelancer_id);
+                    $freelancer_username = $freelancerInfo['username'];
+                    $freelancer_accepted = $row['task_freelancer_accepted'];
+                    $task_freelancer_count = $row['task_freelancer_count'];
 
-        if (!empty($rows)) {
-            // There are results
+                    $customer_id = $row['customer_id'];
+                    $customerInfo = $this->getUserInfo($customer_id);
+                    $customer_username = $customerInfo['username'];
+                    $customer_first_name = $customerInfo['first_name'];
 
-            foreach ($rows as $row) {
-                $freelancer_id = $row['freelancer_id'];
-                $freelancer = $this->getUserInfo($freelancer_id);
+                    $task_description = $row['task_description'];
+                    $task_date = date("n/j/Y", strtotime($row['task_date']));
+                    $task_location = $row['task_location'];
+                    $task_time_to_accomplish = date('h:i A, l, n/j/Y', strtotime($task_date));
+                    $task_price = $row['task_price'];
+                    $task_difficulty = $row['task_intensity'];
+                    $task_status = $row['task_status'];
 
-                $customer_id = $row['customer_id'];
-                $customer = $this->getUserInfo($customer_id);
+                    $task1_img_data_array = unserialize($row['task_picture_path_1']);
+                    $task1_img_name = $task1_img_data_array['name'];
+                    $task1_img_type = $task1_img_data_array['type'];
 
-                $task_id = $row['id'];
-                $task_description = $row['task_description'];
-                $task_date = date("m/d/Y", strtotime($row['task_date']));
-                $task_location = $row['task_location'];
-                $task_time_to_accomplish = $row['task_time_to_accomplish'];
-                $task_price = $row['task_price'];
-                $task_status = $row['task_status'];
+                    $task2_img_data_array = unserialize($row['task_picture_path_2']);
+                    $task2_img_name = $task2_img_data_array['name'];
+                    $task2_img_type = $task2_img_data_array['type'];
 
-                echo "<div class=\"my-3 p-3 bg-white rounded box-shadow\">
-                            <div class='pb-2 mb-0 border-bottom border-gray'>
-                                <img data-src=\"holder.js/32x32?theme=thumb&bg=007bff&fg=007bff&size=1\" alt=\"\" class=\"mr-2 rounded\">
-                                <strong style='font-size: 80%' class=\"d - block text - gray - dark\">@". $customer['username'] ."</strong>
+                    $task3_img_data_array = unserialize($row['task_picture_path_3']);
+                    $task3_img_name = $task3_img_data_array['name'];
+                    $task3_img_type = $task3_img_data_array['type'];
+
+                    // hide shrink button and non essential form information
+
+                    echo "<div class=\"my-3 p-3 bg-white rounded box-shadow\">
+                        <div class='pb-2 mb-0 border-bottom border-gray'>
+                            <img src=\"data:image/svg+xml;charset=UTF-8,%3Csvg%20width%3D%22128%22%20height%3D%22128%22%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20viewBox%3D%220%200%20128%20128%22%20preserveAspectRatio%3D%22none%22%3E%3Cdefs%3E%3Cstyle%20type%3D%22text%2Fcss%22%3E%23holder_164a9f2d749%20text%20%7B%20fill%3A%23007bff%3Bfont-weight%3Abold%3Bfont-family%3AArial%2C%20Helvetica%2C%20Open%20Sans%2C%20sans-serif%2C%20monospace%3Bfont-size%3A6pt%20%7D%20%3C%2Fstyle%3E%3C%2Fdefs%3E%3Cg%20id%3D%22holder_164a9f2d749%22%3E%3Crect%20width%3D%22128%22%20height%3D%22128%22%20fill%3D%22%23007bff%22%3E%3C%2Frect%3E%3Cg%3E%3Ctext%20x%3D%2248.4296875%22%20y%3D%2266.7%22%3E128x128%3C%2Ftext%3E%3C%2Fg%3E%3C%2Fg%3E%3C%2Fsvg%3E\" 
+                                height='32' width='32' alt=\"\" class=\"mr-2 rounded\">
+                            <strong style='font-size: 80%' class=\"d - block text - gray - dark\">
                                 ";
 
-                if ($freelancer_id == $userID) {
-                    echo "<div class='float-right small' style='color: var(--green)'>+ $$task_price</div>";
-                } else if ($customer_id == $userID) {
-                    echo "<div class='float-right small' style='color: var(--red)'>- $$task_price</div>";
-                }
+                    if ($customer_id == $_SESSION['user_info']['id']) {
+                        echo "<p class='font-weight-light text-muted d-inline-flex'>Accepted by</p> @$freelancer_username";
+                    } else {
+                        echo "@$customer_username";
+                    }
 
-                echo "</div>
-                        <div class=\"media text-muted pt-3\">
-                            <div class='container'>
-                                <p class=\"media-body pb-3 mb-0 small lh-125 text-dark\">
-                                    <div class='small'>Task accepted by ". $freelancer['first_name'] ."</div>
-                                    <br>
-                                    $task_description
-                                </p>
-                                <div class='row p-0 border-top border-gray'>
-                                    <div class='col-sm-12 small'>
-                                        <div class=\"float-left d-inline\">
-                                            <a href=\"?navbar=active_notifications&completed_request_id=$task_id&freelancer_id=$freelancer_id&customer_id=$customer_id&ALERT_MESSAGE=The FAVR has been completed and payment is now in the process of disbursal!\">
-                                                Job is Done</a> | 
-                                            <a href='#' onclick='alert(\"Cancellation of an already accepted FAVR will cause a $5 fee to be charged to you! Are you sure you wish to proceed?\")' class='text-danger'>
-                                                Cancel Request</a>
-                                        </div>
-                                        <div class='float-right d-inline'>
-                                            $task_date
-                                        </div>
+
+                    echo "</strong>
+                            ";
+
+                    if (isset($task_difficulty) && $customer_id != $_SESSION['user_info']['id']) {
+                        if ($task_difficulty == Data_Constants::DB_TASK_INTENSITY_EASY) {
+                            echo "<button type=\"button\" class=\"ml-2 btn-sm btn btn-success p-1 rounded\" style='opacity: .9' value=\"Easy\" disabled>Easy 👌</button>";
+                        } else if ($task_difficulty == Data_Constants::DB_TASK_INTENSITY_MEDIUM) {
+                            echo "<button type=\"button\" class=\"ml-2 btn-sm btn btn-warning p-1 rounded\" style='opacity: .9' value=\"Medium\" disabled>Medium 💪🏿</button>";
+                        } else if ($task_difficulty == Data_Constants::DB_TASK_INTENSITY_HARD) {
+                            echo "<button type=\"button\" class=\"ml-2 btn-sm btn btn-danger p-1 rounded\" style='opacity: .9' value=\"Hard\" disabled>Hard 🔥</button>";
+                        }
+                    }
+
+                    if ($customer_id == $_SESSION['user_info']['id']) {
+                        echo "<div class='float-right small' style='padding-top: .3rem;color: var(--red)'>- $$task_price</div>";
+                    } else {
+                        echo "<div class='float-right small' style='padding-top: .3rem;color: var(--green)'>+ $$task_price</div>";
+                    }
+
+                    echo "</div><div class=\"media text-muted pt-3\">
+                        <div class='container'>
+                            <p id='$id' class=\"media-body text-dark mb-0 small lh-125\">
+                                $task_description
+                                <div id='$id-location' class='pt-1 border-top small border-gray d-none'>
+                                    <label for='location'>Location:</label>";
+
+                    // share location of customer to freelancer if task is in progress
+                    if ($task_status == Data_Constants::DB_TASK_STATUS_IN_PROGRESS) {
+                        echo "<p class='text-dark'>$task_location</p>";
+                    } else {
+                        echo "<!-- TODO: calculate location distance by zipcode -->
+                                    <p class='text-dark'>Within 3 Miles of your location.</p>";
+                    }
+
+                    echo "
+                                    <div id='$id-completeby' class='pt-1 border-top border-bottom border-gray'>
+                                        <label for='completeby'>Complete FAVR by:</label>
+                                        <p class='text-dark'>$task_time_to_accomplish</p>
                                     </div>
                                 </div>
+                                <div id='$id-freelancer-count' class='pt-1 small d-none'>
+                                    <label for='freelancer-count'>Amount of freelancer(s) wanted: (accepted/requested)</label>
+                                    <p class='text-dark'>$freelancer_accepted/$task_freelancer_count</p>
+                                </div>";
+                    echo "
+                                <div id='$id-image1' class='pt-1 border-top border-gray small d-none'>
+                                    <label for='image1'>Attached Image 1:</label>
+                                    <img src='data:image/svg+xml;charset=UTF-8,%3Csvg%20width%3D%22128%22%20height%3D%22128%22%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20viewBox%3D%220%200%20128%20128%22%20preserveAspectRatio%3D%22none%22%3E%3Cdefs%3E%3Cstyle%20type%3D%22text%2Fcss%22%3E%23holder_164a9f2d749%20text%20%7B%20fill%3A%23007bff%3Bfont-weight%3Abold%3Bfont-family%3AArial%2C%20Helvetica%2C%20Open%20Sans%2C%20sans-serif%2C%20monospace%3Bfont-size%3A6pt%20%7D%20%3C%2Fstyle%3E%3C%2Fdefs%3E%3Cg%20id%3D%22holder_164a9f2d749%22%3E%3Crect%20width%3D%22128%22%20height%3D%22128%22%20fill%3D%22%23007bff%22%3E%3C%2Frect%3E%3Cg%3E%3Ctext%20x%3D%2248.4296875%22%20y%3D%2266.7%22%3E128x128%3C%2Ftext%3E%3C%2Fg%3E%3C%2Fg%3E%3C%2Fsvg%3E' 
+                                        data-src='$this->root_path/image.php?i=$task1_img_name&i_t=$task1_img_type' height='30%' width='30%'>
+                                </div>";
+                    echo "
+                                <div id='$id-image2' class='pt-1 border-top border-gray small d-none'>
+                                    <label for='image1'>Attached Image 2:</label>
+                                    <img src='data:image/svg+xml;charset=UTF-8,%3Csvg%20width%3D%22128%22%20height%3D%22128%22%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20viewBox%3D%220%200%20128%20128%22%20preserveAspectRatio%3D%22none%22%3E%3Cdefs%3E%3Cstyle%20type%3D%22text%2Fcss%22%3E%23holder_164a9f2d749%20text%20%7B%20fill%3A%23007bff%3Bfont-weight%3Abold%3Bfont-family%3AArial%2C%20Helvetica%2C%20Open%20Sans%2C%20sans-serif%2C%20monospace%3Bfont-size%3A6pt%20%7D%20%3C%2Fstyle%3E%3C%2Fdefs%3E%3Cg%20id%3D%22holder_164a9f2d749%22%3E%3Crect%20width%3D%22128%22%20height%3D%22128%22%20fill%3D%22%23007bff%22%3E%3C%2Frect%3E%3Cg%3E%3Ctext%20x%3D%2248.4296875%22%20y%3D%2266.7%22%3E128x128%3C%2Ftext%3E%3C%2Fg%3E%3C%2Fg%3E%3C%2Fsvg%3E' 
+                                        data-src='$this->root_path/image.php?i=$task2_img_name&i_t=$task2_img_type' height='30%' width='30%'>
+                                </div>";
+                    echo "
+                                <div id='$id-image3' class='pt-1 border-top border-gray small d-none'>
+                                    <label for='image1'>Attached Image 3:</label>
+                                    <img src='data:image/svg+xml;charset=UTF-8,%3Csvg%20width%3D%22128%22%20height%3D%22128%22%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20viewBox%3D%220%200%20128%20128%22%20preserveAspectRatio%3D%22none%22%3E%3Cdefs%3E%3Cstyle%20type%3D%22text%2Fcss%22%3E%23holder_164a9f2d749%20text%20%7B%20fill%3A%23007bff%3Bfont-weight%3Abold%3Bfont-family%3AArial%2C%20Helvetica%2C%20Open%20Sans%2C%20sans-serif%2C%20monospace%3Bfont-size%3A6pt%20%7D%20%3C%2Fstyle%3E%3C%2Fdefs%3E%3Cg%20id%3D%22holder_164a9f2d749%22%3E%3Crect%20width%3D%22128%22%20height%3D%22128%22%20fill%3D%22%23007bff%22%3E%3C%2Frect%3E%3Cg%3E%3Ctext%20x%3D%2248.4296875%22%20y%3D%2266.7%22%3E128x128%3C%2Ftext%3E%3C%2Fg%3E%3C%2Fg%3E%3C%2Fsvg%3E' 
+                                    data-src='$this->root_path/image.php?i=$task3_img_name&i_t=$task3_img_type' height='30%' width='30%'>
+                                </div>";
+
+                    echo "
+                            </p>
+                            <div class='row p-0 border-top border-gray'>
+                                <div class='col-sm-12 small'>
+                                    <div class=\"float-left d-inline\">
+                                        <div id='$id-expand' class='text-info d-inline-flex'
+                                             style='cursor: pointer'
+                                             onclick=\"
+                                              $('.zoom').fadeOut();
+                                              $('#$id').animate({height: '4rem'});
+                                              $('#$id-location').removeClass('d-none');
+                                              $('#$id-freelancer-count').removeClass('d-none');
+                                              $('#$id-collapse').removeClass('d-none');
+                                              $('#$id-collapse').addClass('d-inline-flex');
+                                              $('#$id-expand').removeClass('d-inline-flex');
+                                              $('#$id-expand').addClass('d-none');";
+
+                    if (!empty($task1_img_data_array)) {
+                        echo "$('#$id-image1').removeClass('d-none');";
+                    }
+
+                    if (!empty($task2_img_data_array)) {
+                        echo "$('#$id-image2').removeClass('d-none');";
+                    }
+
+                    if (!empty($task3_img_data_array)) {
+                        echo "$('#$id-image3').removeClass('d-none');";
+                    }
+
+                    echo "
+                                              
+                                        \">Details</div>
+                                         <div id='$id-collapse' class='text-info d-none'
+                                             style='cursor: pointer'
+                                             onclick=\"
+                                              $('#$id-location').addClass('d-none');
+                                              $('#$id-freelancer-count').addClass('d-none');
+                                              $('#$id').css({height: 'auto'});
+                                              $('#$id-collapse').removeClass('d-inline-flex');
+                                              $('#$id-collapse').addClass('d-none');
+                                              $('#$id-expand').removeClass('d-none');
+                                              $('#$id-expand').addClass('d-inline-flex');";
+
+                    if (!empty($task1_img_data_array)) {
+                        echo "$('#$id-image1').addClass('d-none');";
+                    }
+
+                    if (!empty($task2_img_data_array)) {
+                        echo "$('#$id-image2').addClass('d-none');";
+                    }
+
+                    if (!empty($task3_img_data_array)) {
+                        echo "$('#$id-image3').addClass('d-none');";
+                    }
+
+                    echo "
+                                              
+                                              $('.zoom').css({display: ''})
+                                        \">Collapse</div> | $task_date
+                                        ";
+
+                    echo "
+                                    </div>
+                                       ";
+
+                    if ($customer_id != $_SESSION['user_info']['id']) { // if not this user
+                        $freelancerAccepted = false;
+                        $freelancer_id = null;
+                        $user_id = $_SESSION['user_info']['id'];
+                        $select_freelancers_query = "SELECT * 
+                                                     FROM marketplace_favr_freelancers
+                                                     WHERE request_id = $task_id
+                                                     AND user_id = $user_id";
+                        $result = $this->db->query($select_freelancers_query);
+                        if ($result) {
+                            $row = $result->fetch(PDO::FETCH_ASSOC);
+                            if (!empty($row)) {
+                                $freelancerAccepted = true;
+                                $freelancer_id = $row['user_id'];
+                            }
+                        }
+
+                        if ($freelancerAccepted) {
+                            if ($task_status == Data_Constants::DB_TASK_STATUS_PENDING_APPROVAL || $task_status == Data_Constants::DB_TASK_STATUS_REQUESTED) {
+                                echo "<div class='float-right d-inline'>
+                                    <p class='d-inline-flex mb-1'>
+                                    Status: You Accepted</p>
+                                  </div>";
+                            } else {
+                                echo "<div class='float-right d-inline'>
+                                    <p class='d-inline-flex mb-1'>
+                                    Status: $task_status</p>
+                                  </div>";
+                            }
+
+                            echo "<div class='d-block mt-4 border-gray border-top text-center'>
+                                    <a class='text-danger' href=\"$this->root_path/components/notifications/?navbar=active_notifications&withdraw_request_id=$task_id&freelancer_id=$freelancer_id&ALERT_MESSAGE=You've withdrawn from this task: the customer has been notified!\">
+                                    Withdraw From Task</a>
+                                  </div>";
+                        } else {
+                            echo "<div class='float-right d-inline'>
+                                    <a href=\"$this->root_path/components/notifications/?navbar=active_notifications&accept_freelancer_request_id=$task_id&ALERT_MESSAGE=You've signed up to take this task! The task requester has been notified of your interest and is reviewing your offer to help: they can accept or reject your offer to help! You'll be notified of their decision; you can withdraw your offer to help before they decide. \">
+                                    Accept Request</a>
+                                  </div>";
+                        }
+                    } else {
+                        $select_freelancers_query = "SELECT * 
+                                                     FROM marketplace_favr_freelancers
+                                                     WHERE request_id = $task_id
+                                                     AND user_id = $freelancer_id";
+                        $result = $this->db->query($select_freelancers_query);
+                        $row = $result->fetch(PDO::FETCH_ASSOC);
+                        if (!empty($row)) {
+                            if ($row['approved'] == 1) { // this user is approved
+                                echo "<div class='float-right d-inline'>
+                                        <p class='d-inline-flex mb-1'>
+                                        Status: $task_status</p>
+                                      </div>";
+
+                                echo "<div class='d-block mt-4 border-gray border-top text-center'>";
+                                if ($task_status == Data_Constants::DB_TASK_STATUS_REQUESTED || $task_status == Data_Constants::DB_TASK_STATUS_PENDING_APPROVAL) {
+                                    echo "<a href='#' class='mt-0 text-danger'>
+                                        Cancel Request</a>
+                                        ";
+                                } else {
+                                    echo "<a onclick='confirm(\"Are you sure you want to cancel this request you will be a charged a $5 service fee for each freelancer you requested help from?\")' href='#' class='mt-0 text-danger'>
+                                        Cancel Request</a>
+                                        ";
+                                }
+                                echo "</div>";
+                            } else { // user has not been approved yet
+    //                        echo "<p>Respond</p>";
+                                echo "<div class='float-right d-inline'><a href=\"$this->root_path/components/notifications/?navbar=active_notifications&accept_customer_request_id=$task_id&freelancer_id=$freelancer_id&ALERT_MESSAGE=You've approved this freelancer for this task!\" class='text-success'>
+                                Accept</a> | ";
+                                echo "<a href=\"$this->root_path/components/notifications/?navbar=active_notifications&reject_customer_request_id=$task_id&freelancer_id=$freelancer_id&ALERT_MESSAGE=You've rejected this freelancer for this task! They've been notified!\" class='text-danger'>
+                                Reject</a></div>";
+
+                                echo "<div class='d-block mt-4 border-gray border-top text-center'>
+                                        <a href='#' class='mt-3 text-danger'>
+                                            Cancel Request</a>
+                                        </div>
+                                ";
+                            }
+                        }
+                    }
+
+                    echo "
+                                </div>
                             </div>
-                        </div>";
-                echo "</div>";
+                        </div>
+                    </div>";
+                    echo "</div>";
+
+                }
+            } else {
+                echo "<p class='p-3 text-muted'>No notifications at the moment!</p>";
+                return false;
             }
 
             return true;
-        } else {
-
-            echo "<p class='p-3 text-muted'>No notifications at the moment!</p>";
-
-            return false;
         }
+
     }
 
     /**
      * Render request favr web and mobile form
      *
-     * @param $render_favr_request_form
+     * @param boolean $render_favr_request_form
      *
      * @return boolean
      */
@@ -1105,36 +1324,39 @@ class Web_Page
     /**
      * Render marketplace favr request feed to home
      *
-     * @param $scope
-     * @param $orderBy
-     * @param $orientation
+     * @param mixed $scope // default string otherwise an int
+     * @param string $orderBy
+     * @param string $orientation
+     * @param string $limit
      *
      * @return boolean
      */
     function renderFavrMarketplace($scope="global", $orderBy = "task_date", $orientation = "DESC", $limit="LIMIT 3")
     {
         if ($scope == $_SESSION['user_info']['id']) {
-            // TODO: constant Requested used statically here
+
+            $requested = Data_Constants::DB_TASK_STATUS_REQUESTED;
             $selectMarketplaceQuery = "
                                    SELECT *, mfr.id as mfrid
                                    FROM marketplace_favr_requests mfr
                                    INNER JOIN users u
                                    WHERE u.id = $scope
                                    AND u.id = mfr.customer_id
-                                   AND mfr.task_status = 'Requested'
+                                   AND mfr.task_status = '$requested'
                                    ORDER BY $orderBy
                                    $orientation
                                    $limit
             ";
 
         } else if ($scope == "global") {
-            // TODO: constant Requested used statically here
+
+            $requested = Data_Constants::DB_TASK_STATUS_REQUESTED;
             $selectMarketplaceQuery = "
                                    SELECT *, mfr.id as mfrid
                                    FROM marketplace_favr_requests mfr
                                    INNER JOIN users u
                                    WHERE u.id = mfr.customer_id
-                                   AND mfr.task_status = 'Requested'
+                                   AND mfr.task_status = '$requested'
                                    ORDER BY $orderBy
                                    $orientation
                                    $limit
@@ -1154,16 +1376,16 @@ class Web_Page
                 foreach ($rows as $row) {
                     $id = md5($row['mfrid']);
                     $task_id = $row['mfrid'];
-                    $freelancer_ids_array = unserialize($row['freelancer_id']);
-                    $freelancer_accepted = count($freelancer_ids_array);
+                    $freelancer_id = $row['freelancer_id'];
+                    $freelancer_accepted = $row['task_freelancer_accepted'];
                     $task_freelancer_count = $row['task_freelancer_count'];
                     $customer_id = $row['customer_id'];
                     $customer_username = $row['username'];
                     $customer_first_name = $row['first_name'];
                     $task_description = $row['task_description'];
-                    $task_date = date("m/d/Y", strtotime($row['task_date']));
+                    $task_date = date("n/j/Y", strtotime($row['task_date']));
                     $task_location = $row['task_location'];
-                    $task_time_to_accomplish = date('h:i A, l, m/d/Y', strtotime($task_date));
+                    $task_time_to_accomplish = date('h:i A, l, n/j/Y', strtotime($task_date));
                     $task_price = $row['task_price'];
                     $task_difficulty = $row['task_intensity'];
 
@@ -1190,21 +1412,20 @@ class Web_Page
                             </strong>
                             ";
 
-                    // TODO: reference enum(Hard, Medium, Easy) as constants from Constants class
                     if (isset($task_difficulty)) {
-                        if ($task_difficulty == "Easy") {
+                        if ($task_difficulty == Data_Constants::DB_TASK_INTENSITY_EASY) {
                             echo "<button type=\"button\" class=\"ml-2 btn-sm btn btn-success p-1 rounded\" style='opacity: .9' value=\"Easy\" disabled>Easy 👌</button>";
-                        } else if ($task_difficulty == "Medium") {
+                        } else if ($task_difficulty == Data_Constants::DB_TASK_INTENSITY_MEDIUM) {
                             echo "<button type=\"button\" class=\"ml-2 btn-sm btn btn-warning p-1 rounded\" style='opacity: .9' value=\"Medium\" disabled>Medium 💪🏿</button>";
-                        } else if ($task_difficulty == "Hard") {
+                        } else if ($task_difficulty == Data_Constants::DB_TASK_INTENSITY_HARD) {
                             echo "<button type=\"button\" class=\"ml-2 btn-sm btn btn-danger p-1 rounded\" style='opacity: .9' value=\"Hard\" disabled>Hard 🔥</button>";
                         }
                     }
 
                     if ($customer_id == $_SESSION['user_info']['id']) {
-                        echo "<div class='float-right small font-weight-bold' style='padding-top: .3rem;color: var(--red)'>- $$task_price</div>";
+                        echo "<div class='float-right small' style='padding-top: .3rem;color: var(--red)'>- $$task_price</div>";
                     } else {
-                        echo "<div class='float-right small font-weight-bold' style='padding-top: .3rem;color: var(--dark)'>$$task_price</div>";
+                        echo "<div class='float-right small' style='padding-top: .3rem;color: var(--dark)'>$$task_price</div>";
                     }
 
                     echo "</div><div class=\"media text-muted pt-3\">
@@ -1227,21 +1448,44 @@ class Web_Page
                     echo "
                                 <div id='$id-image1' class='pt-1 border-top border-gray small d-none'>
                                     <label for='image1'>Attached Image 1:</label>
-                                    <img src='data:image/svg+xml;charset=UTF-8,%3Csvg%20width%3D%22128%22%20height%3D%22128%22%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20viewBox%3D%220%200%20128%20128%22%20preserveAspectRatio%3D%22none%22%3E%3Cdefs%3E%3Cstyle%20type%3D%22text%2Fcss%22%3E%23holder_164a9f2d749%20text%20%7B%20fill%3A%23007bff%3Bfont-weight%3Abold%3Bfont-family%3AArial%2C%20Helvetica%2C%20Open%20Sans%2C%20sans-serif%2C%20monospace%3Bfont-size%3A6pt%20%7D%20%3C%2Fstyle%3E%3C%2Fdefs%3E%3Cg%20id%3D%22holder_164a9f2d749%22%3E%3Crect%20width%3D%22128%22%20height%3D%22128%22%20fill%3D%22%23007bff%22%3E%3C%2Frect%3E%3Cg%3E%3Ctext%20x%3D%2248.4296875%22%20y%3D%2266.7%22%3E128x128%3C%2Ftext%3E%3C%2Fg%3E%3C%2Fg%3E%3C%2Fsvg%3E' 
-                                        data-src='$this->root_path/image.php?i=$task1_img_name&i_t=$task1_img_type' height='30%' width='30%'>
+                                    <img id='$id-img1' style='cursor: pointer' src='data:image/svg+xml;charset=UTF-8,%3Csvg%20width%3D%22128%22%20height%3D%22128%22%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20viewBox%3D%220%200%20128%20128%22%20preserveAspectRatio%3D%22none%22%3E%3Cdefs%3E%3Cstyle%20type%3D%22text%2Fcss%22%3E%23holder_164a9f2d749%20text%20%7B%20fill%3A%23007bff%3Bfont-weight%3Abold%3Bfont-family%3AArial%2C%20Helvetica%2C%20Open%20Sans%2C%20sans-serif%2C%20monospace%3Bfont-size%3A6pt%20%7D%20%3C%2Fstyle%3E%3C%2Fdefs%3E%3Cg%20id%3D%22holder_164a9f2d749%22%3E%3Crect%20width%3D%22128%22%20height%3D%22128%22%20fill%3D%22%23007bff%22%3E%3C%2Frect%3E%3Cg%3E%3Ctext%20x%3D%2248.4296875%22%20y%3D%2266.7%22%3E128x128%3C%2Ftext%3E%3C%2Fg%3E%3C%2Fg%3E%3C%2Fsvg%3E' 
+                                        data-src='$this->root_path/image.php?i=$task1_img_name&i_t=$task1_img_type' height='30%' width='30%' alt='FAVR image 1'>
                                 </div>";
+                    // Image 1 modal
+                    echo "
+                            <div id=\"$id-image1-modal\" class=\"modal\">
+                              <span id='$id-close1' class=\"modal-close\">&times;</span>
+                              <img class=\"modal-content\" id=\"$id-image1-modal-content\">
+                              <div id=\"$id-caption1\" class='caption'></div>
+                            </div>";
+
                     echo "
                                 <div id='$id-image2' class='pt-1 border-top border-gray small d-none'>
-                                    <label for='image1'>Attached Image 2:</label>
-                                    <img src='data:image/svg+xml;charset=UTF-8,%3Csvg%20width%3D%22128%22%20height%3D%22128%22%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20viewBox%3D%220%200%20128%20128%22%20preserveAspectRatio%3D%22none%22%3E%3Cdefs%3E%3Cstyle%20type%3D%22text%2Fcss%22%3E%23holder_164a9f2d749%20text%20%7B%20fill%3A%23007bff%3Bfont-weight%3Abold%3Bfont-family%3AArial%2C%20Helvetica%2C%20Open%20Sans%2C%20sans-serif%2C%20monospace%3Bfont-size%3A6pt%20%7D%20%3C%2Fstyle%3E%3C%2Fdefs%3E%3Cg%20id%3D%22holder_164a9f2d749%22%3E%3Crect%20width%3D%22128%22%20height%3D%22128%22%20fill%3D%22%23007bff%22%3E%3C%2Frect%3E%3Cg%3E%3Ctext%20x%3D%2248.4296875%22%20y%3D%2266.7%22%3E128x128%3C%2Ftext%3E%3C%2Fg%3E%3C%2Fg%3E%3C%2Fsvg%3E' 
+                                    <label for='image2'>Attached Image 2:</label>
+                                    <img id='$id-img2' style='cursor: pointer' src='data:image/svg+xml;charset=UTF-8,%3Csvg%20width%3D%22128%22%20height%3D%22128%22%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20viewBox%3D%220%200%20128%20128%22%20preserveAspectRatio%3D%22none%22%3E%3Cdefs%3E%3Cstyle%20type%3D%22text%2Fcss%22%3E%23holder_164a9f2d749%20text%20%7B%20fill%3A%23007bff%3Bfont-weight%3Abold%3Bfont-family%3AArial%2C%20Helvetica%2C%20Open%20Sans%2C%20sans-serif%2C%20monospace%3Bfont-size%3A6pt%20%7D%20%3C%2Fstyle%3E%3C%2Fdefs%3E%3Cg%20id%3D%22holder_164a9f2d749%22%3E%3Crect%20width%3D%22128%22%20height%3D%22128%22%20fill%3D%22%23007bff%22%3E%3C%2Frect%3E%3Cg%3E%3Ctext%20x%3D%2248.4296875%22%20y%3D%2266.7%22%3E128x128%3C%2Ftext%3E%3C%2Fg%3E%3C%2Fg%3E%3C%2Fsvg%3E' 
                                         data-src='$this->root_path/image.php?i=$task2_img_name&i_t=$task2_img_type' height='30%' width='30%'>
                                 </div>";
+                    // Image 2 modal
+                    echo "
+                            <div id=\"$id-image2-modal\" class=\"modal\">
+                              <span id='$id-close2' class=\"modal-close\">&times;</span>
+                              <img class=\"modal-content\" id=\"$id-image2-modal-content\" alt='FAVR image 2'>
+                              <div id=\"$id-caption2\" class='caption'></div>
+                            </div>";
+
                     echo "
                                 <div id='$id-image3' class='pt-1 border-top border-gray small d-none'>
-                                    <label for='image1'>Attached Image 3:</label>
-                                    <img src='data:image/svg+xml;charset=UTF-8,%3Csvg%20width%3D%22128%22%20height%3D%22128%22%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20viewBox%3D%220%200%20128%20128%22%20preserveAspectRatio%3D%22none%22%3E%3Cdefs%3E%3Cstyle%20type%3D%22text%2Fcss%22%3E%23holder_164a9f2d749%20text%20%7B%20fill%3A%23007bff%3Bfont-weight%3Abold%3Bfont-family%3AArial%2C%20Helvetica%2C%20Open%20Sans%2C%20sans-serif%2C%20monospace%3Bfont-size%3A6pt%20%7D%20%3C%2Fstyle%3E%3C%2Fdefs%3E%3Cg%20id%3D%22holder_164a9f2d749%22%3E%3Crect%20width%3D%22128%22%20height%3D%22128%22%20fill%3D%22%23007bff%22%3E%3C%2Frect%3E%3Cg%3E%3Ctext%20x%3D%2248.4296875%22%20y%3D%2266.7%22%3E128x128%3C%2Ftext%3E%3C%2Fg%3E%3C%2Fg%3E%3C%2Fsvg%3E' 
-                                    data-src='$this->root_path/image.php?i=$task3_img_name&i_t=$task3_img_type' height='30%' width='30%'>
+                                    <label for='image3'>Attached Image 3:</label>
+                                    <img id='$id-img3' style='cursor: pointer' src='data:image/svg+xml;charset=UTF-8,%3Csvg%20width%3D%22128%22%20height%3D%22128%22%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20viewBox%3D%220%200%20128%20128%22%20preserveAspectRatio%3D%22none%22%3E%3Cdefs%3E%3Cstyle%20type%3D%22text%2Fcss%22%3E%23holder_164a9f2d749%20text%20%7B%20fill%3A%23007bff%3Bfont-weight%3Abold%3Bfont-family%3AArial%2C%20Helvetica%2C%20Open%20Sans%2C%20sans-serif%2C%20monospace%3Bfont-size%3A6pt%20%7D%20%3C%2Fstyle%3E%3C%2Fdefs%3E%3Cg%20id%3D%22holder_164a9f2d749%22%3E%3Crect%20width%3D%22128%22%20height%3D%22128%22%20fill%3D%22%23007bff%22%3E%3C%2Frect%3E%3Cg%3E%3Ctext%20x%3D%2248.4296875%22%20y%3D%2266.7%22%3E128x128%3C%2Ftext%3E%3C%2Fg%3E%3C%2Fg%3E%3C%2Fsvg%3E' 
+                                    data-src='$this->root_path/image.php?i=$task3_img_name&i_t=$task3_img_type' height='30%' width='30%' alt='FAVR image 3'>
                                 </div>";
+                    // Image 3 modal
+                    echo "
+                            <div id=\"$id-image3-modal\" class=\"modal\">
+                              <span id='$id-close3' class=\"modal-close\">&times;</span>
+                              <img class=\"modal-content\" id=\"$id-image3-modal-content\">
+                              <div id=\"$id-caption3\" class='caption'></div>
+                            </div>";
 
                     echo "
                             </p>
@@ -1259,6 +1503,24 @@ class Web_Page
                                               $('#$id-collapse').addClass('d-inline-flex');
                                               $('#$id-expand').removeClass('d-inline-flex');
                                               $('#$id-expand').addClass('d-none');";
+
+                    for ($i = 1; $i <= Data_Constants::MAXIMUM_IMAGE_UPLOAD_COUNT; $i++) {
+                        echo "
+                            var modal = document.getElementById('$id-image$i-modal');
+                            var img = document.getElementById('$id-img$i');
+                            var modalImg = document.getElementById('$id-image$i-modal-content');
+                            var captionText = document.getElementById('$id-caption$i');
+                            img.onclick = function(){
+                                modal.style.display = 'block';
+                                modalImg.src = this.src;
+                                captionText.innerHTML = this.alt;
+                            }
+                            var span = document.getElementById('$id-close$i');
+                            span.onclick = function() { 
+                                modal.style.display = 'none';
+                            }
+                         ";
+                    }
 
                     if (!empty($task1_img_data_array)) {
                         echo "$('#$id-image1').removeClass('d-none');";
@@ -1312,23 +1574,29 @@ class Web_Page
                     if ($customer_id != $_SESSION['user_info']['id']) { // if not this user
                         $freelancerAccepted = false;
                         $freelancer_id = null;
-                        foreach ($freelancer_ids_array as $freelancerID) {
-                            if ($_SESSION['user_info']['id'] == $freelancerID) {
+                        $user_id = $_SESSION['user_info']['id'];
+                        $select_freelancers_query = "SELECT * 
+                                                     FROM marketplace_favr_freelancers
+                                                     WHERE request_id = $task_id
+                                                     AND user_id = $user_id";
+                        $result = $this->db->query($select_freelancers_query);
+                        if ($result) {
+                            $row = $result->fetch(PDO::FETCH_ASSOC);
+                            if (!empty($row)) {
                                 $freelancerAccepted = true;
-                                $freelancer_id = $freelancerID;
-                                break;
+                                $freelancer_id = $row['user_id'];
                             }
                         }
 
                         if ($freelancerAccepted) {
-                            echo "<a class='text-danger' href='$this->root_path/components/notifications/?navbar=active_notifications&withdraw_request_id=$task_id&freelancer_id=$freelancer_id&ALERT_MESSAGE='>
+                            echo "<a class='text-danger' href=\"$this->root_path/components/notifications/?navbar=active_notifications&withdraw_request_id=$task_id&freelancer_id=$freelancer_id&ALERT_MESSAGE=You've withdrawn from this task: the customer has been notified!\">
                                 Withdraw</a>";
                         } else {
-                            echo "<a href=\"$this->root_path/components/notifications/?navbar=active_notifications&accept_request_id=$task_id&ALERT_MESSAGE=You've signed up to take this task! The task requester has been notified of your interest and is reviewing your offer to help: they can accept or reject your offer to help! You'll be notified of their decision; you can withdraw your offer to help before they decide. \">
+                            echo "<a href=\"$this->root_path/components/notifications/?navbar=active_notifications&accept_freelancer_request_id=$task_id&ALERT_MESSAGE=You've signed up to take this task! The task requester has been notified of your interest and is reviewing your offer to help: they can accept or reject your offer to help! You'll be notified of their decision; you can withdraw your offer to help before they decide. \">
                                 Accept Request</a>";
                         }
                     } else {
-                        echo "<a href=\"?nav_bar=active_home&d_request_id=$task_id&ALERT_MESSAGE=Your request has been deleted!\" class='text-danger'>
+                        echo "<a href=\"?navbar=active_home&d_request_id=$task_id&ALERT_MESSAGE=Your request has been deleted!\" class='text-danger'>
                             Cancel Request</a>";
                     }
 
@@ -1352,21 +1620,27 @@ class Web_Page
 
     /**
      * Render page footer at the end of the page
+     *
+     * @param boolean $setFooter
      */
-    function renderFooter()
+    function renderFooter($setFooter = true)
     {
         ?>
         </main>
-
+        <?php
+            if ($setFooter) {
+        ?>
         <!-- FOOTER -->
-        <footer class="container" style="position: relative; float: bottom; max-width: 90%">
+        <footer class="container ml-5 pl-5" style="position: relative; float: bottom; max-width: 90%">
             <hr>
             <div class="row">
-                <p class="col-md-10 text-muted">&copy; 2018 Solken Technology, Inc</p>
+                <p class="col-md-10 text-muted">&copy; 2018 FAVR, Inc</p>
                 <p class="col-md-2 float-right text-muted">v<?php echo $this->product_version; ?> Beta</p>
             </div>
         </footer>
-
+        <?php
+            }
+        ?>
         <!-- Loader -->
         <script>
             var timeOut;
@@ -1438,16 +1712,16 @@ class Web_Page
     /**
      * Process favr request from form and serve into database to display in marketplace
      *
-     * @param $userInfo // array with user details such as location
-     * @param $inputDate
-     * @param $inputCategory
-     * @param $inputTaskDetails
-     * @param $inputFreelancerCount
-     * @param $inputPricing
-     * @param $inputLocation
-     * @param $inputDifficulty
-     * @param $inputPictures
-     * @param $inputScope // pre-alpha scope is public
+     * @param array $userInfo // array with user details such as location
+     * @param string $inputDate
+     * @param string $inputCategory
+     * @param string $inputTaskDetails
+     * @param int $inputFreelancerCount
+     * @param double $inputPricing
+     * @param string $inputLocation
+     * @param string $inputDifficulty
+     * @param array $inputPictures
+     * @param mixed $inputScope // pre-alpha scope is public
      *
      * @return boolean // successful process or not print error
      *
@@ -1488,7 +1762,6 @@ class Web_Page
             if ($result) {
                 // process attached images logic
 
-                // TODO: process images into the server and backend
                 if (isset($inputPictures)) {
                     $select_requested_task_query = "SELECT id 
                                                   FROM marketplace_favr_requests
@@ -1506,16 +1779,14 @@ class Web_Page
                     if ($result) {
                         $row = $result->fetch(PDO::FETCH_ASSOC);
                         $task_id = $row['id'];
-                        // TODO: maximum images allowed constant statically used
 
-                        for ($i = 0; $i < 3; $i++) {
+                        for ($i = 0; $i < Data_Constants::MAXIMUM_IMAGE_UPLOAD_COUNT; $i++) {
                             // check if atleast one image is set
                             if (!empty($inputPictures['name'][$i])) {
                                 // validate file is an image of type jpeg or png
                                 if ($inputPictures['type'][$i] == "image/jpeg" || $inputPictures['type'][$i] == "image/png") {
                                     // continue validating file size is below allowed size of 5 MB
-                                    // TODO: file size allowed should be a constant set in a "constants" class
-                                    if ($inputPictures['size'][$i] <=  5242880) {
+                                    if ($inputPictures['size'][$i] <=  Data_Constants::MAXIMUM_IMAGE_UPLOAD_SIZE) {
                                         // validate temp_name exists
                                         if (!empty($inputPictures['tmp_name'][$i])) {
                                             // validate no file errors were detected
@@ -1529,11 +1800,9 @@ class Web_Page
                                                 }
                                                 $imageFileType = $inputPictures['type'][$i];
 
-                                                // TODO: constant values statically used root image file path
-                                                $imageFilePath = "/Applications/XAMPP/xamppfiles/favr-request-images/$imageFileName";
+                                                $imageFilePath =  Data_Constants::IMAGE_UPLOAD_FILE_PATH . "$imageFileName";
 
                                                 // copy image into backend and execute update query on request to update file paths
-                                                // TODO: constant values statically used image file paths
                                                 if (copy($inputPictures['tmp_name'][$i], $imageFilePath)) {
     //                                                    echo "<pre>";
     //                                                    die(print_r($inputPictures));
@@ -1597,38 +1866,75 @@ class Web_Page
      * TODO: needs logic development and implementation
      * Process cancel pending request
      *
-     * @param $requestID
-     * @param $freelancerID
-     * @param $customerID
+     * @param int $requestID
+     * @param int $freelancerID // user id of the freelancer
+     * @param int $customerID // user id of the customer
      *
      * @return boolean
      */
     function processCancelPendingRequest($requestID,  $freelancerID = null, $customerID = null)
     {
         if (isset($requestID) && ($freelancerID != null || $customerID != null)) {
-            $select_task_query = "SELECT freelancer_id 
+            $select_task_query = "SELECT freelancer_id, task_freelancer_accepted 
                                   FROM marketplace_favr_requests
                                   WHERE id = '$requestID'";
             $result = $this->db->query($select_task_query);
             if ($result) {
-                $row = $result->fetch(PDO::FETCH_ASSOC);
-                $freelancer_ids_array = unserialize($row['freelancer_id']);
-                echo '<pre>';
-                print_r($freelancer_ids_array);
-                echo '</pre>';
-                if (($key = array_search($freelancerID, $freelancer_ids_array)) !== false) {
-                    unset($freelancer_ids_array[$key]); // remove the freelancer from the list of sign ups
-                } else {
-                    return false;
+                if ($freelancerID != null) {
+                    $row = $result->fetch(PDO::FETCH_ASSOC);
+                    $freelancer_id = $row['freelancer_id'];
+                    $freelancer_accepted = $row['task_freelancer_accepted'];
+
+                    // delete request from freelancers table and decrement freelancers accepted count
+                    $delete_freelancer_query = "DELETE 
+                                                FROM marketplace_favr_freelancers
+                                                WHERE request_id = $requestID
+                                                AND user_id = $freelancerID";
+                    $result = $this->db->query($delete_freelancer_query);
+                    if ($result) {
+
+                        // freelancer has been removed from task
+                        $freelancer_accepted -= 1;
+//                        $set_task_status = "";
+                        $requested = Data_Constants::DB_TASK_STATUS_REQUESTED;
+                        $set_task_status = ", task_status = '$requested'";
+
+                        // update request to null if freelancers accepted is 0 and set status back to requested
+                        if ($freelancer_accepted == 0) {
+                            $freelancer_id = "NULL";
+                        }
+
+                        $update_request_query = "UPDATE marketplace_favr_requests
+                                                 SET task_freelancer_accepted = $freelancer_accepted,
+                                                     freelancer_id = $freelancer_id
+                                                     $set_task_status
+                                                 WHERE id = $requestID";
+
+//                        die(print_r($update_request_query));
+                        $result = $this->db->query($update_request_query);
+                        if ($result) {
+                            // successfully withdrawed freelancer from task
+                            return true;
+                        } else {
+                            // failure in withdrawal
+                            return false;
+                        }
+                    } else {
+                        // failure in withdrawal
+                        return false;
+                    }
                 }
 
-                echo '<br><pre>';
-                die(print_r($freelancer_ids_array));
+                if ($customerID != null) {
+                    return true;
+                }
+                // TODO: javaScript validation warning user of action
+
+
+                return false;
+            } else {
+                return false;
             }
-//            $update_task_query = "UPDATE marketplace_favr_requests
-//                                  SET
-//                                  WHERE id = '$requestID'";
-            return true;
         } else {
             return false;
         }
@@ -1639,9 +1945,9 @@ class Web_Page
      * TODO: update database image columns to null after completion of task
      * Process complete request
      *
-     * @param $requestID
-     * @param $customerID
-     * @param $freelancerID
+     * @param int $requestID
+     * @param int $customerID
+     * @param int $freelancerID
      *
      * @return boolean
      */
@@ -1674,8 +1980,8 @@ class Web_Page
      * Image naming convention: task_id-customer_id-request-image#.x hashed by md5
      * Process delete request and task associated images
      *
-     * @param $requestID
-     * @param $customerID
+     * @param int $requestID
+     * @param int $customerID
      *
      * @return boolean
      */
@@ -1698,9 +2004,8 @@ class Web_Page
                 if (!empty($task1_image_array)) {
                     $imageName = $task1_image_array['name'];
 
-                    // TODO: constant used image folder path
-                    if (file_exists("/Applications/XAMPP/xamppfiles/favr-request-images/$imageName")) {
-                        $removeImage = unlink("/Applications/XAMPP/xamppfiles/favr-request-images/$imageName");
+                    if (file_exists(Data_Constants::IMAGE_UPLOAD_FILE_PATH . "$imageName")) {
+                        $removeImage = unlink(Data_Constants::IMAGE_UPLOAD_FILE_PATH . "$imageName");
                         if (!$removeImage) {
                             return false;
                         }
@@ -1710,9 +2015,8 @@ class Web_Page
                 if (!empty($task2_image_array)) {
                     $imageName = $task2_image_array['name'];
 
-                    // TODO: constant used image folder path
-                    if (file_exists("/Applications/XAMPP/xamppfiles/favr-request-images/$imageName")) {
-                        $removeImage = unlink("/Applications/XAMPP/xamppfiles/favr-request-images/$imageName");
+                    if (file_exists(Data_Constants::IMAGE_UPLOAD_FILE_PATH . "$imageName")) {
+                        $removeImage = unlink(Data_Constants::IMAGE_UPLOAD_FILE_PATH . "$imageName");
                         if (!$removeImage) {
                             return false;
                         }
@@ -1722,9 +2026,8 @@ class Web_Page
                 if (!empty($task3_image_array)) {
                     $imageName = $task3_image_array['name'];
 
-                    // TODO: constant used image folder path
-                    if (file_exists("/Applications/XAMPP/xamppfiles/favr-request-images/$imageName")) {
-                        $removeImage = unlink("/Applications/XAMPP/xamppfiles/favr-request-images/$imageName");
+                    if (file_exists(Data_Constants::IMAGE_UPLOAD_FILE_PATH . "$imageName")) {
+                        $removeImage = unlink(Data_Constants::IMAGE_UPLOAD_FILE_PATH . "$imageName");
                         if (!$removeImage) {
                             return false;
                         }
@@ -1757,10 +2060,10 @@ class Web_Page
      * Flow: Marketplace -> Verified freelancer accepts -> Notify customer -> customer accepts -> Notify freelancer -> Change status of request to pending job
      *                                                      |-> freelancer or customer rejects -> Marketplace
      *
-     * @param $requestID
-     * @param $freelancerID
+     * @param int $requestID
+     * @param int $freelancerID
      *
-     * @return boolean
+     * @return mixed
      */
     function processFreelancerAcceptRequest($requestID, $freelancerID)
     {
@@ -1768,50 +2071,155 @@ class Web_Page
             // freelancer has accepted
             $select_request_query = "SELECT * 
                                      FROM marketplace_favr_requests
-                                     WHERE id = '$requestID'";
+                                     WHERE id = $requestID";
             $result = $this->db->query($select_request_query);
             if ($result) {
                 $row = $result->fetch(PDO::FETCH_ASSOC);
+                $freelancer_accepted = $row['task_freelancer_accepted'];
                 $freelancer_count = $row['task_freelancer_count'];
-                $freelancer_ids_array = unserialize($row['freelancer_id']);
+                $freelancer_id = $row['freelancer_id'];
+                $request_id = $row['id'];
                 $setTaskStatusPending = ""; // still need more freelancers
 
                 // ensure there's not already enough freelancers signed up for this job
-                if (sizeof($freelancer_ids_array) < $freelancer_count) {
-                    // ensure that this user has not already accepted to work this request
-                    foreach ($freelancer_ids_array as $freelancer_id) {
-                        if ($freelancer_id == $freelancerID) {
-                            // This should never happen
-                            // TODO: handle error reporting for this critical error
+                if ($freelancer_accepted < $freelancer_count) {
+                    $select_freelancers_query = "INSERT INTO marketplace_favr_freelancers
+                                                 (
+                                                    request_id, 
+                                                    user_id
+                                                 ) 
+                                                 VALUES
+                                                 (
+                                                    $request_id,
+                                                    $freelancerID
+                                                 )";
+
+                    $result = $this->db->query($select_freelancers_query);
+                    if ($result) {
+                        $freelancer_accepted += 1; // add user to freelancer queue
+
+                        $update_request_query = "UPDATE marketplace_favr_requests
+                                                 SET task_freelancer_accepted = $freelancer_accepted,
+                                                     freelancer_id = $request_id
+                                                 WHERE id = $request_id";
+
+                        $result = $this->db->query($update_request_query);
+//                        die(print_r($result));
+                        if (!$result) {
                             return false;
                         }
+
+                    } else {
+                        return false;
                     }
-                    array_push($freelancer_ids_array, $freelancerID);
-                } else if (sizeof($freelancer_ids_array) > $freelancer_count) { // This cannot ever happen
-                    // TODO: handle error reporting for this critical error
-                    return false;
-                } else if (sizeof($freelancer_ids_array) == $freelancer_count) {
-                    $setTaskStatusPending = ", task_status = 'Pending Approval' "; // Has enough freelancers notify customer pending their approval
                 }
 
-                $freelancer_ids_array = serialize($freelancer_ids_array);
+                if ($freelancer_accepted == $freelancer_count) {
+                    $setTaskStatusPending = Data_Constants::DB_TASK_STATUS_PENDING_APPROVAL;
 
-                $update_request_query = "UPDATE marketplace_favr_requests 
-                                         SET freelancer_id = '$freelancer_ids_array'
-                                         $setTaskStatusPending
-                                         WHERE id = '$requestID'";
-                $result = $this->db->query($update_request_query);
+                    $update_request_query = "UPDATE marketplace_favr_requests
+                                             SET task_status = '$setTaskStatusPending'
+                                             WHERE id = $request_id";
 
-                if ($result) {
-                    // successfully accepted
-                    return true;
-                } else {
-                    // failed to accept
+                    $result = $this->db->query($update_request_query);
+                    if ($result) {
+                        return $freelancerID;
+                    } else {
+                        return false;
+                    }
+                }
+
+                if ($freelancer_accepted > $freelancer_count) {
+                    // impossible
+                    return false;
+                }
+
+                return $freelancerID;
+            }
+        } else {
+            // not set
+            return false;
+        }
+    }
+
+    /**
+     * Process accept request
+     *
+     * Flow: Marketplace -> Verified freelancer accepts -> Notify customer -> customer accepts -> Notify freelancer -> Change status of request to pending job
+     *                                                      |-> freelancer or customer rejects -> Marketplace
+     *
+     * @param int $requestID
+     * @param int $freelancerID
+     * @param int $customerID
+     *
+     * @return mixed
+     */
+    function processCustomerAcceptRequest($requestID, $freelancerID, $customerID)
+    {
+        if (isset($requestID, $freelancerID, $customerID)) {
+            // customer has approved of freelancer
+            $select_request_query = "SELECT * 
+                                     FROM marketplace_favr_requests
+                                     WHERE id = $requestID";
+            $result = $this->db->query($select_request_query);
+            if ($result) {
+                $row = $result->fetch(PDO::FETCH_ASSOC);
+                $freelancer_accepted = $row['task_freelancer_accepted'];
+                $freelancer_count = $row['task_freelancer_count'];
+                $freelancer_id = $row['freelancer_id'];
+                $request_id = $row['id'];
+
+                // set freelancer to approved
+                if ($freelancer_accepted <= $freelancer_count) {
+
+                    // approve freelancer set approved to true
+                    $update_freelancer_query = "UPDATE marketplace_favr_freelancers 
+                                                SET approved = 1
+                                                WHERE request_id = $requestID
+                                                AND user_id = $freelancerID";
+
+                    $result = $this->db->query($update_freelancer_query);
+                    if ($result) {
+                        // set status of task to in progress if enough help has been found and approved
+                        if ($freelancer_accepted == $freelancer_count) {
+                            $select_freelancer_query = "SELECT COUNT(*)
+                                                        FROM marketplace_favr_freelancers
+                                                        WHERE request_id = $requestID
+                                                        AND approved = 1";
+                            $result = $this->db->query($select_freelancer_query);
+                            if ($result) {
+                                $row = $result->fetch(PDO::FETCH_ASSOC);
+                                $approvedCount = $row['COUNT(*)'];
+                                if ($approvedCount == $freelancer_count) { // user has approved all freelancers
+                                    $InProgress = Data_Constants::DB_TASK_STATUS_IN_PROGRESS;
+                                    $update_request_query = "UPDATE marketplace_favr_requests
+                                                             SET task_status = '$InProgress'
+                                                             WHERE id = $request_id";
+
+                                    $result = $this->db->query($update_request_query);
+                                    if ($result) {
+                                        return $customerID;
+                                    } else {
+                                        return false;
+                                    }
+                                }
+                            } else {
+                                return false;
+                            }
+                        }
+                    } else {
+                        // error
+                        return false;
+                    }
+
+                    return $customerID;
+                }
+
+                if ($freelancer_accepted > $freelancer_count) {
+                    // impossible
                     return false;
                 }
             }
-
-
         } else {
             // not set
             return false;
@@ -1821,25 +2229,29 @@ class Web_Page
     /**
      * Process notifications
      *
-     * @param $userInfo
+     * @param array $userInfo
      *
      * @return integer // return notification count
      */
     function processNotifications($userInfo)
     {
         $userID = $userInfo['id'];
-
+        $completed = Data_Constants::DB_TASK_STATUS_COMPLETED;
         $notifications_query = "SELECT COUNT(*)
                                 FROM marketplace_favr_requests mfr 
-                                WHERE mfr.customer_id = '$userID' 
-                                AND mfr.freelancer_id IS NOT NULL
-                                AND NOT mfr.task_status = 'Completed'
-                                OR mfr.freelancer_id = '$userID'
-                                AND NOT mfr.task_status = 'Completed'
+                                JOIN marketplace_favr_freelancers mff 
+                                ON mff.request_id = mfr.id
+                                JOIN users u
+                                ON u.id = mff.user_id
+                                AND mff.user_id = $userID 
+                                AND NOT mfr.task_status = '$completed'
+                                OR mfr.customer_id = $userID 
+                                AND u.id = mfr.customer_id
+                                AND NOT mfr.task_status = '$completed'
                                 ";
 
-        if ($this->db != null) {
-            $result = $this->db->query($notifications_query);
+        $result = $this->db->query($notifications_query);
+        if ($result) {
             $row = $result->fetch(PDO::FETCH_ASSOC);
 
             $_SESSION['main_notifications'] = $row['COUNT(*)'];
