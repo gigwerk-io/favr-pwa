@@ -1187,9 +1187,7 @@ class Web_Page
                                         <p class='d-inline-flex mb-1'>
                                         ";
                                 // TODO: use class defined constants here to validate verified freelancers from regular customers
-                                if ($task_status == Data_Constants::DB_TASK_STATUS_PAID && $customer_id == $_SESSION['user_info']['id']) {
-                                    echo "Status: Help en-route";
-                                } else if ($task_status == Data_Constants::DB_TASK_STATUS_PAID && $customer_id != $_SESSION['user_info']['id']) {
+                                if ($task_status == Data_Constants::DB_TASK_STATUS_PAID && $customer_id != $_SESSION['user_info']['id']) {
                                     echo "Status: Go to location";
                                 } else {
                                     echo "Status: $task_status";
@@ -1199,10 +1197,24 @@ class Web_Page
                                       </div>";
                             }
 
-                            echo "<div class='d-block mt-4 pt-2 border-gray border-top text-center'>
-                                    <a class='text-danger' href=\"$this->root_path/components/notifications/?navbar=active_notifications&withdraw_request_id=$task_id&freelancer_id=$freelancer_id&ALERT_MESSAGE=You've withdrawn from this task: the customer has been notified!\">
-                                    Withdraw From Task</a>
-                                  </div>";
+                            if ($task_status == Data_Constants::DB_TASK_STATUS_PAID) {
+                                echo "<div class='d-block mt-4 pt-2 border-gray border-top text-center'>
+                                        <a href='#' class='text-info'>
+                                        Freelancer Arrived</a>
+                                      </div>
+                                    ";
+
+                                echo "<div class='d-block mt-2 pt-2 border-gray border-top text-center'>
+                                        <a class='text-danger' href=\"$this->root_path/components/notifications/?navbar=active_notifications&withdraw_request_id=$task_id&freelancer_id=$freelancer_id&ALERT_MESSAGE=You've withdrawn from this task: the customer has been notified!\">
+                                        Withdraw From Task</a>
+                                      </div>";
+                            } else {
+                                echo "<div class='d-block mt-4 pt-2 border-gray border-top text-center'>
+                                        <a class='text-danger' href=\"$this->root_path/components/notifications/?navbar=active_notifications&withdraw_request_id=$task_id&freelancer_id=$freelancer_id&ALERT_MESSAGE=You've withdrawn from this task: the customer has been notified!\">
+                                        Withdraw From Task</a>
+                                      </div>";
+                            }
+
                         } else {
                             echo "<div class='float-right d-inline'>
                                     <a href=\"$this->root_path/components/notifications/?navbar=active_notifications&accept_freelancer_request_id=$task_id&ALERT_MESSAGE=You've signed up to take this task! The task requester has been notified of your interest and is reviewing your offer to help: they can accept or reject your offer to help! You'll be notified of their decision; you can withdraw your offer to help before they decide. \">
@@ -1224,8 +1236,6 @@ class Web_Page
                                 // TODO: use class defined constants here to validate verified freelancers from regular customers
                                 if ($task_status == Data_Constants::DB_TASK_STATUS_PAID && $customer_id == $_SESSION['user_info']['id']) {
                                     echo "Status: Help en-route";
-                                } else if ($task_status == Data_Constants::DB_TASK_STATUS_PAID && $customer_id != $_SESSION['user_info']['id']) {
-                                    echo "Status: Go to location";
                                 } else {
                                     echo "Status: $task_status";
                                 }
@@ -1233,21 +1243,19 @@ class Web_Page
                                 echo "  </p>
                                       </div>";
 
-                                if ($task_status == Data_Constants::DB_TASK_STATUS_PAID) {
-                                    echo "<div class='d-block mt-4 pt-2 mb-0 border-gray border-top text-center'>
-                                            <a href='#' class='text-info'>
-                                                 Freelancer Arrived</a>
-                                          </div>
-                                    ";
-                                } else if ($task_status == Data_Constants::DB_TASK_STATUS_IN_PROGRESS) {
+                                if ($task_status == Data_Constants::DB_TASK_STATUS_IN_PROGRESS) {
                                     echo "<div class='d-block mt-4 pt-2 mb-0 pt-2 border-gray border-top text-center'>
                                             <a href='#' class='text-info'>
                                                  Request Completed</a>
                                           </div>
                                     ";
+
+                                    echo "<div class='d-block mt-2 pt-2 border-gray border-top text-center'>";
+                                } else {
+                                    echo "<div class='d-block mt-4 pt-2 border-gray border-top text-center'>";
                                 }
 
-                                echo "<div class='d-block mt-2 pt-2 border-gray border-top text-center'>";
+
                                 if ($task_status == Data_Constants::DB_TASK_STATUS_REQUESTED || $task_status == Data_Constants::DB_TASK_STATUS_PENDING_APPROVAL) {
                                     echo "<a href='#' class='mt-0 text-danger'>
                                         Cancel Request</a>
