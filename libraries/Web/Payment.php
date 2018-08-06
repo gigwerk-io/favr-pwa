@@ -42,6 +42,11 @@ class Web_Payment
      */
     public $price;
 
+    /**
+     * @var string
+     */
+    public $description;
+
     function __construct() {
         $this->db = $this->connect();
     }
@@ -58,37 +63,68 @@ class Web_Payment
             echo "<br/>Error: " . $e;
         }
     }
+
     /**
      * @param int $id
+     * @return $this
      */
     public function select(int $id)
     {
-        $result = $this->db->query("SELECT * FROM marketplace_favr_requests WHERE id=$id");
-        $row = $result->fetch(PDO::FETCH_ASSOC);
-        $this->price = $row['task_price'];
+//        $sth = $this->db->prepare("SELECT * FROM marketplace_favr_requests");
+//        $sth->execute();
+        $sth = $this->db->query("SELECT * FROM marketplace_favr_requests WHERE id=$id");
+        $row = $sth->fetch(PDO::FETCH_ASSOC);
+        $this->price = $row['task_price']*100;
+        $this->description = $row['task_description'];
+        return $this;
+    }
+
+    /**
+     * @param int $id
+     * @return $this
+     */
+    public function checkOut(int $id)
+    {
+        echo "
+        <form action='TestPage.php?id=$id' method='post'>
+            <script
+                src='https://checkout.stripe.com/checkout.js' class='stripe-button'
+                data-key= " . Data_Constants::STRIPE_PUBLIC . "
+                data-amount= '$this->price' 
+                data-name='FAVR Inc.'
+                data-description='$this->description'
+                data-image='https://askfavr.com/img/favicon.png'
+                data-locale='auto'>
+            </script>
+        </form>";
+        return $this;
     }
 
     /**
      * @param string $token
-     * @param float $price
+     * @return $this
      */
-    public function charge(string $token,float $price)
+    public function charge(string $token)
     {
         \Stripe\Stripe::setApiKey(\Data_Constants::STRIPE_SECRET);
-        \Stripe\Charge::create(array(
-            "amount" => $price,
+        $charge = \Stripe\Charge::create(array(
+            "amount" => $this->price,
             "currency" => "usd",
-            "description" => "Fulfilled FAVR",
+            "description" => $this->descriptions,
             "source" => $token,
         ));
+        return $this;
     }
 
     /**
      * @param int $id
+     * @return $this
      */
     public function update(int $id)
     {
         $this->db->query("UPDATE marketplace_favr_requests SET task_status='In Progress' WHERE id=$id");
+        header("location: https://askfavr.com");
+        return $this;
     }
 
     // select($id)->charge($_POST['token'], $this->price)->update($id);
