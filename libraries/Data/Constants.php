@@ -26,15 +26,15 @@ class Data_Constants
     const DB_TASK_INTENSITY_EASY = "Easy";
 
     // database connection constants
-    const DB_DSN = "mysql:dbname=local_favr;host=localhost";
-    const DB_USERNAME = "haron";
-    const DB_PASSWORD = "Ha7780703";
+    const DB_DSN = "mysql:dbname=local_favr;host=favr.cgfeyejwt7qv.us-east-2.rds.amazonaws.com";
+    const DB_USERNAME = "Solomon04";
+    const DB_PASSWORD = "Nomolos.99";
 
     // Product version
     const PRODUCT_VERSION = "0.1.1";
 
     // Root path
-    const ROOT_PATH = "http://localhost/favr-pwa";
+    const ROOT_PATH = "http://localhost:1234/favr-pwa";
 
     //Stipe API
     const STRIPE_PUBLIC = 'pk_test_WRhN4BKmkqctL2nrjCPJCTXi'; 
