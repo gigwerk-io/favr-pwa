@@ -23,6 +23,6 @@ function autoload ($classname) {
         $path .= str_replace('_',DIRECTORY_SEPARATOR, $classname);
     }
 
-    require_once($base."/".$path.".php");
+    include_once ($base."/".$path.".php");
 }
 spl_autoload_register("autoload");
