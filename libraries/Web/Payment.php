@@ -47,6 +47,11 @@ class Web_Payment
      */
     public $description;
 
+    /**
+     * @var string
+     */
+    public $status;
+
     function __construct() {
         $this->db = $this->connect();
     }
@@ -74,6 +79,7 @@ class Web_Payment
 //        $sth->execute();
         $sth = $this->db->query("SELECT * FROM marketplace_favr_requests WHERE id=$id");
         $row = $sth->fetch(PDO::FETCH_ASSOC);
+        $this->status = $row['task_status'];
         $this->price = $row['task_price']*100;
         $this->description = $row['task_description'];
         return $this;
@@ -85,18 +91,23 @@ class Web_Payment
      */
     public function checkOut(int $id)
     {
-        echo "
-        <form action='TestPage.php?id=$id' method='post'>
-            <script
-                src='https://checkout.stripe.com/checkout.js' class='stripe-button'
-                data-key= " . Data_Constants::STRIPE_PUBLIC . "
-                data-amount= '$this->price' 
-                data-name='FAVR Inc.'
-                data-description='$this->description'
-                data-image='https://askfavr.com/img/favicon.png'
-                data-locale='auto'>
-            </script>
-        </form>";
+        if($this->status == "Pending Approval")
+        {
+            echo "
+                <form action='TestPage.php?id=$id' method='post'>
+                    <script
+                        src='https://checkout.stripe.com/checkout.js' class='stripe-button'
+                        data-key= " . Data_Constants::STRIPE_PUBLIC . "
+                        data-amount= '$this->price' 
+                        data-name='FAVR Inc.'
+                        data-description='$this->description'
+                        data-image='https://askfavr.com/img/favicon.png'
+                        data-locale='auto'>
+                    </script>
+                </form>";
+        } else{
+            header("location: http://localhost:1234/favr-pwa");
+        }
         return $this;
     }
 
@@ -107,10 +118,10 @@ class Web_Payment
     public function charge(string $token)
     {
         \Stripe\Stripe::setApiKey(\Data_Constants::STRIPE_SECRET);
-        $charge = \Stripe\Charge::create(array(
+        \Stripe\Charge::create(array(
             "amount" => $this->price,
             "currency" => "usd",
-            "description" => $this->descriptions,
+            "description" => $this->description,
             "source" => $token,
         ));
         return $this;
