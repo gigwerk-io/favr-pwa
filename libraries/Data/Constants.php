@@ -8,6 +8,9 @@
 
 class Data_Constants
 {
+    // Product version
+    const PRODUCT_VERSION = "0.1.1";
+
     // image upload constants
     const MAXIMUM_IMAGE_UPLOAD_COUNT = 3;
     const MAXIMUM_IMAGE_UPLOAD_SIZE = 5242880; // 5 Mb
@@ -29,9 +32,15 @@ class Data_Constants
     const DB_DSN = "mysql:dbname=local_favr;host=localhost";
     const DB_USERNAME = "haron";
     const DB_PASSWORD = "Ha7780703";
+    // database task request maximum/minimum manpower
+    const DB_TASK_REQUEST_MAXIMUM_MANPOWER = 5;
+    const DB_TASK_REQUEST_MINIMUM_MANPOWER = 1;
 
-    // Product version
-    const PRODUCT_VERSION = "0.1.1";
+    // database scope constants
+    const DB_SCOPE_PUBLIC = "Public";
+    const DB_SCOPE_FRIENDS_OF_FRIENDS = "Friends of Friends";
+    const DB_SCOPE_FRIENDS = "Friends";
+    const DB_SCOPE_PRIVATE = "Private";
 
     // Root path
     const ROOT_PATH = "http://localhost/favr-pwa";
