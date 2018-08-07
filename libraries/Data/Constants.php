@@ -10,6 +10,14 @@ class Data_Constants
 {
     // Product version
     const PRODUCT_VERSION = "0.1.1";
+    
+    // database connection constants
+    const DB_DSN = "mysql:dbname=local_favr;host=favr.cgfeyejwt7qv.us-east-2.rds.amazonaws.com";
+    const DB_USERNAME = "Solomon04";
+    const DB_PASSWORD = "Nomolos.99";
+    
+    // Root path
+    const ROOT_PATH = "https://askfavr.com/favr-pwa";
 
     // image upload constants
     const MAXIMUM_IMAGE_UPLOAD_COUNT = 3;
@@ -27,11 +35,7 @@ class Data_Constants
     const DB_TASK_INTENSITY_HARD = "Hard";
     const DB_TASK_INTENSITY_MEDIUM = "Medium";
     const DB_TASK_INTENSITY_EASY = "Easy";
-
-    // database connection constants
-    const DB_DSN = "mysql:dbname=local_favr;host=localhost";
-    const DB_USERNAME = "haron";
-    const DB_PASSWORD = "Ha7780703";
+    
     // database task request maximum/minimum manpower
     const DB_TASK_REQUEST_MAXIMUM_MANPOWER = 5;
     const DB_TASK_REQUEST_MINIMUM_MANPOWER = 1;
@@ -41,15 +45,6 @@ class Data_Constants
     const DB_SCOPE_FRIENDS_OF_FRIENDS = "Friends of Friends";
     const DB_SCOPE_FRIENDS = "Friends";
     const DB_SCOPE_PRIVATE = "Private";
-    const DB_DSN = "mysql:dbname=local_favr;host=favr.cgfeyejwt7qv.us-east-2.rds.amazonaws.com";
-    const DB_USERNAME = "Solomon04";
-    const DB_PASSWORD = "Nomolos.99";
-
-    // Product version
-    const PRODUCT_VERSION = "0.1.1";
-
-    // Root path
-    const ROOT_PATH = "http://localhost:1234/favr-pwa";
 
     //Stipe API
     const STRIPE_PUBLIC = 'pk_test_WRhN4BKmkqctL2nrjCPJCTXi'; 
