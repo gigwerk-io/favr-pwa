@@ -45,12 +45,15 @@ class Web_Connect{
     /**
      * @var string
      */
-    private $payment_id;
+    public $payment_id;
 
     function __construct() {
         $this->db = $this->connect();
         $this->code = $_GET['code'];
-        $this->id = $_SESSION['user_info']['id'];
+        $this->id = 5; //$_SESSION['user_info']['id'];
+        $sth = $this->db->query("SELECT payment_id FROM users WHERE id=$this->id");
+        $row = $sth->fetch(PDO::FETCH_ASSOC);
+        $this->payment_id = $row['payment_id'];
     }
 
     function connect()
@@ -68,6 +71,7 @@ class Web_Connect{
 
     /**
      * @param string $code
+     * @return $this
      */
     function savePaymentAccount(string $code)
     {
@@ -91,15 +95,16 @@ class Web_Connect{
         $this->payment_id = $obj['stripe_user_id'];
 
         curl_close ($ch);
+        $this->db->query("UPDATE users SET payment_id='$this->payment_id' WHERE id=$this->id");
+        return $this;
     }
-    /**
-     * @param int $id
-     */
-    public function update(int $id)
+
+    public function stripeLogin($payment_id)
     {
-        $this->db->query("UPDATE users SET payment_id='$this->payment_id' WHERE id=$id");
-        //$this->savePaymentAccount($this->code)->update($this->id);
+        \Stripe\Stripe::setApiKey(\Data_Constants::STRIPE_SECRET);
+        $account = \Stripe\Account::retrieve($payment_id);
+        $link = $account->login_links->create();
+        $url = $link->url;
+        header("location: $url");
     }
-
-
 }

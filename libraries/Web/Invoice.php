@@ -145,13 +145,16 @@ class Web_Invoice
      */
     public function sendEmail(string $name, string $email, string $message)
     {
+
         $from = new SendGrid\Email("FAVR", "contact@askfavr.com");
+
         $subject = "Service Invoice";
         $to = new SendGrid\Email($name, $email);
         $content = new SendGrid\Content("text/html",  $message);
         $mail = new SendGrid\Mail($from, $subject, $to, $content);
         $sg = new \SendGrid(\Data_Constants::SG_API);
         $sg->client->mail()->send()->post($mail);
+        var_dump($mail);
     }
 
     //selectRequest($this->request_id)->selectCustomer($this->customer_id)->selectFreelancer($this->freelancer_id)->sendEmail($this->customer, $this->email, $this->message)
