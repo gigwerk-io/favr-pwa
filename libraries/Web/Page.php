@@ -422,6 +422,25 @@ class Web_Page
             header("location: $this->root_path/signin/ ");
         }
         ?>
+        <!--
+        FFFFFFFFFFFFFFFFFFFFFF               AAA               VVVVVVVV           VVVVVVVV        RRRRRRRRRRRRRRRRR
+        F::::::::::::::::::::F              A:::A              V::::::V           V::::::V        R::::::::::::::::R
+        F::::::::::::::::::::F             A:::::A             V::::::V           V::::::V        R::::::RRRRRR:::::R
+        FF::::::FFFFFFFFF::::F            A:::::::A            V::::::V           V::::::V        RR:::::R     R:::::R
+          F:::::F       FFFFFF           A:::::::::A            V:::::V           V:::::V           R::::R     R:::::R
+          F:::::F                       A:::::A:::::A            V:::::V         V:::::V            R::::R     R:::::R
+          F::::::FFFFFFFFFF            A:::::A A:::::A            V:::::V       V:::::V             R::::RRRRRR:::::R
+          F:::::::::::::::F           A:::::A   A:::::A            V:::::V     V:::::V              R:::::::::::::RR
+          F:::::::::::::::F          A:::::A     A:::::A            V:::::V   V:::::V               R::::RRRRRR:::::R
+          F::::::FFFFFFFFFF         A:::::AAAAAAAAA:::::A            V:::::V V:::::V                R::::R     R:::::R
+          F:::::F                  A:::::::::::::::::::::A            V:::::V:::::V                 R::::R     R:::::R
+          F:::::F                 A:::::AAAAAAAAAAAAA:::::A            V:::::::::V                  R::::R     R:::::R
+        FF:::::::FF              A:::::A             A:::::A            V:::::::V                 RR:::::R     R:::::R
+        F::::::::FF             A:::::A               A:::::A            V:::::V                  R::::::R     R:::::R
+        F::::::::FF            A:::::A                 A:::::A            V:::V                   R::::::R     R:::::R
+        FFFFFFFFFFF           AAAAAAA                   AAAAAAA            VVV                    RRRRRRRR     RRRRRRR
+        © 2018 FAVR, Inc by Haron Arama and Solomon Antoine
+                                                                                                                -->
         <!doctype html>
         <html lang="en">
         <head>
@@ -522,10 +541,12 @@ class Web_Page
             $selectMarketplaceQuery = "
                                    SELECT *, mfr.id as mfrid
                                    FROM marketplace_favr_requests mfr
+                                   INNER JOIN marketplace_favr_freelancers mff
+                                   ON mfr.id = mff.request_id
                                    INNER JOIN users u
-                                   WHERE u.id = mfr.customer_id
+                                   ON u.id = mfr.customer_id
                                    AND u.id = $id
-                                   OR u.id = mfr.freelancer_id
+                                   OR u.id = mff.user_id
                                    AND u.id = $id
                                    ORDER BY $orderBy
                                    $orientation
@@ -546,7 +567,7 @@ class Web_Page
             $rows = $result->fetchAll(PDO::FETCH_ASSOC);
             if (!empty($rows)) {
                 foreach ($rows as $row) {
-                    $freelancer_id = $row['freelancer_id'];
+                    $freelancer_id = $row['user_id'];
                     $task_id = $row['mfrid'];
                     $customer_id = $row['customer_id'];
                     $customer = $this->getUserInfo($customer_id);
@@ -581,23 +602,38 @@ class Web_Page
                                     <div class='col-sm-12 small'>
                                         <div class=\"float-left d-inline\">
                                             ";
-
-                    if ($freelancer_id == $id && $task_status == "Requested") { // if not this user
-                        echo "<p class='mb-0 d-inline-flex'>Accepted(Freelancer)</p>";
-                    } else if ($freelancer_id == $id && $task_status == "In Progress") { // if not this user
-                        echo "<p class='mb-0 d-inline-flex'>In Progress(Freelancer)</p>";
-                    } else if ($freelancer_id == $id && $task_status == "Completed") { // if not this user
-                        echo "<p class='mb-0 d-inline-flex'>You Completed</p>";
-                    } else if ($customer_id == $id && $task_status == "Requested") { // if not this user
-                        echo "<p class='mb-0 d-inline-flex'>Requested</p> |";
-                        echo "<a href=\"?navbar=active_profile&d_request_id=$task_id&ALERT_MESSAGE=Your request has been deleted!\" class='text-danger'>
+                    if ($freelancer_id == $id) {
+                        if ($task_status == Data_Constants::DB_TASK_STATUS_REQUESTED) {
+                            echo "<p class='mb-0 d-inline-flex'>Accepted(Freelancer)</p>";
+                        } else if ($task_status == Data_Constants::DB_TASK_STATUS_PENDING_APPROVAL) {
+                            echo "<p class='mb-0 d-inline-flex'>Pending Approval (Freelancer)</p>";
+                        } else if ($task_status == Data_Constants::DB_TASK_STATUS_PAID) {
+                            echo "<p class='mb-0 d-inline-flex'>Go to location</p>";
+                        } else if ($task_status == Data_Constants::DB_TASK_STATUS_IN_PROGRESS) {
+                            echo "<p class='mb-0 d-inline-flex'>In Progress(Freelancer)</p>";
+                        } else if ($task_status == Data_Constants::DB_TASK_STATUS_COMPLETED) {
+                            echo "<p class='mb-0 d-inline-flex'>You Completed</p>";
+                        }
+                    } else if ($customer_id == $id) {
+                        if ($task_status == Data_Constants::DB_TASK_STATUS_REQUESTED) {
+                            echo "<p class='mb-0 d-inline-flex'>Requested</p> |";
+                            echo "<a href=\"?navbar=active_profile&d_request_id=$task_id&ALERT_MESSAGE=Your request has been deleted!\" class='text-danger'>
                             Cancel Request</a>";
-                    } else if ($customer_id == $id && $task_status == "In Progress") { // if not this user
-                        echo "<p class='mb-0 d-inline-flex'>In Progress</p> |";
-                        echo "<a href=\"?navbar=active_profile&d_request_id=$task_id&ALERT_MESSAGE=Your request has been deleted!\" class='text-danger'>
+                        } else if ($task_status == Data_Constants::DB_TASK_STATUS_PENDING_APPROVAL) {
+                            echo "<p class='mb-0 d-inline-flex'>Pending approval</p>";
+                            echo "<a href=\"?navbar=active_profile&d_request_id=$task_id&ALERT_MESSAGE=Your request has been deleted!\" class='text-danger'>
                             Cancel Request</a>";
-                    } else {
-                        echo "<p class='mb-0 d-inline-flex'>Completed</p>";
+                        } else if ($task_status == Data_Constants::DB_TASK_STATUS_PAID) {
+                            echo "<p class='mb-0 d-inline-flex'>Help en-route</p>";
+                            echo "<a href=\"?navbar=active_profile&d_request_id=$task_id&ALERT_MESSAGE=Your request has been deleted!\" class='text-danger'>
+                            Cancel Request</a>";
+                        } else if ($task_status == Data_Constants::DB_TASK_STATUS_IN_PROGRESS) {
+                            echo "<p class='mb-0 d-inline-flex'>In Progress</p> |";
+                            echo "<a href=\"?navbar=active_profile&d_request_id=$task_id&ALERT_MESSAGE=Your request has been deleted!\" class='text-danger'>
+                            Cancel Request</a>";
+                        } else if ($task_status == Data_Constants::DB_TASK_STATUS_COMPLETED) {
+                            echo "<p class='mb-0 d-inline-flex'>Completed</p>";
+                        }
                     }
 
                     echo "
@@ -678,7 +714,6 @@ class Web_Page
             ?>
             <nav class="navbar navbar-expand-md fixed-top navbar-dark bg-dark pb-2">
                 <button class="navbar-toggler pb-2 border-0" type="button" data-toggle="offcanvas">
-                    <!--                    <i class="material-icons" style="font-size: xx-large;color: var(--red)">menu</i>-->
                     <span class="sr-only">Toggle navigation</span>
                     <span></span>
                     <span></span>
@@ -719,9 +754,6 @@ class Web_Page
                     }
                     ?>
                 </button>
-
-                <!--                <a class="navbar-brand" href="#">FAVR</a>-->
-
 
                 <div class="navbar-collapse offcanvas-collapse" id="navbarsExampleDefault">
                     <ul class="navbar-nav mr-auto">
@@ -830,7 +862,7 @@ class Web_Page
                 // Handle nav scroller presentation logic
                 $active_marketplace = "";
                 $active_friends = "";
-                $active_chat = "";
+//                $active_chat = "";
 
                 switch ($_SESSION['nav_scroller']) {
                     case "active_marketplace":
@@ -839,9 +871,9 @@ class Web_Page
                     case "active_friends":
                         $active_friends = "active";
                         break;
-                    case "active_chat":
-                        $active_chat = "active";
-                        break;
+//                    case "active_chat":
+//                        $active_chat = "active";
+//                        break;
                     default:
                         // none active
                         break;
@@ -871,17 +903,17 @@ class Web_Page
                             }
                             ?>
                         </a>
-                        <a class="nav-link d-inline-flex <?php echo $active_chat; ?>"
-                           href="<?php echo $this->root_path; ?>/home/chat/?navbar=active_home&nav_scroller=active_chat">
-                            Chat
-                            <?php
-                            if ($active_chat) {
-                                echo "<i class=\"material-icons\" style='color: var(--red);font-size: 15px; padding-left: 2px;position:relative;top:.2rem;'>chat_bubble</i>";
-                            } else {
-                                echo "<i class=\"material-icons\" style='font-size: 15px; padding-left: 2px;position:relative;top:.2rem;'>chat_bubble_outline</i>";
-                            }
-                            ?>
-                        </a>
+<!--                        <a class="nav-link d-inline-flex --><?php // echo $active_chat; ?><!--"-->
+<!--                           href="--><?php //echo $this->root_path; ?><!--/home/chat/?navbar=active_home&nav_scroller=active_chat">-->
+<!--                            Chat-->
+<!--                            --><?php
+//                            if ($active_chat) {
+//                                echo "<i class=\"material-icons\" style='color: var(--red);font-size: 15px; padding-left: 2px;position:relative;top:.2rem;'>chat_bubble</i>";
+//                            } else {
+//                                echo "<i class=\"material-icons\" style='font-size: 15px; padding-left: 2px;position:relative;top:.2rem;'>chat_bubble_outline</i>";
+//                            }
+//                            ?>
+<!--                        </a>-->
                         <!--                    <a id="suggestions" onclick="focusNoScrollMethod()" class="nav-link -->
                         <?php //echo  $active_suggestions; ?><!--" href="?nav_scroller=active_suggestions">Suggestions</a>-->
                     </nav>
@@ -903,7 +935,7 @@ class Web_Page
     {
         if ($notificationCount > 0) {
 
-            echo "<span style=\"height: 1rem\" class=\"badge badge-pill red-bubble-notification align-text-bottom\">$notificationCount</span>";
+            echo "<span id='notificationCount' style=\"height: 1rem\" class=\"badge badge-pill red-bubble-notification align-text-bottom\">$notificationCount</span>";
 
             return true;
         } else {
@@ -949,6 +981,7 @@ class Web_Page
                     $task_id = $row['mfrid'];
                     $freelancerInfo = $this->getUserInfo($freelancer_id);
                     $freelancer_username = $freelancerInfo['username'];
+                    $freelancer_first_name = $freelancerInfo['first_name'];
                     $freelancer_accepted = $row['task_freelancer_accepted'];
                     $task_freelancer_count = $row['task_freelancer_count'];
 
@@ -956,6 +989,7 @@ class Web_Page
                     $customerInfo = $this->getUserInfo($customer_id);
                     $customer_username = $customerInfo['username'];
                     $customer_first_name = $customerInfo['first_name'];
+                    $customer_phone = $customerInfo['phone'];
 
                     $task_description = $row['task_description'];
                     $task_date = date("n/j/Y", strtotime($row['task_date']));
@@ -995,39 +1029,149 @@ class Web_Page
 
                     echo "</strong>
                             ";
+                    if (isset($_GET['request_completed_id']) && $task_status == Data_Constants::DB_TASK_STATUS_IN_PROGRESS) {
+                        echo "</div>";
+                        echo "<div class='mt-3 text-center'>";
+                        echo "    <p class=\"small d-inline-flex\">";
 
-                    if (isset($task_difficulty) && $customer_id != $_SESSION['user_info']['id']) {
-                        if ($task_difficulty == Data_Constants::DB_TASK_INTENSITY_EASY) {
-                            echo "<button type=\"button\" class=\"ml-2 btn-sm btn btn-success p-1 rounded\" style='opacity: .9' value=\"Easy\" disabled>Easy 👌</button>";
-                        } else if ($task_difficulty == Data_Constants::DB_TASK_INTENSITY_MEDIUM) {
-                            echo "<button type=\"button\" class=\"ml-2 btn-sm btn btn-warning p-1 rounded\" style='opacity: .9' value=\"Medium\" disabled>Medium 💪🏿</button>";
-                        } else if ($task_difficulty == Data_Constants::DB_TASK_INTENSITY_HARD) {
-                            echo "<button type=\"button\" class=\"ml-2 btn-sm btn btn-danger p-1 rounded\" style='opacity: .9' value=\"Hard\" disabled>Hard 🔥</button>";
+                        // rating system 1 - 5 stars + optional review
+                        if (isset($_GET['stars'])) {
+                            if ($_GET['stars'] == 1) {
+                                echo "<i style=\"color: var(--yellow)\" class=\"material-icons\">star</i>";
+                                echo "<a href='?navbar=active_notifications&request_completed_id=$task_id&stars=2'><i style=\"color: var(--dark)\" class=\"material-icons\">star_border</i></a>";
+                                echo "<a href='?navbar=active_notifications&request_completed_id=$task_id&stars=3'><i style=\"color: var(--dark)\" class=\"material-icons\">star_border</i></a>";
+                                echo "<a href='?navbar=active_notifications&request_completed_id=$task_id&stars=4'><i style=\"color: var(--dark)\" class=\"material-icons\">star_border</i></a>";
+                                echo "<a href='?navbar=active_notifications&request_completed_id=$task_id&stars=5'><i style=\"color: var(--dark)\" class=\"material-icons\">star_border</i></a>";
+                            } else if ($_GET['stars'] == 2) {
+                                echo "<a href='?navbar=active_notifications&request_completed_id=$task_id&stars=1'><i style=\"color: var(--yellow)\" class=\"material-icons\">star</i></a>";
+                                echo "<i style=\"color: var(--yellow)\" class=\"material-icons\">star</i>";
+                                echo "<a href='?navbar=active_notifications&request_completed_id=$task_id&stars=3'><i style=\"color: var(--dark)\" class=\"material-icons\">star_border</i></a>";
+                                echo "<a href='?navbar=active_notifications&request_completed_id=$task_id&stars=4'><i style=\"color: var(--dark)\" class=\"material-icons\">star_border</i></a>";
+                                echo "<a href='?navbar=active_notifications&request_completed_id=$task_id&stars=5'><i style=\"color: var(--dark)\" class=\"material-icons\">star_border</i></a>";
+                            } else if ($_GET['stars'] == 3) {
+                                echo "<a href='?navbar=active_notifications&request_completed_id=$task_id&stars=1'><i style=\"color: var(--yellow)\" class=\"material-icons\">star</i></a>";
+                                echo "<a href='?navbar=active_notifications&request_completed_id=$task_id&stars=2'><i style=\"color: var(--yellow)\" class=\"material-icons\">star</i></a>";
+                                echo "<i style=\"color: var(--yellow)\" class=\"material-icons\">star</i>";
+                                echo "<a href='?navbar=active_notifications&request_completed_id=$task_id&stars=4'><i style=\"color: var(--dark)\" class=\"material-icons\">star_border</i></a>";
+                                echo "<a href='?navbar=active_notifications&request_completed_id=$task_id&stars=5'><i style=\"color: var(--dark)\" class=\"material-icons\">star_border</i></a>";
+                            } else if ($_GET['stars'] == 4) {
+                                echo "<a href='?navbar=active_notifications&request_completed_id=$task_id&stars=1'><i style=\"color: var(--yellow)\" class=\"material-icons\">star</i></a>";
+                                echo "<a href='?navbar=active_notifications&request_completed_id=$task_id&stars=2'><i style=\"color: var(--yellow)\" class=\"material-icons\">star</i></a>";
+                                echo "<a href='?navbar=active_notifications&request_completed_id=$task_id&stars=3'><i style=\"color: var(--yellow)\" class=\"material-icons\">star</i></a>";
+                                echo "<i style=\"color: var(--yellow)\" class=\"material-icons\">star</i>";
+                                echo "<a href='?navbar=active_notifications&request_completed_id=$task_id&stars=5'><i style=\"color: var(--dark)\" class=\"material-icons\">star_border</i></a>";
+                            } else if ($_GET['stars'] == 5) {
+                                echo "<a href='?navbar=active_notifications&request_completed_id=$task_id&stars=1'><i style=\"color: var(--yellow)\" class=\"material-icons\">star</i></a>";
+                                echo "<a href='?navbar=active_notifications&request_completed_id=$task_id&stars=2'><i style=\"color: var(--yellow)\" class=\"material-icons\">star</i></a>";
+                                echo "<a href='?navbar=active_notifications&request_completed_id=$task_id&stars=3'><i style=\"color: var(--yellow)\" class=\"material-icons\">star</i></a>";
+                                echo "<a href='?navbar=active_notifications&request_completed_id=$task_id&stars=4'><i style=\"color: var(--yellow)\" class=\"material-icons\">star</i></a>";
+                                echo "<i style=\"color: var(--yellow)\" class=\"material-icons\">star</i>";
+                            }
+                        } else {
+                            echo "<a href='?navbar=active_notifications&request_completed_id=$task_id&stars=1'><i style=\"color: var(--dark)\" class=\"material-icons\">star_border</i></a>";
+                            echo "<a href='?navbar=active_notifications&request_completed_id=$task_id&stars=2'><i style=\"color: var(--dark)\" class=\"material-icons\">star_border</i></a>";
+                            echo "<a href='?navbar=active_notifications&request_completed_id=$task_id&stars=3'><i style=\"color: var(--dark)\" class=\"material-icons\">star_border</i></a>";
+                            echo "<a href='?navbar=active_notifications&request_completed_id=$task_id&stars=4'><i style=\"color: var(--dark)\" class=\"material-icons\">star_border</i></a>";
+                            echo "<a href='?navbar=active_notifications&request_completed_id=$task_id&stars=5'><i style=\"color: var(--dark)\" class=\"material-icons\">star_border</i></a>";
                         }
-                    }
 
-                    if ($customer_id == $_SESSION['user_info']['id']) {
-                        echo "<div class='float-right small' style='padding-top: .3rem;color: var(--red)'>- $$task_price</div>";
+                        echo " </p>";
+                        echo "</div>";
+
+                        $review = isset($_POST['review']) ? $_POST['review'] : null;
+                        $stars = isset($_GET['stars']) ? $_GET['stars'] : 3;
+                        // optional review preview
+                        if (isset($_POST['review'])) {
+                            $review = $_POST['review'];
+                            echo "<div class='mt-1 text-center'>
+                                    <p class='d-inline-flex text-lg-left'>$review</p> 
+                                    <i class='material-icons text-muted text-lg-right'>format_quote</i> 
+                                  </div>";
+                        }
+
+                        echo "<div class='mt-2 p-2 text-center'>";
+                        echo "<!-- Button trigger modal -->
+                                <button type=\"button\" class=\"btn btn-primary\" data-toggle=\"modal\" data-target=\"#exampleModalCenter\">
+                                  Leave an optional review
+                                </button>
+                                
+                                <!-- Modal -->
+                                <div class=\"modal fade\" id=\"exampleModalCenter\" tabindex=\"-1\" role=\"dialog\" aria-labelledby=\"exampleModalCenterTitle\" aria-hidden=\"true\">
+                                  <form action='$this->root_path/components/notifications/?navbar=active_notifications&request_completed_id=$task_id&stars=$stars' method='post'>
+                                      <div class=\"modal-dialog\" role=\"document\">
+                                        <div class=\"modal-content\">
+                                          <div class=\"modal-header\">
+                                            <h5 class=\"modal-title\" id=\"exampleModalLongTitle\">Leave a review for $freelancer_first_name</h5>
+                                            <button type=\"button\" class=\"close\" data-dismiss=\"modal\" aria-label=\"Close\">
+                                              <span aria-hidden=\"true\">&times;</span>
+                                            </button>
+                                          </div>
+                                          <div class=\"modal-body\">
+                                            <textarea name='review' class='form-control' placeholder='Leave a review of your experience...'>$review</textarea>
+                                          </div>
+                                          <div class=\"modal-footer\">
+                                            <button type=\"button\" class=\"btn btn-secondary\" data-dismiss=\"modal\">Close</button>
+                                            <input type=\"submit\" name='submit' class=\"btn btn-primary\" value='Save Changes'>
+                                          </div>
+                                        </div>
+                                      </div>
+                                  </form>
+                                </div>";
+
+                        echo "  <div class='mt-3 border-top border-gray pt-3'>
+                                    <div class='d-inline-flex text-center'>
+                                        <form action='$this->root_path/components/notifications/?navbar=active_notifications&completed_request_id=$task_id&stars=$stars' method='post'>
+                                            <input type='hidden' name='request_rating' value='$stars' required>
+                                            <input type='hidden' name='freelancer_id' value='$freelancer_id' required>
+                                            <input type='hidden' name='customer_id' value='$customer_id' required>
+                                            <input type='hidden' name='request_review' value='$review'>
+                                            <input class='btn btn-sm btn-outline-success'
+                                                type='submit'
+                                                name='complete_request'
+                                                value='Submit' />
+                                        </form>
+                                    </div>
+                                </div>";
+                        echo "</div>";
                     } else {
-                        echo "<div class='float-right small' style='padding-top: .3rem;color: var(--green)'>+ $$task_price</div>";
-                    }
 
-                    echo "</div><div class=\"media text-muted pt-3\">
+                        if (isset($task_difficulty) && $customer_id != $_SESSION['user_info']['id']) {
+                            if ($task_difficulty == Data_Constants::DB_TASK_INTENSITY_EASY) {
+                                echo "<button type=\"button\" class=\"ml-2 btn-sm btn btn-success p-1 rounded\" style='opacity: .9' value=\"Easy\" disabled>Easy 👌</button>";
+                            } else if ($task_difficulty == Data_Constants::DB_TASK_INTENSITY_MEDIUM) {
+                                echo "<button type=\"button\" class=\"ml-2 btn-sm btn btn-warning p-1 rounded\" style='opacity: .9' value=\"Medium\" disabled>Medium 💪🏿</button>";
+                            } else if ($task_difficulty == Data_Constants::DB_TASK_INTENSITY_HARD) {
+                                echo "<button type=\"button\" class=\"ml-2 btn-sm btn btn-danger p-1 rounded\" style='opacity: .9' value=\"Hard\" disabled>Hard 🔥</button>";
+                            }
+                        }
+
+                        if ($customer_id == $_SESSION['user_info']['id']) {
+                            echo "<div class='float-right small' style='padding-top: .3rem;color: var(--red)'>- $$task_price</div>";
+                        } else {
+                            echo "<div class='float-right small' style='padding-top: .3rem;color: var(--green)'>+ $$task_price</div>";
+                        }
+
+                        echo "</div><div class=\"media text-muted pt-3\">
                         <div class='container'>
                             <p id='$id' class=\"media-body text-dark mb-0 small lh-125\">
                                 $task_description
                                 <div id='$id-location' class='pt-1 border-top small border-gray d-none'>
                                     <label for='location'>Location:</label>";
 
-                    // share location of customer to freelancer if task is in progress or paid for
-                    if ($task_status == Data_Constants::DB_TASK_STATUS_PAID || $task_status == Data_Constants::DB_TASK_STATUS_IN_PROGRESS) {
-                        echo "<p class='text-dark'>$task_location</p>";
-                    } else {
-                        echo "<!-- TODO: calculate location distance by zipcode -->
+                        // TODO: add contact info for customer and freelancer
+                        // share location of customer to freelancer if task is in progress or paid for
+                        if ($task_status == Data_Constants::DB_TASK_STATUS_PAID || $task_status == Data_Constants::DB_TASK_STATUS_IN_PROGRESS) {
+                            echo "<p class='text-dark'>$task_location</p>";
+                            echo "<div class='pt-1 border-top border-bottom border-gray'>
+                                    <label for='contact'>Contact:</label>
+                                    <p class='text-dark'>$customer_phone</p>
+                                  </div>";
+                        } else {
+                            echo "<!-- TODO: calculate location distance by zipcode -->
                                     <p class='text-dark'>Within 3 Miles of your location.</p>";
-                    }
+                        }
 
-                    echo "
+                        echo "
                                     <div id='$id-completeby' class='pt-1 border-top border-bottom border-gray'>
                                         <label for='completeby'>Complete FAVR by:</label>
                                         <p class='text-dark'>$task_time_to_accomplish</p>
@@ -1037,48 +1181,48 @@ class Web_Page
                                     <label for='freelancer-count'>Amount of freelancer(s) wanted: (accepted/requested)</label>
                                     <p class='text-dark'>$freelancer_accepted/$task_freelancer_count</p>
                                 </div>";
-                    echo "
+                        echo "
                                 <div id='$id-image1' class='pt-1 border-top border-gray small d-none'>
                                     <label for='image1'>Attached Image 1:</label>
                                     <img id='$id-img1' style='cursor: pointer' src='data:image/svg+xml;charset=UTF-8,%3Csvg%20width%3D%22128%22%20height%3D%22128%22%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20viewBox%3D%220%200%20128%20128%22%20preserveAspectRatio%3D%22none%22%3E%3Cdefs%3E%3Cstyle%20type%3D%22text%2Fcss%22%3E%23holder_164a9f2d749%20text%20%7B%20fill%3A%23007bff%3Bfont-weight%3Abold%3Bfont-family%3AArial%2C%20Helvetica%2C%20Open%20Sans%2C%20sans-serif%2C%20monospace%3Bfont-size%3A6pt%20%7D%20%3C%2Fstyle%3E%3C%2Fdefs%3E%3Cg%20id%3D%22holder_164a9f2d749%22%3E%3Crect%20width%3D%22128%22%20height%3D%22128%22%20fill%3D%22%23007bff%22%3E%3C%2Frect%3E%3Cg%3E%3Ctext%20x%3D%2248.4296875%22%20y%3D%2266.7%22%3E128x128%3C%2Ftext%3E%3C%2Fg%3E%3C%2Fg%3E%3C%2Fsvg%3E' 
                                         data-src='$this->root_path/image.php?i=$task1_img_name&i_t=$task1_img_type' height='30%' width='30%' alt='FAVR image 1'>
                                 </div>";
-                    // Image 1 modal
-                    echo "
+                        // Image 1 modal
+                        echo "
                             <div id=\"$id-image1-modal\" class=\"modal\">
                               <span id='$id-close1' class=\"modal-close\">&times;</span>
                               <img class=\"modal-content\" id=\"$id-image1-modal-content\">
                               <div id=\"$id-caption1\" class='caption'></div>
                             </div>";
 
-                    echo "
+                        echo "
                                 <div id='$id-image2' class='pt-1 border-top border-gray small d-none'>
                                     <label for='image2'>Attached Image 2:</label>
                                     <img id='$id-img2' style='cursor: pointer' src='data:image/svg+xml;charset=UTF-8,%3Csvg%20width%3D%22128%22%20height%3D%22128%22%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20viewBox%3D%220%200%20128%20128%22%20preserveAspectRatio%3D%22none%22%3E%3Cdefs%3E%3Cstyle%20type%3D%22text%2Fcss%22%3E%23holder_164a9f2d749%20text%20%7B%20fill%3A%23007bff%3Bfont-weight%3Abold%3Bfont-family%3AArial%2C%20Helvetica%2C%20Open%20Sans%2C%20sans-serif%2C%20monospace%3Bfont-size%3A6pt%20%7D%20%3C%2Fstyle%3E%3C%2Fdefs%3E%3Cg%20id%3D%22holder_164a9f2d749%22%3E%3Crect%20width%3D%22128%22%20height%3D%22128%22%20fill%3D%22%23007bff%22%3E%3C%2Frect%3E%3Cg%3E%3Ctext%20x%3D%2248.4296875%22%20y%3D%2266.7%22%3E128x128%3C%2Ftext%3E%3C%2Fg%3E%3C%2Fg%3E%3C%2Fsvg%3E' 
                                         data-src='$this->root_path/image.php?i=$task2_img_name&i_t=$task2_img_type' height='30%' width='30%' alt='FAVR image 2'>
                                 </div>";
-                    // Image 2 modal
-                    echo "
+                        // Image 2 modal
+                        echo "
                             <div id=\"$id-image2-modal\" class=\"modal\">
                               <span id='$id-close2' class=\"modal-close\">&times;</span>
                               <img class=\"modal-content\" id=\"$id-image2-modal-content\" alt='FAVR image 2'>
                               <div id=\"$id-caption2\" class='caption'></div>
                             </div>";
 
-                    echo "
+                        echo "
                                 <div id='$id-image3' class='pt-1 border-top border-gray small d-none'>
                                     <label for='image3'>Attached Image 3:</label>
                                     <img id='$id-img3' style='cursor: pointer' src='data:image/svg+xml;charset=UTF-8,%3Csvg%20width%3D%22128%22%20height%3D%22128%22%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20viewBox%3D%220%200%20128%20128%22%20preserveAspectRatio%3D%22none%22%3E%3Cdefs%3E%3Cstyle%20type%3D%22text%2Fcss%22%3E%23holder_164a9f2d749%20text%20%7B%20fill%3A%23007bff%3Bfont-weight%3Abold%3Bfont-family%3AArial%2C%20Helvetica%2C%20Open%20Sans%2C%20sans-serif%2C%20monospace%3Bfont-size%3A6pt%20%7D%20%3C%2Fstyle%3E%3C%2Fdefs%3E%3Cg%20id%3D%22holder_164a9f2d749%22%3E%3Crect%20width%3D%22128%22%20height%3D%22128%22%20fill%3D%22%23007bff%22%3E%3C%2Frect%3E%3Cg%3E%3Ctext%20x%3D%2248.4296875%22%20y%3D%2266.7%22%3E128x128%3C%2Ftext%3E%3C%2Fg%3E%3C%2Fg%3E%3C%2Fsvg%3E' 
                                     data-src='$this->root_path/image.php?i=$task3_img_name&i_t=$task3_img_type' height='30%' width='30%' alt='FAVR image 3'>
                                 </div>";
-                    // Image 3 modal
-                    echo "
+                        // Image 3 modal
+                        echo "
                             <div id=\"$id-image3-modal\" class=\"modal\">
                               <span id='$id-close3' class=\"modal-close\">&times;</span>
                               <img class=\"modal-content\" id=\"$id-image3-modal-content\">
                               <div id=\"$id-caption3\" class='caption'></div>
                             </div>";
-                    echo "
+                        echo "
                             </p>
                             <div class='row p-0 border-top border-gray'>
                                 <div class='col-sm-12 small'>
@@ -1094,8 +1238,8 @@ class Web_Page
                                               $('#$id-expand').removeClass('d-inline-flex');
                                               $('#$id-expand').addClass('d-none');";
 
-                    for ($i = 1; $i <= Data_Constants::MAXIMUM_IMAGE_UPLOAD_COUNT; $i++) {
-                        echo "
+                        for ($i = 1; $i <= Data_Constants::MAXIMUM_IMAGE_UPLOAD_COUNT; $i++) {
+                            echo "
                             var modal = document.getElementById('$id-image$i-modal');
                             var img = document.getElementById('$id-img$i');
                             var modalImg = document.getElementById('$id-image$i-modal-content');
@@ -1110,21 +1254,21 @@ class Web_Page
                                 modal.style.display = 'none';
                             }
                          ";
-                    }
+                        }
 
-                    if (!empty($task1_img_data_array)) {
-                        echo "$('#$id-image1').removeClass('d-none');";
-                    }
+                        if (!empty($task1_img_data_array)) {
+                            echo "$('#$id-image1').removeClass('d-none');";
+                        }
 
-                    if (!empty($task2_img_data_array)) {
-                        echo "$('#$id-image2').removeClass('d-none');";
-                    }
+                        if (!empty($task2_img_data_array)) {
+                            echo "$('#$id-image2').removeClass('d-none');";
+                        }
 
-                    if (!empty($task3_img_data_array)) {
-                        echo "$('#$id-image3').removeClass('d-none');";
-                    }
+                        if (!empty($task3_img_data_array)) {
+                            echo "$('#$id-image3').removeClass('d-none');";
+                        }
 
-                    echo "
+                        echo "
                                               
                                         \">Details</div>
                                          <div id='$id-collapse' class='text-info d-none'
@@ -1138,157 +1282,158 @@ class Web_Page
                                               $('#$id-expand').removeClass('d-none');
                                               $('#$id-expand').addClass('d-inline-flex');";
 
-                    if (!empty($task1_img_data_array)) {
-                        echo "$('#$id-image1').addClass('d-none');";
-                    }
+                        if (!empty($task1_img_data_array)) {
+                            echo "$('#$id-image1').addClass('d-none');";
+                        }
 
-                    if (!empty($task2_img_data_array)) {
-                        echo "$('#$id-image2').addClass('d-none');";
-                    }
+                        if (!empty($task2_img_data_array)) {
+                            echo "$('#$id-image2').addClass('d-none');";
+                        }
 
-                    if (!empty($task3_img_data_array)) {
-                        echo "$('#$id-image3').addClass('d-none');";
-                    }
+                        if (!empty($task3_img_data_array)) {
+                            echo "$('#$id-image3').addClass('d-none');";
+                        }
 
-                    echo "
+                        echo "
                                         \">Collapse</div>
                                         ";
 
 
-                    echo "
+                        echo "
                                     </div>
                                        ";
 
-                    if ($customer_id != $_SESSION['user_info']['id']) { // if not this user
-                        $freelancerAccepted = false;
-                        $freelancer_id = null;
-                        $user_id = $_SESSION['user_info']['id'];
-                        $select_freelancers_query = "SELECT * 
+                        // Customer and freelancer request actions
+                        if ($customer_id != $_SESSION['user_info']['id']) { // if not this user
+                            $freelancerAccepted = false;
+                            $freelancer_id = null;
+                            $user_id = $_SESSION['user_info']['id'];
+                            $select_freelancers_query = "SELECT * 
                                                      FROM marketplace_favr_freelancers
                                                      WHERE request_id = $task_id
                                                      AND user_id = $user_id";
-                        $result = $this->db->query($select_freelancers_query);
-                        if ($result) {
-                            $row = $result->fetch(PDO::FETCH_ASSOC);
-                            if (!empty($row)) {
-                                $freelancerAccepted = true;
-                                $freelancer_id = $row['user_id'];
+                            $result = $this->db->query($select_freelancers_query);
+                            if ($result) {
+                                $row = $result->fetch(PDO::FETCH_ASSOC);
+                                if (!empty($row)) {
+                                    $freelancerAccepted = true;
+                                    $freelancer_id = $row['user_id'];
+                                }
                             }
-                        }
 
-                        if ($freelancerAccepted) {
-                            if ($task_status == Data_Constants::DB_TASK_STATUS_PENDING_APPROVAL || $task_status == Data_Constants::DB_TASK_STATUS_REQUESTED) {
-                                echo "<div class='float-right d-inline'>
+                            if ($freelancerAccepted) {
+                                if ($task_status == Data_Constants::DB_TASK_STATUS_PENDING_APPROVAL || $task_status == Data_Constants::DB_TASK_STATUS_REQUESTED) {
+                                    echo "<div class='float-right d-inline'>
                                     <p class='d-inline-flex mb-1'>
                                     Status: You Accepted</p>
                                   </div>";
-                            } else {
-                                echo "<div class='float-right d-inline'>
+                                } else {
+                                    echo "<div class='float-right d-inline'>
                                         <p class='d-inline-flex mb-1'>
                                         ";
-                                // TODO: use class defined constants here to validate verified freelancers from regular customers
-                                if ($task_status == Data_Constants::DB_TASK_STATUS_PAID && $customer_id != $_SESSION['user_info']['id']) {
-                                    echo "Status: Go to location";
-                                } else {
-                                    echo "Status: $task_status";
+                                    // TODO: use class defined constants here to validate verified freelancers from regular customers
+                                    if ($task_status == Data_Constants::DB_TASK_STATUS_PAID && $customer_id != $_SESSION['user_info']['id']) {
+                                        echo "Status: Go to location";
+                                    } else {
+                                        echo "Status: $task_status";
+                                    }
+
+                                    echo "  </p>
+                                      </div>";
                                 }
 
-                                echo "  </p>
-                                      </div>";
-                            }
+                                if ($task_status == Data_Constants::DB_TASK_STATUS_PAID) {
+                                    echo "<div class='d-block mt-4 pt-2 border-gray border-top text-center'>
+                                            <a href=\"$this->root_path/components/notifications/?navbar=active_notifications&freelancer_arrived=true&arrived_request_id=$task_id&ALERT_MESSAGE=You've arrived! Make sure you're at the correct location and that the customer is who they say they are!\" class='text-success'>
+                                            Freelancer Arrived</a>
+                                          </div>
+                                        ";
 
-                            if ($task_status == Data_Constants::DB_TASK_STATUS_PAID) {
-                                echo "<div class='d-block mt-4 pt-2 border-gray border-top text-center'>
-                                        <a href='#' class='text-info'>
-                                        Freelancer Arrived</a>
-                                      </div>
-                                    ";
-
-                                echo "<div class='d-block mt-2 pt-2 border-gray border-top text-center'>
+                                    echo "<div class='d-block mt-2 pt-2 border-gray border-top text-center'>
                                         <a class='text-danger' href=\"$this->root_path/components/notifications/?navbar=active_notifications&withdraw_request_id=$task_id&freelancer_id=$freelancer_id&ALERT_MESSAGE=You've withdrawn from this task: the customer has been notified!\">
                                         Withdraw From Task</a>
                                       </div>";
+                                } else {
+                                    echo "<div class='d-block mt-4 pt-2 border-gray border-top text-center'>
+                                        <a class='text-danger' href=\"$this->root_path/components/notifications/?navbar=active_notifications&withdraw_request_id=$task_id&freelancer_id=$freelancer_id&ALERT_MESSAGE=You've withdrawn from this task: the customer has been notified!\">
+                                        Withdraw From Task</a>
+                                      </div>";
+                                }
+
                             } else {
-                                echo "<div class='d-block mt-4 pt-2 border-gray border-top text-center'>
-                                        <a class='text-danger' href=\"$this->root_path/components/notifications/?navbar=active_notifications&withdraw_request_id=$task_id&freelancer_id=$freelancer_id&ALERT_MESSAGE=You've withdrawn from this task: the customer has been notified!\">
-                                        Withdraw From Task</a>
-                                      </div>";
-                            }
-
-                        } else {
-                            echo "<div class='float-right d-inline'>
+                                echo "<div class='float-right d-inline'>
                                     <a href=\"$this->root_path/components/notifications/?navbar=active_notifications&accept_freelancer_request_id=$task_id&ALERT_MESSAGE=You've signed up to take this task! The task requester has been notified of your interest and is reviewing your offer to help: they can accept or reject your offer to help! You'll be notified of their decision; you can withdraw your offer to help before they decide. \">
                                     Accept Request</a>
                                   </div>";
-                        }
-                    } else {
-                        $select_freelancers_query = "SELECT * 
+                            }
+                        } else {
+                            $select_freelancers_query = "SELECT * 
                                                      FROM marketplace_favr_freelancers
                                                      WHERE request_id = $task_id
                                                      AND user_id = $freelancer_id";
-                        $result = $this->db->query($select_freelancers_query);
-                        $row = $result->fetch(PDO::FETCH_ASSOC);
-                        if (!empty($row)) {
-                            if ($row['approved'] == 1) { // this user is approved
-                                echo "<div class='float-right d-inline'>
+                            $result = $this->db->query($select_freelancers_query);
+                            $row = $result->fetch(PDO::FETCH_ASSOC);
+                            if (!empty($row)) {
+                                if ($row['approved'] == 1) { // this user is approved
+                                    echo "<div class='float-right d-inline'>
                                         <p class='d-inline-flex mb-1'>
                                         ";
-                                // TODO: use class defined constants here to validate verified freelancers from regular customers
-                                if ($task_status == Data_Constants::DB_TASK_STATUS_PAID && $customer_id == $_SESSION['user_info']['id']) {
-                                    echo "Status: Help en-route";
-                                } else {
-                                    echo "Status: $task_status";
-                                }
+                                    // TODO: use class defined constants here to validate verified freelancers from regular customers
+                                    if ($task_status == Data_Constants::DB_TASK_STATUS_PAID && $customer_id == $_SESSION['user_info']['id']) {
+                                        echo "Status: Help en-route";
+                                    } else {
+                                        echo "Status: $task_status";
+                                    }
 
-                                echo "  </p>
+                                    echo "  </p>
                                       </div>";
 
-                                if ($task_status == Data_Constants::DB_TASK_STATUS_IN_PROGRESS) {
-                                    echo "<div class='d-block mt-4 pt-2 mb-0 pt-2 border-gray border-top text-center'>
-                                            <a href='#' class='text-info'>
+                                    if ($task_status == Data_Constants::DB_TASK_STATUS_IN_PROGRESS) {
+                                        echo "<div class='d-block mt-4 pt-2 mb-0 pt-2 border-gray border-top text-center'>
+                                            <a href=\"$this->root_path/components/notifications/?navbar=active_notifications&request_completed_id=$task_id&ALERT_MESSAGE=You've marked this request as completed now please rate your experience!\" class='text-success'>
                                                  Request Completed</a>
                                           </div>
                                     ";
 
-                                    echo "<div class='d-block mt-2 pt-2 border-gray border-top text-center'>";
-                                } else {
-                                    echo "<div class='d-block mt-4 pt-2 border-gray border-top text-center'>";
-                                }
+                                        echo "<div class='d-block mt-2 pt-2 border-gray border-top text-center'>";
+                                    } else {
+                                        echo "<div class='d-block mt-4 pt-2 border-gray border-top text-center'>";
+                                    }
 
 
-                                if ($task_status == Data_Constants::DB_TASK_STATUS_REQUESTED || $task_status == Data_Constants::DB_TASK_STATUS_PENDING_APPROVAL) {
-                                    echo "<a href='#' class='mt-0 text-danger'>
+                                    if ($task_status == Data_Constants::DB_TASK_STATUS_REQUESTED || $task_status == Data_Constants::DB_TASK_STATUS_PENDING_APPROVAL) {
+                                        echo "<a href='#' class='mt-0 text-danger'>
                                         Cancel Request</a>
                                         ";
-                                } else {
-                                    echo "<a onclick='confirm(\"Are you sure you want to cancel this request you will be a charged a $5 service fee for each freelancer you requested help from?\")' href='#' class='mt-0 text-danger'>
+                                    } else {
+                                        echo "<a onclick='confirm(\"Are you sure you want to cancel this request you will be a charged a $5 service fee for each freelancer you requested help from?\")' href='#' class='mt-0 text-danger'>
                                         Cancel Request</a>
                                         ";
-                                }
-                                echo "</div>";
-                            } else { // user has not been approved yet
-    //                        echo "<p>Respond</p>";
-                                echo "<div class='float-right d-inline'><a href=\"$this->root_path/components/notifications/?navbar=active_notifications&accept_customer_request_id=$task_id&freelancer_id=$freelancer_id&ALERT_MESSAGE=You've approved this freelancer for this task! Mark that they've arrived when they start doing your FAVR!\" class='text-success'>
+                                    }
+                                    echo "</div>";
+                                } else { // user has not been approved yet
+                                    //                        echo "<p>Respond</p>";
+                                    echo "<div class='float-right d-inline'><a href=\"$this->root_path/components/notifications/?navbar=active_notifications&accept_customer_request_id=$task_id&freelancer_id=$freelancer_id&ALERT_MESSAGE=You've approved this freelancer for this task! They're on their way to complete your FAVR!\" class='text-success'>
                                 Accept</a> | ";
-                                echo "<a href=\"$this->root_path/components/notifications/?navbar=active_notifications&reject_customer_request_id=$task_id&freelancer_id=$freelancer_id&ALERT_MESSAGE=You've rejected this freelancer for this task! They've been notified!\" class='text-danger'>
+                                    echo "<a href=\"$this->root_path/components/notifications/?navbar=active_notifications&reject_customer_request_id=$task_id&freelancer_id=$freelancer_id&ALERT_MESSAGE=You've rejected this freelancer for this task! They've been notified!\" class='text-danger'>
                                 Reject</a></div>";
 
-                                echo "<div class='d-block mt-4 pt-2 border-gray border-top text-center'>
+                                    echo "<div class='d-block mt-4 pt-2 border-gray border-top text-center'>
                                         <a href='#' class='mt-3 text-danger'>
                                             Cancel Request</a>
                                       </div>
                                 ";
+                                }
                             }
                         }
-                    }
 
-                    echo "
+                        echo "
+                                    </div>
                                 </div>
                             </div>
-                        </div>
-                    </div>";
+                        </div>";
+                    }
                     echo "</div>";
-
                 }
             } else {
                 echo "<p class='p-3 text-muted'>No notifications at the moment!</p>";
@@ -1992,10 +2137,9 @@ class Web_Page
                                                      $set_task_status
                                                  WHERE id = $requestID";
 
-//                        die(print_r($update_request_query));
                         $result = $this->db->query($update_request_query);
                         if ($result) {
-                            // successfully withdrawed freelancer from task
+                            // successfully withdrew freelancer from task
                             return true;
                         } else {
                             // failure in withdrawal
@@ -2012,8 +2156,51 @@ class Web_Page
                 }
                 // TODO: javaScript validation warning user of action
 
-
                 return false;
+            } else {
+                return false;
+            }
+        } else {
+            return false;
+        }
+    }
+
+    /**
+     * Process freelancer arrival and log the time
+     *
+     * @param boolean $freelancerArrived
+     * @param int $timestamp
+     * @param int $requestID
+     * @param int $freelancerID // this user!
+     *
+     * @return mixed // timestamp of arrival or false
+     */
+    function processFreelancerArrived($freelancerArrived, $timestamp, $requestID, $freelancerID)
+    {
+        if (isset($freelancerArrived, $timestamp, $requestID, $freelancerID)) {
+            if ($freelancerID == $_SESSION['user_info']['id']) { // must be this user
+                // log time of arrival
+                $inProgress = Data_Constants::DB_TASK_STATUS_IN_PROGRESS;
+                $update_request_query = "UPDATE marketplace_favr_requests
+                                         SET task_status = '$inProgress'
+                                         WHERE id = $requestID";
+
+                $result = $this->db->query($update_request_query);
+                if ($result) {
+                    $update_freelancers_query = "UPDATE marketplace_favr_freelancers
+                                             SET arrival_time = '$timestamp'
+                                             WHERE request_id = $requestID
+                                             AND user_id = $freelancerID";
+
+                    $result = $this->db->query($update_freelancers_query);
+                    if ($result) {
+                        return $timestamp;
+                    } else {
+                        return false;
+                    }
+                } else {
+                    return false;
+                }
             } else {
                 return false;
             }
@@ -2030,22 +2217,35 @@ class Web_Page
      * @param int $requestID
      * @param int $customerID
      * @param int $freelancerID
+     * @param int $requestRating
+     * @param string $requestReview
+     * @param int $timestamp // time of completion
      *
      * @return boolean
      */
-    function processCompleteRequest($requestID, $customerID, $freelancerID)
+    function processCompleteRequest($requestID, $customerID, $freelancerID, $requestRating, $requestReview, $timestamp)
     {
-        if (isset($requestID, $customerID, $freelancerID)) {
+        if (isset($requestID, $customerID, $freelancerID, $requestRating, $timestamp)) {
             // complete request
+            $complete = Data_Constants::DB_TASK_STATUS_COMPLETED;
             $update_request_query = "UPDATE marketplace_favr_requests 
-                                     SET task_status = 'Completed'
-                                     WHERE id = '$requestID'
-                                     AND customer_id = '$customerID'
-                                     AND freelancer_id = '$freelancerID'";
+                                     SET task_status = '$complete',
+                                         task_rating = '$requestRating',
+                                         task_optional_service_review = '$requestReview'
+                                     WHERE id = $requestID
+                                     AND customer_id = $customerID";
 
             $result = $this->db->query($update_request_query);
-
             if ($result) {
+                // log time of completion
+                $update_freelancers_query = "UPDATE marketplace_favr_freelancers
+                                             SET completion_time = '$timestamp'
+                                             WHERE request_id = $requestID";
+
+                $result = $this->db->query($update_freelancers_query);
+                if (!$result) {
+                    return false;
+                }
                 // successfully completed
                 return true;
             } else {
