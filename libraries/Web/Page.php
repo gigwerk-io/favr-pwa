@@ -156,16 +156,11 @@ class Web_Page
                 }
             }
 
-//            if (empty($_SESSION['limit_marketplace_by'])) {
-//                $_SESSION['limit_marketplace_by'] = "LIMIT 3";
-//                $_GET['limit_marketplace_by'] = "LIMIT 3";
-//            } else {
             if (isset($_GET['limit_marketplace_by'])) {
                 $_SESSION['limit_marketplace_by'] = $_GET['limit_marketplace_by'];
             } else if (!isset($_SESSION['limit_marketplace_by'])) {
                 $_SESSION['limit_marketplace_by'] = "LIMIT 3";
             }
-//            }
 
             // navbar logic
             if (empty($_SESSION['navbar']) && empty($_GET['navbar'])) {
@@ -375,7 +370,7 @@ class Web_Page
      *
      * @param int $userID
      *
-     * @return array // return array of userInfo if user exists NULL otherwise
+     * @return mixed // return array of userInfo if user exists NULL otherwise
      */
     function getUserInfo($userID)
     {
@@ -384,8 +379,11 @@ class Web_Page
                        WHERE id = '$userID'";
         $result = $this->db->query($user_query);
         $row = $result->fetch(PDO::FETCH_ASSOC);
-
-        return $row;
+        if (!empty($row)) {
+            return $row;
+        } else {
+            return false;
+        }
     }
 
     /**
@@ -415,8 +413,9 @@ class Web_Page
     /**
      * Render page header
      * @param boolean $render_top_nav
+     * @param boolean $render_back_button
      */
-    function renderHeader($render_top_nav = true)
+    function renderHeader($render_top_nav = true, $render_back_button = false)
     {
         if (empty($_SESSION['user'])) {
             header("location: $this->root_path/signin/ ");
@@ -519,7 +518,7 @@ class Web_Page
             <div id="loader"></div>
 
         <?php
-        $this->renderMainNavigation($this->page_id, $render_top_nav);
+        $this->renderMainNavigation($this->page_id, $render_top_nav, $render_back_button);
         ?>
 
         <main role="main" class="container animate-bottom" style="max-width: 750px">
@@ -583,7 +582,7 @@ class Web_Page
                     echo "<div class=\"my-3 p-3 bg-white rounded box-shadow\">
                         <div class='pb-2 mb-0 border-bottom border-gray'>
                             <img data-src=\"holder.js/32x32?theme=thumb&bg=007bff&fg=007bff&size=1\" alt=\"\" class=\"mr-2 rounded\">
-                            <strong style='font-size: 80%' class=\"d - block text - gray - dark\">@$customer_username</strong>
+                            <strong style='font-size: 80%' class=\"d - block text - gray - dark\"><a href='$this->root_path/components/profile/profile.php?user_id=$customer_id'>@$customer_username</a></strong>
                             ";
 
                     if ($freelancer_id == $id) {
@@ -620,19 +619,46 @@ class Web_Page
                             echo "<a href=\"?navbar=active_profile&d_request_id=$task_id&ALERT_MESSAGE=Your request has been deleted!\" class='text-danger'>
                             Cancel Request</a>";
                         } else if ($task_status == Data_Constants::DB_TASK_STATUS_PENDING_APPROVAL) {
-                            echo "<p class='mb-0 d-inline-flex'>Pending approval</p>";
+                            echo "<p class='mb-0 d-inline-flex'>Pending approval</p> |";
                             echo "<a href=\"?navbar=active_profile&d_request_id=$task_id&ALERT_MESSAGE=Your request has been deleted!\" class='text-danger'>
                             Cancel Request</a>";
                         } else if ($task_status == Data_Constants::DB_TASK_STATUS_PAID) {
-                            echo "<p class='mb-0 d-inline-flex'>Help en-route</p>";
-                            echo "<a href=\"?navbar=active_profile&d_request_id=$task_id&ALERT_MESSAGE=Your request has been deleted!\" class='text-danger'>
-                            Cancel Request</a>";
+                            echo "<p class='mb-0 d-inline-flex'>Help en-route</p> |";
                         } else if ($task_status == Data_Constants::DB_TASK_STATUS_IN_PROGRESS) {
                             echo "<p class='mb-0 d-inline-flex'>In Progress</p> |";
-                            echo "<a href=\"?navbar=active_profile&d_request_id=$task_id&ALERT_MESSAGE=Your request has been deleted!\" class='text-danger'>
-                            Cancel Request</a>";
                         } else if ($task_status == Data_Constants::DB_TASK_STATUS_COMPLETED) {
                             echo "<p class='mb-0 d-inline-flex'>Completed</p>";
+                        }
+
+                        if ($task_status == Data_Constants::DB_TASK_STATUS_PAID || $task_status == Data_Constants::DB_TASK_STATUS_IN_PROGRESS) {
+                            echo "<div style='cursor: pointer;' class='text-danger d-inline' data-toggle=\"modal\" data-target=\"#cancelInProgressModal\">
+                                    Cancel Request</div>
+                                ";
+
+                            echo "
+                                    <!-- Modal -->
+                                    <div class=\"modal fade\" id=\"cancelInProgressModal\" tabindex=\"-1\" role=\"dialog\" aria-labelledby=\"cancelInProgressTitle\" aria-hidden=\"true\">
+                                      <div class=\"modal-dialog\" role=\"document\">
+                                        <div class=\"modal-content\">
+                                          <div class=\"modal-header\">
+                                            <h5 class=\"modal-title\" id=\"exampleModalLongTitle\">You are canceling an in progress request</h5>
+                                            <button type=\"button\" class=\"close\" data-dismiss=\"modal\" aria-label=\"Close\">
+                                              <span aria-hidden=\"true\">&times;</span>
+                                            </button>
+                                          </div>
+                                          <div class=\"modal-body\">By canceling a request that is in progress you're aware that this will incur a $5 cancellation fee.
+                                                                Are you sure you wish to proceed with the cancellation of this request?
+                                          </div>
+                                          <div class=\"modal-footer\">
+                                            <button type=\"button\" class=\"btn btn-secondary\" data-dismiss=\"modal\">Close</button>
+                                            <a href=\"$this->root_path/home/?navbar=active_home&d_request_id=$task_id&ALERT_MESSAGE=You've cancelled this request!\"
+                                               class='btn btn-primary'>
+                                                Cancel Request
+                                            </a>
+                                          </div>
+                                        </div>
+                                      </div>
+                                    </div>";
                         }
                     }
 
@@ -676,8 +702,9 @@ class Web_Page
      * Render page main navigation
      * @param int $page_id
      * @param boolean $render_main_navigation
+     * @param boolean $render_back_button
      */
-    function renderMainNavigation($page_id, $render_main_navigation = true)
+    function renderMainNavigation($page_id, $render_main_navigation = true, $render_back_button = false)
     {
         if ($render_main_navigation) {
             $active_home = "";
@@ -687,40 +714,62 @@ class Web_Page
             $active_profile = "";
             $active_settings = "";
 
+            $last_url = "";
+
             // Handle page navigation presentation logic
             switch ($_SESSION['navbar']) {
                 case "active_home":
                     $active_home = "active";
+                    $last_url = "$this->root_path/home/?navbar=active_home";
                     break;
                 case "active_categories":
                     $active_categories = "active";
+                    $last_url = "$this->root_path/components/categories/?navbar=active_categories";
                     break;
                 case "active_notifications":
                     $active_notifications = "active";
+                    $last_url = "$this->root_path/components/notifications/?navbar=active_notifications";
                     break;
                 case "active_profile":
                     $active_profile = "active";
+                    $last_url = "$this->root_path/components/profile/?navbar=active_profile";
                     break;
                 case "active_search":
                     $active_search = "active";
+                    $last_url = "$this->root_path/components/search/?navbar=active_search";
                     break;
                 case "active_settings":
                     $active_settings = "active";
+                    $last_url = "$this->root_path/components/settings/?navbar=active_settings";
                     break;
                 default:
                     // none active
                     break;
             }
             ?>
-            <nav class="navbar navbar-expand-md fixed-top navbar-dark bg-dark pb-2">
-                <button class="navbar-toggler pb-2 border-0" type="button" data-toggle="offcanvas">
-                    <span class="sr-only">Toggle navigation</span>
-                    <span></span>
-                    <span></span>
-                    <span></span>
-                </button>
+            <nav class="navbar navbar-mobile navbar-expand-md fixed-top navbar-dark bg-dark">
+                <?php
+                    if ($render_back_button) {
+                        // back button
+                        ?>
+                        <a href="<?php echo $last_url; ?>" class="navbar-toggler pb-2 border-0">
+                            <span class="sr-only">Toggle back navigate</span>
+                            <i class="material-icons text-light">arrow_back</i>
+                        </a>
+                        <?php
+                    } else {
+                        ?>
+                        <button class="navbar-toggler pb-2 border-0" type="button" data-toggle="offcanvas">
+                            <span class="sr-only">Toggle navigation</span>
+                            <span></span>
+                            <span></span>
+                            <span></span>
+                        </button>
+                        <?php
+                    }
+        ?>
 
-                <div class="request-favr pt-0 pr-0 pb-0 mr-0">
+                <div class="request-favr pt-0 pr-3 pb-0 mr-0">
                     <?php
                     if ($_SESSION['nav_scroller'] != "active_marketplace" || $_SESSION['navbar'] != "active_home") {
                         echo "
@@ -804,7 +853,7 @@ class Web_Page
                                     echo "<i class=\"material-icons\">person_outline</i>";
                                 }
                                 ?>
-                                Profile, Welcome: <?php echo $_SESSION['user_info']['first_name']; ?>
+                                Welcome, <?php echo $_SESSION['user_info']['first_name']; ?>
                                 <?php
                                 if (!empty($active_profile)) {
                                     echo "<span class=\"sr-only\">(current)</span>";
@@ -825,12 +874,12 @@ class Web_Page
                         </li>
                     </ul>
 
-                    <!-- WEB ELEMENT ONLY -->
+<!--                     WEB ELEMENT ONLY-->
                     <form class="web-search form-inline my-2 my-lg-0">
                         <input style="border-radius: 5px 0 0 5px" class="form-control mr-sm-0" type="text" placeholder="Search" aria-label="Search">
                         <button style="border-radius: 0 5px 5px 0" class="btn btn-outline-danger my-2 my-sm-0" type="submit">Search</button>
                     </form>
-                    <!-- WEB ELEMENT ONLY -->
+<!--                     WEB ELEMENT ONLY-->
 
                     <ul class="navbar-nav ml-auto">
                         <li class="nav-item <?php echo $active_settings; ?>">
@@ -858,7 +907,7 @@ class Web_Page
             </nav>
 
             <?php
-            if ($_SESSION['navbar'] == "active_home" || $_GET['navbar'] == "active_home") {
+            if ($_SESSION['navbar'] == "active_home") {
                 // Handle nav scroller presentation logic
                 $active_marketplace = "";
                 $active_friends = "";
@@ -878,47 +927,52 @@ class Web_Page
                         // none active
                         break;
                 }
-                ?>
-                <div class="nav-scroller bg-white box-shadow">
-                    <nav class="nav nav-underline">
-                        <a class="nav-link <?php echo $active_marketplace; ?>"
-                           href="<?php echo $this->root_path; ?>/home/?navbar=active_home&nav_scroller=active_marketplace">
-                            Marketplace
-                            <?php
-                            if ($active_marketplace) {
-                                echo "<i class=\"material-icons\" style='color: var(--red);font-size: 15px;position:relative;top:.2rem;padding-left: 2px;'>store</i>";
-                            } else {
-                                echo "<i class=\"material-icons\" style='font-size: 15px;position:relative;top:.2rem;padding-left: 2px;'>store</i>";
-                            }
-                            ?>
-                        </a>
-                        <a class="nav-link <?php echo $active_friends; ?>"
-                           href="<?php echo $this->root_path; ?>/home/friends/?navbar=active_home&nav_scroller=active_friends">
-                            Friends
-                            <?php
-                            if ($active_friends) {
-                                echo "<i class=\"material-icons\" style='color: var(--red);font-size: 15px; padding-left: 2px;position:relative;top:.1rem;'>people</i>";
-                            } else {
-                                echo "<i class=\"material-icons\" style='font-size: 15px; padding-left: 2px;position:relative;top:.1rem;'>people_outline</i>";
-                            }
-                            ?>
-                        </a>
-<!--                        <a class="nav-link d-inline-flex --><?php // echo $active_chat; ?><!--"-->
-<!--                           href="--><?php //echo $this->root_path; ?><!--/home/chat/?navbar=active_home&nav_scroller=active_chat">-->
-<!--                            Chat-->
-<!--                            --><?php
-//                            if ($active_chat) {
-//                                echo "<i class=\"material-icons\" style='color: var(--red);font-size: 15px; padding-left: 2px;position:relative;top:.2rem;'>chat_bubble</i>";
-//                            } else {
-//                                echo "<i class=\"material-icons\" style='font-size: 15px; padding-left: 2px;position:relative;top:.2rem;'>chat_bubble_outline</i>";
-//                            }
-//                            ?>
-<!--                        </a>-->
-                        <!--                    <a id="suggestions" onclick="focusNoScrollMethod()" class="nav-link -->
-                        <?php //echo  $active_suggestions; ?><!--" href="?nav_scroller=active_suggestions">Suggestions</a>-->
-                    </nav>
-                </div>
-                <?php
+
+                if (!$render_back_button) {
+                    ?>
+                    <div class="nav-scroller bg-white box-shadow">
+                        <nav class="nav nav-underline">
+                            <a class="nav-link <?php echo $active_marketplace; ?>"
+                               href="<?php echo $this->root_path; ?>/home/?navbar=active_home&nav_scroller=active_marketplace">
+                                Marketplace
+                                <?php
+                                if ($active_marketplace) {
+                                    echo "<i class=\"material-icons\" style='color: var(--red);font-size: 15px;position:relative;top:.2rem;padding-left: 2px;'>store</i>";
+                                } else {
+                                    echo "<i class=\"material-icons\" style='font-size: 15px;position:relative;top:.2rem;padding-left: 2px;'>store</i>";
+                                }
+                                ?>
+                            </a>
+                            <a class="nav-link <?php echo $active_friends; ?>"
+                               href="<?php echo $this->root_path; ?>/home/friends/?navbar=active_home&nav_scroller=active_friends">
+                                Friends
+                                <?php
+                                if ($active_friends) {
+                                    echo "<i class=\"material-icons\" style='color: var(--red);font-size: 15px; padding-left: 2px;position:relative;top:.1rem;'>people</i>";
+                                } else {
+                                    echo "<i class=\"material-icons\" style='font-size: 15px; padding-left: 2px;position:relative;top:.1rem;'>people_outline</i>";
+                                }
+                                ?>
+                            </a>
+                            <!--                        <a class="nav-link d-inline-flex -->
+                            <?php // echo $active_chat; ?><!--"-->
+                            <!--                           href="-->
+                            <?php //echo $this->root_path; ?><!--/home/chat/?navbar=active_home&nav_scroller=active_chat">-->
+                            <!--                            Chat-->
+                            <!--                            --><?php
+                            //                            if ($active_chat) {
+                            //                                echo "<i class=\"material-icons\" style='color: var(--red);font-size: 15px; padding-left: 2px;position:relative;top:.2rem;'>chat_bubble</i>";
+                            //                            } else {
+                            //                                echo "<i class=\"material-icons\" style='font-size: 15px; padding-left: 2px;position:relative;top:.2rem;'>chat_bubble_outline</i>";
+                            //                            }
+                            //                            ?>
+                            <!--                        </a>-->
+                            <!--                    <a id="suggestions" onclick="focusNoScrollMethod()" class="nav-link -->
+                            <?php //echo  $active_suggestions; ?><!--" href="?nav_scroller=active_suggestions">Suggestions</a>-->
+                        </nav>
+                    </div>
+                    <?php
+                }
             }
         }
 
@@ -1021,9 +1075,9 @@ class Web_Page
                                 ";
 
                     if ($customer_id == $_SESSION['user_info']['id']) {
-                        echo "<p class='font-weight-light text-muted d-inline-flex'>Accepted by</p> @$freelancer_username";
+                        echo "<p class='font-weight-light text-muted d-inline-flex'>Accepted by</p> <a href='$this->root_path/components/profile/profile.php?user_id=$freelancer_id'>@$freelancer_username</a>";
                     } else {
-                        echo "@$customer_username";
+                        echo "<a href='$this->root_path/components/profile/profile.php?user_id=$customer_id'>@$customer_username</a>";
                     }
 
 
@@ -1402,27 +1456,77 @@ class Web_Page
 
 
                                     if ($task_status == Data_Constants::DB_TASK_STATUS_REQUESTED || $task_status == Data_Constants::DB_TASK_STATUS_PENDING_APPROVAL) {
-                                        echo "<a href='#' class='mt-0 text-danger'>
+                                        echo "<a href=\"$this->root_path/home/?navbar=active_home&d_request_id=$task_id&ALERT_MESSAGE=You've cancelled this request!\" class='mt-0 text-danger'>
                                         Cancel Request</a>
                                         ";
                                     } else {
-                                        echo "<a onclick='confirm(\"Are you sure you want to cancel this request you will be a charged a $5 service fee for each freelancer you requested help from?\")' href='#' class='mt-0 text-danger'>
-                                        Cancel Request</a>
+                                        echo "<div style='cursor: pointer;' class='text-danger d-inline' data-toggle=\"modal\" data-target=\"#cancelInProgressModal\">
+                                            Cancel Request</div>
                                         ";
                                     }
                                     echo "</div>";
+
+                                    echo "
+                                    <!-- Modal -->
+                                    <div class=\"modal fade\" id=\"cancelInProgressModal\" tabindex=\"-1\" role=\"dialog\" aria-labelledby=\"cancelInProgressTitle\" aria-hidden=\"true\">
+                                      <div class=\"modal-dialog\" role=\"document\">
+                                        <div class=\"modal-content\">
+                                          <div class=\"modal-header\">
+                                            <h5 class=\"modal-title\" id=\"exampleModalLongTitle\">You are canceling an in progress request</h5>
+                                            <button type=\"button\" class=\"close\" data-dismiss=\"modal\" aria-label=\"Close\">
+                                              <span aria-hidden=\"true\">&times;</span>
+                                            </button>
+                                          </div>
+                                          <div class=\"modal-body\">By canceling a request that is in progress you're aware that this will incur a $5 cancellation fee.
+                                                                Are you sure you wish to proceed with the cancellation of this request?
+                                          </div>
+                                          <div class=\"modal-footer\">
+                                            <button type=\"button\" class=\"btn btn-secondary\" data-dismiss=\"modal\">Close</button>
+                                            <a href=\"$this->root_path/home/?navbar=active_home&d_request_id=$task_id&ALERT_MESSAGE=You've cancelled this request!\"
+                                               class='btn btn-primary'>
+                                                Cancel Request
+                                            </a>
+                                          </div>
+                                        </div>
+                                      </div>
+                                    </div>";
                                 } else { // user has not been approved yet
                                     //                        echo "<p>Respond</p>";
-                                    echo "<div class='float-right d-inline'><a href=\"$this->root_path/components/notifications/?navbar=active_notifications&accept_customer_request_id=$task_id&freelancer_id=$freelancer_id&ALERT_MESSAGE=You've approved this freelancer for this task! They're on their way to complete your FAVR!\" class='text-success'>
-                                Accept</a> | ";
+                                    echo "<!-- Button trigger modal -->
+                                          <div class='float-right d-inline'>
+                                            <div style='cursor: pointer;' class='text-success d-inline' data-toggle=\"modal\" data-target=\"#acceptModal\">
+                                            Accept</div> | ";
                                     echo "<a href=\"$this->root_path/components/notifications/?navbar=active_notifications&reject_customer_request_id=$task_id&freelancer_id=$freelancer_id&ALERT_MESSAGE=You've rejected this freelancer for this task! They've been notified!\" class='text-danger'>
-                                Reject</a></div>";
+                                            Reject</a></div>";
 
                                     echo "<div class='d-block mt-4 pt-2 border-gray border-top text-center'>
-                                        <a href='#' class='mt-3 text-danger'>
+                                        <a href=\"$this->root_path/home/?navbar=active_home&d_request_id=$task_id&ALERT_MESSAGE=You've cancelled this request!\" class='mt-3 text-danger'>
                                             Cancel Request</a>
                                       </div>
-                                ";
+                                    ";
+
+                                    echo "
+                                    <!-- Modal -->
+                                    <div class=\"modal fade\" id=\"acceptModal\" tabindex=\"-1\" role=\"dialog\" aria-labelledby=\"acceptModalTitle\" aria-hidden=\"true\">
+                                      <div class=\"modal-dialog\" role=\"document\">
+                                        <div class=\"modal-content\">
+                                          <div class=\"modal-header\">
+                                            <h5 class=\"modal-title\" id=\"exampleModalLongTitle\">You are accepting $freelancer_first_name</h5>
+                                            <button type=\"button\" class=\"close\" data-dismiss=\"modal\" aria-label=\"Close\">
+                                              <span aria-hidden=\"true\">&times;</span>
+                                            </button>
+                                          </div>
+                                          <div class=\"modal-body\">By accepting this freelancer you are affirming that you have adequately reviewed their profile and qualifications. By accepting this freelancer you will also share sensitive information with them which may include location and contact information.</div>
+                                          <div class=\"modal-footer\">
+                                            <button type=\"button\" class=\"btn btn-secondary\" data-dismiss=\"modal\">Close</button>
+                                            <a href=\"$this->root_path/components/notifications/?navbar=active_notifications&accept_customer_request_id=$task_id&freelancer_id=$freelancer_id&ALERT_MESSAGE=You've approved this freelancer for this task! They're on their way to complete your FAVR!\"
+                                               class='btn btn-primary'>
+                                                Accept Freelancer
+                                            </a>
+                                          </div>
+                                        </div>
+                                      </div>
+                                    </div>";
                                 }
                             }
                         }
@@ -1635,7 +1739,7 @@ class Web_Page
                             <img src=\"data:image/svg+xml;charset=UTF-8,%3Csvg%20width%3D%22128%22%20height%3D%22128%22%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20viewBox%3D%220%200%20128%20128%22%20preserveAspectRatio%3D%22none%22%3E%3Cdefs%3E%3Cstyle%20type%3D%22text%2Fcss%22%3E%23holder_164a9f2d749%20text%20%7B%20fill%3A%23007bff%3Bfont-weight%3Abold%3Bfont-family%3AArial%2C%20Helvetica%2C%20Open%20Sans%2C%20sans-serif%2C%20monospace%3Bfont-size%3A6pt%20%7D%20%3C%2Fstyle%3E%3C%2Fdefs%3E%3Cg%20id%3D%22holder_164a9f2d749%22%3E%3Crect%20width%3D%22128%22%20height%3D%22128%22%20fill%3D%22%23007bff%22%3E%3C%2Frect%3E%3Cg%3E%3Ctext%20x%3D%2248.4296875%22%20y%3D%2266.7%22%3E128x128%3C%2Ftext%3E%3C%2Fg%3E%3C%2Fg%3E%3C%2Fsvg%3E\" 
                                 height='32' width='32' alt=\"\" class=\"mr-2 rounded\">
                             <strong style='font-size: 80%' class=\"d - block text - gray - dark\">
-                                @$customer_username
+                                <a href='$this->root_path/components/profile/profile.php?user_id=$customer_id'>@$customer_username</a>
                             </strong>
                             ";
 

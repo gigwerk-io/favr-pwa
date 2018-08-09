@@ -7,8 +7,6 @@ $PAGE_ID = 1;
 $USER = "";
 $ALERT_MESSAGE = "";
 
-//header("Location: ../assets/css/main.css");
-
 if (isset($_SESSION['user_info'])) {
     $USER = $_SESSION['user_info']['username']; // user is set from initial configuration
 }
@@ -53,11 +51,6 @@ if (isset($_GET['ALERT_MESSAGE'])) {
 
 echo $ALERT_MESSAGE;
 
-//$array = unserialize("a:0:{}");
-////array_push($array, 3);
-//
-//die(print_r(count($array)));
-
 $page->renderFavrRequestForm($_SESSION['user_info'], $_SESSION['filter_marketplace_by'], $_SESSION['orient_marketplace_by'], $_SESSION['limit_marketplace_by']);
 ?>
 <div class="favr-fab">
@@ -72,8 +65,6 @@ $page->renderFavrRequestForm($_SESSION['user_info'], $_SESSION['filter_marketpla
             <a href="?filter_marketplace_by=task_price&orient_marketplace_by=<?php echo $_SESSION['orient_marketplace_by']; ?>&limit_marketplace_by=<?php echo $_SESSION['limit_marketplace_by']; ?>">Price </a>|
             <a href="?filter_marketplace_by=task_date&orient_marketplace_by=<?php echo $_SESSION['orient_marketplace_by']; ?>&limit_marketplace_by=<?php echo $_SESSION['limit_marketplace_by']; ?>">Date </a>|
             <a href="?filter_marketplace_by=task_price&orient_marketplace_by=<?php echo $_SESSION['orient_marketplace_by']; ?>&limit_marketplace_by=<?php echo $_SESSION['limit_marketplace_by']; ?>">Time </a>|
-
-<!--            Needs to be implemented-->
             <a href="?filter_marketplace_by=<?php echo $_SESSION['filter_marketplace_by']; ?>&orient_marketplace_by=<?php echo $_SESSION['orient_marketplace_by']; ?>&limit_marketplace_by=<?php echo $_SESSION['limit_marketplace_by']; ?>&scope=<?php echo $_SESSION['user_info']['id']; ?>">Mine </a>|
             <a href="?filter_marketplace_by=<?php echo $_SESSION['filter_marketplace_by']; ?>&orient_marketplace_by=<?php echo $_SESSION['orient_marketplace_by']; ?>&limit_marketplace_by=<?php echo $_SESSION['limit_marketplace_by']; ?>&scope=global">Global</a>
 
@@ -127,6 +118,10 @@ $page->addScript("
     }, false);
         
     $(document).ready(function() {
+        window.setInterval(function(){
+            $('#marketplace').load('marketplace.php')
+        }, 10000);
+        
         $('#hard-button').click(function() {
             $('#hard-button').removeClass('unfocus');
             $('#hard-button').addClass('focus');

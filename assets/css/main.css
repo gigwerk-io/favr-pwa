@@ -169,7 +169,7 @@ body {
 .modal {
     display: none; /* Hidden by default */
     position: fixed; /* Stay in place */
-    z-index: 1033; /* Sit on top */
+    z-index: 1041; /* Sit on top */
     padding-top: 100px; /* Location of the box */
     left: 0;
     top: 0;
@@ -244,6 +244,15 @@ body {
 }
 
 @media (max-width: 767.98px) {
+    .navbar-mobile {
+        padding-left: 1rem!important;
+        padding-right: 1rem!important;
+        padding-top: 0!important;
+        padding-bottom: 0!important;
+    }
+    .nav-scroller {
+        bottom: 1rem;
+    }
     .web-search {
         visibility: hidden;
         display: none;
@@ -432,7 +441,7 @@ body {
 
     .offcanvas-collapse {
         position: fixed;
-        top: 55px;
+        top: 40px;
         bottom: 0;
         width: 75%;
         padding-right: 1rem;

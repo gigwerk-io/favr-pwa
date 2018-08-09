@@ -20,22 +20,33 @@ if (isset($_SESSION['user_info'])) {
 
 $page = new Web_Page($PAGE_ID, $USER);
 
-if (isset($_GET['withdraw_request_id'], $_GET['freelancer_id'])) {
+// handle freelancer acceptance and withdrawal
+if (isset($_GET['accept_freelancer_request_id'])) {
+    $page->processFreelancerAcceptRequest($_GET['accept_freelancer_request_id'], $_SESSION['user_info']['id']);
+} else if (isset($_GET['withdraw_request_id'], $_GET['freelancer_id'])) {
     $page->processCancelPendingRequest($_GET['withdraw_request_id'], $_GET['freelancer_id']);
 }
 
-if (isset($_GET['accept_freelancer_request_id'])) {
-    $page->processFreelancerAcceptRequest($_GET['accept_freelancer_request_id'], $_SESSION['user_info']['id']);
-}
-
+// handle customer accept and reject freelancer
 if (isset($_GET['accept_customer_request_id'], $_GET['freelancer_id'])) {
     $page->processCustomerAcceptRequest($_GET['accept_customer_request_id'], $_GET['freelancer_id'], $_SESSION['user_info']['id']);
 } else if (isset($_GET['reject_customer_request_id'], $_GET['freelancer_id'])) {
     $page->processCancelPendingRequest($_GET['reject_customer_request_id'], $_GET['freelancer_id'], $_SESSION['user_info']['id']);
 }
 
-if (isset($_GET['completed_request_id'], $_GET['freelancer_id'], $_GET['customer_id'])) {
-    $page->processCompleteRequest($_GET['completed_request_id'], $_GET['customer_id'], $_GET['freelancer_id']);
+// handle freelancer arrival
+if (isset($_GET['freelancer_arrived'], $_GET['arrived_request_id'])) {
+    if ($_GET['freelancer_arrived']) {
+        $timestamp = date("Y-m-d h:i:s", time());
+        $page->processFreelancerArrived($_GET['freelancer_arrived'], $timestamp, $_GET['arrived_request_id'], $_SESSION['user_info']['id']);
+    }
+}
+
+// handle customer task completion
+if (isset($_GET['completed_request_id'], $_POST['complete_request'], $_POST['freelancer_id'], $_POST['customer_id'], $_POST['request_rating'])) {
+    $review = isset($_POST['request_review']) ? $_POST['request_review'] : "";
+    $timestamp = date("Y-m-d h:i:s", time());
+    $page->processCompleteRequest($_GET['completed_request_id'], $_POST['customer_id'], $_POST['freelancer_id'], $_POST['request_rating'], $review, $timestamp);
 }
 
 $page->setTitle("Notifications");
@@ -65,6 +76,7 @@ echo $ALERT_MESSAGE;
 <!--            <small class="col-sm-6 pl-0"></small>-->
         </h6>
     </div>
+<!--    <div id="notifications"></div>-->
 <?php
 $page->renderMainNotifications($_SESSION['user_info']);
 $page->addScript("
@@ -77,6 +89,11 @@ $page->addScript("
             }
         }
     }, false);    
+    
+//    window.setInterval(function(){
+//      // call your function here
+//        $('#notifications').load('notifications.php')
+//    }, 5000);
 </script>
 ");
 $page->renderFooter();
