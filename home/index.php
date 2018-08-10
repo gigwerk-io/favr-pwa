@@ -53,11 +53,6 @@ echo $ALERT_MESSAGE;
 
 $page->renderFavrRequestForm($_SESSION['user_info'], $_SESSION['filter_marketplace_by'], $_SESSION['orient_marketplace_by'], $_SESSION['limit_marketplace_by']);
 ?>
-<div class="favr-fab">
-    <a class="favr-fab-fab favr-fab-btn-large text-center" id="favr-fabBtn">
-        <i style="padding: .8rem;background: transparent;color: var(--white);font-size: xx-large" class="material-icons">create</i>
-    </a>
-</div>
 <div class="my-3 p-3">
     <h6 class="border-bottom border-gray pb-2 mb-0">
         <small class="col-sm-6 pl-0">

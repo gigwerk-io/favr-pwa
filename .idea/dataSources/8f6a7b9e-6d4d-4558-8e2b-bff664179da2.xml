@@ -1489,9 +1489,16 @@
     <column id="340" parent="254" name="profile_picture_path">
       <Position>17</Position>
       <DataType>varchar(255)|0</DataType>
+      <NotNull>1</NotNull>
+      <DefaultExpression>&apos;a:0:{}&apos;</DefaultExpression>
       <ColumnKind>normal</ColumnKind>
     </column>
-    <key id="341" parent="254" name="PRIMARY">
+    <column id="341" parent="254" name="profile_description">
+      <Position>18</Position>
+      <DataType>varchar(100)|0</DataType>
+      <ColumnKind>normal</ColumnKind>
+    </column>
+    <key id="342" parent="254" name="PRIMARY">
       <NameSurrogate>1</NameSurrogate>
       <ColNames>id</ColNames>
       <Primary>1</Primary>

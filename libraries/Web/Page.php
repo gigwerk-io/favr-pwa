@@ -364,7 +364,6 @@ class Web_Page
         return;
     }
 
-
     /**
      * Get user info by id
      *
@@ -445,10 +444,13 @@ class Web_Page
         <head>
             <meta charset="utf-8">
             <!--            <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">-->
-            <meta name="viewport" content="width=device-width, initial-scale=1.0, minimum-scale=1.0, maximum-scale=5.0, shrink-to-fit=yes, user-scalable=yes" />
-            <meta name="HandheldFriendly" content="true" />
-            <meta name="description" content="Post job requests at your price and have access to verified freelancers for open tasks. Chat with friends and trade FAVRs.">
-            <meta name="author" content="Solken Technoloy LLC: Solomon Antoione, Haron Arama, D'Angelo Tines, and Ken Nguyen">
+            <meta name="viewport"
+                  content="width=device-width, initial-scale=1.0, minimum-scale=1.0, maximum-scale=5.0, shrink-to-fit=yes, user-scalable=yes"/>
+            <meta name="HandheldFriendly" content="true"/>
+            <meta name="description"
+                  content="Post job requests at your price and have access to verified freelancers for open tasks. Chat with friends and trade FAVRs.">
+            <meta name="author"
+                  content="Solken Technoloy LLC: Solomon Antoione, Haron Arama, D'Angelo Tines, and Ken Nguyen">
             <meta name="theme-color" content="#343a40"/>
             <meta name="msapplication-TileColor" content="#da532c">
             <meta name="theme-color" content="#f5f5f5">
@@ -515,12 +517,11 @@ class Web_Page
         </head>
 
         <body class="bg-light" onload="pageLoader()">
-            <div id="loader"></div>
+        <div id="loader"></div>
 
         <?php
         $this->renderMainNavigation($this->page_id, $render_top_nav, $render_back_button);
         ?>
-
         <main role="main" class="container animate-bottom" style="max-width: 750px">
         <?php
     }
@@ -688,14 +689,181 @@ class Web_Page
      *
      * @param int $userID
      *
-     * @return boolean
-     *
      * TODO implement this function as a universal solution to rendering profiles
      * TODO allow for image file upload but store image files in file system outside of document root
      *
      */
     function renderFavrProfile($userID) {
-        return null;
+        if ($userID == $_SESSION['user_info']['id']) { // this user's profile
+            $userInfo = $this->getUserInfo($userID);
+            $id = md5($userID);
+            $userRealName = $userInfo['first_name'] . " " . $userInfo['last_name'];
+            $profile_img = unserialize($userInfo['profile_picture_path']);
+            $profile_img_name = "";
+            $profile_img_type = "";
+
+            if (!empty($profile_img)) {
+                $profile_img_name = $profile_img['name'];
+                $profile_img_type = $profile_img['type'];
+            }
+//            echo "<pre>";
+//            print_r($userInfo);
+//            echo "</pre>";
+            ?>
+            <div class="p-3 pb-0 rounded bg-white box-shadow" style="margin-top: 3rem;">
+                <div class="row pb-2 mb-0">
+                    <div class="col-md-4">
+                    </div>
+                    <div class="col-md-4 text-center border-bottom border-gray">
+                        <?php
+                            echo " <div id='$id-profile-image' style='height: 4.5rem'>
+                                        <img id='$id-profile-img' style='cursor: pointer;bottom: 3.5rem;width: 7rem!important;height: 7rem!important;position: relative;' 
+                                            src='data:image/svg+xml;charset=UTF-8,%3Csvg%20width%3D%22128%22%20height%3D%22128%22%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20viewBox%3D%220%200%20128%20128%22%20preserveAspectRatio%3D%22none%22%3E%3Cdefs%3E%3Cstyle%20type%3D%22text%2Fcss%22%3E%23holder_164a9f2d749%20text%20%7B%20fill%3A%23007bff%3Bfont-weight%3Abold%3Bfont-family%3AArial%2C%20Helvetica%2C%20Open%20Sans%2C%20sans-serif%2C%20monospace%3Bfont-size%3A6pt%20%7D%20%3C%2Fstyle%3E%3C%2Fdefs%3E%3Cg%20id%3D%22holder_164a9f2d749%22%3E%3Crect%20width%3D%22128%22%20height%3D%22128%22%20fill%3D%22%23007bff%22%3E%3C%2Frect%3E%3Cg%3E%3Ctext%20x%3D%2248.4296875%22%20y%3D%2266.7%22%3E128x128%3C%2Ftext%3E%3C%2Fg%3E%3C%2Fg%3E%3C%2Fsvg%3E' 
+                                            onclick=\"
+                                                    var modal = document.getElementById('$id-profile-image-modal');
+                                                    var img = document.getElementById('$id-profile-img');
+                                                    var modalImg = document.getElementById('$id-profile-image-modal-content');
+                                                    var captionText = document.getElementById('$id-profile-caption');
+                                                    
+                                                    modal.style.display = 'block';
+                                                    modalImg.src = img.src;
+                                                    captionText.innerHTML = img.alt;
+                                                    \"
+                                            data-src='$this->root_path/image.php?i=$profile_img_name&i_t=$profile_img_type&i_p=true' class='rounded' alt='$userRealName'>
+                                    </div>";
+
+                        // Profile image modal
+                        echo "
+                                <div id=\"$id-profile-image-modal\" class=\"modal\">
+                                  <span id='$id-profile-close' 
+                                        class=\"modal-close\" 
+                                        onclick=\"var modal = document.getElementById('$id-profile-image-modal');
+                                                  modal.style.display = 'none';\">&times;</span>
+                                  <img class=\"modal-content\" id=\"$id-profile-image-modal-content\">
+                                  <div id=\"$id-profile-caption\" class='caption'></div>
+                                </div>";
+
+                        echo "  <button class='text-right btn text-muted' data-toggle='modal' data-target='#profileEditModal'>
+                                        <i class='material-icons'>edit</i>
+                                    </button>";
+
+                        // profile edit modal
+                        echo "<div class=\"modal fade\" id=\"profileEditModal\" tabindex=\"-1\" role=\"dialog\" aria-labelledby=\"profileEditTitle\" aria-hidden=\"true\">
+                                  <form action='$this->root_path/components/profile/?navbar=active_profile' method='post' enctype='multipart/form-data'>
+                                      <div class=\"modal-dialog\" role=\"document\">
+                                        <div class=\"modal-content\">
+                                          <div class=\"modal-header\">
+                                            <h5 class=\"modal-title\" id=\"profileEditTitle\">Edit your profile</h5>
+                                            <button type=\"button\" class=\"close\" data-dismiss=\"modal\" aria-label=\"Close\">
+                                              <span aria-hidden=\"true\">&times;</span>
+                                            </button>
+                                          </div>
+                                          <div class=\"modal-body\">
+                                            <label for='profileImage'>Upload a new profile picture</label>
+                                            <input type='file' name='profile_image' class='form-control'>
+                                            <br>
+                                            <textarea name='profile_description' class='form-control' placeholder='Describe yourself and what you do...'></textarea>
+                                          </div>
+                                          <div class=\"modal-footer\">
+                                            <button type=\"button\" class=\"btn btn-secondary\" data-dismiss=\"modal\">Close</button>
+                                            <input type=\"submit\" name='submit' class=\"btn btn-primary\" value='Save Changes'>
+                                          </div>
+                                        </div>
+                                      </div>
+                                  </form>
+                                </div>";
+                        ?>
+<!--                        <img data-src="holder.js/7remx7rem?theme=thumb&amp;bg=007bff&amp;fg=007bff&amp;size=1" alt="128x128" class="rounded" style="bottom: 3.5rem;width: 7rem;height: 7rem;position: relative;" src="data:image/svg+xml;charset=UTF-8,%3Csvg%20width%3D%22128%22%20height%3D%22128%22%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20viewBox%3D%220%200%20128%20128%22%20preserveAspectRatio%3D%22none%22%3E%3Cdefs%3E%3Cstyle%20type%3D%22text%2Fcss%22%3E%23holder_164a9f2d749%20text%20%7B%20fill%3A%23007bff%3Bfont-weight%3Abold%3Bfont-family%3AArial%2C%20Helvetica%2C%20Open%20Sans%2C%20sans-serif%2C%20monospace%3Bfont-size%3A6pt%20%7D%20%3C%2Fstyle%3E%3C%2Fdefs%3E%3Cg%20id%3D%22holder_164a9f2d749%22%3E%3Crect%20width%3D%22128%22%20height%3D%22128%22%20fill%3D%22%23007bff%22%3E%3C%2Frect%3E%3Cg%3E%3Ctext%20x%3D%2248.4296875%22%20y%3D%2266.7%22%3E128x128%3C%2Ftext%3E%3C%2Fg%3E%3C%2Fg%3E%3C%2Fsvg%3E" data-holder-rendered="true">-->
+                        <h3><?php echo $userInfo['first_name'] . " " . $userInfo['last_name']; ?><i class="material-icons text-primary">verified_user</i></h3>
+                        <p class="d-inline-flex mb-0" style="font-size: -webkit-xxx-large;font-weight: lighter">4.4<p class="row pl-3 d-inline-flex"><i style="position:relative;font-weight: lighter;font-size: medium;bottom:  1.2rem;left: .1rem;color:  var(--green);border: 1px solid;border-radius: 1rem;" class="material-icons">arrow_upward</i></p><p class="row pl-2 mb-0 d-inline-flex" style="font-weight: lighter;font-size: medium">29</p></p>
+                        <p style="color: var(--yellow)" class="small d-inline-flex"><i class="material-icons">star</i><i class="material-icons">star</i><i class="material-icons">star</i><i class="material-icons">star</i><i class="material-icons">star_half</i></p>
+                    </div>
+                    <div class="col-md-4">
+                    </div>
+                </div>
+                <div class="pb-2 mb-0">
+                    <p class="mr-3 text-center">
+                        <?php
+                            if (!empty($userInfo['profile_description'])) {
+                                echo $userInfo['profile_description'];
+                            } else {
+                                ?>
+                                Describe yourself and what you do...
+                                <?php
+                            }
+                        ?>
+                    </p>
+                </div>
+            </div>
+            <div class="row m-3 pt-3">
+            </div>
+            <?php
+        } else { // other user's profiles
+            $userInfo = $this->getUserInfo($userID);
+            $id = md5($userID);
+            $userRealName = $userInfo['first_name'] . " " . $userInfo['last_name'];
+            $profile_img = unserialize($userInfo['profile_picture_path']);
+            $profile_img_name = "";
+            $profile_img_type = "";
+            if (!empty($profile_img)) {
+                $profile_img_name = $profile_img['name'];
+                $profile_img_type = $profile_img['type'];
+            }
+//            echo "<pre>";
+//            print_r($userInfo);
+//            echo "</pre>";
+            ?>
+            <div class="p-3 pb-0 rounded bg-white box-shadow" style="margin-top: 3rem;">
+                <div class="row pb-2 mb-0">
+                    <div class="col-md-4">
+                    </div>
+                    <div class="col-md-4 text-center border-bottom border-gray">
+                        <?php
+                        echo " <div id='$id-profile-image'>
+                                        <img id='$id-profile-img' style='cursor: pointer;bottom: 3.5rem;width: 7rem!important;height: 7rem!important;position: relative;' 
+                                            src='data:image/svg+xml;charset=UTF-8,%3Csvg%20width%3D%22128%22%20height%3D%22128%22%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20viewBox%3D%220%200%20128%20128%22%20preserveAspectRatio%3D%22none%22%3E%3Cdefs%3E%3Cstyle%20type%3D%22text%2Fcss%22%3E%23holder_164a9f2d749%20text%20%7B%20fill%3A%23007bff%3Bfont-weight%3Abold%3Bfont-family%3AArial%2C%20Helvetica%2C%20Open%20Sans%2C%20sans-serif%2C%20monospace%3Bfont-size%3A6pt%20%7D%20%3C%2Fstyle%3E%3C%2Fdefs%3E%3Cg%20id%3D%22holder_164a9f2d749%22%3E%3Crect%20width%3D%22128%22%20height%3D%22128%22%20fill%3D%22%23007bff%22%3E%3C%2Frect%3E%3Cg%3E%3Ctext%20x%3D%2248.4296875%22%20y%3D%2266.7%22%3E128x128%3C%2Ftext%3E%3C%2Fg%3E%3C%2Fg%3E%3C%2Fsvg%3E' 
+                                            onclick=\"
+                                                    var modal = document.getElementById('$id-profile-image-modal');
+                                                    var img = document.getElementById('$id-profile-img');
+                                                    var modalImg = document.getElementById('$id-profile-image-modal-content');
+                                                    var captionText = document.getElementById('$id-profile-caption');
+                                                    
+                                                    modal.style.display = 'block';
+                                                    modalImg.src = img.src;
+                                                    captionText.innerHTML = img.alt;
+                                                    \"
+                                            data-src='$this->root_path/image.php?i=$profile_img_name&i_t=$profile_img_type&i_p=true' class='rounded' alt='$userRealName'>
+                                    </div>";
+
+                        // Profile image modal
+                        echo "
+                                <div id=\"$id-profile-image-modal\" class=\"modal\">
+                                  <span id='$id-profile-close' 
+                                        class=\"modal-close\" 
+                                        onclick=\"var modal = document.getElementById('$id-profile-image-modal');
+                                                  modal.style.display = 'none';\">&times;</span>
+                                  <img class=\"modal-content\" id=\"$id-profile-image-modal-content\">
+                                  <div id=\"$id-profile-caption\" class='caption'></div>
+                                </div>";
+                        ?>
+                        <!--                        <img data-src="holder.js/7remx7rem?theme=thumb&amp;bg=007bff&amp;fg=007bff&amp;size=1" alt="128x128" class="rounded" style="bottom: 3.5rem;width: 7rem;height: 7rem;position: relative;" src="data:image/svg+xml;charset=UTF-8,%3Csvg%20width%3D%22128%22%20height%3D%22128%22%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20viewBox%3D%220%200%20128%20128%22%20preserveAspectRatio%3D%22none%22%3E%3Cdefs%3E%3Cstyle%20type%3D%22text%2Fcss%22%3E%23holder_164a9f2d749%20text%20%7B%20fill%3A%23007bff%3Bfont-weight%3Abold%3Bfont-family%3AArial%2C%20Helvetica%2C%20Open%20Sans%2C%20sans-serif%2C%20monospace%3Bfont-size%3A6pt%20%7D%20%3C%2Fstyle%3E%3C%2Fdefs%3E%3Cg%20id%3D%22holder_164a9f2d749%22%3E%3Crect%20width%3D%22128%22%20height%3D%22128%22%20fill%3D%22%23007bff%22%3E%3C%2Frect%3E%3Cg%3E%3Ctext%20x%3D%2248.4296875%22%20y%3D%2266.7%22%3E128x128%3C%2Ftext%3E%3C%2Fg%3E%3C%2Fg%3E%3C%2Fsvg%3E" data-holder-rendered="true">-->
+                        <h3><?php echo $userInfo['first_name'] . " " . $userInfo['last_name']; ?><i class="material-icons text-primary">verified_user</i></h3>
+                        <p class="d-inline-flex mb-0" style="font-size: -webkit-xxx-large;font-weight: lighter">4.4<p class="row pl-3 d-inline-flex"><i style="position:relative;font-weight: lighter;font-size: medium;bottom:  1.2rem;left: .1rem;color:  var(--green);border: 1px solid;border-radius: 1rem;" class="material-icons">arrow_upward</i></p><p class="row pl-2 mb-0 d-inline-flex" style="font-weight: lighter;font-size: medium">29</p></p>
+                        <p style="color: var(--yellow)" class="small d-inline-flex"><i class="material-icons">star</i><i class="material-icons">star</i><i class="material-icons">star</i><i class="material-icons">star</i><i class="material-icons">star_half</i></p>
+                    </div>
+                    <div class="col-md-4">
+                    </div>
+                </div>
+                <div class="pb-2 mb-0">
+                    <p class="mr-3 text-center">
+                        I am a developer, and a verified freelancer.
+                    </p>
+                </div>
+            </div>
+            <div class="row m-3 pt-3">
+            </div>
+            <?php
+        }
     }
 
     /**
@@ -1563,10 +1731,16 @@ class Web_Page
             <div class="p-3 text-center request-favr-web">
                 <button class="btn btn-lg btn-primary" id="request-favr-web">
                     <div class="d-inline-flex">
-                        <i class="material-icons">create</i>
+                        <i class="material-icons">build</i>
                         Request FAVR
                     </div>
                 </button>
+            </div>
+
+            <div class="favr-fab">
+                <a class="favr-fab-fab favr-fab-btn-large text-center" id="favr-fabBtn">
+                    <i style="padding: .8rem;background: transparent;color: var(--white);font-size: xx-large" class="material-icons">build</i>
+                </a>
             </div>
 
             <form class="request-favr-mobile" action="" method="post" enctype="multipart/form-data">
@@ -1623,6 +1797,7 @@ class Web_Page
                                 <button id="hard-button" type="button" class="btn btn-danger p-2 rounded" value="Hard">Hard 🔥</button>
                                 <input id="difficulty" type="hidden" name="requestDifficulty">
                             </div>
+                            <label for="inputPricing">Price (for each freelancer)</label>
                             <div class="input-group pb-3">
                                 <div class="input-group-prepend">
                                     <span class="input-group-text" style="color: var(--green)">$</span>
@@ -1631,7 +1806,6 @@ class Web_Page
                                        class="form-control"
                                        style="border-radius: 0 5px 5px 0"
                                        placeholder="Set your price ..." min="0.50" max="250.00" step="0.01" required="">
-<!--                                <label for="inputPricing">Set your price... </label>-->
                             </div>
                             <label for="inputPictures">Only image files < 5 Mb can be attached</label>
                             <div class="form-label-group">
@@ -1711,14 +1885,25 @@ class Web_Page
                     $freelancer_accepted = $row['task_freelancer_accepted'];
                     $task_freelancer_count = $row['task_freelancer_count'];
                     $customer_id = $row['customer_id'];
-                    $customer_username = $row['username'];
-                    $customer_first_name = $row['first_name'];
+                    $customerInfo = $this->getUserInfo($customer_id);
+                    $customer_username = $customerInfo['username'];
+                    $customer_first_name = $customerInfo['first_name'];
                     $task_description = $row['task_description'];
                     $task_date = date("n/j/Y", strtotime($row['task_date']));
                     $task_location = $row['task_location'];
                     $task_time_to_accomplish = date('h:i A, l, n/j/Y', strtotime($row['task_date']));
                     $task_price = $row['task_price'];
                     $task_difficulty = $row['task_intensity'];
+
+                    $profile_img_data_array = unserialize($customerInfo['profile_picture_path']);
+
+                    if (isset($profile_img_data_array['name'], $profile_img_data_array['type'])) {
+                        $profile_img_name = $profile_img_data_array['name'];
+                        $profile_img_type = $profile_img_data_array['type'];
+                    } else {
+                        $profile_img_name = "";
+                        $profile_img_type = "";
+                    }
 
                     $task1_img_data_array = unserialize($row['task_picture_path_1']);
                     $task1_img_name = $task1_img_data_array['name'];
@@ -1736,8 +1921,10 @@ class Web_Page
 
                     echo "<div class=\"my-3 p-3 bg-white rounded box-shadow\">
                         <div class='pb-2 mb-0 border-bottom border-gray'>
-                            <img src=\"data:image/svg+xml;charset=UTF-8,%3Csvg%20width%3D%22128%22%20height%3D%22128%22%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20viewBox%3D%220%200%20128%20128%22%20preserveAspectRatio%3D%22none%22%3E%3Cdefs%3E%3Cstyle%20type%3D%22text%2Fcss%22%3E%23holder_164a9f2d749%20text%20%7B%20fill%3A%23007bff%3Bfont-weight%3Abold%3Bfont-family%3AArial%2C%20Helvetica%2C%20Open%20Sans%2C%20sans-serif%2C%20monospace%3Bfont-size%3A6pt%20%7D%20%3C%2Fstyle%3E%3C%2Fdefs%3E%3Cg%20id%3D%22holder_164a9f2d749%22%3E%3Crect%20width%3D%22128%22%20height%3D%22128%22%20fill%3D%22%23007bff%22%3E%3C%2Frect%3E%3Cg%3E%3Ctext%20x%3D%2248.4296875%22%20y%3D%2266.7%22%3E128x128%3C%2Ftext%3E%3C%2Fg%3E%3C%2Fg%3E%3C%2Fsvg%3E\" 
-                                height='32' width='32' alt=\"\" class=\"mr-2 rounded\">
+                            <a href='$this->root_path/components/profile/profile.php?user_id=$customer_id'>
+                                <img src=\"data:image/svg+xml;charset=UTF-8,%3Csvg%20width%3D%22128%22%20height%3D%22128%22%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20viewBox%3D%220%200%20128%20128%22%20preserveAspectRatio%3D%22none%22%3E%3Cdefs%3E%3Cstyle%20type%3D%22text%2Fcss%22%3E%23holder_164a9f2d749%20text%20%7B%20fill%3A%23007bff%3Bfont-weight%3Abold%3Bfont-family%3AArial%2C%20Helvetica%2C%20Open%20Sans%2C%20sans-serif%2C%20monospace%3Bfont-size%3A6pt%20%7D%20%3C%2Fstyle%3E%3C%2Fdefs%3E%3Cg%20id%3D%22holder_164a9f2d749%22%3E%3Crect%20width%3D%22128%22%20height%3D%22128%22%20fill%3D%22%23007bff%22%3E%3C%2Frect%3E%3Cg%3E%3Ctext%20x%3D%2248.4296875%22%20y%3D%2266.7%22%3E128x128%3C%2Ftext%3E%3C%2Fg%3E%3C%2Fg%3E%3C%2Fsvg%3E\" 
+                                data-src=\"$this->root_path/image.php?i=$profile_img_name&i_t=$profile_img_type&i_p=true\" height='32' width='32' alt=\"Profile Image\" class=\"mr-2 rounded\">
+                            </a>
                             <strong style='font-size: 80%' class=\"d - block text - gray - dark\">
                                 <a href='$this->root_path/components/profile/profile.php?user_id=$customer_id'>@$customer_username</a>
                             </strong>
@@ -2194,7 +2381,7 @@ class Web_Page
     }
 
     /**
-     * TODO: needs logic development and implementation
+     * TODO: needs logic development
      * Process cancel pending request
      *
      * @param int $requestID
@@ -2425,11 +2612,17 @@ class Web_Page
             $delete_request_query = "DELETE FROM marketplace_favr_requests
                                      WHERE id = '$requestID'
                                      AND customer_id = '$customerID'";
+            $delete_freelancer_query = "DELETE FROM marketplace_favr_freelancers
+                                        WHERE request_id = '$requestID'";
             $result = $this->db->query($delete_request_query);
-
             if ($result) {
-                // successfully deleted
-                return true;
+                $result = $this->db->query($delete_freelancer_query);
+                if ($result) {
+                    // successfully deleted
+                    return true;
+                } else {
+                    return false;
+                }
             } else {
                 // error when deleting
                 return false;
