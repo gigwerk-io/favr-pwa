@@ -27,7 +27,7 @@ class Data_Constants
     const MAXIMUM_IMAGE_UPLOAD_SIZE = 5242880; // 5 Mb
     const IMAGE_UPLOAD_FILE_PATH = "/Applications/XAMPP/xamppfiles/favr-request-images/";
     const IMAGE_UPLOAD_PROFILE_IMAGE_FILE_PATH = "/Applications/XAMPP/xamppfiles/favr-profile-images/";
-    
+
     // database marketplace task status constants
     const DB_TASK_STATUS_REQUESTED = "Requested";
     const DB_TASK_STATUS_PENDING_APPROVAL = "Pending Approval";

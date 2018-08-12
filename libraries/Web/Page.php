@@ -579,28 +579,97 @@ class Web_Page
                     $task_time_to_accomplish = $row['task_time_to_accomplish'];
                     $task_price = $row['task_price'];
                     $task_status = $row['task_status'];
+                    $task_rating = $row['task_rating'];
+
+                    $freelancerInfo = $this->getUserInfo($freelancer_id);
+                    $customerInfo = $this->getUserInfo($customer_id);
+
+                    $freelancer_username = $freelancerInfo['username'];
+
+                    $customer_profile_img = unserialize($customerInfo['profile_picture_path']);
+                    $freelancer_profile_img = unserialize($freelancerInfo['profile_picture_path']);
 
                     echo "<div class=\"my-3 p-3 bg-white rounded box-shadow\">
-                        <div class='pb-2 mb-0 border-bottom border-gray'>
-                            <img data-src=\"holder.js/32x32?theme=thumb&bg=007bff&fg=007bff&size=1\" alt=\"\" class=\"mr-2 rounded\">
-                            <strong style='font-size: 80%' class=\"d - block text - gray - dark\"><a href='$this->root_path/components/profile/profile.php?user_id=$customer_id'>@$customer_username</a></strong>
-                            ";
+                                <div class='pb-2 mb-0 border-bottom border-gray'>";
 
                     if ($freelancer_id == $id) {
+                        if (!empty($freelancer_profile_img)) {
+                            $freelancer_profile_img_name = $freelancer_profile_img['name'];
+                            $freelancer_profile_img_type = $freelancer_profile_img['type'];
+                        } else {
+                            $freelancer_profile_img_name = "";
+                            $freelancer_profile_img_type = "";
+                        }
+
+                        echo "<a href='$this->root_path/components/profile/profile.php?user_id=$freelancer_id'>
+                                <img src=\"data:image/svg+xml;charset=UTF-8,%3Csvg%20width%3D%22128%22%20height%3D%22128%22%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20viewBox%3D%220%200%20128%20128%22%20preserveAspectRatio%3D%22none%22%3E%3Cdefs%3E%3Cstyle%20type%3D%22text%2Fcss%22%3E%23holder_164a9f2d749%20text%20%7B%20fill%3A%23007bff%3Bfont-weight%3Abold%3Bfont-family%3AArial%2C%20Helvetica%2C%20Open%20Sans%2C%20sans-serif%2C%20monospace%3Bfont-size%3A6pt%20%7D%20%3C%2Fstyle%3E%3C%2Fdefs%3E%3Cg%20id%3D%22holder_164a9f2d749%22%3E%3Crect%20width%3D%22128%22%20height%3D%22128%22%20fill%3D%22%23007bff%22%3E%3C%2Frect%3E%3Cg%3E%3Ctext%20x%3D%2248.4296875%22%20y%3D%2266.7%22%3E128x128%3C%2Ftext%3E%3C%2Fg%3E%3C%2Fg%3E%3C%2Fsvg%3E\"
+                                     data-src=\"$this->root_path/image.php?i=$freelancer_profile_img_name&i_t=$freelancer_profile_img_type&i_p=true\" height='32' width='32' alt=\"Profile Image\" class=\"mr-2 rounded\">
+                              </a>
+                              <strong style='font-size: 80%' class=\"d - block text - gray - dark\"><a href='$this->root_path/components/profile/profile.php?user_id=$freelancer_id'>@$freelancer_username</a></strong>
+                              ";
                         echo "<div class='float-right small' style='color: var(--green)'>+ $$task_price</div>";
                     } else if ($customer_id == $id) {
+                        if (!empty($customer_profile_img)) {
+                            $customer_profile_img_name = $customer_profile_img['name'];
+                            $customer_profile_img_type = $customer_profile_img['type'];
+                        } else {
+                            $customer_profile_img_name = "";
+                            $customer_profile_img_type = "";
+                        }
+
+                        echo "<a href='$this->root_path/components/profile/profile.php?user_id=$customer_id'>
+                                <img src=\"data:image/svg+xml;charset=UTF-8,%3Csvg%20width%3D%22128%22%20height%3D%22128%22%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20viewBox%3D%220%200%20128%20128%22%20preserveAspectRatio%3D%22none%22%3E%3Cdefs%3E%3Cstyle%20type%3D%22text%2Fcss%22%3E%23holder_164a9f2d749%20text%20%7B%20fill%3A%23007bff%3Bfont-weight%3Abold%3Bfont-family%3AArial%2C%20Helvetica%2C%20Open%20Sans%2C%20sans-serif%2C%20monospace%3Bfont-size%3A6pt%20%7D%20%3C%2Fstyle%3E%3C%2Fdefs%3E%3Cg%20id%3D%22holder_164a9f2d749%22%3E%3Crect%20width%3D%22128%22%20height%3D%22128%22%20fill%3D%22%23007bff%22%3E%3C%2Frect%3E%3Cg%3E%3Ctext%20x%3D%2248.4296875%22%20y%3D%2266.7%22%3E128x128%3C%2Ftext%3E%3C%2Fg%3E%3C%2Fg%3E%3C%2Fsvg%3E\"
+                                     data-src=\"$this->root_path/image.php?i=$customer_profile_img_name&i_t=$customer_profile_img_type&i_p=true\" height='32' width='32' alt=\"Profile Image\" class=\"mr-2 rounded\">
+                              </a>
+                              <strong style='font-size: 80%' class=\"d - block text - gray - dark\"><a href='$this->root_path/components/profile/profile.php?user_id=$customer_id'>@$customer_username</a></strong>
+                              ";
                         echo "<div class='float-right small' style='color: var(--red)'>- $$task_price</div>";
+
                     }
 
                     echo "</div>
                         <div class=\"media text-muted pt-3\">
                             <div class='container'>
                                 <p class=\"media-body text-dark pb-3 mb-0 small lh-125\">
-                                    $task_description
-                                </p>
-                                <div class='row p-0 border-top border-gray'>
-                                    <div class='col-sm-12 small'>
-                                        <div class=\"float-left d-inline\">
+                                    $task_description";
+
+                    echo "<p class='text-center'>";
+                    if ($task_rating == 1) {
+                        echo "<i style=\"font-size: 20px!important;color: var(--yellow)\" class=\"small material-icons\">star</i>";
+                        echo "<i style=\"font-size: 20px!important;color: var(--dark)\" class=\"material-icons\">star_border</i>";
+                        echo "<i style=\"font-size: 20px!important;color: var(--dark)\" class=\"material-icons\">star_border</i>";
+                        echo "<i style=\"font-size: 20px!important;color: var(--dark)\" class=\"material-icons\">star_border</i>";
+                        echo "<i style=\"font-size: 20px!important;color: var(--dark)\" class=\"material-icons\">star_border</i>";
+                    } else if ($task_rating == 2) {
+                        echo "<i style=\"font-size: 20px!important;color: var(--yellow)\" class=\"material-icons\">star</i>";
+                        echo "<i style=\"font-size: 20px!important;color: var(--yellow)\" class=\"material-icons\">star</i>";
+                        echo "<i style=\"font-size: 20px!important;color: var(--dark)\" class=\"material-icons\">star_border</i>";
+                        echo "<i style=\"font-size: 20px!important;color: var(--dark)\" class=\"material-icons\">star_border</i>";
+                        echo "<i style=\"font-size: 20px!important;color: var(--dark)\" class=\"material-icons\">star_border</i>";
+                    } else if ($task_rating == 3) {
+                        echo "<i style=\"font-size: 20px!important;color: var(--yellow)\" class=\"material-icons\">star</i>";
+                        echo "<i style=\"font-size: 20px!important;color: var(--yellow)\" class=\"material-icons\">star</i>";
+                        echo "<i style=\"font-size: 20px!important;color: var(--yellow)\" class=\"material-icons\">star</i>";
+                        echo "<i style=\"font-size: 20px!important;color: var(--dark)\" class=\"material-icons\">star_border</i>";
+                        echo "<i style=\"font-size: 20px!important;color: var(--dark)\" class=\"material-icons\">star_border</i>";
+                    } else if ($task_rating == 4) {
+                        echo "<i style=\"font-size: 20px!important;color: var(--yellow)\" class=\"material-icons\">star</i>";
+                        echo "<i style=\"font-size: 20px!important;color: var(--yellow)\" class=\"material-icons\">star</i>";
+                        echo "<i style=\"font-size: 20px!important;color: var(--yellow)\" class=\"material-icons\">star</i>";
+                        echo "<i style=\"font-size: 20px!important;color: var(--yellow)\" class=\"material-icons\">star</i>";
+                        echo "<i style=\"font-size: 20px!important;color: var(--dark)\" class=\"material-icons\">star_border</i>";
+                    } else if ($task_rating == 5) {
+                        echo "<i style=\"font-size: 20px!important;color: var(--yellow)\" class=\"material-icons\">star</i>";
+                        echo "<i style=\"font-size: 20px!important;color: var(--yellow)\" class=\"material-icons\">star</i>";
+                        echo "<i style=\"font-size: 20px!important;color: var(--yellow)\" class=\"material-icons\">star</i>";
+                        echo "<i style=\"font-size: 20px!important;color: var(--yellow)\" class=\"material-icons\">star</i>";
+                        echo "<i style=\"font-size: 20px!important;color: var(--yellow)\" class=\"material-icons\">star</i>";
+                    }
+                    echo "</p>";
+                    echo "    </p>
+                             <div class='row p-0 border-top border-gray'>
+                                <div class='col-sm-12 small'>
+                                    <div class=\"float-left d-inline\">
                                             ";
                     if ($freelancer_id == $id) {
                         if ($task_status == Data_Constants::DB_TASK_STATUS_REQUESTED) {
@@ -743,7 +812,7 @@ class Web_Page
                                   <div id=\"$id-profile-caption\" class='caption'></div>
                                 </div>";
 
-                        echo "  <button class='text-right btn text-muted' data-toggle='modal' data-target='#profileEditModal'>
+                        echo "  <button class='text-right btn text-muted bg-white' data-toggle='modal' data-target='#profileEditModal'>
                                         <i class='material-icons'>edit</i>
                                     </button>";
 
@@ -937,7 +1006,7 @@ class Web_Page
                     }
         ?>
 
-                <div class="request-favr pt-0 pr-3 pb-0 mr-0">
+                <div class="request-favr pt-0 pr-2 pb-0 mr-0">
                     <?php
                     if ($_SESSION['nav_scroller'] != "active_marketplace" || $_SESSION['navbar'] != "active_home") {
                         echo "
@@ -957,20 +1026,41 @@ class Web_Page
                     ?>
                 </div>
 
-                <button class="profile-button pb-0 border-0 mr-0 pr-0" style="left: .1rem" type="button">
+
                     <?php
-                    if ($_SESSION['navbar'] == "active_profile") {
-                        echo "
-                               <i class=\"material-icons\" style=\"color: red;border: 1px solid;border-radius: 1rem;\">person</i>
-                            ";
+                    $userInfo = $this->getUserInfo($_SESSION['user_info']['id']);
+                    $profile_image = unserialize($userInfo['profile_picture_path']);
+
+                    if (isset($profile_image['name'], $profile_image['type'])) {
+                        $profile_img_name = $profile_image['name'];
+                        $profile_img_type = $profile_image['type'];
+                        ?>
+                        <button class="profile-button border-0 mr-0 pr-0" style="left: .1rem;padding-bottom: .569rem;" type="button">
+                            <a href='<?php echo "$this->root_path/components/profile/?navbar=active_profile"; ?>'>
+                                <img src='data:image/svg+xml;charset=UTF-8,%3Csvg%20width%3D%22128%22%20height%3D%22128%22%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20viewBox%3D%220%200%20128%20128%22%20preserveAspectRatio%3D%22none%22%3E%3Cdefs%3E%3Cstyle%20type%3D%22text%2Fcss%22%3E%23holder_164a9f2d749%20text%20%7B%20fill%3A%23007bff%3Bfont-weight%3Abold%3Bfont-family%3AArial%2C%20Helvetica%2C%20Open%20Sans%2C%20sans-serif%2C%20monospace%3Bfont-size%3A6pt%20%7D%20%3C%2Fstyle%3E%3C%2Fdefs%3E%3Cg%20id%3D%22holder_164a9f2d749%22%3E%3Crect%20width%3D%22128%22%20height%3D%22128%22%20fill%3D%22%23007bff%22%3E%3C%2Frect%3E%3Cg%3E%3Ctext%20x%3D%2248.4296875%22%20y%3D%2266.7%22%3E128x128%3C%2Ftext%3E%3C%2Fg%3E%3C%2Fg%3E%3C%2Fsvg%3E'
+                                     data-src='<?php echo "$this->root_path/image.php?i=$profile_img_name&i_t=$profile_img_type&i_p=true"; ?>' height='26' width='26' alt='Profile Image'
+                                     style="border: 1px solid red;border-radius: 1rem;">
+                            </a>
+                        </button>
+                        <?php
                     } else {
-                        echo "
+                        if ($_SESSION['navbar'] == "active_profile") {
+                            echo "
+                                <button class=\"profile-button border-0 pb-1 mr-0 pr-0\" style=\"left: .1rem;\" type=\"button\">
+                                    <i class=\"material-icons\" style=\"color: red;border: 1px solid;border-radius: 1rem;\">person</i>
+                                </button>
+                            ";
+                        } else {
+                            echo "
+                                <button class=\"profile-button border-0 pb-1 mr-0 pr-0\" style=\"left: .1rem;\" type=\"button\">
                                   <a href='$this->root_path/components/profile/?navbar=active_profile'>
                                      <i class=\"material-icons\" style=\"color: red;border: 1px solid;border-radius: 1rem;\">person_outline</i>
-                                  </a>";
+                                  </a>
+                                </button>";
+                        }
                     }
                     ?>
-                </button>
+
 
                 <div class="navbar-collapse offcanvas-collapse" id="navbarsExampleDefault">
                     <ul class="navbar-nav mr-auto">
@@ -1221,6 +1311,16 @@ class Web_Page
                     $task_difficulty = $row['task_intensity'];
                     $task_status = $row['task_status'];
 
+                    $profile_img_data_array = unserialize($customerInfo['profile_picture_path']);
+
+                    if (isset($profile_img_data_array['name'], $profile_img_data_array['type'])) {
+                        $profile_img_name = $profile_img_data_array['name'];
+                        $profile_img_type = $profile_img_data_array['type'];
+                    } else {
+                        $profile_img_name = "";
+                        $profile_img_type = "";
+                    }
+
                     $task1_img_data_array = unserialize($row['task_picture_path_1']);
                     $task1_img_name = $task1_img_data_array['name'];
                     $task1_img_type = $task1_img_data_array['type'];
@@ -1237,8 +1337,10 @@ class Web_Page
 
                     echo "<div class=\"my-3 p-3 bg-white rounded box-shadow\">
                         <div class='pb-2 mb-0 border-bottom border-gray'>
-                            <img src=\"data:image/svg+xml;charset=UTF-8,%3Csvg%20width%3D%22128%22%20height%3D%22128%22%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20viewBox%3D%220%200%20128%20128%22%20preserveAspectRatio%3D%22none%22%3E%3Cdefs%3E%3Cstyle%20type%3D%22text%2Fcss%22%3E%23holder_164a9f2d749%20text%20%7B%20fill%3A%23007bff%3Bfont-weight%3Abold%3Bfont-family%3AArial%2C%20Helvetica%2C%20Open%20Sans%2C%20sans-serif%2C%20monospace%3Bfont-size%3A6pt%20%7D%20%3C%2Fstyle%3E%3C%2Fdefs%3E%3Cg%20id%3D%22holder_164a9f2d749%22%3E%3Crect%20width%3D%22128%22%20height%3D%22128%22%20fill%3D%22%23007bff%22%3E%3C%2Frect%3E%3Cg%3E%3Ctext%20x%3D%2248.4296875%22%20y%3D%2266.7%22%3E128x128%3C%2Ftext%3E%3C%2Fg%3E%3C%2Fg%3E%3C%2Fsvg%3E\" 
-                                height='32' width='32' alt=\"\" class=\"mr-2 rounded\">
+                            <a href='$this->root_path/components/profile/profile.php?user_id=$customer_id'>
+                                <img src=\"data:image/svg+xml;charset=UTF-8,%3Csvg%20width%3D%22128%22%20height%3D%22128%22%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20viewBox%3D%220%200%20128%20128%22%20preserveAspectRatio%3D%22none%22%3E%3Cdefs%3E%3Cstyle%20type%3D%22text%2Fcss%22%3E%23holder_164a9f2d749%20text%20%7B%20fill%3A%23007bff%3Bfont-weight%3Abold%3Bfont-family%3AArial%2C%20Helvetica%2C%20Open%20Sans%2C%20sans-serif%2C%20monospace%3Bfont-size%3A6pt%20%7D%20%3C%2Fstyle%3E%3C%2Fdefs%3E%3Cg%20id%3D%22holder_164a9f2d749%22%3E%3Crect%20width%3D%22128%22%20height%3D%22128%22%20fill%3D%22%23007bff%22%3E%3C%2Frect%3E%3Cg%3E%3Ctext%20x%3D%2248.4296875%22%20y%3D%2266.7%22%3E128x128%3C%2Ftext%3E%3C%2Fg%3E%3C%2Fg%3E%3C%2Fsvg%3E\" 
+                                data-src=\"$this->root_path/image.php?i=$profile_img_name&i_t=$profile_img_type&i_p=true\" height='32' width='32' alt=\"Profile Image\" class=\"mr-2 rounded\">
+                            </a>   
                             <strong style='font-size: 80%' class=\"d - block text - gray - dark\">
                                 ";
 
@@ -1727,6 +1829,17 @@ class Web_Page
     function renderFavrRequestForm($render_favr_request_form = true)
     {
         if ($render_favr_request_form) {
+            $userInfo = $this->getUserInfo($_SESSION['user_info']['id']);
+            $userID = $userInfo['id'];
+            $profile_img = unserialize($userInfo['profile_picture_path']);
+
+            if (isset($profile_img['name'], $profile_img['type'])) {
+                $profile_img_name = $profile_img['name'];
+                $profile_img_type = $profile_img['type'];
+            } else {
+                $profile_img_name = "";
+                $profile_img_type = "";
+            }
             ?>
             <div class="p-3 text-center request-favr-web">
                 <button class="btn btn-lg btn-primary" id="request-favr-web">
@@ -1747,11 +1860,10 @@ class Web_Page
                 <div class="my-3 p-3 bg-white rounded box-shadow">
                     <h6 class="border-bottom border-gray pb-2 mb-0">Post a FAVR request in Marketplace</h6>
                     <div class="media text-muted pt-3">
-                        <img src="data:image/svg+xml;charset=UTF-8,%3Csvg%20width%3D%22128%22%20height%3D%22128%22%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20viewBox%3D%220%200%20128%20128%22%20preserveAspectRatio%3D%22none%22%3E%3Cdefs%3E%3Cstyle%20type%3D%22text%2Fcss%22%3E%23holder_164a9f2d749%20text%20%7B%20fill%3A%23007bff%3Bfont-weight%3Abold%3Bfont-family%3AArial%2C%20Helvetica%2C%20Open%20Sans%2C%20sans-serif%2C%20monospace%3Bfont-size%3A6pt%20%7D%20%3C%2Fstyle%3E%3C%2Fdefs%3E%3Cg%20id%3D%22holder_164a9f2d749%22%3E%3Crect%20width%3D%22128%22%20height%3D%22128%22%20fill%3D%22%23007bff%22%3E%3C%2Frect%3E%3Cg%3E%3Ctext%20x%3D%2248.4296875%22%20y%3D%2266.7%22%3E128x128%3C%2Ftext%3E%3C%2Fg%3E%3C%2Fg%3E%3C%2Fsvg%3E"
-                             alt="profile picture"
-                             height="32"
-                             width="32"
-                             class="mr-2 rounded">
+                        <a href='<?php echo "$this->root_path/components/profile/profile.php?user_id=$userID"; ?>'>
+                            <img src='data:image/svg+xml;charset=UTF-8,%3Csvg%20width%3D%22128%22%20height%3D%22128%22%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20viewBox%3D%220%200%20128%20128%22%20preserveAspectRatio%3D%22none%22%3E%3Cdefs%3E%3Cstyle%20type%3D%22text%2Fcss%22%3E%23holder_164a9f2d749%20text%20%7B%20fill%3A%23007bff%3Bfont-weight%3Abold%3Bfont-family%3AArial%2C%20Helvetica%2C%20Open%20Sans%2C%20sans-serif%2C%20monospace%3Bfont-size%3A6pt%20%7D%20%3C%2Fstyle%3E%3C%2Fdefs%3E%3Cg%20id%3D%22holder_164a9f2d749%22%3E%3Crect%20width%3D%22128%22%20height%3D%22128%22%20fill%3D%22%23007bff%22%3E%3C%2Frect%3E%3Cg%3E%3Ctext%20x%3D%2248.4296875%22%20y%3D%2266.7%22%3E128x128%3C%2Ftext%3E%3C%2Fg%3E%3C%2Fg%3E%3C%2Fsvg%3E'
+                                 data-src='<?php echo "$this->root_path/image.php?i=$profile_img_name&i_t=$profile_img_type&i_p=true"; ?>' height='32' width='32' alt='Profile Image' class='mr-2 rounded'>
+                        </a>
                         <div class="media-body pb-3 mb-0 small lh-125">
                             <strong class="d-block text-gray-dark">@<?php echo $_SESSION['user_info']['username']; ?></strong>
                             <div class="form-label-group">
