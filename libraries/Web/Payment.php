@@ -29,13 +29,13 @@ class Web_Payment
      * Backend username
      * @var string
      */
-    public $username = Data_Constants::DB_USERNAME;
+    private $username = Data_Constants::DB_USERNAME;
 
     /**
      * Backend password
      * @var string
      */
-    public $password = Data_Constants::DB_PASSWORD;
+    private $password = Data_Constants::DB_PASSWORD;
 
     /**
      * @var float
@@ -51,6 +51,16 @@ class Web_Payment
      * @var string
      */
     public $status;
+
+    /**
+     * @var int
+     */
+    public $customer_id;
+
+    /**
+     * @var int
+     */
+    public $freelancer_id;
 
     function __construct() {
         $this->db = $this->connect();
@@ -82,6 +92,8 @@ class Web_Payment
         $this->status = $row['task_status'];
         $this->price = $row['task_price']*100;
         $this->description = $row['task_description'];
+        $this->customer_id = $row['customer_id'];
+        $this->freelancer_id = $row['freelancer_id'];
         return $this;
     }
 
@@ -134,9 +146,22 @@ class Web_Payment
     public function update(int $id)
     {
         $this->db->query("UPDATE marketplace_favr_requests SET task_status='In Progress' WHERE id=$id");
-        header("location: https://askfavr.com");
         return $this;
     }
+
+    /**
+     * @return $this
+     */
+    public function createChat()
+    {
+        $message_file = time() . "txt";
+        fopen("../../storage/$message_file", "x");
+        $this->db->query("INSERT INTO marketplace_favr_chat (message_file, customer_id, freelancer_id_1) 
+                                    VALUES ($message_file, $this->customer_id, $this->freelancer_id)");
+        return $this;
+    }
+
+
 
     // select($id)->charge($_POST['token'], $this->price)->update($id);
 }
