@@ -1,11 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <project version="4">
   <component name="ChangeListManager">
-    <list default="true" id="3a16668b-218a-4ebf-810d-5852cbb6f97c" name="Default" comment="">
-      <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" afterPath="$PROJECT_DIR$/.idea/workspace.xml" />
-      <change beforePath="$PROJECT_DIR$/libraries/Data/Constants.php" afterPath="$PROJECT_DIR$/libraries/Data/Constants.php" />
-      <change beforePath="$PROJECT_DIR$/libraries/Web/Page.php" afterPath="$PROJECT_DIR$/libraries/Web/Page.php" />
-    </list>
+    <list default="true" id="3a16668b-218a-4ebf-810d-5852cbb6f97c" name="Default" comment="" />
     <option name="EXCLUDED_CONVERTED_TO_IGNORED" value="true" />
     <option name="TRACKING_ENABLED" value="true" />
     <option name="SHOW_DIALOG" value="false" />
@@ -58,7 +54,7 @@
     <splitter split-orientation="horizontal" split-proportion="0.5">
       <split-first>
         <leaf SIDE_TABS_SIZE_LIMIT_KEY="300">
-          <file leaf-file-name="Page.php" pinned="false" current-in-tab="true">
+          <file leaf-file-name="Page.php" pinned="false" current-in-tab="false">
             <entry file="file://$PROJECT_DIR$/libraries/Web/Page.php">
               <provider selected="true" editor-type-id="text-editor">
                 <state relative-caret-position="242">
@@ -475,6 +471,16 @@
               </provider>
             </entry>
           </file>
+          <file leaf-file-name="Constants.php" pinned="false" current-in-tab="true">
+            <entry file="file://$PROJECT_DIR$/../../xamppfiles/htdocs/FAVR-PWA/libraries/Data/Constants.php">
+              <provider selected="true" editor-type-id="text-editor">
+                <state relative-caret-position="210">
+                  <caret line="22" column="53" lean-forward="false" selection-start-line="22" selection-start-column="53" selection-end-line="22" selection-end-column="53" />
+                  <folding />
+                </state>
+              </provider>
+            </entry>
+          </file>
           <file leaf-file-name="Constants.php" pinned="false" current-in-tab="false">
             <entry file="file://$PROJECT_DIR$/libraries/Data/Constants.php">
               <provider selected="true" editor-type-id="text-editor">
@@ -671,7 +677,6 @@
   <component name="IdeDocumentHistory">
     <option name="CHANGED_PATHS">
       <list>
-        <option value="$PROJECT_DIR$/include/autoload.php" />
         <option value="$PROJECT_DIR$/assets/css/offcanvas.css" />
         <option value="$PROJECT_DIR$/assets/css/loader.css" />
         <option value="$PROJECT_DIR$/assets/css/signin.css" />
@@ -722,6 +727,7 @@
         <option value="$PROJECT_DIR$/libraries/Data/Constants.php" />
         <option value="$PROJECT_DIR$/libraries/Web/Page.php" />
         <option value="$PROJECT_DIR$/libraries/Web/Page.php" />
+        <option value="$PROJECT_DIR$/../../xamppfiles/htdocs/FAVR-PWA/libraries/Data/Constants.php" />
       </list>
     </option>
   </component>
@@ -886,7 +892,7 @@
       <workItem from="1530572776384" duration="52228000" />
       <workItem from="1531357098908" duration="331270000" />
       <workItem from="1534022444624" duration="354000" />
-      <workItem from="1534035557457" duration="16686000" />
+      <workItem from="1534035557457" duration="16803000" />
     </task>
     <servers />
   </component>
@@ -923,7 +929,7 @@
     </history-entry>
   </component>
   <component name="TimeTrackingManager">
-    <option name="totallyTimeSpent" value="400538000" />
+    <option name="totallyTimeSpent" value="400655000" />
   </component>
   <component name="ToolWindowManager">
     <frame x="0" y="0" width="1440" height="900" extended-state="0" />
@@ -967,13 +973,6 @@
     <watches-manager />
   </component>
   <component name="editorHistoryManager">
-    <entry file="file://$PROJECT_DIR$/test/phpunit.xml">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="60">
-          <caret line="4" column="10" lean-forward="false" selection-start-line="4" selection-start-column="10" selection-end-line="4" selection-end-column="10" />
-        </state>
-      </provider>
-    </entry>
     <entry file="file://$PROJECT_DIR$/assets/js/src/application.js">
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="0">
@@ -1754,6 +1753,14 @@
             <marker date="1534132291183" expanded="true" signature="180256:180448" ph="UPDATE marketplace_favr_requests... " />
             <marker date="1534132291183" expanded="true" signature="181722:182356" ph="SELECT COUNT... marketplace_favr_requests" />
           </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/../../xamppfiles/htdocs/FAVR-PWA/libraries/Data/Constants.php">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="210">
+          <caret line="22" column="53" lean-forward="false" selection-start-line="22" selection-start-column="53" selection-end-line="22" selection-end-column="53" />
+          <folding />
         </state>
       </provider>
     </entry>
