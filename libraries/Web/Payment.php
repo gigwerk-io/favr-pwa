@@ -130,12 +130,13 @@ class Web_Payment
     public function charge(string $token)
     {
         \Stripe\Stripe::setApiKey(\Data_Constants::STRIPE_SECRET);
-        \Stripe\Charge::create(array(
+        \Stripe\Charge::create($charge = array(
             "amount" => $this->price,
             "currency" => "usd",
             "description" => $this->description,
             "source" => $token,
         ));
+        print_r($charge);
         return $this;
     }
 
@@ -145,7 +146,13 @@ class Web_Payment
      */
     public function update(int $id)
     {
-        $this->db->query("UPDATE marketplace_favr_requests SET task_status='In Progress' WHERE id=$id");
+        $success = $this->db->query("UPDATE marketplace_favr_requests SET task_status='In Progress' WHERE id=$id");
+        if($success)
+        {
+            echo "Request Updated \n";
+        }else{
+            echo " Request Failure \n";
+        }
         return $this;
     }
 
@@ -154,10 +161,19 @@ class Web_Payment
      */
     public function createChat()
     {
-        $message_file = time() . "txt";
+        $message_file = "message_" . time() . ".txt";
         fopen("../../storage/$message_file", "x");
-        $this->db->query("INSERT INTO marketplace_favr_chat (message_file, customer_id, freelancer_id_1) 
-                                    VALUES ($message_file, $this->customer_id, $this->freelancer_id)");
+        $success = $this->db->query("INSERT INTO marketplace_favr_chat (message_file, customer_id, freelancer_id_1) 
+                                    VALUES ('$message_file', $this->customer_id, $this->freelancer_id)");
+        if($success)
+        {
+            echo "<script> 
+                    alert('Chat Created.');
+                    //window.location.href = 'TestPage.php?file=$message_file&customer=$this->customer_id&freelancer=$this->freelancer_id';
+                </script> \n";
+        }else{
+            echo "Chat Unsuccessful \n";
+        }
         return $this;
     }
 
