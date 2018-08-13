@@ -1,15 +1,8 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <project version="4">
   <component name="dataSourceStorageLocal">
-    <data-source name="local_favr@localhost" uuid="affb968c-cfe1-41a2-92da-e66b5f032007">
-      <database-info product="MySQL" version="5.5.5-10.1.34-MariaDB" jdbc-version="4.0" driver-name="MySQL Connector Java" driver-version="mysql-connector-java-5.1.46 ( Revision: 9cc87a48e75c2d2e87c1a293b2862ce651cb256e )">
-        <extra-name-characters>#@</extra-name-characters>
-        <identifier-quote-string>`</identifier-quote-string>
-      </database-info>
-      <case-sensitivity plain-identifiers="mixed" quoted-identifiers="upper" />
-      <secret-storage>master_key</secret-storage>
-      <user-name>haron</user-name>
-      <introspection-schemas>*:local_favr</introspection-schemas>
+    <data-source name="local_favr@favr.cgfeyejwt7qv.us-east-2.rds.amazonaws.com [2]" uuid="f02ca305-186f-480c-b8e8-5d49a3abb11a">
+      <database-info product="" version="" jdbc-version="" driver-name="" driver-version="" family="MYSQL" exact-version="0.0" />
     </data-source>
   </component>
 </project>
