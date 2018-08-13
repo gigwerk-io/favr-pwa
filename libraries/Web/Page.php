@@ -580,6 +580,7 @@ class Web_Page
                     $task_price = $row['task_price'];
                     $task_status = $row['task_status'];
                     $task_rating = $row['task_rating'];
+                    $review = $row['task_optional_service_review'];
 
                     $freelancerInfo = $this->getUserInfo($freelancer_id);
                     $customerInfo = $this->getUserInfo($customer_id);
@@ -666,6 +667,15 @@ class Web_Page
                         echo "<i style=\"font-size: 20px!important;color: var(--yellow)\" class=\"material-icons\">star</i>";
                     }
                     echo "</p>";
+
+                    // optional review preview
+                    if (!empty($review)) {
+                        echo "<div class='mt-1 text-center'>
+                                    <p class='d-inline-flex text-lg-left'>$review</p> 
+                                    <i class='material-icons text-muted text-lg-right'>format_quote</i> 
+                                  </div>";
+                    }
+
                     echo "    </p>
                              <div class='row p-0 border-top border-gray'>
                                 <div class='col-sm-12 small'>
@@ -754,6 +764,129 @@ class Web_Page
     }
 
     /**
+     * Render profile rating from an array of ratings
+     *
+     * @param array $ratings
+     * @param boolean $renderTrend
+     *
+     */
+    function renderFavrProfileRating($ratings, $renderTrend = true) {
+        if (!empty($ratings)) {
+            $count = count($ratings);
+            $sum = array_sum($ratings);
+            $trend = "<i style=\"position:relative;font-weight: lighter;font-size: medium;bottom:  1.2rem;left: .3rem;visibility: hidden\" class=\"material-icons\">
+                        arrow_upward</i>";
+
+            if ($renderTrend) {
+                if ($count >= 2) {
+                    if ($ratings[$count - 1] < $ratings[$count - 2]) {
+                        $trend = "<i style=\"position:relative;font-weight: lighter;font-size: medium;bottom:  1.2rem;left: .3rem;color:  var(--red);border: 1px solid;border-radius: 1rem;\" class=\"material-icons\">
+                        arrow_downward</i>";
+                    } else {
+                        $trend = "<i style=\"position:relative;font-weight: lighter;font-size: medium;bottom:  1.2rem;left: .3rem;color:  var(--green);border: 1px solid;border-radius: 1rem;\" class=\"material-icons\">
+                        arrow_upward</i>";
+                    }
+                } else {
+                    $trend = "<i style=\"position:relative;font-weight: lighter;font-size: medium;bottom:  1.2rem;left: .3rem;color:  var(--green);border: 1px solid;border-radius: 1rem;\" class=\"material-icons\">
+                        arrow_upward</i>";
+                }
+            }
+
+            $avg = round($sum / $count, 3);
+
+            $digits = strlen((string) $avg);
+
+            if ($digits == 1) {
+                $avg .= ".000";
+            } else if ($digits == 3) {
+                $avg .= "00";
+            }
+
+            $coefficient = substr($avg, 0, 3);
+            $mantissa = substr($avg, 3, 5);
+
+            echo "
+            <p class=\"d-inline-flex mb-0\" style=\"font-size: -webkit-xxx-large;font-weight: lighter\">
+                $coefficient
+                <p class=\"row pl-3 d-inline-flex\">
+                    $trend
+                </p>
+                <p class=\"row pl-2 mb-0 d-inline-flex\" style=\"font-weight: lighter;font-size: medium\">
+                    $mantissa</p>
+            </p>
+            ";
+
+            echo "<p class='text-center'>";
+            if ($avg >= 1 && $avg < 1.5) {
+                echo "<i style=\"font-size: 20px!important;color: var(--yellow)\" class=\"small material-icons\">star</i>";
+                echo "<i style=\"font-size: 20px!important;color: var(--dark)\" class=\"material-icons\">star_border</i>";
+                echo "<i style=\"font-size: 20px!important;color: var(--dark)\" class=\"material-icons\">star_border</i>";
+                echo "<i style=\"font-size: 20px!important;color: var(--dark)\" class=\"material-icons\">star_border</i>";
+                echo "<i style=\"font-size: 20px!important;color: var(--dark)\" class=\"material-icons\">star_border</i>";
+            }
+            else if ($avg >= 1.5 && $avg < 2) {
+                echo "<i style=\"font-size: 20px!important;color: var(--yellow)\" class=\"material-icons\">star</i>";
+                echo "<i style=\"font-size: 20px!important;color: var(--yellow)\" class=\"material-icons\">star_half</i>";
+                echo "<i style=\"font-size: 20px!important;color: var(--dark)\" class=\"material-icons\">star_border</i>";
+                echo "<i style=\"font-size: 20px!important;color: var(--dark)\" class=\"material-icons\">star_border</i>";
+                echo "<i style=\"font-size: 20px!important;color: var(--dark)\" class=\"material-icons\">star_border</i>";
+            }
+            else if ($avg >= 2 && $avg < 2.5) {
+                echo "<i style=\"font-size: 20px!important;color: var(--yellow)\" class=\"material-icons\">star</i>";
+                echo "<i style=\"font-size: 20px!important;color: var(--yellow)\" class=\"material-icons\">star</i>";
+                echo "<i style=\"font-size: 20px!important;color: var(--dark)\" class=\"material-icons\">star_border</i>";
+                echo "<i style=\"font-size: 20px!important;color: var(--dark)\" class=\"material-icons\">star_border</i>";
+                echo "<i style=\"font-size: 20px!important;color: var(--dark)\" class=\"material-icons\">star_border</i>";
+            }
+            else if ($avg >= 2.5 && $avg < 3) {
+                echo "<i style=\"font-size: 20px!important;color: var(--yellow)\" class=\"material-icons\">star</i>";
+                echo "<i style=\"font-size: 20px!important;color: var(--yellow)\" class=\"material-icons\">star</i>";
+                echo "<i style=\"font-size: 20px!important;color: var(--yellow)\" class=\"material-icons\">star_half</i>";
+                echo "<i style=\"font-size: 20px!important;color: var(--dark)\" class=\"material-icons\">star_border</i>";
+                echo "<i style=\"font-size: 20px!important;color: var(--dark)\" class=\"material-icons\">star_border</i>";
+            }
+            else if ($avg >= 3 && $avg < 3.5) {
+                echo "<i style=\"font-size: 20px!important;color: var(--yellow)\" class=\"material-icons\">star</i>";
+                echo "<i style=\"font-size: 20px!important;color: var(--yellow)\" class=\"material-icons\">star</i>";
+                echo "<i style=\"font-size: 20px!important;color: var(--yellow)\" class=\"material-icons\">star</i>";
+                echo "<i style=\"font-size: 20px!important;color: var(--dark)\" class=\"material-icons\">star_border</i>";
+                echo "<i style=\"font-size: 20px!important;color: var(--dark)\" class=\"material-icons\">star_border</i>";
+            }
+            else if ($avg >= 3.5 && $avg < 4) {
+                echo "<i style=\"font-size: 20px!important;color: var(--yellow)\" class=\"material-icons\">star</i>";
+                echo "<i style=\"font-size: 20px!important;color: var(--yellow)\" class=\"material-icons\">star</i>";
+                echo "<i style=\"font-size: 20px!important;color: var(--yellow)\" class=\"material-icons\">star</i>";
+                echo "<i style=\"font-size: 20px!important;color: var(--yellow)\" class=\"material-icons\">star_half</i>";
+                echo "<i style=\"font-size: 20px!important;color: var(--dark)\" class=\"material-icons\">star_border</i>";
+            }
+            else if ($avg == 4 && $avg < 4.5) {
+                echo "<i style=\"font-size: 20px!important;color: var(--yellow)\" class=\"material-icons\">star</i>";
+                echo "<i style=\"font-size: 20px!important;color: var(--yellow)\" class=\"material-icons\">star</i>";
+                echo "<i style=\"font-size: 20px!important;color: var(--yellow)\" class=\"material-icons\">star</i>";
+                echo "<i style=\"font-size: 20px!important;color: var(--yellow)\" class=\"material-icons\">star</i>";
+                echo "<i style=\"font-size: 20px!important;color: var(--dark)\" class=\"material-icons\">star_border</i>";
+            }
+            else if ($avg >= 4.5 && $avg < 5) {
+                echo "<i style=\"font-size: 20px!important;color: var(--yellow)\" class=\"material-icons\">star</i>";
+                echo "<i style=\"font-size: 20px!important;color: var(--yellow)\" class=\"material-icons\">star</i>";
+                echo "<i style=\"font-size: 20px!important;color: var(--yellow)\" class=\"material-icons\">star</i>";
+                echo "<i style=\"font-size: 20px!important;color: var(--yellow)\" class=\"material-icons\">star</i>";
+                echo "<i style=\"font-size: 20px!important;color: var(--yellow)\" class=\"material-icons\">star_half</i>";
+            }
+            else if ($avg == 5) {
+                echo "<i style=\"font-size: 20px!important;color: var(--yellow)\" class=\"material-icons\">star</i>";
+                echo "<i style=\"font-size: 20px!important;color: var(--yellow)\" class=\"material-icons\">star</i>";
+                echo "<i style=\"font-size: 20px!important;color: var(--yellow)\" class=\"material-icons\">star</i>";
+                echo "<i style=\"font-size: 20px!important;color: var(--yellow)\" class=\"material-icons\">star</i>";
+                echo "<i style=\"font-size: 20px!important;color: var(--yellow)\" class=\"material-icons\">star</i>";
+            }
+            echo "</p>";
+        } else {
+            echo "---";
+        }
+    }
+
+    /**
      * Render profile from userID
      *
      * @param int $userID
@@ -775,9 +908,6 @@ class Web_Page
                 $profile_img_name = $profile_img['name'];
                 $profile_img_type = $profile_img['type'];
             }
-//            echo "<pre>";
-//            print_r($userInfo);
-//            echo "</pre>";
             ?>
             <div class="p-3 pb-0 rounded bg-white box-shadow" style="margin-top: 3rem;">
                 <div class="row pb-2 mb-0">
@@ -844,8 +974,10 @@ class Web_Page
                         ?>
 <!--                        <img data-src="holder.js/7remx7rem?theme=thumb&amp;bg=007bff&amp;fg=007bff&amp;size=1" alt="128x128" class="rounded" style="bottom: 3.5rem;width: 7rem;height: 7rem;position: relative;" src="data:image/svg+xml;charset=UTF-8,%3Csvg%20width%3D%22128%22%20height%3D%22128%22%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20viewBox%3D%220%200%20128%20128%22%20preserveAspectRatio%3D%22none%22%3E%3Cdefs%3E%3Cstyle%20type%3D%22text%2Fcss%22%3E%23holder_164a9f2d749%20text%20%7B%20fill%3A%23007bff%3Bfont-weight%3Abold%3Bfont-family%3AArial%2C%20Helvetica%2C%20Open%20Sans%2C%20sans-serif%2C%20monospace%3Bfont-size%3A6pt%20%7D%20%3C%2Fstyle%3E%3C%2Fdefs%3E%3Cg%20id%3D%22holder_164a9f2d749%22%3E%3Crect%20width%3D%22128%22%20height%3D%22128%22%20fill%3D%22%23007bff%22%3E%3C%2Frect%3E%3Cg%3E%3Ctext%20x%3D%2248.4296875%22%20y%3D%2266.7%22%3E128x128%3C%2Ftext%3E%3C%2Fg%3E%3C%2Fg%3E%3C%2Fsvg%3E" data-holder-rendered="true">-->
                         <h3><?php echo $userInfo['first_name'] . " " . $userInfo['last_name']; ?><i class="material-icons text-primary">verified_user</i></h3>
-                        <p class="d-inline-flex mb-0" style="font-size: -webkit-xxx-large;font-weight: lighter">4.4<p class="row pl-3 d-inline-flex"><i style="position:relative;font-weight: lighter;font-size: medium;bottom:  1.2rem;left: .1rem;color:  var(--green);border: 1px solid;border-radius: 1rem;" class="material-icons">arrow_upward</i></p><p class="row pl-2 mb-0 d-inline-flex" style="font-weight: lighter;font-size: medium">29</p></p>
-                        <p style="color: var(--yellow)" class="small d-inline-flex"><i class="material-icons">star</i><i class="material-icons">star</i><i class="material-icons">star</i><i class="material-icons">star</i><i class="material-icons">star_half</i></p>
+                    <?php
+                        $ratings = unserialize($userInfo['rating']);
+                        $this->renderFavrProfileRating($ratings);
+                    ?>
                     </div>
                     <div class="col-md-4">
                     </div>
@@ -915,17 +1047,25 @@ class Web_Page
                                   <div id=\"$id-profile-caption\" class='caption'></div>
                                 </div>";
                         ?>
-                        <!--                        <img data-src="holder.js/7remx7rem?theme=thumb&amp;bg=007bff&amp;fg=007bff&amp;size=1" alt="128x128" class="rounded" style="bottom: 3.5rem;width: 7rem;height: 7rem;position: relative;" src="data:image/svg+xml;charset=UTF-8,%3Csvg%20width%3D%22128%22%20height%3D%22128%22%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20viewBox%3D%220%200%20128%20128%22%20preserveAspectRatio%3D%22none%22%3E%3Cdefs%3E%3Cstyle%20type%3D%22text%2Fcss%22%3E%23holder_164a9f2d749%20text%20%7B%20fill%3A%23007bff%3Bfont-weight%3Abold%3Bfont-family%3AArial%2C%20Helvetica%2C%20Open%20Sans%2C%20sans-serif%2C%20monospace%3Bfont-size%3A6pt%20%7D%20%3C%2Fstyle%3E%3C%2Fdefs%3E%3Cg%20id%3D%22holder_164a9f2d749%22%3E%3Crect%20width%3D%22128%22%20height%3D%22128%22%20fill%3D%22%23007bff%22%3E%3C%2Frect%3E%3Cg%3E%3Ctext%20x%3D%2248.4296875%22%20y%3D%2266.7%22%3E128x128%3C%2Ftext%3E%3C%2Fg%3E%3C%2Fg%3E%3C%2Fsvg%3E" data-holder-rendered="true">-->
                         <h3><?php echo $userInfo['first_name'] . " " . $userInfo['last_name']; ?><i class="material-icons text-primary">verified_user</i></h3>
-                        <p class="d-inline-flex mb-0" style="font-size: -webkit-xxx-large;font-weight: lighter">4.4<p class="row pl-3 d-inline-flex"><i style="position:relative;font-weight: lighter;font-size: medium;bottom:  1.2rem;left: .1rem;color:  var(--green);border: 1px solid;border-radius: 1rem;" class="material-icons">arrow_upward</i></p><p class="row pl-2 mb-0 d-inline-flex" style="font-weight: lighter;font-size: medium">29</p></p>
-                        <p style="color: var(--yellow)" class="small d-inline-flex"><i class="material-icons">star</i><i class="material-icons">star</i><i class="material-icons">star</i><i class="material-icons">star</i><i class="material-icons">star_half</i></p>
+                        <?php
+                        $ratings = unserialize($userInfo['rating']);
+                        $this->renderFavrProfileRating($ratings,false);
+
+                        ?>
                     </div>
                     <div class="col-md-4">
                     </div>
                 </div>
                 <div class="pb-2 mb-0">
                     <p class="mr-3 text-center">
-                        I am a developer, and a verified freelancer.
+                        <?php
+                        if (!empty($userInfo['profile_description'])) {
+                            echo $userInfo['profile_description'];
+                        } else {
+                            echo "";
+                        }
+                        ?>
                     </p>
                 </div>
             </div>
@@ -2640,6 +2780,42 @@ class Web_Page
 
             $result = $this->db->query($update_request_query);
             if ($result) {
+                // set rating for each freelancer on the task
+                $select_freelancers_query = "SELECT * 
+                                             FROM marketplace_favr_freelancers
+                                             WHERE request_id = $requestID";
+
+                $result = $this->db->query($select_freelancers_query);
+                $rows = $result->fetchAll(PDO::FETCH_ASSOC);
+                foreach ($rows as $row) {
+                    $userID = $row['user_id'];
+                    $select_user_query = "SELECT rating
+                                          FROM users
+                                          WHERE id = $userID";
+                    $result = $this->db->query($select_user_query);
+                    if ($result) {
+                        $row = $result->fetch(PDO::FETCH_ASSOC);
+                        $ratings = unserialize($row['rating']);
+                        if (count($ratings) == Data_Constants::DB_MAX_USER_RATING_COUNT) {
+                            $ratings = array_reverse($ratings);
+                            array_pop($ratings);
+                            $ratings = array_reverse($ratings);
+                            array_push($ratings, $requestRating);
+                        } else {
+                            array_push($ratings, $requestRating);
+                        }
+
+                        $ratings = serialize($ratings);
+                        $update_user_query = "UPDATE users 
+                                              SET rating = '$ratings' 
+                                              WHERE id = $userID";
+                        $result = $this->db->query($update_user_query);
+                        if (!$result) {
+                            return false;
+                        }
+                    }
+                }
+
                 // log time of completion
                 $update_freelancers_query = "UPDATE marketplace_favr_freelancers
                                              SET completion_time = '$timestamp'

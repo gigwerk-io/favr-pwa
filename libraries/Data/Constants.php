@@ -13,12 +13,12 @@ class Data_Constants
 {
     // Product version
     const PRODUCT_VERSION = "0.1.1";
-    
+
     // database connection constants
     const DB_DSN = "mysql:dbname=local_favr;host=favr.cgfeyejwt7qv.us-east-2.rds.amazonaws.com";
     const DB_USERNAME = "Solomon04";
     const DB_PASSWORD = "Nomolos.99";
-    
+
     // Root path
     const ROOT_PATH = "https://askfavr.com/favr-pwa";
 
@@ -43,6 +43,9 @@ class Data_Constants
     // database task request maximum/minimum manpower
     const DB_TASK_REQUEST_MAXIMUM_MANPOWER = 5;
     const DB_TASK_REQUEST_MINIMUM_MANPOWER = 1;
+
+    // database user rating max number of ratings at a time
+    const DB_MAX_USER_RATING_COUNT = 42;
 
     // database scope constants
     const DB_SCOPE_PUBLIC = "Public";
