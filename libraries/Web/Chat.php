@@ -59,7 +59,7 @@ class Web_Chat
      */
     function __construct() {
         $this->db = $this->connect();
-        $this->id = 5; //$_SESSION['user_info']['id'];
+        $this->id = $_SESSION['user_info']['id'];
     }
 
     function connect()
@@ -200,6 +200,6 @@ class Web_Chat
         fwrite($file, "$data");
         fclose($file);
         $location = $message['File'];
-        echo "<script> window.location.href = 'http://192.168.64.2/favr-pwa/home/chat/test-chat.php?file=$location&to=$to'; </script>";
+        echo "<script> window.location.href = 'http://192.168.64.2/favr-pwa/home/chat/?file=$location&to=$to'; </script>";
     }
 }

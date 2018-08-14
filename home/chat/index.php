@@ -11,6 +11,7 @@ include($_SERVER['DOCUMENT_ROOT'] . "/favr-pwa/include/autoload.php");
 // component constants
 $PAGE_ID = 5;
 $USER = "";
+$list = new Web_Chat();
 
 if (isset($_SESSION['user_info'])) {
     $USER = $_SESSION['user_info']['username']; // user is set from initial configuration
@@ -23,7 +24,19 @@ $page = new Web_Page($PAGE_ID, $USER);
 $page->setTitle("Chat");
 $page->addStylesheet("<link rel='stylesheet' href='$page->root_path/assets/css/chat.css'>");
 $page->renderHeader();
+if (!empty($_POST['Text']))
+{
+    $message = array(
+        "File" => $_GET['file'],
+        "To" => $_GET['to'],
+        "Text" => $_POST['Text'],
+        "Time" => time()
+    );
+    $list->updateMessage($message);
+}
 ?>
+    <!--    <meta http-equiv="refresh" content="30"/>-->
+
     <div class="messaging m-0 p-0">
         <div class="inbox_msg">
             <div class="inbox_people">
@@ -39,86 +52,46 @@ $page->renderHeader();
                 </span></div>
                     </div>
                 </div>
-                <div class="inbox_chat">
-                    <div class="chat_list active_chat">
-                        <div class="chat_people">
-                            <div class="chat_img"><img src="https://ptetutorials.com/images/user-profile.png"
-                                                       alt="sunil"></div>
-                            <div class="chat_ib">
-                                <h5>Test Test <span class="chat_date">Dec 25</span></h5>
-                                <p>Test, which is a new approach to have all solutions
-                                    astrology under one roof.</p>
-                            </div>
-                        </div>
-                    </div>
-                    <div class="chat_list">
-                        <div class="chat_people">
-                            <div class="chat_img"><img src="https://ptetutorials.com/images/user-profile.png"
-                                                       alt="sunil"></div>
-                            <div class="chat_ib">
-                                <h5>Haron Arama <span class="chat_date">Dec 25</span></h5>
-                                <p>Test, which is a new approach to have all solutions
-                                    astrology under one roof.</p>
-                            </div>
-                        </div>
-                    </div>
-                </div>
+                <?php
+                $list->listChat();
+                echo "<div id=\"status\">
+                </div>";
+                ?>
             </div>
             <div class="web-messaging-contact mesgs p-0">
                 <div class="msg_history p-2 pt-5">
-                    <div class="incoming_msg">
-                        <div class="incoming_msg_img"><img src="https://ptetutorials.com/images/user-profile.png"
-                                                           alt="sunil"></div>
-                        <div class="received_msg">
-                            <div class="received_withd_msg">
-                                <p>Test which is a new approach to have all
-                                    solutions</p>
-                                <span class="time_date"> 11:01 AM    |    June 9</span></div>
-                        </div>
-                    </div>
-                    <div class="outgoing_msg">
-                        <div class="sent_msg">
-                            <p>Test which is a new approach to have all
-                                solutions</p>
-                            <span class="time_date"> 11:01 AM    |    June 9</span></div>
-                    </div>
-                    <div class="incoming_msg">
-                        <div class="incoming_msg_img"><img src="https://ptetutorials.com/images/user-profile.png"
-                                                           alt="sunil"></div>
-                        <div class="received_msg">
-                            <div class="received_withd_msg">
-                                <p>Test, which is a new approach to have</p>
-                                <span class="time_date"> 11:01 AM    |    Yesterday</span></div>
-                        </div>
-                    </div>
-                    <div class="outgoing_msg">
-                        <div class="sent_msg">
-                            <p>University of Minnesota, Minneapolis, Minnesota Test</p>
-                            <span class="time_date"> 11:01 AM    |    Today</span></div>
-                    </div>
-                    <div id="recent-15" class="incoming_msg">
-                        <div class="incoming_msg_img"><img src="https://ptetutorials.com/images/user-profile.png"
-                                                           alt="sunil"></div>
-                        <div class="received_msg">
-                            <div class="received_withd_msg">
-                                <p>We work directly with our designers and suppliers,
-                                    and sell direct to you, which means quality, exclusive
-                                    products, at a price anyone can afford.</p>
-                                <span class="time_date"> 11:01 AM    |    Today</span></div>
-                        </div>
-                    </div>
+                    <?php
+                    if(isset($_GET['file']))
+                    {
+                        $list->displayMessage($_GET['file']);
+                    }
+                    ?>
                 </div>
                 <div class="type_msg m-0">
                     <div class="input_msg_write">
-<!--                        <input type="text" class="write_msg" placeholder="Type a message"/>-->
-                        <textarea style="border-radius: 0;" type="text" class="form-control m-0 pt-2" placeholder="Type a message..."></textarea>
-                        <button class="msg_send_btn text-center p-1" type="button"><i class="material-icons"
-                                                                      aria-hidden="true">send</i></button>
+                        <form action="<?php echo "?file=" . $_GET['file'] . "&to=" . $_GET['to']; ?>" method="post" id="Message">
+                            <textarea onkeyup="resetTimer = true" style="border-radius: 0;" type="text" class="form-control m-0 pt-2" name="Text" placeholder="Type a message..."></textarea>
+                        </form>
+                        <button class="msg_send_btn text-center p-1" form="Message" type="submit"><i class="material-icons"
+                                                                                                     aria-hidden="true">send</i></button>
                     </div>
                 </div>
             </div>
         </div>
     </div>
+    <script>
+        function refreshPageUnlessFocusedOn (el) {
+
+            setInterval(function () {
+                if(el !== document.activeElement) {
+                    document.location.reload();
+                }
+            }, 10000)
+
+        }
+
+        refreshPageUnlessFocusedOn(document.querySelector('textarea'));
+    </script>
 <?php
 $page->addScript("
 <script>
