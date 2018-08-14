@@ -420,7 +420,7 @@ body {
         -moz-transform: rotate(45deg);
         -o-transform: rotate(45deg);
         transform: rotate(45deg);
-        transform-origin: 18% 110%;
+        transform-origin: 15% 110%;
         opacity: 1;
     }
 

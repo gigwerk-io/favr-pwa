@@ -47,6 +47,11 @@ class Data_Constants
     // database user rating max number of ratings at a time
     const DB_MAX_USER_RATING_COUNT = 42;
 
+    // database user class statuses
+    const DB_USER_CLASS_VERIFIED = "Verified Freelancer";
+    const DB_USER_CLASS_USER = "User";
+    const DB_USER_CLASS_MOD = "Moderator";
+
     // database scope constants
     const DB_SCOPE_PUBLIC = "Public";
     const DB_SCOPE_FRIENDS_OF_FRIENDS = "Friends of Friends";

@@ -22,7 +22,7 @@ if (isset($_SESSION['user_info'])) {
 $page = new Web_Page($PAGE_ID, $USER);
 
 // TODO: put this in a process function
-if (isset($_FILES['profile_image'], $_POST['profile_description'])) {
+if (isset($_FILES['profile_image']) ||  isset($_POST['profile_description'])) {
     $profile_image = $_FILES['profile_image'];
     $profile_description = $_POST['profile_description'];
     $userID = $_SESSION['user_info']['id'];
@@ -58,6 +58,11 @@ if (isset($_FILES['profile_image'], $_POST['profile_description'])) {
                 $result = $page->db->query($update_profile_query);
             }
         }
+    } else {
+        $update_profile_query = "UPDATE users 
+                                 SET profile_description = '$profile_description'
+                                 WHERE id = $userID";
+        $result = $page->db->query($update_profile_query);
     }
 }
 
