@@ -24,7 +24,7 @@ $page = new Web_Page($PAGE_ID, $USER);
 $page->setTitle("Chat");
 $page->addStylesheet("<link rel='stylesheet' href='$page->root_path/assets/css/chat.css'>");
 $page->renderHeader();
-if (isset($_POST['Text']))
+if (!empty($_POST['Text']))
 {
     $message = array(
         "File" => $_GET['file'],

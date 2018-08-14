@@ -193,10 +193,13 @@ class Web_Chat
     {
         $to = $message['To'];
         $text = $message['Text'];
+        $text = str_replace(array("\r\n","\r","\n"),"<br/>", $text);
         $time = $message['Time'];
-        $data = "From:$this->id|To:$to|Message:$text|Time:$time\n";
-        $myfile = fopen("../../storage/" . $message['File'], "w") or die("Unable to open inbox!");
-        fwrite($myfile, $data);
-        fclose($myfile);
+        $file = fopen("../../storage/" . $message['File'], "a");
+        $data = "\nFrom:$this->id|To:$to|Message:$text|Time:$time";
+        fwrite($file, "$data");
+        fclose($file);
+        $location = $message['File'];
+        echo "<script> window.location.href = 'http://192.168.64.2/favr-pwa/home/chat/test-chat.php?file=$location&to=$to'; </script>";
     }
 }

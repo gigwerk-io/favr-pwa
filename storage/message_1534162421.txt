@@ -3,3 +3,8 @@ From:5|To:4|Message:Hi How Are Ya?|Time:1534186637
 From:4|To:5|Message:Eh, living|Time:1534186659
 From:5|To:4|Message:Where?|Time:1534186671
 From:4|To:5|Message:Minneapolis|Time:1534186690
+From:5|To:4|Message:Really? I stay in Rochester|Time:1534186691
+From:4|To:5|Message:That's dope bro!|Time:1534186702
+From:5|To:4|Message:Good Morning bruh|Time:1534257045
+From:5|To:4|Message:This is a test.|Time:1534257318
+From:5|To:4|Message:Testing line break<br/>Nice.|Time:1534257826
