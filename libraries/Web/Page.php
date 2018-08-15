@@ -268,6 +268,7 @@ class Web_Page
         $select_sign_in_query = "SELECT * 
                                  FROM users
                                  WHERE email='$signInUsernameEmail'
+                                 AND password='$signInPass'
                                  OR username='$signInUsernameEmail'
                                  AND password='$signInPass'";
 
@@ -1560,6 +1561,15 @@ class Web_Page
                                 } else {
                                     echo "<i class=\"material-icons\" style='font-size: 15px; padding-left: 2px;position:relative;top:.2rem;'>chat_bubble_outline</i>";
                                 }
+                                ?>
+                            </a>
+                            <a class="nav-link "
+                               href="<?php echo $this->root_path; ?>/home/payments">
+                                Payments
+                                <?php
+
+                                echo "<i class=\"material-icons\" style='font-size: 15px; padding-left: 2px;position:relative;top:.2rem;'>attach_money</i>";
+
                                 ?>
                             </a>
                             <!--                    <a id="suggestions" onclick="focusNoScrollMethod()" class="nav-link -->

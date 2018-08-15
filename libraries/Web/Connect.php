@@ -7,7 +7,7 @@
  * @author Solomon Antoine
  */
 
-require '../Api/Stripe/init.php';
+
 
 class Web_Connect{
     /**
@@ -38,10 +38,7 @@ class Web_Connect{
      */
     public $id;
 
-    /**
-     * @var string
-     */
-    private $code;
+
     /**
      * @var string
      */
@@ -49,7 +46,6 @@ class Web_Connect{
 
     function __construct() {
         $this->db = $this->connect();
-        $this->code = $_GET['code'];
         $this->id = $_SESSION['user_info']['id'];
         $sth = $this->db->query("SELECT payment_id FROM users WHERE id=$this->id");
         $row = $sth->fetch(PDO::FETCH_ASSOC);
@@ -93,16 +89,20 @@ class Web_Connect{
 
         $obj = json_decode($result,true);
         $this->payment_id = $obj['stripe_user_id'];
-
+        $sth = $this->db->prepare("UPDATE users SET payment_id='$this->payment_id' WHERE id=$this->id");
+        if ($sth->execute()){
+            $this->stripeLogin();
+        } else {
+            echo "<script> alert('Failure!'); </script>";
+        }
         curl_close ($ch);
-        $this->db->query("UPDATE users SET payment_id='$this->payment_id' WHERE id=$this->id");
         return $this;
     }
 
-    public function stripeLogin($payment_id)
+    public function stripeLogin()
     {
         \Stripe\Stripe::setApiKey(\Data_Constants::STRIPE_SECRET);
-        $account = \Stripe\Account::retrieve($payment_id);
+        $account = \Stripe\Account::retrieve($this->payment_id);
         $link = $account->login_links->create();
         $url = $link->url;
         header("location: $url");
