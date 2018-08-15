@@ -165,7 +165,7 @@ class Web_Chat
                                 <span class=\"time_date\"> $time</span></div>
                         </div>
                   </div>";
-            } else {
+            } elseif($this->id == $this->message['From']) {
                 echo "<div class=\"outgoing_msg\">
                         <div class=\"sent_msg\">
                             <p>$text</p>
