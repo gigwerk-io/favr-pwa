@@ -47,9 +47,6 @@ class Web_Connect{
     function __construct() {
         $this->db = $this->connect();
         $this->id = $_SESSION['user_info']['id'];
-        $sth = $this->db->query("SELECT payment_id FROM users WHERE id=$this->id");
-        $row = $sth->fetch(PDO::FETCH_ASSOC);
-        $this->payment_id = $row['payment_id'];
     }
 
     function connect()
@@ -88,15 +85,22 @@ class Web_Connect{
 
 
         $obj = json_decode($result,true);
-        $payment_id = $obj['stripe_user_id'];
-
+        $this->payment_id = $obj['stripe_user_id'];
+        $sth = $this->db->prepare("UPDATE users SET payment_id='$this->payment_id' WHERE id=$this->id");
+        if ($sth->execute()){
+            $this->stripeLogin();
+        } else {
+            echo "<script> alert('Failure!'); </script>";
+        }
         curl_close ($ch);
-        $this->db->query("UPDATE users SET payment_id='$payment_id' WHERE id=$this->id");
         return $this;
     }
 
     public function stripeLogin()
     {
+        $sth = $this->db->query("SELECT payment_id FROM users WHERE id=$this->id");
+        $row = $sth->fetch(PDO::FETCH_ASSOC);
+        $this->payment_id = $row['payment_id'];
         \Stripe\Stripe::setApiKey(\Data_Constants::STRIPE_SECRET);
         $account = \Stripe\Account::retrieve($this->payment_id);
         $link = $account->login_links->create();
