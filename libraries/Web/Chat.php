@@ -155,7 +155,7 @@ class Web_Chat
             $this->message = array_combine($keys, $values);
             $text = $this->message['Message'];
             $time = date('F j,g:i a', $this->message['Time']);
-            if($this->id != $this->message['From']){
+            if($this->id == $this->message['To']){
                 echo "<div class=\"incoming_msg\">
                         <div class=\"incoming_msg_img\"><img src=\"https://ptetutorials.com/images/user-profile.png\"
                                                            alt=\"sunil\"></div>
