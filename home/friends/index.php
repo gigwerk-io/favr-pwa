@@ -11,64 +11,167 @@ session_start();
 include($_SERVER['DOCUMENT_ROOT'] . "/favr-pwa/include/autoload.php");
 
 // component constants
-$PAGE_ID = 4;
 $USER = "";
+$ALERT_MESSAGE = "";
+
+if (isset($_GET['ALERT_MESSAGE'])) {
+    $ALERT_MESSAGE = $_GET['ALERT_MESSAGE'];
+    $ALERT_MESSAGE = "
+            <div class=\"my-3 p-3 alert alert-success alert-dismissible\" role=\"alert\">
+                <button type=\"button\" class=\"close\" data-dismiss=\"alert\" aria-label=\"Close\"><span aria-hidden=\"true\">&times;</span></button>
+                <strong>Success!</strong> $ALERT_MESSAGE
+            </div>
+        ";
+}
 
 if (isset($_SESSION['user_info'])) {
     $USER = $_SESSION['user_info']['username']; // user is set from initial configuration
 }
 
-$page = new Web_Page($PAGE_ID, $USER);
-$data = new Data_Table("$PAGE_ID-friends", "friends-table", $page);
+if (isset($_GET['friends_list']) && $_GET['friends_list'] == true) {
+    $render_back_button = true;
+} else {
+    $render_back_button = false;
+}
+
+$page = new Web_Page($USER);
 
 $page->setTitle("Friends");
-$page->renderHeader();
+$page->renderHeader(true, $render_back_button);
+echo $ALERT_MESSAGE;
+if (isset($_GET['friends_list']) && $_GET['friends_list'] == true) {
 
-?>
+    if (isset($_GET['add_friend'])) {
+        $user_id = $_GET['id'];
+        $requester_id = $_SESSION['user_info']['id'];
+        if ($_GET['add_friend'] == 'true') {
+            $page->processFavrFriendRequest($user_id, $requester_id, true);
+        } else if ($_GET['add_friend'] == 'false') {
+            $page->processFavrFriendRequest($user_id, $requester_id, false);
+        }
+    }
 
-    <div class="my-3 p-3 bg-white rounded box-shadow">
-        <h6 class="border-bottom border-gray pb-2 mb-0">Suggestions</h6>
-        <div class="media text-muted pt-3">
-            <img data-src="holder.js/32x32?theme=thumb&bg=007bff&fg=007bff&size=1" alt="" class="mr-2 rounded">
-            <div class="media-body pb-3 mb-0 small lh-125 border-bottom border-gray">
-                <div class="d-flex justify-content-between align-items-center w-100">
-                    <strong class="text-gray-dark">Full Name</strong>
-                    <a href="#">Send Friend Request</a>
-                </div>
-                <span class="d-block">@username</span>
-            </div>
-        </div>
-        <div class="media text-muted pt-3">
-            <img data-src="holder.js/32x32?theme=thumb&bg=007bff&fg=007bff&size=1" alt="" class="mr-2 rounded">
-            <div class="media-body pb-3 mb-0 small lh-125 border-bottom border-gray">
-                <div class="d-flex justify-content-between align-items-center w-100">
-                    <strong class="text-gray-dark">Full Name</strong>
-                    <a href="#">Send Friend Request</a>
-                </div>
-                <span class="d-block">@username</span>
-            </div>
-        </div>
-        <div class="media text-muted pt-3">
-            <img data-src="holder.js/32x32?theme=thumb&bg=007bff&fg=007bff&size=1" alt="" class="mr-2 rounded">
-            <div class="media-body pb-3 mb-0 small lh-125 border-bottom border-gray">
-                <div class="d-flex justify-content-between align-items-center w-100">
-                    <strong class="text-gray-dark">Full Name</strong>
-                    <a href="#">Send Friend Request</a>
-                </div>
-                <span class="d-block">@username</span>
-            </div>
-        </div>
-        <small class="d-block text-right mt-3">
-            <a href="#">All suggestions</a>
+    $_SESSION['navbar'] = "friends_list";
+    $page->renderFriendList($_SESSION['user_info']['id']);
+} else {
+    $page->renderFavrRequestForm();
+    ?>
+    <div class="my-3 p-3">
+        <h6 class="border-bottom border-gray pb-2 mb-0">
+            <small class="col-sm-6 pl-0">
+                Filter by:
+                <a href="?filter_marketplace_by=task_price&orient_marketplace_by=<?php echo $_SESSION['orient_marketplace_by']; ?>&limit_marketplace_by=<?php echo $_SESSION['limit_marketplace_by']; ?>">Price </a>|
+                <a href="?filter_marketplace_by=task_date&orient_marketplace_by=<?php echo $_SESSION['orient_marketplace_by']; ?>&limit_marketplace_by=<?php echo $_SESSION['limit_marketplace_by']; ?>">Date </a>|
+                <a href="?filter_marketplace_by=task_price&orient_marketplace_by=<?php echo $_SESSION['orient_marketplace_by']; ?>&limit_marketplace_by=<?php echo $_SESSION['limit_marketplace_by']; ?>">Time </a>|
+                <a href="?filter_marketplace_by=<?php echo $_SESSION['filter_marketplace_by']; ?>&orient_marketplace_by=<?php echo $_SESSION['orient_marketplace_by']; ?>&limit_marketplace_by=<?php echo $_SESSION['limit_marketplace_by']; ?>&scope=<?php echo $_SESSION['user_info']['id']; ?>">Mine </a>|
+                <a href="?filter_marketplace_by=<?php echo $_SESSION['filter_marketplace_by']; ?>&orient_marketplace_by=<?php echo $_SESSION['orient_marketplace_by']; ?>&limit_marketplace_by=<?php echo $_SESSION['limit_marketplace_by']; ?>&scope=global">Global</a>
+
+            </small>
+            <small class="col-sm-6 pl-0">
+                Orientation:
+                <a href="?filter_marketplace_by=<?php echo $_SESSION['filter_marketplace_by']; ?>&orient_marketplace_by=ASC&limit_marketplace_by=<?php echo $_SESSION['limit_marketplace_by']; ?>">Asc </a>|
+                <a href="?filter_marketplace_by=<?php echo $_SESSION['filter_marketplace_by']; ?>&orient_marketplace_by=DESC&limit_marketplace_by=<?php echo $_SESSION['limit_marketplace_by']; ?>">Desc</a>
+            </small>
+        </h6>
+        <small class="d-block mt-3">
+            <a href="?filter_marketplace_by=<?php echo $_SESSION['filter_marketplace_by']; ?>&orient_marketplace_by=<?php echo $_SESSION['orient_marketplace_by']; ?>&limit_marketplace_by=<?php echo $_SESSION['limit_marketplace_by']; ?>"
+               class="float-left">Refresh</a>
+            <a href="?friends_list=true"
+               class="ml-5">My friends</a>
+            <a href="?filter_marketplace_by=<?php echo $_SESSION['filter_marketplace_by']; ?>&orient_marketplace_by=<?php echo $_SESSION['orient_marketplace_by']; ?>&limit_marketplace_by="
+               class="float-right">All updates</a>
         </small>
     </div>
-
-<?php
-//$data->editDataTableEntry();
-
+    <?php
+    $page->renderFavrMarketplace();
+    $page->renderFriendSuggestions($_SESSION['user_info']['id']);
+}
 $page->addScript("
-    <script>
-    </script>
+<script>
+    $(function(){
+        var dtToday = new Date();
+        
+        var month = dtToday.getMonth() + 1;
+        var day = dtToday.getDate();
+        var year = dtToday.getFullYear();
+        var hour = dtToday.getHours();
+        var minute = dtToday.getMinutes();
+        
+        if (month < 10)
+            month = '0' + month.toString();
+        if (day < 10)
+            day = '0' + day.toString();
+        if (hour < 10)
+            hour = '0' + hour.toString();
+        if (minute < 10)
+            minute = dtToday.getMinutes();
+        
+        var maxDate = year + '-' + month + '-' + day + '\T' + hour + ':' + minute;
+        $('#inputDate').attr('min', maxDate);
+    });
+    
+    window.addEventListener('load', function(){
+        var allimages= document.getElementsByTagName('img');
+        for (var i=0; i<allimages.length; i++) {
+            if (allimages[i].getAttribute('data-src')) {
+                allimages[i].setAttribute('src', allimages[i].getAttribute('data-src'));
+            }
+        }
+    }, false);
+        
+    $(document).ready(function() {
+//        window.setInterval(function(){
+//            $('#marketplace').load('marketplace.php')
+//        }, 10000);
+        
+        $('#hard-button').click(function() {
+            $('#hard-button').removeClass('unfocus');
+            $('#hard-button').addClass('focus');
+            $('#medium-button').removeClass('focus');
+            $('#medium-button').addClass('unfocus');
+            $('#easy-button').removeClass('focus');
+            $('#easy-button').addClass('unfocus');
+            $('#difficulty').val('Hard');
+        });
+        
+        $('#medium-button').click(function() {
+            $('#hard-button').removeClass('focus');
+            $('#hard-button').addClass('unfocus');
+            $('#medium-button').removeClass('unfocus');
+            $('#medium-button').addClass('focus');
+            $('#easy-button').removeClass('focus');
+            $('#easy-button').addClass('unfocus');
+            $('#difficulty').val('Medium');
+        });
+        
+        $('#easy-button').click(function() {
+            $('#hard-button').removeClass('focus');
+            $('#hard-button').addClass('unfocus');
+            $('#medium-button').removeClass('focus');
+            $('#medium-button').addClass('unfocus');
+            $('#easy-button').removeClass('unfocus');
+            $('#easy-button').addClass('focus');
+            $('#difficulty').val('Easy');
+        });
+        
+        $('#favr-fabBtn').click(function() {
+          $('.request-favr-mobile').toggle();
+          $('#favr-fabBtn').toggleClass('favr-fab-fade');
+        });
+
+        $('.request-favr-mobile').hide();
+        $('#request-favr-web').click(function() {
+            $('.request-favr-mobile').toggle();
+            $('.request-favr-mobile').focus();
+        });
+        
+        $('.request-favr').click(function() {
+            $('.request-favr-mobile').toggle();
+            $('.favr-fab-fab').toggle();
+            $('.request-favr-mobile').focus();
+        });
+    } );
+</script>
 ");
 $page->renderFooter();
 ?>

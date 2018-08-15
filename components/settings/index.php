@@ -12,21 +12,112 @@ session_start();
 include($_SERVER['DOCUMENT_ROOT'] . "/favr-pwa/include/autoload.php");
 
 // component constants
-$PAGE_ID = 6;
 $USER = "";
+$ALERT_MESSAGE = "";
 
 if (isset($_SESSION['user_info'])) {
     $USER = $_SESSION['user_info']['username']; // user is set from initial configuration
 }
 
-$page = new Web_Page($PAGE_ID, $USER);
-$data = new Data_Table("$PAGE_ID", "friends-table", $page);
-$chart = new Data_Chart("$PAGE_ID", "rent-chart", $page);
+// TODO: Constant variable statically used: active_home
+if (isset($_SESSION['navbar']) && $_SESSION['navbar'] != "active_home") {
+    $_SESSION['navbar'] = "active_settings";
+}
+
+$page = new Web_Page($USER);
 
 $page->setTitle("Settings");
+$page->addStylesheet("<link rel='stylesheet' type='text/css' href='$page->root_path/assets/css/settings.css' />");
 $page->renderHeader();
+
+echo $ALERT_MESSAGE;
 ?>
-    <img class="d-block img-fluid" src="data:image/svg+xml;charset=UTF-8,%3Csvg%20width%3D%22800%22%20height%3D%22400%22%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20viewBox%3D%220%200%20800%20400%22%20preserveAspectRatio%3D%22none%22%3E%3Cdefs%3E%3Cstyle%20type%3D%22text%2Fcss%22%3E%23holder_16404fff51b%20text%20%7B%20fill%3A%23333%3Bfont-weight%3Anormal%3Bfont-family%3AHelvetica%2C%20monospace%3Bfont-size%3A40pt%20%7D%20%3C%2Fstyle%3E%3C%2Fdefs%3E%3Cg%20id%3D%22holder_16404fff51b%22%3E%3Crect%20width%3D%22800%22%20height%3D%22400%22%20fill%3D%22%23555%22%3E%3C%2Frect%3E%3Cg%3E%3Ctext%20x%3D%22277%22%20y%3D%22218.3%22%3EComing%20soon%3C%2Ftext%3E%3C%2Fg%3E%3C%2Fg%3E%3C%2Fsvg%3E" alt="Coming soon">
+    <div class="p-3 pb-0 rounded bg-white box-shadow" style="margin-top: 1.2rem;">
+        <div class="row pb-2 mb-0">
+            <h3 style="width: 100%" class="text-center border-bottom border-gray">Account Settings</h3>
+        </div>
+        <div class="row p-0 mb-0">
+            <div class="col-md-4">
+                <div class="form-group border-bottom border-gray">
+                    <label class="small text-left pb-0">Display my ratings</label>
+                    <span class="float-right switch switch-sm">
+                        <input type="checkbox" checked class="switch" id="rating">
+                        <label for="rating"></label>
+                    </span>
+                </div>
+            </div>
+            <div class="col-md-3">
+                <div class="form-group border-bottom border-gray">
+                    <label class="small text-left pb-0">Display receipts</label>
+                    <span class="float-right switch switch-sm">
+                        <input type="checkbox" checked class="switch" id="receipts">
+                        <label for="receipts"></label>
+                    </span>
+                </div>
+            </div>
+            <div class="col-md-5">
+                <div class="small form-group border-bottom border-gray">
+                    <label class="text-left pb-0">Display my description</label>
+                    <span class="float-right switch switch-sm">
+                        <input type="checkbox" checked class="switch" id="description">
+                        <label for="description"></label>
+                    </span>
+                </div>
+            </div>
+        </div>
+        <div class="row pb-0 pt-0 mb-0">
+            <div class="col-md-3 request-favr-web border-bottom border-gray"></div>
+            <div class="col-md-6 pl-2 pr-2 pt-0 pb-2 border-bottom border-gray">
+                <label for="scope">My default scope</label>
+                <select class="form-control">
+                    <option>Only me</option>
+                    <option selected>Friends</option>
+                    <option>Friends of friends</option>
+                    <option>Public</option>
+                </select>
+            </div>
+            <div class="col-md-3 request-favr-web border-bottom border-gray"></div>
+        </div>
+        <div class="row pb-1 mb-0">
+            <div class="col-md-6 p-2 border-bottom border-gray">
+                <a href="#">Terms of Service and Conditions
+                    <i class="mobile-footer float-right text-muted material-icons">chevron_right</i>
+                </a>
+            </div>
+            <div class="col-md-6 p-2 border-bottom border-gray">
+                <a href="#">Change password
+                    <i class="mobile-footer float-right text-muted material-icons">chevron_right</i>
+                </a>
+            </div>
+        </div>
+        <div class="row pb-1 mb-0">
+            <div class="col-lg-12 text-center">
+                <a href="#" class="text-danger">Delete my account</a>
+            </div>
+        </div>
+    </div>
+    <div class="p-3 pb-0 rounded bg-white box-shadow" style="margin-top: 1.2rem;">
+        <div class="row pb-2 mb-0">
+            <h3 style="width: 100%" class="text-center border-bottom border-gray">Signed-In Sessions</h3>
+        </div>
+    </div>
 <?php
+$page->addScript("
+<script>
+    window.addEventListener('load', function(){
+        var allimages= document.getElementsByTagName('img');
+        for (var i=0; i<allimages.length; i++) {
+            if (allimages[i].getAttribute('data-src')) {
+                allimages[i].setAttribute('src', allimages[i].getAttribute('data-src'));
+            }
+        }
+    }, false);    
+    
+//    window.setInterval(function(){
+//      // call your function here
+//        $('#notifications').load('notifications.php')
+//    }, 5000);
+</script>
+");
 $page->renderFooter();
 ?>

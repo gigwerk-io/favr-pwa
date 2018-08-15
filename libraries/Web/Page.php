@@ -89,12 +89,6 @@ class Web_Page
     public $user_class = 3;
 
     /**
-     * Unique page id that will allow admin to set settings for potential additional users
-     * @var integer 0 - Home, 1 - Products, 2 - Reports, 3 - Settings, 4 - Tenants
-     */
-    public $page_id;
-
-    /**
      * Whether or not user is able to edit content
      * @var boolean
      */
@@ -103,22 +97,17 @@ class Web_Page
     /**
      * Constructor for the page. Sets up most of the properties of this object.
      *
-     * @param int $page_id
      * @param string $page_title
      * @param string $user
      * @param boolean $render_main_navigation
      */
-    function __construct($page_id, $user = "", $page_title = "FAVR", $render_main_navigation = true)
+    function __construct($user = "", $page_title = "FAVR", $render_main_navigation = true)
     {
         $this->page_title = $page_title;
         $this->render_main_navigation = $render_main_navigation;
 
         // Connect to database
         $this->db = $this->connect();
-
-        //Set up $this->user
-
-        $this->page_id = $page_id;
 
         $_SESSION['user'] = $user;
         $this->user = $user;
@@ -413,6 +402,7 @@ class Web_Page
      * Render page header
      * @param boolean $render_top_nav
      * @param boolean $render_back_button
+     * @param boolean $render_friends
      */
     function renderHeader($render_top_nav = true, $render_back_button = false)
     {
@@ -518,9 +508,8 @@ class Web_Page
 
         <body class="bg-light" onload="pageLoader()">
         <div id="loader"></div>
-
         <?php
-        $this->renderMainNavigation($this->page_id, $render_top_nav, $render_back_button);
+        $this->renderMainNavigation($render_top_nav, $render_back_button);
         ?>
         <main role="main" class="container animate-bottom" style="max-width: 750px">
         <?php
@@ -530,12 +519,13 @@ class Web_Page
      * Render marketplace history for this specific user
      *
      * @param int $id
+     * @param int $friend_id
      * @param string $orderBy
      * @param string $orientation
      *
      * @return boolean
      */
-    function renderFavrProfileHistory($id, $orderBy = "task_date", $orientation = "DESC", $limit="")
+    function renderFavrProfileHistory($id, $friend_id = null, $orderBy = "task_date", $orientation = "DESC", $limit="")
     {
         if ($id == $_SESSION['user_info']['id']) {
             $selectMarketplaceQuery = "
@@ -553,15 +543,143 @@ class Web_Page
                                    $limit
             ";
 
-        } else {
+        } else if ($friend_id == $_SESSION['user_info']['id']) { // profile history viewing for other users
+            $userInfo = $this->getUserInfo($id);
+            if (!empty($userInfo)) {
+                $scope = $userInfo['default_scope'];
+                if ($scope == Data_Constants::DB_SCOPE_PUBLIC)
+                {
+                    // the target user has a public profile
+                    $selectMarketplaceQuery = "
+                                   SELECT *, mfr.id as mfrid
+                                   FROM marketplace_favr_requests mfr
+                                   INNER JOIN marketplace_favr_freelancers mff
+                                   ON mfr.id = mff.request_id
+                                   INNER JOIN users u
+                                   ON u.id = mfr.customer_id
+                                   AND u.id = $id
+                                   OR u.id = mff.user_id
+                                   AND u.id = $id
+                                   ORDER BY $orderBy
+                                   $orientation
+                                   $limit
+                    ";
+                }
+                else if ($scope == Data_Constants::DB_SCOPE_FRIENDS_OF_FRIENDS) {
+                    $select_friends_query = "SELECT * 
+                                             FROM friends 
+                                             WHERE user_id = $id";
+
+                    $result = $this->db->query($select_friends_query);
+                    if ($result) {
+                        $rows = $result->fetchAll(PDO::FETCH_ASSOC);
+                        if (!empty($rows)) {
+                            foreach ($rows as $row) {
+                                if ($friend_id == $row['friend_id']) {
+                                    // if this is already a friend of the target stop the search
+                                    $selectMarketplaceQuery = "
+                                               SELECT *, mfr.id as mfrid
+                                               FROM marketplace_favr_requests mfr
+                                               INNER JOIN marketplace_favr_freelancers mff
+                                               ON mfr.id = mff.request_id
+                                               INNER JOIN users u
+                                               ON u.id = mfr.customer_id
+                                               AND u.id = $id
+                                               OR u.id = mff.user_id
+                                               AND u.id = $id
+                                               ORDER BY $orderBy
+                                               $orientation
+                                               $limit
+                                    ";
+                                    break;
+                                } else {
+                                    $friend_of_id = $row['friend_id'];
+                                    $select_friends_of_friends_query = "
+                                        SELECT * 
+                                        FROM friends
+                                        WHERE user_id = $friend_of_id
+                                        AND friend_id = $friend_id
+                                    ";
+                                    $result = $this->db->query($select_friends_of_friends_query);
+                                    if ($result) {
+                                        $ffrow = $result->fetch(PDO::FETCH_ASSOC);
+                                        if (!empty($ffrow)) {
+                                            // this is a friend of a friend of the target
+                                            $selectMarketplaceQuery = "
+                                               SELECT *, mfr.id as mfrid
+                                               FROM marketplace_favr_requests mfr
+                                               INNER JOIN marketplace_favr_freelancers mff
+                                               ON mfr.id = mff.request_id
+                                               INNER JOIN users u
+                                               ON u.id = mfr.customer_id
+                                               AND u.id = $id
+                                               OR u.id = mff.user_id
+                                               AND u.id = $id
+                                               ORDER BY $orderBy
+                                               $orientation
+                                               $limit
+                                            ";
+                                            break;
+                                        }
+                                    }
+                                }
+                            }
+                        }
+
+                    }
+                }
+                else if ($scope == Data_Constants::DB_SCOPE_FRIENDS)
+                {
+                    $select_friends_query = "SELECT * 
+                                             FROM friends 
+                                             WHERE user_id = $id 
+                                             AND friend_id = $friend_id";
+
+                    $result = $this->db->query($select_friends_query);
+                    if ($result) {
+                        $row = $result->fetch(PDO::FETCH_ASSOC);
+                        if (!empty($row)) {
+                            $selectMarketplaceQuery = "
+                                   SELECT *, mfr.id as mfrid
+                                   FROM marketplace_favr_requests mfr
+                                   INNER JOIN marketplace_favr_freelancers mff
+                                   ON mfr.id = mff.request_id
+                                   INNER JOIN users u
+                                   ON u.id = mfr.customer_id
+                                   AND u.id = $id
+                                   OR u.id = mff.user_id
+                                   AND u.id = $id
+                                   ORDER BY $orderBy
+                                   $orientation
+                                   $limit
+                            ";
+                        }
+                    }
+                }
+                else if ($scope == Data_Constants::DB_SCOPE_PRIVATE)
+                {
+                    $selectMarketplaceQuery = "";
+                }
+                else
+                {
+                    $selectMarketplaceQuery = "";
+                }
+            }
+        }
+
+        if (!isset($selectMarketplaceQuery)) {
             $selectMarketplaceQuery = "";
         }
 
         $result = $this->db->query($selectMarketplaceQuery);
 
         if (!$result) {
-            // failed to render marketplace
-            echo "Something went wrong! :(";
+            // failed to render user history
+            if ($id == $_SESSION['user_info']['id']) {
+                echo "Something went wrong! :(";
+            } else {
+                echo "This profile is private! :(";
+            }
             return false;
         } else {
             $rows = $result->fetchAll(PDO::FETCH_ASSOC);
@@ -602,11 +720,11 @@ class Web_Page
                             $freelancer_profile_img_type = "";
                         }
 
-                        echo "<a href='$this->root_path/components/profile/profile.php?user_id=$freelancer_id'>
+                        echo "<a href='$this->root_path/components/profile/profile.php?id=$freelancer_id'>
                                 <img src=\"data:image/svg+xml;charset=UTF-8,%3Csvg%20width%3D%22128%22%20height%3D%22128%22%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20viewBox%3D%220%200%20128%20128%22%20preserveAspectRatio%3D%22none%22%3E%3Cdefs%3E%3Cstyle%20type%3D%22text%2Fcss%22%3E%23holder_164a9f2d749%20text%20%7B%20fill%3A%23007bff%3Bfont-weight%3Abold%3Bfont-family%3AArial%2C%20Helvetica%2C%20Open%20Sans%2C%20sans-serif%2C%20monospace%3Bfont-size%3A6pt%20%7D%20%3C%2Fstyle%3E%3C%2Fdefs%3E%3Cg%20id%3D%22holder_164a9f2d749%22%3E%3Crect%20width%3D%22128%22%20height%3D%22128%22%20fill%3D%22%23007bff%22%3E%3C%2Frect%3E%3Cg%3E%3Ctext%20x%3D%2248.4296875%22%20y%3D%2266.7%22%3E128x128%3C%2Ftext%3E%3C%2Fg%3E%3C%2Fg%3E%3C%2Fsvg%3E\"
                                      data-src=\"$this->root_path/image.php?i=$freelancer_profile_img_name&i_t=$freelancer_profile_img_type&i_p=true\" height='32' width='32' alt=\"Profile Image\" class=\"mr-2 rounded\">
                               </a>
-                              <strong style='font-size: 80%' class=\"d - block text - gray - dark\"><a href='$this->root_path/components/profile/profile.php?user_id=$freelancer_id'>@$freelancer_username</a></strong>
+                              <strong style='font-size: 80%' class=\"d - block text - gray - dark\"><a href='$this->root_path/components/profile/profile.php?id=$freelancer_id'>@$freelancer_username</a></strong>
                               ";
                         echo "<div class='float-right small' style='color: var(--green)'>+ $$task_price</div>";
                     } else if ($customer_id == $id) {
@@ -618,11 +736,11 @@ class Web_Page
                             $customer_profile_img_type = "";
                         }
 
-                        echo "<a href='$this->root_path/components/profile/profile.php?user_id=$customer_id'>
+                        echo "<a href='$this->root_path/components/profile/profile.php?id=$customer_id'>
                                 <img src=\"data:image/svg+xml;charset=UTF-8,%3Csvg%20width%3D%22128%22%20height%3D%22128%22%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20viewBox%3D%220%200%20128%20128%22%20preserveAspectRatio%3D%22none%22%3E%3Cdefs%3E%3Cstyle%20type%3D%22text%2Fcss%22%3E%23holder_164a9f2d749%20text%20%7B%20fill%3A%23007bff%3Bfont-weight%3Abold%3Bfont-family%3AArial%2C%20Helvetica%2C%20Open%20Sans%2C%20sans-serif%2C%20monospace%3Bfont-size%3A6pt%20%7D%20%3C%2Fstyle%3E%3C%2Fdefs%3E%3Cg%20id%3D%22holder_164a9f2d749%22%3E%3Crect%20width%3D%22128%22%20height%3D%22128%22%20fill%3D%22%23007bff%22%3E%3C%2Frect%3E%3Cg%3E%3Ctext%20x%3D%2248.4296875%22%20y%3D%2266.7%22%3E128x128%3C%2Ftext%3E%3C%2Fg%3E%3C%2Fg%3E%3C%2Fsvg%3E\"
                                      data-src=\"$this->root_path/image.php?i=$customer_profile_img_name&i_t=$customer_profile_img_type&i_p=true\" height='32' width='32' alt=\"Profile Image\" class=\"mr-2 rounded\">
                               </a>
-                              <strong style='font-size: 80%' class=\"d - block text - gray - dark\"><a href='$this->root_path/components/profile/profile.php?user_id=$customer_id'>@$customer_username</a></strong>
+                              <strong style='font-size: 80%' class=\"d - block text - gray - dark\"><a href='$this->root_path/components/profile/profile.php?id=$customer_id'>@$customer_username</a></strong>
                               ";
                         echo "<div class='float-right small' style='color: var(--red)'>- $$task_price</div>";
 
@@ -755,7 +873,14 @@ class Web_Page
 
                 }
             } else {
-                echo "<p class='p-3 text-muted'>You don't have a FAVR history! <a href='$this->root_path/home/?navbar=active_home&nav_scroller=active_marketplace'>Go to marketplace</a> and request FAVRs :)</p>";
+                if ($id == $_SESSION['user_info']['id']) {
+                    echo "<p class='p-3 text-muted'>You don't have a FAVR history! <a href='$this->root_path/home/?navbar=active_home&nav_scroller=active_marketplace'>Go to marketplace</a> and request FAVRs :)</p>";
+                } else {
+                    echo "<p class='p-3 text-muted'>
+                            No FAVR history! <a href='$this->root_path/home/?navbar=active_home&nav_scroller=active_marketplace'>Go to marketplace</a> and request FAVRs :)</p>
+                          </p>";
+                }
+
                 return false;
             }
 
@@ -776,6 +901,16 @@ class Web_Page
             $sum = array_sum($ratings);
             $trend = "<i style=\"position:relative;font-weight: lighter;font-size: medium;bottom:  1.2rem;left: .3rem;visibility: hidden\" class=\"material-icons\">
                         arrow_upward</i>";
+            $avg = round($sum / $count, 3);
+            $digits = strlen((string) $avg);
+
+            if ($digits == 1) {
+                $avg .= ".000";
+            } else if ($digits == 3) {
+                $avg .= "00";
+            } else if ($digits == 4) {
+                $avg .= "0";
+            }
 
             if ($renderTrend) {
                 if ($count >= 2) {
@@ -790,20 +925,13 @@ class Web_Page
                     $trend = "<i style=\"position:relative;font-weight: lighter;font-size: medium;bottom:  1.2rem;left: .3rem;color:  var(--green);border: 1px solid;border-radius: 1rem;\" class=\"material-icons\">
                         arrow_upward</i>";
                 }
-            }
-
-            $avg = round($sum / $count, 3);
-
-            $digits = strlen((string) $avg);
-
-            if ($digits == 1) {
-                $avg .= ".000";
-            } else if ($digits == 3) {
-                $avg .= "00";
+                $mantissa = substr($avg, 3, 5);
+            } else {
+                $mantissa = "";
             }
 
             $coefficient = substr($avg, 0, 3);
-            $mantissa = substr($avg, 3, 5);
+
 
             echo "
             <p class=\"d-inline-flex mb-0\" style=\"font-size: -webkit-xxx-large;font-weight: lighter\">
@@ -890,12 +1018,10 @@ class Web_Page
      * Render profile from userID
      *
      * @param int $userID
-     *
-     * TODO implement this function as a universal solution to rendering profiles
-     * TODO allow for image file upload but store image files in file system outside of document root
+     * @param int $friendID
      *
      */
-    function renderFavrProfile($userID) {
+    function renderFavrProfile($userID, $friendID = null) {
         if ($userID == $_SESSION['user_info']['id']) { // this user's profile
             $userInfo = $this->getUserInfo($userID);
             $id = md5($userID);
@@ -1027,7 +1153,7 @@ class Web_Page
                     </div>
                     <div class="col-md-4 text-center border-bottom border-gray">
                         <?php
-                        echo " <div id='$id-profile-image'>
+                        echo " <div id='$id-profile-image' style='height: 4.5rem;'>
                                         <img id='$id-profile-img' style='cursor: pointer;bottom: 3.5rem;width: 7rem!important;height: 7rem!important;position: relative;' 
                                             src='data:image/svg+xml;charset=UTF-8,%3Csvg%20width%3D%22128%22%20height%3D%22128%22%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20viewBox%3D%220%200%20128%20128%22%20preserveAspectRatio%3D%22none%22%3E%3Cdefs%3E%3Cstyle%20type%3D%22text%2Fcss%22%3E%23holder_164a9f2d749%20text%20%7B%20fill%3A%23007bff%3Bfont-weight%3Abold%3Bfont-family%3AArial%2C%20Helvetica%2C%20Open%20Sans%2C%20sans-serif%2C%20monospace%3Bfont-size%3A6pt%20%7D%20%3C%2Fstyle%3E%3C%2Fdefs%3E%3Cg%20id%3D%22holder_164a9f2d749%22%3E%3Crect%20width%3D%22128%22%20height%3D%22128%22%20fill%3D%22%23007bff%22%3E%3C%2Frect%3E%3Cg%3E%3Ctext%20x%3D%2248.4296875%22%20y%3D%2266.7%22%3E128x128%3C%2Ftext%3E%3C%2Fg%3E%3C%2Fg%3E%3C%2Fsvg%3E' 
                                             onclick=\"
@@ -1053,8 +1179,52 @@ class Web_Page
                                   <img class=\"modal-content\" id=\"$id-profile-image-modal-content\">
                                   <div id=\"$id-profile-caption\" class='caption'></div>
                                 </div>";
+
+                        $select_friends_query1 = "SELECT * 
+                                                 FROM friends
+                                                 WHERE user_id = $userID
+                                                 AND friend_id = $friendID";
+
+                        $select_friends_query2 = "SELECT * 
+                                                  FROM friends
+                                                  WHERE user_id = $friendID
+                                                  AND friend_id = $userID";
+
+                        $result1 = $this->db->query($select_friends_query1);
+                        $row1 = $result1->fetch(PDO::FETCH_ASSOC);
+
+                        $result2 = $this->db->query($select_friends_query2);
+                        $row2 = $result2->fetch(PDO::FETCH_ASSOC);
+
+                        $isFriend = (!empty($row1) && !empty($row2)) ? true : false;
+                        if ($isFriend) {
+                            // TODO: give friendship information and ability to manage friendship in modal
+                            echo "<button class='text-right btn text-muted bg-white' data-toggle='modal' data-target='#profileFriendInfoModal'>
+                                <i class='material-icons'>group</i>
+                              </button>";
+                        } else if (!empty($row1)) {
+                            // a friend request has been sent to this user
+                            echo "<a href='$this->root_path/components/profile/profile.php?id=$userID&add_friend=true&ALERT_MESSAGE=You are now friends on FAVR!'
+                                    class='text-right btn text-muted bg-white'>
+                                    <i class='material-icons'>person_add</i>
+                                  </a>";
+                        } else {
+                            echo "<a href='$this->root_path/components/profile/profile.php?id=$userID&add_friend=true&ALERT_MESSAGE=Your friend request has been sent!'
+                                    class='text-right btn text-muted bg-white'>
+                                    <i class='material-icons'>person_add</i>
+                                  </a>";
+                        }
+
                         ?>
-                        <h3><?php echo $userInfo['first_name'] . " " . $userInfo['last_name']; ?><i class="material-icons text-primary">verified_user</i></h3>
+                        <h3>
+                            <?php
+                            echo $userInfo['first_name'] . " " . $userInfo['last_name'];
+
+                            if ($userInfo['class'] == Data_Constants::DB_USER_CLASS_VERIFIED) {
+                                echo "<i class=\"material-icons text-primary\">verified_user</i>";
+                            }
+                            ?>
+                        </h3>
                         <?php
                         $ratings = unserialize($userInfo['rating']);
                         $this->renderFavrProfileRating($ratings,false);
@@ -1084,11 +1254,11 @@ class Web_Page
 
     /**
      * Render page main navigation
-     * @param int $page_id
+     *
      * @param boolean $render_main_navigation
      * @param boolean $render_back_button
      */
-    function renderMainNavigation($page_id, $render_main_navigation = true, $render_back_button = false)
+    function renderMainNavigation($render_main_navigation = true, $render_back_button = false)
     {
         if ($render_main_navigation) {
             $active_home = "";
@@ -1104,7 +1274,18 @@ class Web_Page
             switch ($_SESSION['navbar']) {
                 case "active_home":
                     $active_home = "active";
-                    $last_url = "$this->root_path/home/?navbar=active_home";
+                    if (isset($_SESSION['nav_scroller'])) {
+                        $nav_scroller = $_SESSION['nav_scroller'];
+                        if ($nav_scroller == "active_friends") {
+                            $last_url = "$this->root_path/home/friends/?navbar=active_home&navbar_scroller=$nav_scroller";
+                        } else if ($nav_scroller == "active_chat") {
+                            $last_url = "$this->root_path/home/chat/?navbar=active_home&navbar_scroller=$nav_scroller";
+                        } else {
+                            $last_url = "$this->root_path/home/?navbar=active_home";
+                        }
+                    } else {
+                        $last_url = "$this->root_path/home/?navbar=active_home";
+                    }
                     break;
                 case "active_categories":
                     $active_categories = "active";
@@ -1126,6 +1307,15 @@ class Web_Page
                     $active_settings = "active";
                     $last_url = "$this->root_path/components/settings/?navbar=active_settings";
                     break;
+                case "friends_list":
+                    $active_home = "active";
+                    if (isset($_GET['friends_list']) && $_GET['friends_list'] == true) {
+                        $nav_scroller = $_SESSION['nav_scroller'];
+                        $last_url = "$this->root_path/home/friends/?navbar=active_home&nav_scroller=$nav_scroller";
+                    } else {
+                        $last_url = "$this->root_path/home/friends/?friends_list=true";
+                    }
+                    break;
                 default:
                     // none active
                     break;
@@ -1136,23 +1326,22 @@ class Web_Page
                     if ($render_back_button) {
                         // back button
                         ?>
-                        <a href="<?php echo $last_url; ?>" class="navbar-toggler pb-2 border-0">
+                        <a href="<?php echo $last_url; ?>" class="navbar-toggler pt-0 pb-2 border-0" style="height: 44px;">
                             <span class="sr-only">Toggle back navigate</span>
                             <i class="material-icons text-light">arrow_back</i>
                         </a>
-                        <?php
+                <?php
                     } else {
-                        ?>
+                ?>
                         <button class="navbar-toggler pb-2 border-0" type="button" data-toggle="offcanvas">
                             <span class="sr-only">Toggle navigation</span>
                             <span></span>
                             <span></span>
                             <span></span>
                         </button>
-                        <?php
+                <?php
                     }
-        ?>
-
+                ?>
                 <div class="request-favr pt-0 pr-2 pb-0 mr-0">
                     <?php
                     if ($_SESSION['nav_scroller'] != "active_marketplace" || $_SESSION['navbar'] != "active_home") {
@@ -1225,7 +1414,7 @@ class Web_Page
                         <li class="nav-item <?php echo $active_categories; ?>">
                             <a class="nav-link d-inline-flex" href="<?php echo $this->root_path; ?>/components/categories/?navbar=active_categories">
                                 <i class="material-icons">layers</i>
-                                Categories
+                                Categories <span style="font-size: xx-small" class="badge badge-pill text-muted">coming soon</span>
                             </a>
                         </li>
                         <li class="nav-item <?php echo $active_notifications; ?>">
@@ -1316,7 +1505,7 @@ class Web_Page
                 // Handle nav scroller presentation logic
                 $active_marketplace = "";
                 $active_friends = "";
-//                $active_chat = "";
+                $active_chat = "";
 
                 switch ($_SESSION['nav_scroller']) {
                     case "active_marketplace":
@@ -1325,9 +1514,9 @@ class Web_Page
                     case "active_friends":
                         $active_friends = "active";
                         break;
-//                    case "active_chat":
-//                        $active_chat = "active";
-//                        break;
+                    case "active_chat":
+                        $active_chat = "active";
+                        break;
                     default:
                         // none active
                         break;
@@ -1359,19 +1548,17 @@ class Web_Page
                                 }
                                 ?>
                             </a>
-                            <!--                        <a class="nav-link d-inline-flex -->
-                            <?php // echo $active_chat; ?><!--"-->
-                            <!--                           href="-->
-                            <?php //echo $this->root_path; ?><!--/home/chat/?navbar=active_home&nav_scroller=active_chat">-->
-                            <!--                            Chat-->
-                            <!--                            --><?php
-                            //                            if ($active_chat) {
-                            //                                echo "<i class=\"material-icons\" style='color: var(--red);font-size: 15px; padding-left: 2px;position:relative;top:.2rem;'>chat_bubble</i>";
-                            //                            } else {
-                            //                                echo "<i class=\"material-icons\" style='font-size: 15px; padding-left: 2px;position:relative;top:.2rem;'>chat_bubble_outline</i>";
-                            //                            }
-                            //                            ?>
-                            <!--                        </a>-->
+                            <a class="nav-link <?php  echo $active_chat; ?>"
+                               href="<?php echo $this->root_path; ?>/home/chat/?navbar=active_home&nav_scroller=active_chat">
+                                Chat
+                                <?php
+                                if ($active_chat) {
+                                    echo "<i class=\"material-icons\" style='color: var(--red);font-size: 15px; padding-left: 2px;position:relative;top:.2rem;'>chat_bubble</i>";
+                                } else {
+                                    echo "<i class=\"material-icons\" style='font-size: 15px; padding-left: 2px;position:relative;top:.2rem;'>chat_bubble_outline</i>";
+                                }
+                                ?>
+                            </a>
                             <!--                    <a id="suggestions" onclick="focusNoScrollMethod()" class="nav-link -->
                             <?php //echo  $active_suggestions; ?><!--" href="?nav_scroller=active_suggestions">Suggestions</a>-->
                         </nav>
@@ -1484,7 +1671,7 @@ class Web_Page
 
                     echo "<div class=\"my-3 p-3 bg-white rounded box-shadow\">
                         <div class='pb-2 mb-0 border-bottom border-gray'>
-                            <a href='$this->root_path/components/profile/profile.php?user_id=$customer_id'>
+                            <a href='$this->root_path/components/profile/profile.php?id=$customer_id'>
                                 <img src=\"data:image/svg+xml;charset=UTF-8,%3Csvg%20width%3D%22128%22%20height%3D%22128%22%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20viewBox%3D%220%200%20128%20128%22%20preserveAspectRatio%3D%22none%22%3E%3Cdefs%3E%3Cstyle%20type%3D%22text%2Fcss%22%3E%23holder_164a9f2d749%20text%20%7B%20fill%3A%23007bff%3Bfont-weight%3Abold%3Bfont-family%3AArial%2C%20Helvetica%2C%20Open%20Sans%2C%20sans-serif%2C%20monospace%3Bfont-size%3A6pt%20%7D%20%3C%2Fstyle%3E%3C%2Fdefs%3E%3Cg%20id%3D%22holder_164a9f2d749%22%3E%3Crect%20width%3D%22128%22%20height%3D%22128%22%20fill%3D%22%23007bff%22%3E%3C%2Frect%3E%3Cg%3E%3Ctext%20x%3D%2248.4296875%22%20y%3D%2266.7%22%3E128x128%3C%2Ftext%3E%3C%2Fg%3E%3C%2Fg%3E%3C%2Fsvg%3E\" 
                                 data-src=\"$this->root_path/image.php?i=$profile_img_name&i_t=$profile_img_type&i_p=true\" height='32' width='32' alt=\"Profile Image\" class=\"mr-2 rounded\">
                             </a>   
@@ -1492,9 +1679,9 @@ class Web_Page
                                 ";
 
                     if ($customer_id == $_SESSION['user_info']['id']) {
-                        echo "<p class='font-weight-light text-muted d-inline-flex'>Accepted by</p> <a href='$this->root_path/components/profile/profile.php?user_id=$freelancer_id'>@$freelancer_username</a>";
+                        echo "<p class='font-weight-light text-muted d-inline-flex'>Accepted by</p> <a href='$this->root_path/components/profile/profile.php?id=$freelancer_id'>@$freelancer_username</a>";
                     } else {
-                        echo "<a href='$this->root_path/components/profile/profile.php?user_id=$customer_id'>@$customer_username</a>";
+                        echo "<a href='$this->root_path/components/profile/profile.php?id=$customer_id'>@$customer_username</a>";
                     }
 
 
@@ -2007,7 +2194,7 @@ class Web_Page
                 <div class="my-3 p-3 bg-white rounded box-shadow">
                     <h6 class="border-bottom border-gray pb-2 mb-0">Post a FAVR request in Marketplace</h6>
                     <div class="media text-muted pt-3">
-                        <a href='<?php echo "$this->root_path/components/profile/profile.php?user_id=$userID"; ?>'>
+                        <a href='<?php echo "$this->root_path/components/profile/profile.php?id=$userID"; ?>'>
                             <img src='data:image/svg+xml;charset=UTF-8,%3Csvg%20width%3D%22128%22%20height%3D%22128%22%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20viewBox%3D%220%200%20128%20128%22%20preserveAspectRatio%3D%22none%22%3E%3Cdefs%3E%3Cstyle%20type%3D%22text%2Fcss%22%3E%23holder_164a9f2d749%20text%20%7B%20fill%3A%23007bff%3Bfont-weight%3Abold%3Bfont-family%3AArial%2C%20Helvetica%2C%20Open%20Sans%2C%20sans-serif%2C%20monospace%3Bfont-size%3A6pt%20%7D%20%3C%2Fstyle%3E%3C%2Fdefs%3E%3Cg%20id%3D%22holder_164a9f2d749%22%3E%3Crect%20width%3D%22128%22%20height%3D%22128%22%20fill%3D%22%23007bff%22%3E%3C%2Frect%3E%3Cg%3E%3Ctext%20x%3D%2248.4296875%22%20y%3D%2266.7%22%3E128x128%3C%2Ftext%3E%3C%2Fg%3E%3C%2Fg%3E%3C%2Fsvg%3E'
                                  data-src='<?php echo "$this->root_path/image.php?i=$profile_img_name&i_t=$profile_img_type&i_p=true"; ?>' height='32' width='32' alt='Profile Image' class='mr-2 rounded'>
                         </a>
@@ -2083,6 +2270,277 @@ class Web_Page
         }
 
         return $render_favr_request_form;
+    }
+
+    /**
+     * Render friends list
+     *
+     * @param int $userId
+     *
+     */
+    function renderFriendList($userId)
+    {
+        if ($userId == $_SESSION['user_info']['id']) {
+            $userInfo = $this->getUserInfo($userId);
+            $userFullName = $userInfo['first_name'] . " " . $userInfo['last_name'];
+
+            $select_friends_query = "SELECT *
+                                     FROM friends
+                                     WHERE user_id = $userId";
+            $result = $this->db->query($select_friends_query);
+            if ($result) {
+                $rows = $result->fetchAll(PDO::FETCH_ASSOC);
+                if (!empty($rows)) {
+                    $friend_count = count($rows);
+                    ?>
+                    <div class="my-3 p-3 bg-white rounded box-shadow">
+                        <h6 class="border-bottom border-gray pb-2 mb-0">
+                            Friends of <?php echo $userFullName; ?>
+                            <p class="d-inline-flex small font-weight-light">(<?php echo $friend_count; ?>)</p>
+                        </h6>
+                        <?php
+                            foreach ($rows as $row) {
+                                $friend_id = $row['friend_id'];
+                                $friendInfo = $this->getUserInfo($friend_id);
+                                if (!empty($friendInfo)) {
+                                    $friendFullName = $friendInfo['first_name'] . " " . $friendInfo['last_name'];
+                                    $friendUsername = $friendInfo['username'];
+                                    $friendProfilePicture = unserialize($friendInfo['profile_picture_path']);
+                                    if (isset($friendProfilePicture['name'], $friendProfilePicture['type'])) {
+                                        $friendPictureName = $friendProfilePicture['name'];
+                                        $friendPictureType = $friendProfilePicture['type'];
+                                    } else {
+                                        $friendPictureName = "";
+                                        $friendPictureType = "";
+                                    }
+
+                                    $check_friend_query = "SELECT COUNT(*)  
+                                                           FROM friends 
+                                                           WHERE user_id = $friend_id
+                                                           AND friend_id = $userId";
+                                    $result = $this->db->query($check_friend_query);
+                                    $crow = $result->fetch(PDO::FETCH_ASSOC);
+                                    ?>
+                                    <div class="media text-muted pt-3">
+                                        <a href="<?php echo "$this->root_path/components/profile/profile.php?id=$friend_id"; ?>">
+                                            <img src="data:image/svg+xml;charset=UTF-8,%3Csvg%20width%3D%22128%22%20height%3D%22128%22%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20viewBox%3D%220%200%20128%20128%22%20preserveAspectRatio%3D%22none%22%3E%3Cdefs%3E%3Cstyle%20type%3D%22text%2Fcss%22%3E%23holder_164a9f2d749%20text%20%7B%20fill%3A%23007bff%3Bfont-weight%3Abold%3Bfont-family%3AArial%2C%20Helvetica%2C%20Open%20Sans%2C%20sans-serif%2C%20monospace%3Bfont-size%3A6pt%20%7D%20%3C%2Fstyle%3E%3C%2Fdefs%3E%3Cg%20id%3D%22holder_164a9f2d749%22%3E%3Crect%20width%3D%22128%22%20height%3D%22128%22%20fill%3D%22%23007bff%22%3E%3C%2Frect%3E%3Cg%3E%3Ctext%20x%3D%2248.4296875%22%20y%3D%2266.7%22%3E128x128%3C%2Ftext%3E%3C%2Fg%3E%3C%2Fg%3E%3C%2Fsvg%3E"
+                                                 data-src="<?php echo "$this->root_path/image.php?i=$friendPictureName&i_t=$friendPictureType&i_p=true"; ?>" height="32" width="32" alt="" class="mr-2 rounded">
+                                        </a>
+                                        <div class="media-body pb-3 mr-0 mb-0 small lh-125 border-bottom border-gray">
+                                            <div class="d-flex justify-content-between align-items-center w-100">
+                                                <strong class="text-gray-dark"><?php echo $friendFullName; ?></strong>
+                                                <?php
+                                                    if ($crow['COUNT(*)'] != 0) {
+                                                        echo "<a href=\"#\"
+                                                            class=\"float-right\">Ask FAVR</a>";
+                                                    }
+                                                ?>
+                                            </div>
+                                            <a href="<?php echo "$this->root_path/components/profile/profile.php?id=$friend_id"; ?>">
+                                                <span class="d-block">@<?php echo $friendUsername; ?></span>
+                                            </a>
+                                            <br>
+                                            <div class="d-flex justify-content-center align-items-center w-100">
+                                                <?php
+                                                if ($crow['COUNT(*)'] != 0) {
+                                                    ?>
+<!--                                                    <a href="#"-->
+<!--                                                       class="text-info mr-1 pr-1">Block</a> |-->
+                                                    <a href="<?php echo "$this->root_path/home/friends/?friends_list=true&add_friend=false&id=$friend_id&ALERT_MESSAGE=You have unfriended!"; ?>"
+                                                       class="text-danger">Unfriend</a>
+                                                    <?php
+                                                } else {
+                                                    ?>
+                                                    <a href="<?php echo "$this->root_path/home/friends/?friends_list=true&add_friend=false&id=$friend_id&ALERT_MESSAGE=You have canceled your friend request!"; ?>"
+                                                       class="text-danger">Cancel Friend Request</a>
+                                                    <?php
+                                                }
+                                                ?>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <?php
+                                }
+                            }
+                        ?>
+                    </div>
+                    <?php
+                } else {
+                    // this user has no friends go ahead and suggest to them friends they can add
+                    $this->renderFriendSuggestions($userId);
+                }
+            }
+        }
+    }
+
+    /**
+     * Render friends suggestions
+     *
+     * @param int $userId
+     *
+     */
+    function renderFriendSuggestions($userId)
+    {
+        $select_friends_query = "SELECT * 
+                                 FROM friends 
+                                 WHERE user_id = $userId
+                                 ORDER BY RAND()
+                                 LIMIT 3";
+        $result = $this->db->query($select_friends_query);
+        if ($result) {
+            ?>
+            <div class="my-3 p-3 bg-white rounded box-shadow" style="width: 100%;">
+                <h6 class="border-bottom border-gray pb-2 mb-0">Friendly Suggestions</h6>
+            <?php
+            $rows = $result->fetchAll(PDO::FETCH_ASSOC);
+            $count = count($rows);
+            if (!empty($rows) && $count > 5) {
+                foreach ($rows as $row) {
+                    $friend_id = $row['friend_id'];
+                    $select_friends_of_friend_query = "
+                                                 SELECT * 
+                                                 FROM friends
+                                                 WHERE friend_id = $friend_id
+                                                 AND NOT user_id = $userId
+                                                 ORDER BY RAND()
+                                                 LIMIT 1";
+                    $result = $this->db->query($select_friends_of_friend_query);
+                    if ($result) {
+                        $ffrow = $result->fetch(PDO::FETCH_ASSOC);
+                        if (!empty($ffrow)) {
+                            $friend_of_friend_id = $ffrow['user_id'];
+
+                            $check_friend_query = "SELECT COUNT(*) 
+                                                   FROM friends
+                                                   WHERE user_id = $userId
+                                                   AND friend_id = $friend_of_friend_id";
+
+                            $result = $this->db->query($check_friend_query);
+                            if ($result) {
+                                $crow = $result->fetch(PDO::FETCH_ASSOC);
+                                if ($crow['COUNT(*)'] == 0) {
+                                    // if these users are not already friends then suggest this friend
+                                    $friendOfFriendInfo = $this->getUserInfo($friend_of_friend_id);
+                                    $friendOfFriendFullName =  $friendOfFriendInfo['first_name'] . " " . $friendOfFriendInfo['last_name'];
+                                    $friendOfFriendUsername = $friendOfFriendInfo['username'];
+                                    $friendOfFriendProfilePicPath = $friendOfFriendInfo['profile_picture_path'];
+                                    if (isset($friendOfFriendProfilePicPath['name'], $friendOfFriendProfilePicPath['type'])) {
+                                        $picName = $friendOfFriendProfilePicPath['name'];
+                                        $picType = $friendOfFriendProfilePicPath['type'];
+                                    } else {
+                                        $picName = "";
+                                        $picType = "";
+                                    }
+                                    ?>
+                                    <div class="media text-muted pt-3">
+                                        <a href="<?php echo "$this->root_path/components/profile/profile.php?id=$friend_of_friend_id"; ?>">
+                                            <img src="data:image/svg+xml;charset=UTF-8,%3Csvg%20width%3D%22128%22%20height%3D%22128%22%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20viewBox%3D%220%200%20128%20128%22%20preserveAspectRatio%3D%22none%22%3E%3Cdefs%3E%3Cstyle%20type%3D%22text%2Fcss%22%3E%23holder_164a9f2d749%20text%20%7B%20fill%3A%23007bff%3Bfont-weight%3Abold%3Bfont-family%3AArial%2C%20Helvetica%2C%20Open%20Sans%2C%20sans-serif%2C%20monospace%3Bfont-size%3A6pt%20%7D%20%3C%2Fstyle%3E%3C%2Fdefs%3E%3Cg%20id%3D%22holder_164a9f2d749%22%3E%3Crect%20width%3D%22128%22%20height%3D%22128%22%20fill%3D%22%23007bff%22%3E%3C%2Frect%3E%3Cg%3E%3Ctext%20x%3D%2248.4296875%22%20y%3D%2266.7%22%3E128x128%3C%2Ftext%3E%3C%2Fg%3E%3C%2Fg%3E%3C%2Fsvg%3E"
+                                                 data-src="<?php echo "$this->root_path/image.php?i=$picName&i_t=$picType&i_p=true"; ?>" height="32" width="32" alt="" class="mr-2 rounded">
+                                        </a>
+                                        <div class="media-body pb-3 mb-0 small lh-125 border-bottom border-gray">
+                                            <div class="d-flex justify-content-between align-items-center w-100">
+                                                <strong class="text-gray-dark"><?php echo $friendOfFriendFullName; ?></strong>
+                                                <a href="#">Send Friend Request</a>
+                                            </div>
+                                            <span class="d-block">
+                                                <a href="<?php echo "$this->root_path/components/profile/profile.php?id=$friend_of_friend_id"; ?>">
+                                                    @<?php echo $friendOfFriendUsername; ?>
+                                                </a>
+                                            </span>
+                                        </div>
+                                    </div>
+                                    <?php
+                                }
+                            }
+                        }
+                    }
+                }
+            } else {
+                // No matches for friends were found or user has no friends suggest friends within same zip code hints for using favr
+                $userInfo = $this->getUserInfo($userId);
+                $userZip = $userInfo['zip'];
+                // only public users are discoverable
+                $public = Data_Constants::DB_SCOPE_PUBLIC;
+
+                $select_friends_query = "SELECT *, u.id as uid
+                                         FROM users u
+                                         WHERE zip = '$userZip'
+                                         AND NOT id = $userId
+                                         AND default_scope = '$public'
+                                         ORDER BY RAND()
+                                         LIMIT 3
+                                         ";
+                $result = $this->db->query($select_friends_query);
+                if ($result) {
+                    $rows = $result->fetchAll(PDO::FETCH_ASSOC);
+                    if (empty($rows)) {
+                        ?>
+                        <p>
+                            You can trade FAVRs with friends instead of paying cash!
+                        </p>
+                        <?php
+                    } else {
+                        foreach ($rows as $row) {
+                            // if these users are not already friends then suggest this friend
+                            $friend_of_friend_id = $row['uid'];
+
+                            $check_friend_query = "SELECT COUNT(*) 
+                                               FROM friends
+                                               WHERE user_id = $userId
+                                               AND friend_id = $friend_of_friend_id
+                                               OR user_id = $friend_of_friend_id
+                                               AND friend_id = $userId";
+
+                            $result = $this->db->query($check_friend_query);
+                            if ($result) {
+                                $crow = $result->fetch(PDO::FETCH_ASSOC);
+                                if ($crow['COUNT(*)'] == 0) {
+                                    $friendOfFriendFullName =  $row['first_name'] . " " . $row['last_name'];
+                                    $friendOfFriendUsername = $row['username'];
+                                    $friendOfFriendProfilePicPath = unserialize($row['profile_picture_path']);
+                                    if (isset($friendOfFriendProfilePicPath['name'], $friendOfFriendProfilePicPath['type'])) {
+                                        $picName = $friendOfFriendProfilePicPath['name'];
+                                        $picType = $friendOfFriendProfilePicPath['type'];
+                                    } else {
+                                        $picName = "";
+                                        $picType = "";
+                                    }
+                                    ?>
+                                    <div class="media text-muted pt-3">
+                                        <a href="<?php echo "$this->root_path/components/profile/profile.php?id=$friend_of_friend_id"; ?>">
+                                            <img src="data:image/svg+xml;charset=UTF-8,%3Csvg%20width%3D%22128%22%20height%3D%22128%22%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20viewBox%3D%220%200%20128%20128%22%20preserveAspectRatio%3D%22none%22%3E%3Cdefs%3E%3Cstyle%20type%3D%22text%2Fcss%22%3E%23holder_164a9f2d749%20text%20%7B%20fill%3A%23007bff%3Bfont-weight%3Abold%3Bfont-family%3AArial%2C%20Helvetica%2C%20Open%20Sans%2C%20sans-serif%2C%20monospace%3Bfont-size%3A6pt%20%7D%20%3C%2Fstyle%3E%3C%2Fdefs%3E%3Cg%20id%3D%22holder_164a9f2d749%22%3E%3Crect%20width%3D%22128%22%20height%3D%22128%22%20fill%3D%22%23007bff%22%3E%3C%2Frect%3E%3Cg%3E%3Ctext%20x%3D%2248.4296875%22%20y%3D%2266.7%22%3E128x128%3C%2Ftext%3E%3C%2Fg%3E%3C%2Fg%3E%3C%2Fsvg%3E"
+                                                 data-src="<?php echo "$this->root_path/image.php?i=$picName&i_t=$picType&i_p=true"; ?>" height="32" width="32" alt="" class="mr-2 rounded">
+                                        </a>
+                                        <div class="media-body pb-3 mb-0 small lh-125 border-bottom border-gray">
+                                            <div class="d-flex justify-content-between align-items-center w-100">
+                                                <strong class="text-gray-dark"><?php echo $friendOfFriendFullName; ?></strong>
+                                                <?php
+                                                    if ($_SESSION['navbar'] == "friends_list") {
+                                                        $last_url = "$this->root_path/home/friends/?friends_list=true&add_friend=true&id=$friend_of_friend_id&ALERT_MESSAGE=Your friend request has been sent!";
+                                                    } else {
+                                                        $last_url = "$this->root_path/home/friends/?navbar=active_home&nav_scroller=active_friends&add_friend=true&id=$friend_of_friend_id&ALERT_MESSAGE=Your friend request has been sent!";
+                                                    }
+                                                ?>
+                                                <a href="<?php echo $last_url; ?>">Send Friend Request</a>
+                                            </div>
+                                            <span class="d-block">
+                                                <a href="<?php echo "$this->root_path/components/profile/profile.php?id=$friend_of_friend_id"; ?>">
+                                                    @<?php echo $friendOfFriendUsername; ?>
+                                                </a>
+                                            </span>
+                                        </div>
+                                    </div>
+                                    <?php
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+            ?>
+            </div>
+            <?php
+        }
     }
 
     /**
@@ -2180,12 +2638,12 @@ class Web_Page
 
                     echo "<div class=\"my-3 p-3 bg-white rounded box-shadow\">
                         <div class='pb-2 mb-0 border-bottom border-gray'>
-                            <a href='$this->root_path/components/profile/profile.php?user_id=$customer_id'>
+                            <a href='$this->root_path/components/profile/profile.php?id=$customer_id'>
                                 <img src=\"data:image/svg+xml;charset=UTF-8,%3Csvg%20width%3D%22128%22%20height%3D%22128%22%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20viewBox%3D%220%200%20128%20128%22%20preserveAspectRatio%3D%22none%22%3E%3Cdefs%3E%3Cstyle%20type%3D%22text%2Fcss%22%3E%23holder_164a9f2d749%20text%20%7B%20fill%3A%23007bff%3Bfont-weight%3Abold%3Bfont-family%3AArial%2C%20Helvetica%2C%20Open%20Sans%2C%20sans-serif%2C%20monospace%3Bfont-size%3A6pt%20%7D%20%3C%2Fstyle%3E%3C%2Fdefs%3E%3Cg%20id%3D%22holder_164a9f2d749%22%3E%3Crect%20width%3D%22128%22%20height%3D%22128%22%20fill%3D%22%23007bff%22%3E%3C%2Frect%3E%3Cg%3E%3Ctext%20x%3D%2248.4296875%22%20y%3D%2266.7%22%3E128x128%3C%2Ftext%3E%3C%2Fg%3E%3C%2Fg%3E%3C%2Fsvg%3E\" 
                                 data-src=\"$this->root_path/image.php?i=$profile_img_name&i_t=$profile_img_type&i_p=true\" height='32' width='32' alt=\"Profile Image\" class=\"mr-2 rounded\">
                             </a>
                             <strong style='font-size: 80%' class=\"d - block text - gray - dark\">
-                                <a href='$this->root_path/components/profile/profile.php?user_id=$customer_id'>@$customer_username</a>
+                                <a href='$this->root_path/components/profile/profile.php?id=$customer_id'>@$customer_username</a>
                             </strong>
                             ";
 
@@ -2484,6 +2942,132 @@ class Web_Page
         </html>
 
         <?php
+    }
+
+    //------------------------------------------------------------
+    // From this point forward these are process functions
+    //------------------------------------------------------------
+
+    /**
+     * Process favr friend requests
+     * this process functions from the perspective of the requester who owns the sessions always
+     *
+     * @param int $userID
+     * @param int $requesterID
+     * @param boolean $add_friend // if true user add friend else false user decline request
+     *
+     * @return boolean // successful process or not print error
+     *
+     */
+    function processFavrFriendRequest($userID, $requesterID, $add_friend)
+    {
+        if (isset($userID, $requesterID, $add_friend)) {
+            // check if users are already friends
+            $select_friends_query1 = "SELECT * 
+                                      FROM friends 
+                                      WHERE user_id = $userID
+                                      AND friend_id = $requesterID";
+
+            $select_friends_query2 = "SELECT * 
+                                      FROM friends
+                                      WHERE user_id = $requesterID
+                                      AND friend_id = $userID";
+
+            $result1 = $this->db->query($select_friends_query1);
+            $result2 = $this->db->query($select_friends_query2);
+
+            if ($result1 && $result2) {
+                $row1 = $result1->fetch(PDO::FETCH_ASSOC);
+                $row2 = $result2->fetch(PDO::FETCH_ASSOC);
+
+                if (!empty($row1) && !empty($row2)) {
+                    // friendship already exists do not do anything
+                    return false;
+                } else if (!empty($row1) && empty($row2)) {
+                    // requester is accepting a friend request sent to them
+                    if ($add_friend == true) {
+                        $timestamp = time();
+                        $update_friend_query = "UPDATE friends 
+                                            SET user_id = $userID,
+                                                friend_id = $requesterID,
+                                                friend_since = '$timestamp'
+                                            WHERE user_id = $userID 
+                                            AND friend_id = $requesterID";
+
+                        $insert_friend_query = "INSERT 
+                                            INTO friends 
+                                            (user_id, friend_id, friends_since) 
+                                            VALUES 
+                                            ($requesterID, $userID, '$timestamp')";
+
+                        $result1 = $this->db->query($update_friend_query);
+                        $result2 = $this->db->query($insert_friend_query);
+                        if ($result1 && $result2) {
+                            return true;
+                        } else {
+                            return false;
+                        }
+                    } else if ($add_friend == false) {
+                        // unfriend this user or cancel this friendship
+                        $delete_friends_query1 = "DELETE
+                                                  FROM friends
+                                                  WHERE user_id = $userID
+                                                  AND friend_id = $requesterID";
+
+                        $delete_friends_query2 = "DELETE
+                                                  FROM friends
+                                                  WHERE user_id = $requesterID
+                                                  AND friend_id = $userID";
+
+                        $result1 = $this->db->query($delete_friends_query1);
+                        $result2 = $this->db->query($delete_friends_query2);
+                        if ($result1 && $result2) {
+                            return true;
+                        } else {
+                            return false;
+                        }
+                    } else {
+                        // invalid input for add friends
+                        return false;
+                    }
+                } else if (empty($row1) && !empty($row2)) {
+                    // requester has already sent a friend request
+                    if ($add_friend == false) {
+                        // unfriend this user or cancel this friendship
+                        $delete_friends_query2 = "DELETE
+                                                  FROM friends
+                                                  WHERE user_id = $requesterID
+                                                  AND friend_id = $userID";
+
+                        $result2 = $this->db->query($delete_friends_query2);
+                        if ($result2) {
+                            return true;
+                        } else {
+                            return false;
+                        }
+                    } else {
+                        // invalid input for add friends
+                        return false;
+                    }
+                } else {
+                    // friendship doesn't exist requester send friend request
+                    $timestamp = time();
+                    $insert_friend_query = "INSERT 
+                                            INTO friends 
+                                            (user_id, friend_id, friends_since) 
+                                            VALUES 
+                                            ($requesterID, $userID, '$timestamp')";
+                    $result = $this->db->query($insert_friend_query);
+                    if ($result) {
+                        return true;
+                    } else {
+                        return false;
+                    }
+                }
+            }
+        } else {
+            return false;
+        }
     }
 
     /**

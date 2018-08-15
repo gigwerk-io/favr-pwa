@@ -12,14 +12,13 @@ if (isset($_SESSION['user_info']) && $_SESSION['user_info']['id'] != -1) {
     header("Location: ../home/");
 }
 // constants
-$PAGE_ID = 0;
 $USER = "guest";
 $ALERT_MESSAGE = "";
 $CRUD_INDEX_DB = "";
 //
 //die(print_r($_SESSION));
 
-$page = new Web_Page($PAGE_ID, $USER);
+$page = new Web_Page($USER);
 
 if (isset($_GET['d_idb']) && $_GET['d_idb'] = true) {
     $CRUD_INDEX_DB = "

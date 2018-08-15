@@ -3,7 +3,6 @@ session_start();
 include($_SERVER['DOCUMENT_ROOT'] . "/favr-pwa/include/autoload.php");
 
 // component constants
-$PAGE_ID = 1;
 $USER = "";
 $ALERT_MESSAGE = "";
 
@@ -16,7 +15,7 @@ if (isset($_SESSION['navbar']) && $_SESSION['navbar'] != "active_home") {
     $_SESSION['navbar'] = "active_home";
 }
 
-$page = new Web_Page($PAGE_ID, $USER);
+$page = new Web_Page($USER);
 
 $page->setTitle("Home");
 $page->renderHeader();
@@ -113,9 +112,9 @@ $page->addScript("
     }, false);
         
     $(document).ready(function() {
-        window.setInterval(function(){
-            $('#marketplace').load('marketplace.php')
-        }, 10000);
+//        window.setInterval(function(){
+//            $('#marketplace').load('marketplace.php')
+//        }, 10000);
         
         $('#hard-button').click(function() {
             $('#hard-button').removeClass('unfocus');

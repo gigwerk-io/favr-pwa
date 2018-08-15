@@ -44,6 +44,9 @@ class Data_Constants
     const DB_TASK_REQUEST_MAXIMUM_MANPOWER = 5;
     const DB_TASK_REQUEST_MINIMUM_MANPOWER = 1;
 
+    // database maximum friend count
+    const DB_MAX_FRIEND_COUNT = 100;
+
     // database user rating max number of ratings at a time
     const DB_MAX_USER_RATING_COUNT = 42;
 

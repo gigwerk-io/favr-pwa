@@ -12,11 +12,10 @@ if (isset($_SESSION['user_info']) && $_SESSION['user_info']['id'] != -1) {
     header("Location: ../home/");
 }
 //constants
-$PAGE_ID = 2;
 $USER = "guest";
 $ALERT_MESSAGE = "";
 
-$page = new Web_Page($PAGE_ID, $USER);
+$page = new Web_Page($USER);
 $page->setTitle("Sign Up");
 $page->addStylesheet("<link rel='stylesheet' href='$page->root_path/assets/css/signin.css' />");
 $page->renderHeader(false);
@@ -62,27 +61,27 @@ echo $ALERT_MESSAGE;
         <form class="form-signin" action="" method="post">
             <div class="form-label-group">
                 <input type="text" name="signUpUsername" id="inputUsername" class="form-control" placeholder="Username" required="">
-                <label for="inputUsername" >Username</label>
+                <label for="inputUsername">Username</label>
             </div>
             <div class="form-label-group">
                 <input type="text" name="signUpFirstName" id="inputFirstName" class="form-control" placeholder="First name" required="">
-                <label for="inputFirstName" >First name</label>
+                <label for="inputFirstName">First name</label>
             </div>
             <div class="form-label-group">
                 <input type="text" name="signUpLastName" id="inputLastName" class="form-control" placeholder="Last name" required="">
-                <label for="inputLastName" >Last name</label>
+                <label for="inputLastName">Last name</label>
             </div>
             <div class="form-label-group">
                 <input type="email" name="signUpEmail" id="inputEmail" class="form-control" placeholder="Email address" required="">
-                <label for="inputEmail" >Email address</label>
+                <label for="inputEmail">Email address</label>
             </div>
             <div class="form-label-group">
                 <input type="password" name="signUpPass" id="inputPassword" class="form-control" placeholder="Password" required="">
-                <label for="inputPassword" >Password</label>
+                <label for="inputPassword">Password</label>
             </div>
             <div class="form-label-group">
                 <input type="password" name="signUpPassConfirm" id="inputConfirmPassword" class="form-control" placeholder="Re-enter Password" required="">
-                <label for="inputConfirmPassword" >Password</label>
+                <label for="inputConfirmPassword">Re-enter Password</label>
             </div>
             <div class="row">
                 <div class="d-inline-flex">
