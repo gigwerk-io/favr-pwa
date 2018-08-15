@@ -1560,6 +1560,15 @@ class Web_Page
                                 }
                                 ?>
                             </a>
+                            <a class="nav-link <?php  echo $active_chat; ?>"
+                               href="<?php echo $this->root_path; ?>/home/payments">
+                                Payments
+                                <?php
+
+                                echo "<i class=\"material-icons\" style='font-size: 15px; padding-left: 2px;position:relative;top:.2rem;'>attach_money</i>";
+
+                                ?>
+                            </a>
                             <!--                    <a id="suggestions" onclick="focusNoScrollMethod()" class="nav-link -->
                             <?php //echo  $active_suggestions; ?><!--" href="?nav_scroller=active_suggestions">Suggestions</a>-->
                         </nav>
