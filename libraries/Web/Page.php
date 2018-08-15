@@ -1601,7 +1601,8 @@ class Web_Page
     {
         $userID = $userInfo['id'];
         $completed = Data_Constants::DB_TASK_STATUS_COMPLETED;
-        $notifications_query = "SELECT *, mff.user_id AS mffuserid, mfr.id AS mfrid
+        $notifications_request_query = "
+                                SELECT *, mff.user_id AS mffuserid, mfr.id AS mfrid
                                 FROM marketplace_favr_requests mfr 
                                 JOIN marketplace_favr_freelancers mff 
                                 ON mff.request_id = mfr.id
@@ -1613,14 +1614,26 @@ class Web_Page
                                 AND u.id = mfr.customer_id
                                 AND NOT mfr.task_status = '$completed'";
 
-        $result = $this->db->query($notifications_query);
-        if (!$result) {
+        $notifications_friend_request_query = "
+                SELECT *, f.user_id as uid 
+                FROM friends f
+                JOIN users u
+                ON u.id = f.friend_id
+                WHERE u.id = $userID
+                AND friends_since IS NULL 
+        ";
+
+        $result = $this->db->query($notifications_request_query);
+        $result1 = $this->db->query($notifications_friend_request_query);
+        if (!$result || !$result1) {
             // failed to render notifications
             return false;
         } else {
             $rows = $result->fetchAll(PDO::FETCH_ASSOC);
-            if (!empty($rows)) {
+            $rows1 = $result1->fetchAll(PDO::FETCH_ASSOC);
+            if (!empty($rows) || !empty($rows1)) {
                 // There are results
+                // request notifications
                 foreach ($rows as $row) {
                     $freelancer_id = $row['mffuserid'];
                     $id = md5($row['mfrid'] . "-$freelancer_id"); // div id
@@ -2142,6 +2155,60 @@ class Web_Page
                         </div>";
                     }
                     echo "</div>";
+                }
+
+                // friend request notifications
+                foreach ($rows1 as $row1) {
+                    $requesterID = $row1['uid'];
+                    $requesterInfo = $this->getUserInfo($row1['uid']);
+                    $requesterFullName = $requesterInfo['first_name'] . " " . $requesterInfo['last_name'];
+                    $requesterUsername = $requesterInfo['username'];
+                    $requesterPic = unserialize($requesterInfo['profile_picture_path']);
+                    if (isset($requesterPic['name'], $requesterPic['type'])) {
+                        $profile_img_type = $requesterPic['type'];
+                        $profile_img_name = $requesterPic['name'];
+                    } else {
+                        $profile_img_name = "";
+                        $profile_img_type = "";
+                    }
+
+                    echo "
+                    <div class=\"my-3 p-3 bg-white rounded box-shadow\">
+                        <div class='pb-2 mb-0 border-bottom border-gray'>
+                            <a href='$this->root_path/components/profile/profile.php?id=$requesterID'>
+                                <img src=\"data:image/svg+xml;charset=UTF-8,%3Csvg%20width%3D%22128%22%20height%3D%22128%22%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20viewBox%3D%220%200%20128%20128%22%20preserveAspectRatio%3D%22none%22%3E%3Cdefs%3E%3Cstyle%20type%3D%22text%2Fcss%22%3E%23holder_164a9f2d749%20text%20%7B%20fill%3A%23007bff%3Bfont-weight%3Abold%3Bfont-family%3AArial%2C%20Helvetica%2C%20Open%20Sans%2C%20sans-serif%2C%20monospace%3Bfont-size%3A6pt%20%7D%20%3C%2Fstyle%3E%3C%2Fdefs%3E%3Cg%20id%3D%22holder_164a9f2d749%22%3E%3Crect%20width%3D%22128%22%20height%3D%22128%22%20fill%3D%22%23007bff%22%3E%3C%2Frect%3E%3Cg%3E%3Ctext%20x%3D%2248.4296875%22%20y%3D%2266.7%22%3E128x128%3C%2Ftext%3E%3C%2Fg%3E%3C%2Fg%3E%3C%2Fsvg%3E\" 
+                                data-src=\"$this->root_path/image.php?i=$profile_img_name&i_t=$profile_img_type&i_p=true\" height='32' width='32' alt=\"Profile Image\" class=\"mr-2 rounded\">
+                            </a>   
+                            <strong style='font-size: 80%' class=\"d - block text - gray - dark\">
+                                <a href='$this->root_path/components/profile/profile.php?id=$requesterID'>
+                                    @$requesterUsername
+                                </a>
+                            </strong>
+                            <div class=\"float-right text-muted small\" style=\"padding-top: .3rem;\">
+                                <i class='material-icons'>person_add</i>
+                            </div>
+                        </div>
+                        <div class='media text-muted pt-3'>
+                            <div class='container'>
+                                <p class='media-body text-dark small lh-125'>$requesterFullName is asking to be friends on FAVR.</p>
+                                <div class='row p-0 border-top border-gray'>
+                                    <div class='col-sm-12 small'>
+                                        <div class='float-left d-inline'>
+                                            <a href='$this->root_path/components/profile/profile.php?id=$requesterID'>
+                                                View Profile
+                                            </a>
+                                        </div>
+                                        <div class='float-right d-inline'>
+                                            <a href='$this->root_path/components/notifications/?navbar=active_notifications&add_friend=true&id=$requesterID&ALERT_MESSAGE=You are now friends on FAVR!' class=\"text-success d-inline\">
+                                            Accept</a> |
+                                            <a href='$this->root_path/components/notifications/?navbar=active_notifications&add_friend=false&id=$requesterID&ALERT_MESSAGE=You have declined the friend request!' class=\"text-danger d-inline\">
+                                            Decline</a> 
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>";
                 }
             } else {
                 echo "<p class='p-3 text-muted'>No notifications at the moment!</p>";
@@ -2981,16 +3048,38 @@ class Web_Page
                 $row2 = $result2->fetch(PDO::FETCH_ASSOC);
 
                 if (!empty($row1) && !empty($row2)) {
-                    // friendship already exists do not do anything
-                    return false;
+                    // friendship already exists do not do anything unless unfriending
+                    if ($add_friend == false) {
+                        // unfriend this user or cancel this friendship
+                        $delete_friends_query1 = "DELETE
+                                                  FROM friends
+                                                  WHERE user_id = $userID
+                                                  AND friend_id = $requesterID";
+
+                        $delete_friends_query2 = "DELETE
+                                                  FROM friends
+                                                  WHERE user_id = $requesterID
+                                                  AND friend_id = $userID";
+
+                        $result1 = $this->db->query($delete_friends_query1);
+                        $result2 = $this->db->query($delete_friends_query2);
+                        if ($result1 && $result2) {
+                            return true;
+                        } else {
+                            return false;
+                        }
+                    } else {
+                        // invalid input for add friends
+                        return false;
+                    }
                 } else if (!empty($row1) && empty($row2)) {
                     // requester is accepting a friend request sent to them
                     if ($add_friend == true) {
-                        $timestamp = time();
+                        $timestamp = date("Y-m-d h:i:s" , time());
                         $update_friend_query = "UPDATE friends 
                                             SET user_id = $userID,
                                                 friend_id = $requesterID,
-                                                friend_since = '$timestamp'
+                                                friends_since = '$timestamp'
                                             WHERE user_id = $userID 
                                             AND friend_id = $requesterID";
 
@@ -3051,12 +3140,11 @@ class Web_Page
                     }
                 } else {
                     // friendship doesn't exist requester send friend request
-                    $timestamp = time();
                     $insert_friend_query = "INSERT 
                                             INTO friends 
-                                            (user_id, friend_id, friends_since) 
+                                            (user_id, friend_id) 
                                             VALUES 
-                                            ($requesterID, $userID, '$timestamp')";
+                                            ($requesterID, $userID)";
                     $result = $this->db->query($insert_friend_query);
                     if ($result) {
                         return true;
@@ -3709,11 +3797,22 @@ class Web_Page
                                 AND NOT mfr.task_status = '$completed'
                                 ";
 
-        $result = $this->db->query($notifications_query);
-        if ($result) {
-            $row = $result->fetch(PDO::FETCH_ASSOC);
+        $notifications_friend_request_query = "
+                SELECT COUNT(*)
+                FROM friends f
+                JOIN users u
+                ON u.id = f.friend_id
+                WHERE u.id = $userID
+                AND friends_since IS NULL 
+        ";
 
-            $_SESSION['main_notifications'] = $row['COUNT(*)'];
+        $result = $this->db->query($notifications_query);
+        $result1 = $this->db->query($notifications_friend_request_query);
+        if ($result || $result1) {
+            $row = $result->fetch(PDO::FETCH_ASSOC);
+            $row1 = $result1->fetch(PDO::FETCH_ASSOC);
+
+            $_SESSION['main_notifications'] = $row['COUNT(*)'] + $row1['COUNT(*)'];
         } else {
             $_SESSION['main_notifications'] = 0;
         }

@@ -54,6 +54,16 @@ if (isset($_GET['friends_list']) && $_GET['friends_list'] == true) {
     $_SESSION['navbar'] = "friends_list";
     $page->renderFriendList($_SESSION['user_info']['id']);
 } else {
+    if (isset($_GET['add_friend'])) {
+        $user_id = $_GET['id'];
+        $requester_id = $_SESSION['user_info']['id'];
+        if ($_GET['add_friend'] == 'true') {
+            $page->processFavrFriendRequest($user_id, $requester_id, true);
+        } else if ($_GET['add_friend'] == 'false') {
+            $page->processFavrFriendRequest($user_id, $requester_id, false);
+        }
+    }
+
     $page->renderFavrRequestForm();
     ?>
     <div class="my-3 p-3">

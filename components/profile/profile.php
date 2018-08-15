@@ -43,9 +43,9 @@ if (!isset($_GET['id']) || $userInfo == false) {
     if (isset($_GET['add_friend'])) {
         $user_id = $_GET['id'];
         $requester_id = $_SESSION['user_info']['id'];
-        if ($_GET['add_friend'] == true) {
+        if ($_GET['add_friend'] == 'true') {
             $page->processFavrFriendRequest($user_id, $requester_id, true);
-        } else if ($_GET['add_friend'] == false) {
+        } else if ($_GET['add_friend'] == 'false') {
             $page->processFavrFriendRequest($user_id, $requester_id, false);
         }
     }
