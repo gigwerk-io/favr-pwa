@@ -20,7 +20,7 @@ class Data_Constants
     const DB_PASSWORD = "Nomolos.99";
 
     // Root path
-    const ROOT_PATH = "http://192.168.64.2/favr-pwa";
+    const ROOT_PATH = "https://askfavr.com/favr-pwa";
 
     // image upload constants
     const MAXIMUM_IMAGE_UPLOAD_COUNT = 3;
