@@ -50,7 +50,7 @@ class Web_Connect{
     function __construct() {
         $this->db = $this->connect();
         $this->code = $_GET['code'];
-        $this->id = 5; //$_SESSION['user_info']['id'];
+        $this->id = $_SESSION['user_info']['id'];
         $sth = $this->db->query("SELECT payment_id FROM users WHERE id=$this->id");
         $row = $sth->fetch(PDO::FETCH_ASSOC);
         $this->payment_id = $row['payment_id'];
