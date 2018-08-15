@@ -1560,7 +1560,7 @@ class Web_Page
                                 }
                                 ?>
                             </a>
-                            <a class="nav-link <?php  echo $active_chat; ?>"
+                            <a class="nav-link "
                                href="<?php echo $this->root_path; ?>/home/payments">
                                 Payments
                                 <?php
