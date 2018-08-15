@@ -268,6 +268,7 @@ class Web_Page
         $select_sign_in_query = "SELECT * 
                                  FROM users
                                  WHERE email='$signInUsernameEmail'
+                                 AND password='$signInPass'
                                  OR username='$signInUsernameEmail'
                                  AND password='$signInPass'";
 
