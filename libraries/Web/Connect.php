@@ -7,7 +7,7 @@
  * @author Solomon Antoine
  */
 
-require '../Api/Stripe/init.php';
+
 
 class Web_Connect{
     /**
@@ -92,17 +92,17 @@ class Web_Connect{
 
 
         $obj = json_decode($result,true);
-        $this->payment_id = $obj['stripe_user_id'];
+        $payment_id = $obj['stripe_user_id'];
 
         curl_close ($ch);
-        $this->db->query("UPDATE users SET payment_id='$this->payment_id' WHERE id=$this->id");
+        $this->db->query("UPDATE users SET payment_id='$payment_id' WHERE id=$this->id");
         return $this;
     }
 
-    public function stripeLogin($payment_id)
+    public function stripeLogin()
     {
         \Stripe\Stripe::setApiKey(\Data_Constants::STRIPE_SECRET);
-        $account = \Stripe\Account::retrieve($payment_id);
+        $account = \Stripe\Account::retrieve($this->payment_id);
         $link = $account->login_links->create();
         $url = $link->url;
         header("location: $url");
