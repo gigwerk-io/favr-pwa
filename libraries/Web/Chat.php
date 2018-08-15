@@ -200,6 +200,6 @@ class Web_Chat
         fwrite($file, "$data");
         fclose($file);
         $location = $message['File'];
-        echo "<script> window.location.href = 'http://192.168.64.2/favr-pwa/home/chat/?file=$location&to=$to'; </script>";
+        echo "<script> window.location.href = 'https://askfavr.com/favr-pwa/home/chat/?file=$location&to=$to'; </script>";
     }
 }
