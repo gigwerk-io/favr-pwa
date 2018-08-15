@@ -3808,13 +3808,9 @@ class Web_Page
 
         $result = $this->db->query($notifications_query);
         $result1 = $this->db->query($notifications_friend_request_query);
-        $row = null;
-        $row1 = null;
         if ($result || $result1) {
             $row = $result->fetch(PDO::FETCH_ASSOC);
-            if(!empty($result1)){
-                $row1 = $result1->fetch(PDO::FETCH_ASSOC);
-            }
+            $row1 = $result1->fetch(PDO::FETCH_ASSOC);
 
             $_SESSION['main_notifications'] = $row['COUNT(*)'] + $row1['COUNT(*)'];
         } else {
