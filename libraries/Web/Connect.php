@@ -38,10 +38,7 @@ class Web_Connect{
      */
     public $id;
 
-    /**
-     * @var string
-     */
-    private $code;
+
     /**
      * @var string
      */
@@ -49,7 +46,6 @@ class Web_Connect{
 
     function __construct() {
         $this->db = $this->connect();
-        $this->code = $_GET['code'];
         $this->id = $_SESSION['user_info']['id'];
         $sth = $this->db->query("SELECT payment_id FROM users WHERE id=$this->id");
         $row = $sth->fetch(PDO::FETCH_ASSOC);
