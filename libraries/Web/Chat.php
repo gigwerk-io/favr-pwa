@@ -85,7 +85,7 @@ class Web_Chat
         {
             $this->freelancer_id = $row['freelancer_id_1'];
             $this->customer_id = $row['customer_id'];
-            if($this->id == $this->customer_id)
+            if($this->id = $this->customer_id)
             {
                 $name = $this->getName($this->freelancer_id);
             } else{
@@ -165,7 +165,7 @@ class Web_Chat
                                 <span class=\"time_date\"> $time</span></div>
                         </div>
                   </div>";
-            } elseif($this->id == $this->message['To']) {
+            } else {
                 echo "<div class=\"outgoing_msg\">
                         <div class=\"sent_msg\">
                             <p>$text</p>
