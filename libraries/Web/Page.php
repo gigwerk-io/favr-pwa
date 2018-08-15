@@ -344,9 +344,11 @@ class Web_Page
     /**
      * TODO: implement set permissions to lock certain aspects and functionality of FAVR to certain users only
      * Set permissions for the page. Will render Access Denied page and kill the page if needed.
+     *
      * @param $restrict_id integer The component to which access should be restricted.
      * @param $restrict_class integer The user class to which access should be restricted.
      * @param $restrict_user string Whether or not the page should be restricted to a certain user.
+     *
      */
     function setPermissions($restrict_id, $restrict_class, $restrict_user)
     {
@@ -377,6 +379,7 @@ class Web_Page
     /**
      * Set any stylesheets that need to be loaded in the header.
      * Must be called before renderHeader.
+     *
      * @param string $add_stylesheet string The stylesheet to load.
      */
     function addStylesheet($add_stylesheet)
@@ -389,6 +392,7 @@ class Web_Page
     /**
      * Set any stylesheets that need to be loaded in the header.
      * Must be called before renderHeader.
+     *
      * @param string $add_script string The stylesheet to load.
      */
     function addScript($add_script)
@@ -402,7 +406,6 @@ class Web_Page
      * Render page header
      * @param boolean $render_top_nav
      * @param boolean $render_back_button
-     * @param boolean $render_friends
      */
     function renderHeader($render_top_nav = true, $render_back_button = false)
     {
@@ -2340,6 +2343,119 @@ class Web_Page
     }
 
     /**
+     * Render request favr web and mobile form for friends sub section
+     *
+     * @param boolean $render_favr_request_form
+     *
+     * @return boolean
+     */
+    function renderFavrFriendsRequestForm($render_favr_request_form = true)
+    {
+        if ($render_favr_request_form) {
+            $userInfo = $this->getUserInfo($_SESSION['user_info']['id']);
+            $userID = $userInfo['id'];
+            $profile_img = unserialize($userInfo['profile_picture_path']);
+
+            if (isset($profile_img['name'], $profile_img['type'])) {
+                $profile_img_name = $profile_img['name'];
+                $profile_img_type = $profile_img['type'];
+            } else {
+                $profile_img_name = "";
+                $profile_img_type = "";
+            }
+            ?>
+            <div class="p-3 text-center request-favr-web">
+                <button class="btn btn-lg btn-primary" id="request-favr-web">
+                    <div class="d-inline-flex">
+                        <i class="material-icons">build</i>
+                        Request FAVR
+                    </div>
+                </button>
+            </div>
+
+            <div class="favr-fab">
+                <a class="favr-fab-fab favr-fab-btn-large text-center" id="favr-fabBtn">
+                    <i style="padding: .8rem;background: transparent;color: var(--white);font-size: xx-large" class="material-icons">build</i>
+                </a>
+            </div>
+
+            <form class="request-favr-mobile" action="" method="post" enctype="multipart/form-data">
+                <div class="my-3 p-3 bg-white rounded box-shadow">
+                    <h6 class="border-bottom border-gray pb-2 mb-0">Post a FAVR request for help from Friends</h6>
+                    <div class="media text-muted pt-3">
+                        <a href='<?php echo "$this->root_path/components/profile/profile.php?id=$userID"; ?>'>
+                            <img src='data:image/svg+xml;charset=UTF-8,%3Csvg%20width%3D%22128%22%20height%3D%22128%22%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20viewBox%3D%220%200%20128%20128%22%20preserveAspectRatio%3D%22none%22%3E%3Cdefs%3E%3Cstyle%20type%3D%22text%2Fcss%22%3E%23holder_164a9f2d749%20text%20%7B%20fill%3A%23007bff%3Bfont-weight%3Abold%3Bfont-family%3AArial%2C%20Helvetica%2C%20Open%20Sans%2C%20sans-serif%2C%20monospace%3Bfont-size%3A6pt%20%7D%20%3C%2Fstyle%3E%3C%2Fdefs%3E%3Cg%20id%3D%22holder_164a9f2d749%22%3E%3Crect%20width%3D%22128%22%20height%3D%22128%22%20fill%3D%22%23007bff%22%3E%3C%2Frect%3E%3Cg%3E%3Ctext%20x%3D%2248.4296875%22%20y%3D%2266.7%22%3E128x128%3C%2Ftext%3E%3C%2Fg%3E%3C%2Fg%3E%3C%2Fsvg%3E'
+                                 data-src='<?php echo "$this->root_path/image.php?i=$profile_img_name&i_t=$profile_img_type&i_p=true"; ?>' height='32' width='32' alt='Profile Image' class='mr-2 rounded'>
+                        </a>
+                        <div class="media-body pb-3 mb-0 small lh-125">
+                            <strong class="d-block text-gray-dark">@<?php echo $_SESSION['user_info']['username']; ?></strong>
+                            <div class="form-label-group">
+                                <textarea name="requestTaskDescription" class="form-control" placeholder="What is your task?"></textarea>
+                            </div>
+                            <div class="form-label-group">
+                                <input type="datetime-local" name="requestDate" id="inputDate"
+                                       class="form-control"
+                                       placeholder="When do you want your FAVR?" value="<?php echo date("Y-m-d\TH:i", time()); ?>" required="">
+                                <label for="inputDate">When do you want your FAVR?</label>
+                            </div>
+
+                            <!--                            TODO: Add informational popup telling the user we won't share sensitive information until freelancer accepts request -->
+
+                            <div class="form-label-group">
+                                <input type="text" name="requestStreetAddress" id="inputStreetAddress"
+                                       class="form-control"
+                                       placeholder="What's your street address?"
+                                       value="<?php echo $_SESSION['user_info']['street'] . ", " . $_SESSION['user_info']['city'] . ", " . $_SESSION['user_info']['state_province'] . ", " . $_SESSION['user_info']['zip']; ?>"
+                                       required="">
+                                <label for="inputStreetAddress">What's your street address?</label>
+                            </div>
+                            <label for="inputCategory">What category do you want your FAVR listed?</label>
+                            <div class="form-label-group">
+                                <select name="requestCategory" id="inputCategory"
+                                        class="form-control"
+                                        required="">
+                                    <option value="General Request" selected>General Request</option>
+                                    <option value="Home Improvement">Home Improvement</option>
+                                    <option value="Yard Work">Yard Work</option>
+                                </select>
+                            </div>
+                            <label for="inputDifficulty">What difficulty is the task?</label>
+                            <div class="form-label-group">
+                                <button id="easy-button" type="button" class="btn btn-success p-2 rounded" value="Easy">Easy 👌</button>
+                                <button id="medium-button" type="button" class="btn btn-warning p-2 rounded" value="Medium">Medium 💪🏿</button>
+                                <button id="hard-button" type="button" class="btn btn-danger p-2 rounded" value="Hard">Hard 🔥</button>
+                                <input id="difficulty" type="hidden" name="requestDifficulty">
+                            </div>
+                            <label for="inputPricing">Price (A future FAVR instead of cash 😉)</label>
+                            <div class="input-group pb-3">
+                                <div class="input-group-prepend">
+                                    <span class="input-group-text" style="color: var(--red)">FAVR</span>
+                                </div>
+                                <input type="number" name="requestPrice" id="inputPricing"
+                                       class="form-control"
+                                       style="border-radius: 0 5px 5px 0"
+                                       value="1" min="1" max="5" required="">
+                            </div>
+                            <label for="inputPictures">Only image files < 5 Mb can be attached</label>
+                            <div class="form-label-group">
+                                <input type="file" name="requestPictures[]" id="inputPictures"
+                                       class="form-control"
+                                       placeholder="Attach picture(s)" multiple>
+                                <label for="inputPictures">Attach picture(s): at most 3...</label>
+                            </div>
+                            <input type="submit" name="requestFavr" class="btn btn-lg btn-primary btn-block"
+                                   value="Request FAVR" onclick="alert("This will be posted publically")">
+                        </div>
+                    </div>
+                </div>
+            </form>
+            <?php
+        }
+
+        return $render_favr_request_form;
+    }
+
+    /**
      * Render friends list
      *
      * @param int $userId
@@ -2607,6 +2723,316 @@ class Web_Page
             ?>
             </div>
             <?php
+        }
+    }
+
+    /**
+     * Render marketplace favr request feed to home
+     *
+     * @param mixed $scope // default string otherwise an int
+     * @param string $orderBy
+     * @param string $orientation
+     * @param string $limit
+     *
+     * @return boolean
+     */
+    function renderFavrFriendsMarketplace($scope="global", $orderBy = "task_date", $orientation = "DESC", $limit="LIMIT 3")
+    {
+        if ($scope == $_SESSION['user_info']['id']) {
+
+            $requested = Data_Constants::DB_TASK_STATUS_REQUESTED;
+            $selectMarketplaceQuery = "
+                                   SELECT *, mfr.id as mfrid
+                                   FROM marketplace_favr_requests mfr
+                                   INNER JOIN users u
+                                   WHERE u.id = $scope
+                                   AND u.id = mfr.customer_id
+                                   AND mfr.task_status = '$requested'
+                                   ORDER BY $orderBy
+                                   $orientation
+                                   $limit
+            ";
+
+        } else if ($scope == "global") {
+
+            $requested = Data_Constants::DB_TASK_STATUS_REQUESTED;
+            $selectMarketplaceQuery = "
+                                   SELECT *, mfr.id as mfrid
+                                   FROM marketplace_favr_requests mfr
+                                   INNER JOIN users u
+                                   WHERE u.id = mfr.customer_id
+                                   AND mfr.task_status = '$requested'
+                                   ORDER BY $orderBy
+                                   $orientation
+                                   $limit
+            ";
+        } else {
+            $selectMarketplaceQuery = "";
+        }
+
+        $result = $this->db->query($selectMarketplaceQuery);
+
+        if (!$result) {
+            // failed to render marketplace
+            return false;
+        } else {
+            $rows = $result->fetchAll(PDO::FETCH_ASSOC);
+            if (!empty($rows)) {
+                foreach ($rows as $row) {
+                    $id = md5($row['mfrid']);
+                    $task_id = $row['mfrid'];
+                    $freelancer_id = $row['freelancer_id'];
+                    $freelancer_accepted = $row['task_freelancer_accepted'];
+                    $task_freelancer_count = $row['task_freelancer_count'];
+                    $customer_id = $row['customer_id'];
+                    $customerInfo = $this->getUserInfo($customer_id);
+                    $customer_username = $customerInfo['username'];
+                    $customer_first_name = $customerInfo['first_name'];
+                    $task_description = $row['task_description'];
+                    $task_date = date("n/j/Y", strtotime($row['task_date']));
+                    $task_location = $row['task_location'];
+                    $task_time_to_accomplish = date('h:i A, l, n/j/Y', strtotime($row['task_date']));
+                    $task_price = $row['task_price'];
+                    $task_difficulty = $row['task_intensity'];
+
+                    $profile_img_data_array = unserialize($customerInfo['profile_picture_path']);
+
+                    if (isset($profile_img_data_array['name'], $profile_img_data_array['type'])) {
+                        $profile_img_name = $profile_img_data_array['name'];
+                        $profile_img_type = $profile_img_data_array['type'];
+                    } else {
+                        $profile_img_name = "";
+                        $profile_img_type = "";
+                    }
+
+                    $task1_img_data_array = unserialize($row['task_picture_path_1']);
+                    $task1_img_name = $task1_img_data_array['name'];
+                    $task1_img_type = $task1_img_data_array['type'];
+
+                    $task2_img_data_array = unserialize($row['task_picture_path_2']);
+                    $task2_img_name = $task2_img_data_array['name'];
+                    $task2_img_type = $task2_img_data_array['type'];
+
+                    $task3_img_data_array = unserialize($row['task_picture_path_3']);
+                    $task3_img_name = $task3_img_data_array['name'];
+                    $task3_img_type = $task3_img_data_array['type'];
+
+                    // hide shrink button and non essential form information
+
+                    echo "<div class=\"my-3 p-3 bg-white rounded box-shadow\">
+                        <div class='pb-2 mb-0 border-bottom border-gray'>
+                            <a href='$this->root_path/components/profile/profile.php?id=$customer_id'>
+                                <img src=\"data:image/svg+xml;charset=UTF-8,%3Csvg%20width%3D%22128%22%20height%3D%22128%22%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20viewBox%3D%220%200%20128%20128%22%20preserveAspectRatio%3D%22none%22%3E%3Cdefs%3E%3Cstyle%20type%3D%22text%2Fcss%22%3E%23holder_164a9f2d749%20text%20%7B%20fill%3A%23007bff%3Bfont-weight%3Abold%3Bfont-family%3AArial%2C%20Helvetica%2C%20Open%20Sans%2C%20sans-serif%2C%20monospace%3Bfont-size%3A6pt%20%7D%20%3C%2Fstyle%3E%3C%2Fdefs%3E%3Cg%20id%3D%22holder_164a9f2d749%22%3E%3Crect%20width%3D%22128%22%20height%3D%22128%22%20fill%3D%22%23007bff%22%3E%3C%2Frect%3E%3Cg%3E%3Ctext%20x%3D%2248.4296875%22%20y%3D%2266.7%22%3E128x128%3C%2Ftext%3E%3C%2Fg%3E%3C%2Fg%3E%3C%2Fsvg%3E\" 
+                                data-src=\"$this->root_path/image.php?i=$profile_img_name&i_t=$profile_img_type&i_p=true\" height='32' width='32' alt=\"Profile Image\" class=\"mr-2 rounded\">
+                            </a>
+                            <strong style='font-size: 80%' class=\"d - block text - gray - dark\">
+                                <a href='$this->root_path/components/profile/profile.php?id=$customer_id'>@$customer_username</a>
+                            </strong>
+                            ";
+
+                    if (isset($task_difficulty)) {
+                        if ($task_difficulty == Data_Constants::DB_TASK_INTENSITY_EASY) {
+                            echo "<button type=\"button\" class=\"ml-2 btn-sm btn btn-success p-1 rounded\" style='opacity: .9' value=\"Easy\" disabled>Easy 👌</button>";
+                        } else if ($task_difficulty == Data_Constants::DB_TASK_INTENSITY_MEDIUM) {
+                            echo "<button type=\"button\" class=\"ml-2 btn-sm btn btn-warning p-1 rounded\" style='opacity: .9' value=\"Medium\" disabled>Medium 💪🏿</button>";
+                        } else if ($task_difficulty == Data_Constants::DB_TASK_INTENSITY_HARD) {
+                            echo "<button type=\"button\" class=\"ml-2 btn-sm btn btn-danger p-1 rounded\" style='opacity: .9' value=\"Hard\" disabled>Hard 🔥</button>";
+                        }
+                    }
+
+                    if ($customer_id == $_SESSION['user_info']['id']) {
+                        echo "<div class='float-right small' style='padding-top: .3rem;color: var(--red)'>- $$task_price</div>";
+                    } else {
+                        echo "<div class='float-right small' style='padding-top: .3rem;color: var(--dark)'>$$task_price</div>";
+                    }
+
+                    echo "</div><div class=\"media text-muted pt-3\">
+                        <div class='container'>
+                            <p id='$id' class=\"media-body text-dark mb-0 small lh-125\">
+                                $task_description
+                                <div id='$id-location' class='pt-1 border-top small border-gray d-none'>
+                                    <label for='location'>Location:</label>
+                                    <!-- TODO: calculate location distance by zipcode -->
+                                    <p class='text-dark'>Within 3 Miles of your location.</p>
+                                    <div id='$id-completeby' class='pt-1 border-top border-bottom border-gray'>
+                                        <label for='completeby'>Complete FAVR by:</label>
+                                        <p class='text-dark'>$task_time_to_accomplish</p>
+                                    </div>
+                                </div>
+                                <div id='$id-freelancer-count' class='pt-1 small d-none'>
+                                    <label for='freelancer-count'>Amount of freelancer(s) wanted: (accepted/requested)</label>
+                                    <p class='text-dark'>$freelancer_accepted/$task_freelancer_count</p>
+                                </div>";
+                    echo "
+                                <div id='$id-image1' class='pt-1 border-top border-gray small d-none'>
+                                    <label for='image1'>Attached Image 1:</label>
+                                    <img id='$id-img1' style='cursor: pointer' src='data:image/svg+xml;charset=UTF-8,%3Csvg%20width%3D%22128%22%20height%3D%22128%22%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20viewBox%3D%220%200%20128%20128%22%20preserveAspectRatio%3D%22none%22%3E%3Cdefs%3E%3Cstyle%20type%3D%22text%2Fcss%22%3E%23holder_164a9f2d749%20text%20%7B%20fill%3A%23007bff%3Bfont-weight%3Abold%3Bfont-family%3AArial%2C%20Helvetica%2C%20Open%20Sans%2C%20sans-serif%2C%20monospace%3Bfont-size%3A6pt%20%7D%20%3C%2Fstyle%3E%3C%2Fdefs%3E%3Cg%20id%3D%22holder_164a9f2d749%22%3E%3Crect%20width%3D%22128%22%20height%3D%22128%22%20fill%3D%22%23007bff%22%3E%3C%2Frect%3E%3Cg%3E%3Ctext%20x%3D%2248.4296875%22%20y%3D%2266.7%22%3E128x128%3C%2Ftext%3E%3C%2Fg%3E%3C%2Fg%3E%3C%2Fsvg%3E' 
+                                        data-src='$this->root_path/image.php?i=$task1_img_name&i_t=$task1_img_type' height='30%' width='30%' alt='FAVR image 1'>
+                                </div>";
+                    // Image 1 modal
+                    echo "
+                            <div id=\"$id-image1-modal\" class=\"modal\">
+                              <span id='$id-close1' class=\"modal-close\">&times;</span>
+                              <img class=\"modal-content\" id=\"$id-image1-modal-content\">
+                              <div id=\"$id-caption1\" class='caption'></div>
+                            </div>";
+
+                    echo "
+                                <div id='$id-image2' class='pt-1 border-top border-gray small d-none'>
+                                    <label for='image2'>Attached Image 2:</label>
+                                    <img id='$id-img2' style='cursor: pointer' src='data:image/svg+xml;charset=UTF-8,%3Csvg%20width%3D%22128%22%20height%3D%22128%22%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20viewBox%3D%220%200%20128%20128%22%20preserveAspectRatio%3D%22none%22%3E%3Cdefs%3E%3Cstyle%20type%3D%22text%2Fcss%22%3E%23holder_164a9f2d749%20text%20%7B%20fill%3A%23007bff%3Bfont-weight%3Abold%3Bfont-family%3AArial%2C%20Helvetica%2C%20Open%20Sans%2C%20sans-serif%2C%20monospace%3Bfont-size%3A6pt%20%7D%20%3C%2Fstyle%3E%3C%2Fdefs%3E%3Cg%20id%3D%22holder_164a9f2d749%22%3E%3Crect%20width%3D%22128%22%20height%3D%22128%22%20fill%3D%22%23007bff%22%3E%3C%2Frect%3E%3Cg%3E%3Ctext%20x%3D%2248.4296875%22%20y%3D%2266.7%22%3E128x128%3C%2Ftext%3E%3C%2Fg%3E%3C%2Fg%3E%3C%2Fsvg%3E' 
+                                        data-src='$this->root_path/image.php?i=$task2_img_name&i_t=$task2_img_type' height='30%' width='30%' alt='FAVR image 2'>
+                                </div>";
+                    // Image 2 modal
+                    echo "
+                            <div id=\"$id-image2-modal\" class=\"modal\">
+                              <span id='$id-close2' class=\"modal-close\">&times;</span>
+                              <img class=\"modal-content\" id=\"$id-image2-modal-content\">
+                              <div id=\"$id-caption2\" class='caption'></div>
+                            </div>";
+
+                    echo "
+                                <div id='$id-image3' class='pt-1 border-top border-gray small d-none'>
+                                    <label for='image3'>Attached Image 3:</label>
+                                    <img id='$id-img3' style='cursor: pointer' src='data:image/svg+xml;charset=UTF-8,%3Csvg%20width%3D%22128%22%20height%3D%22128%22%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20viewBox%3D%220%200%20128%20128%22%20preserveAspectRatio%3D%22none%22%3E%3Cdefs%3E%3Cstyle%20type%3D%22text%2Fcss%22%3E%23holder_164a9f2d749%20text%20%7B%20fill%3A%23007bff%3Bfont-weight%3Abold%3Bfont-family%3AArial%2C%20Helvetica%2C%20Open%20Sans%2C%20sans-serif%2C%20monospace%3Bfont-size%3A6pt%20%7D%20%3C%2Fstyle%3E%3C%2Fdefs%3E%3Cg%20id%3D%22holder_164a9f2d749%22%3E%3Crect%20width%3D%22128%22%20height%3D%22128%22%20fill%3D%22%23007bff%22%3E%3C%2Frect%3E%3Cg%3E%3Ctext%20x%3D%2248.4296875%22%20y%3D%2266.7%22%3E128x128%3C%2Ftext%3E%3C%2Fg%3E%3C%2Fg%3E%3C%2Fsvg%3E' 
+                                    data-src='$this->root_path/image.php?i=$task3_img_name&i_t=$task3_img_type' height='30%' width='30%' alt='FAVR image 3'>
+                                </div>";
+                    // Image 3 modal
+                    echo "
+                            <div id=\"$id-image3-modal\" class=\"modal\">
+                              <span id='$id-close3' class=\"modal-close\">&times;</span>
+                              <img class=\"modal-content\" id=\"$id-image3-modal-content\">
+                              <div id=\"$id-caption3\" class='caption'></div>
+                            </div>";
+
+                    echo "
+                            </p>
+                            <div class='row p-0 border-top border-gray'>
+                                <div class='col-sm-12 small'>
+                                    <div class=\"float-left d-inline\">
+                                        <div id='$id-expand' class='text-info d-inline-flex'
+                                             style='cursor: pointer'
+                                             onclick=\"
+                                              $('.favr-fab').fadeOut();
+                                              $('#$id').animate({height: '4rem'});
+                                              $('#$id-location').removeClass('d-none');
+                                              $('#$id-freelancer-count').removeClass('d-none');
+                                              $('#$id-collapse').removeClass('d-none');
+                                              $('#$id-collapse').addClass('d-inline-flex');
+                                              $('#$id-expand').removeClass('d-inline-flex');
+                                              $('#$id-expand').addClass('d-none');";
+
+                    for ($i = 1; $i <= Data_Constants::MAXIMUM_IMAGE_UPLOAD_COUNT; $i++) {
+                        echo "
+                            var modal = document.getElementById('$id-image$i-modal');
+                            var img = document.getElementById('$id-img$i');
+                            var modalImg = document.getElementById('$id-image$i-modal-content');
+                            var captionText = document.getElementById('$id-caption$i');
+                            img.onclick = function(){
+                                modal.style.display = 'block';
+                                modalImg.src = this.src;
+                                captionText.innerHTML = this.alt;
+                            }
+                            var span = document.getElementById('$id-close$i');
+                            span.onclick = function() { 
+                                modal.style.display = 'none';
+                            }
+                         ";
+                    }
+
+                    if (!empty($task1_img_data_array)) {
+                        echo "$('#$id-image1').removeClass('d-none');";
+                    }
+
+                    if (!empty($task2_img_data_array)) {
+                        echo "$('#$id-image2').removeClass('d-none');";
+                    }
+
+                    if (!empty($task3_img_data_array)) {
+                        echo "$('#$id-image3').removeClass('d-none');";
+                    }
+
+                    echo "
+                                              
+                                        \">Details</div>
+                                         <div id='$id-collapse' class='text-info d-none'
+                                             style='cursor: pointer'
+                                             onclick=\"
+                                              $('#$id-location').addClass('d-none');
+                                              $('#$id-freelancer-count').addClass('d-none');
+                                              $('#$id').css({height: 'auto'});
+                                              $('#$id-collapse').removeClass('d-inline-flex');
+                                              $('#$id-collapse').addClass('d-none');
+                                              $('#$id-expand').removeClass('d-none');
+                                              $('#$id-expand').addClass('d-inline-flex');";
+
+                    if (!empty($task1_img_data_array)) {
+                        echo "$('#$id-image1').addClass('d-none');";
+                    }
+
+                    if (!empty($task2_img_data_array)) {
+                        echo "$('#$id-image2').addClass('d-none');";
+                    }
+
+                    if (!empty($task3_img_data_array)) {
+                        echo "$('#$id-image3').addClass('d-none');";
+                    }
+
+                    echo "
+                                              
+                                              $('.favr-fab').css({display: ''})
+                                        \">Collapse</div> | $task_date
+                                        ";
+
+                    echo "
+                                    </div>
+                                    <div class='float-right d-inline'>
+                                       ";
+
+                    if ($customer_id != $_SESSION['user_info']['id']) { // if not this user
+                        $freelancerAccepted = false;
+                        $freelancer_id = null;
+                        $user_id = $_SESSION['user_info']['id'];
+                        $select_freelancers_query = "SELECT * 
+                                                     FROM marketplace_favr_freelancers
+                                                     WHERE request_id = $task_id
+                                                     AND user_id = $user_id";
+                        $result = $this->db->query($select_freelancers_query);
+                        if ($result) {
+                            $row = $result->fetch(PDO::FETCH_ASSOC);
+                            if (!empty($row)) {
+                                $freelancerAccepted = true;
+                                $freelancer_id = $row['user_id'];
+                            }
+                        }
+
+                        if ($freelancerAccepted) {
+                            echo "<a class='text-danger' href=\"$this->root_path/components/notifications/?navbar=active_notifications&withdraw_request_id=$task_id&freelancer_id=$freelancer_id&ALERT_MESSAGE=You've withdrawn from this task: the customer has been notified!\">
+                                Withdraw</a>";
+                        } else {
+                            echo "<a href=\"$this->root_path/components/notifications/?navbar=active_notifications&accept_freelancer_request_id=$task_id&ALERT_MESSAGE=You've signed up to take this task! The task requester has been notified of your interest and is reviewing your offer to help: they can accept or reject your offer to help! You'll be notified of their decision; you can withdraw your offer to help before they decide. \">
+                                Accept Request</a>";
+                        }
+                    } else {
+                        echo "<a href=\"?navbar=active_home&d_request_id=$task_id&ALERT_MESSAGE=Your request has been deleted!\" class='text-danger'>
+                            Cancel Request</a>";
+                    }
+
+                    echo "
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>";
+                    echo "</div>";
+
+                }
+            } else {
+                echo "<p class='p-3 text-muted'>No FAVR requests at the moment!</p>";
+                return false;
+            }
+
+            return true;
         }
     }
 

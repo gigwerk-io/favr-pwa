@@ -82,6 +82,7 @@ $page->setTitle("". $_SESSION['user_info']['username'] ."");
 $page->renderHeader();
 echo $ALERT_MESSAGE;
 $page->renderFavrProfile($_SESSION['user_info']['id']);
+echo "<a class='small' href='$page->root_path/home/friends/?navbar=active_home&nav_scroller=active_friends'>My friends</a>";
 $page->renderFavrProfileHistory($_SESSION['user_info']['id']);
 $page->addScript("
 <script>

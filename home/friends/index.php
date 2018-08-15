@@ -64,7 +64,7 @@ if (isset($_GET['friends_list']) && $_GET['friends_list'] == true) {
         }
     }
 
-    $page->renderFavrRequestForm();
+    $page->renderFavrFriendsRequestForm();
     ?>
     <div class="my-3 p-3">
         <h6 class="border-bottom border-gray pb-2 mb-0">
@@ -93,7 +93,7 @@ if (isset($_GET['friends_list']) && $_GET['friends_list'] == true) {
         </small>
     </div>
     <?php
-    $page->renderFavrMarketplace();
+    $page->renderFavrFriendsMarketplace($_SESSION['scope'], $_SESSION['filter_marketplace_by'], $_SESSION['orient_marketplace_by'], $_SESSION['limit_marketplace_by']);
     $page->renderFriendSuggestions($_SESSION['user_info']['id']);
 }
 $page->addScript("
