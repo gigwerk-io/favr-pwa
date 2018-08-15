@@ -86,7 +86,7 @@ if (!empty($_POST['Text']))
                 if(el !== document.activeElement) {
                     document.location.reload();
                 }
-            }, 10000)
+            }, 12500)
 
         }
 
