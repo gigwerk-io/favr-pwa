@@ -85,7 +85,7 @@ class Web_Chat
         {
             $this->freelancer_id = $row['freelancer_id_1'];
             $this->customer_id = $row['customer_id'];
-            if($this->id = $this->customer_id)
+            if($this->id == $this->customer_id)
             {
                 $name = $this->getName($this->freelancer_id);
             } else{
@@ -137,6 +137,7 @@ class Web_Chat
 //            $to = $this->getName($row['customer_id']);
 //            $from = $this->getName($row['freelancer_id_1']);
 //        }
+        //loop through shared file
         $convo = file_get_contents("../../storage/$file");
         $split = explode("\n", $convo);
         $keys = array();
