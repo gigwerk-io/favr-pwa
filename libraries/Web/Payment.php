@@ -106,7 +106,7 @@ class Web_Payment
         if($this->status == "Pending Approval")
         {
             echo "
-                <form action='TestPage.php?id=$id' method='post'>
+                <form action='process_payment?id=$id' method='post'>
                     <script
                         src='https://checkout.stripe.com/checkout.js' class='stripe-button'
                         data-key= " . Data_Constants::STRIPE_PUBLIC . "
@@ -118,7 +118,7 @@ class Web_Payment
                     </script>
                 </form>";
         } else{
-            header("location: http://localhost:1234/favr-pwa");
+            //header("location: http://localhost:1234/favr-pwa");
         }
         return $this;
     }
@@ -136,7 +136,7 @@ class Web_Payment
             "description" => $this->description,
             "source" => $token,
         ));
-        print_r($charge);
+        //print_r($charge);
         return $this;
     }
 

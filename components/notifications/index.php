@@ -19,6 +19,7 @@ if (isset($_SESSION['user_info'])) {
 
 $page = new Web_Page($USER);
 $chat = new Web_Chat();
+$payment = new Web_Payment();
 
 //handle friend requests
 if (isset($_GET['add_friend'])) {
@@ -52,6 +53,8 @@ if (isset($_GET['freelancer_arrived'], $_GET['arrived_request_id'])) {
     if ($_GET['freelancer_arrived']) {
         $timestamp = date("Y-m-d h:i:s", time());
         $page->processFreelancerArrived($_GET['freelancer_arrived'], $timestamp, $_GET['arrived_request_id'], $_SESSION['user_info']['id']);
+        $payment->select($_GET['arrived_request_id'])->checkOut($_GET['arrived_request_id']); //redirects to charge page
+
     }
 }
 
