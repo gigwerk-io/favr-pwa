@@ -1121,7 +1121,7 @@ class Web_Page
                                             <label for='profileImage'>Upload a new profile picture</label>
                                             <input type='file' name='profile_image' class='form-control'>
                                             <br>
-                                            <textarea name='profile_description' class='form-control' placeholder='Describe yourself and what you do...'></textarea>
+                                            <textarea name='profile_description' class='form-control' placeholder='Describe yourself and what you do...'>". $userInfo['profile_description'] ."</textarea>
                                           </div>
                                           <div class=\"modal-footer\">
                                             <button type=\"button\" class=\"btn btn-secondary\" data-dismiss=\"modal\">Close</button>
@@ -1545,9 +1545,9 @@ class Web_Page
                     case "active_friends":
                         $active_friends = "active";
                         break;
-//                    case "active_chat":
-//                        $active_chat = "active";
-//                        break;
+                    case "active_chat":
+                        $active_chat = "active";
+                        break;
                     default:
                         // none active
                         break;
@@ -1557,7 +1557,7 @@ class Web_Page
                     ?>
                     <div class="nav-scroller bg-white box-shadow">
                         <nav class="nav nav-underline">
-                            <div class="col-sm-6" style="max-width: 200px">
+                            <div class="col-sm-4 pl-0 pr-0" style="max-width: 170px">
                                 <a class="nav-link <?php echo $active_marketplace; ?>"
                                    href="<?php echo $this->root_path; ?>/home/?navbar=active_home&nav_scroller=active_marketplace">
                                     Marketplace
@@ -1570,7 +1570,7 @@ class Web_Page
                                     ?>
                                 </a>
                             </div>
-                            <div class="col-sm-6" style="max-width: 200px;">
+                            <div class="col-sm-4 pl-0 pr-0" style="max-width: 170px;">
                                 <a class="nav-link <?php echo $active_friends; ?>"
                                    href="<?php echo $this->root_path; ?>/home/friends/?navbar=active_home&nav_scroller=active_friends">
                                     Friends
@@ -1579,6 +1579,19 @@ class Web_Page
                                         echo "<i class=\"material-icons\" style='color: var(--red);font-size: 15px; padding-left: 2px;position:relative;top:.1rem;'>people</i>";
                                     } else {
                                         echo "<i class=\"material-icons\" style='font-size: 15px; padding-left: 2px;position:relative;top:.1rem;'>people_outline</i>";
+                                    }
+                                    ?>
+                                </a>
+                            </div>
+                            <div class="col-sm-4 pl-0 pr-0" style="max-width: 170px;">
+                                <a class="nav-link <?php echo $active_chat; ?>"
+                                   href="<?php echo $this->root_path; ?>/home/chat/?navbar=active_home&nav_scroller=active_chat">
+                                    Chat
+                                    <?php
+                                    if ($active_chat) {
+                                        echo "<i class=\"material-icons\" style='color: var(--red);font-size: 15px; padding-left: 2px;position:relative;top:.1rem;'>chat</i>";
+                                    } else {
+                                        echo "<i class=\"material-icons\" style='font-size: 15px; padding-left: 2px;position:relative;top:.1rem;'>chat</i>";
                                     }
                                     ?>
                                 </a>
@@ -2615,7 +2628,7 @@ class Web_Page
 
                             if ($task_status == Data_Constants::DB_TASK_STATUS_PAID) {
                                 echo "<div class='d-block mt-4 pt-2 border-gray border-top text-center'>
-                                        <a href=\"$this->root_path/components/notifications/?navbar=active_notifications&freelancer_arrived=true&arrived_friend_id=$task_id&ALERT_MESSAGE=You've arrived! Make sure you're at the correct location and that the customer is who they say they are!\" class='text-success'>
+                                        <a href=\"$this->root_path/components/notifications/?navbar=active_notifications&friend_arrived=true&arrived_friend_request_id=$task_id&ALERT_MESSAGE=You've arrived! Make sure you're at the correct location and that the customer is who they say they are!\" class='text-success'>
                                         Freelancer Arrived</a>
                                       </div>
                                     ";
@@ -4820,6 +4833,95 @@ class Web_Page
     }
 
     /**
+     * Process accept a friend's request
+     *
+     * Flow: Marketplace -> freelancer accepts -> Notify customer -> customer accepts -> Notify freelancer -> Change status of request to pending job
+     *                                                      |-> freelancer or customer rejects -> Marketplace
+     *
+     * @param int $requestID
+     * @param int $freelancerID
+     *
+     * @return mixed
+     */
+    function processFreelancerAcceptRequest($requestID, $freelancerID)
+    {
+        if (isset($requestID, $freelancerID)) {
+            // freelancer has accepted
+            $select_request_query = "SELECT * 
+                                     FROM marketplace_favr_requests
+                                     WHERE id = $requestID";
+            $result = $this->db->query($select_request_query);
+            if ($result) {
+                $row = $result->fetch(PDO::FETCH_ASSOC);
+                $freelancer_accepted = $row['task_freelancer_accepted'];
+                $freelancer_count = $row['task_freelancer_count'];
+                $freelancer_id = $row['freelancer_id'];
+                $request_id = $row['id'];
+                $setTaskStatusPending = ""; // still need more freelancers
+
+                // ensure there's not already enough freelancers signed up for this job
+                if ($freelancer_accepted < $freelancer_count) {
+                    $select_freelancers_query = "INSERT INTO marketplace_favr_freelancers
+                                                 (
+                                                    request_id, 
+                                                    user_id
+                                                 ) 
+                                                 VALUES
+                                                 (
+                                                    $request_id,
+                                                    $freelancerID
+                                                 )";
+
+                    $result = $this->db->query($select_freelancers_query);
+                    if ($result) {
+                        $freelancer_accepted += 1; // add user to freelancer queue
+
+                        $update_request_query = "UPDATE marketplace_favr_requests
+                                                 SET task_freelancer_accepted = $freelancer_accepted,
+                                                     freelancer_id = $request_id
+                                                 WHERE id = $request_id";
+
+                        $result = $this->db->query($update_request_query);
+//                        die(print_r($result));
+                        if (!$result) {
+                            return false;
+                        }
+
+                    } else {
+                        return false;
+                    }
+                }
+
+                if ($freelancer_accepted == $freelancer_count) {
+                    $setTaskStatusPending = Data_Constants::DB_TASK_STATUS_PENDING_APPROVAL;
+
+                    $update_request_query = "UPDATE marketplace_favr_requests
+                                             SET task_status = '$setTaskStatusPending'
+                                             WHERE id = $request_id";
+
+                    $result = $this->db->query($update_request_query);
+                    if ($result) {
+                        return $freelancerID;
+                    } else {
+                        return false;
+                    }
+                }
+
+                if ($freelancer_accepted > $freelancer_count) {
+                    // impossible
+                    return false;
+                }
+
+                return $freelancerID;
+            }
+        } else {
+            // not set
+            return false;
+        }
+    }
+
+
+    /**
      * Process accept request
      *
      * Flow: Marketplace -> Verified freelancer accepts -> Notify customer -> customer accepts -> Notify freelancer -> Change status of request to paid job
@@ -4994,7 +5096,7 @@ class Web_Page
     /**
      * Process accept request
      *
-     * Flow: Marketplace -> Verified freelancer accepts -> Notify customer -> customer accepts -> Notify freelancer -> Change status of request to paid job
+     * Flow: Friends -> Verified freelancer accepts -> Notify customer -> customer accepts -> Notify freelancer -> Change status of request to paid job
      *                                                      |-> freelancer or customer rejects -> Marketplace
      *
      * @param int $requestID
@@ -5089,13 +5191,13 @@ class Web_Page
     {
         if (isset($requestID) && ($freelancerID != null || $customerID != null)) {
             $select_task_query = "SELECT friend_id, task_freelancer_accepted 
-                                  FROM friend_favr_requests
+                                  FROM friends_favr_requests
                                   WHERE id = '$requestID'";
             $result = $this->db->query($select_task_query);
             if ($result) {
                 if ($freelancerID != null) {
                     $row = $result->fetch(PDO::FETCH_ASSOC);
-                    $freelancer_id = $row['freelancer_id'];
+                    $freelancer_id = $row['friend_id'];
                     $freelancer_accepted = $row['task_freelancer_accepted'];
 
                     // delete request from freelancers table and decrement freelancers accepted count
@@ -5113,7 +5215,8 @@ class Web_Page
 
                     $update_request_query = "UPDATE friends_favr_requests
                                              SET task_freelancer_accepted = $freelancer_accepted,
-                                                 friend_id = $freelancer_id
+                                                 friend_id = $freelancer_id,
+                                                 arrival_time = NULL
                                                  $set_task_status
                                              WHERE id = $requestID";
 
@@ -5157,16 +5260,16 @@ class Web_Page
             if ($freelancerID == $_SESSION['user_info']['id']) { // must be this user
                 // log time of arrival
                 $inProgress = Data_Constants::DB_TASK_STATUS_IN_PROGRESS;
-                $update_request_query = "UPDATE friend_favr_requests
+                $update_request_query = "UPDATE friends_favr_requests
                                          SET task_status = '$inProgress'
                                          WHERE id = $requestID";
 
                 $result = $this->db->query($update_request_query);
                 if ($result) {
-                    $update_freelancers_query = "UPDATE marketplace_favr_freelancers
+                    $update_freelancers_query = "UPDATE friends_favr_requests
                                              SET arrival_time = '$timestamp'
-                                             WHERE request_id = $requestID
-                                             AND user_id = $freelancerID";
+                                             WHERE id = $requestID
+                                             AND friend_id = $freelancerID";
 
                     $result = $this->db->query($update_freelancers_query);
                     if ($result) {
