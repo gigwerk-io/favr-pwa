@@ -203,7 +203,7 @@ class Web_Page
             $db->setAttribute(PDO::MYSQL_ATTR_USE_BUFFERED_QUERY, true);
             return $db;
         } catch (PDOException $e) {
-            echo "Error: Unable to load this page. Please contact arama006@umn.edu for assistance.";
+            echo "Error: Unable to load this page. Please contact contact@askfavr.com for assistance.";
             echo "<br/>Error: " . $e;
         }
     }
@@ -354,6 +354,36 @@ class Web_Page
     function setPermissions($restrict_id, $restrict_class, $restrict_user)
     {
         return;
+    }
+
+    /**
+     * Check if these users are friends
+     *
+     * Users are friends if the friends_since column timestamp is not empty as it is only updated once a friendship is confirmed
+     *
+     * @param int $user_id
+     * @param int $friend_id
+     *
+     * @return boolean // true if users are friends false otherwise
+     */
+    function assertFriends($user_id, $friend_id) {
+        if (isset($user_id, $friend_id)) {
+            $select_friend_query = "SELECT friends_since FROM friends WHERE user_id = $user_id AND friend_id = $friend_id";
+            $result = $this->db->query($select_friend_query);
+            if ($result) {
+                $row = $result->fetch(PDO::FETCH_ASSOC);
+                if (!empty($row) && $row['friends_since'] != null) {
+                    // these users are friends
+                    return true;
+                } else {
+                    return false;
+                }
+            } else {
+                return false;
+            }
+        } else {
+            return false;
+        }
     }
 
     /**
@@ -1253,6 +1283,9 @@ class Web_Page
             <div class="row m-3 pt-3">
             </div>
             <?php
+            if ($isFriend) {
+                echo "<a class='small' href='$this->root_path/home/friends/?navbar=active_home&nav_scroller=active_friends&ask_favr=true&id=$userID&last_url=profile'>Ask FAVR</a>";
+            }
         }
     }
 
@@ -1415,12 +1448,6 @@ class Web_Page
                                 ?>
                             </a>
                         </li>
-                        <li class="nav-item <?php echo $active_categories; ?>">
-                            <a class="nav-link d-inline-flex" href="<?php echo $this->root_path; ?>/components/categories/?navbar=active_categories">
-                                <i class="material-icons">layers</i>
-                                Categories <span style="font-size: xx-small" class="badge badge-pill text-muted">coming soon</span>
-                            </a>
-                        </li>
                         <li class="nav-item <?php echo $active_notifications; ?>">
                             <a class="nav-link d-inline-flex" href="<?php echo $this->root_path; ?>/components/notifications/?navbar=active_notifications">
                                 <?php
@@ -1518,9 +1545,9 @@ class Web_Page
                     case "active_friends":
                         $active_friends = "active";
                         break;
-                    case "active_chat":
-                        $active_chat = "active";
-                        break;
+//                    case "active_chat":
+//                        $active_chat = "active";
+//                        break;
                     default:
                         // none active
                         break;
@@ -1530,48 +1557,32 @@ class Web_Page
                     ?>
                     <div class="nav-scroller bg-white box-shadow">
                         <nav class="nav nav-underline">
-                            <a class="nav-link <?php echo $active_marketplace; ?>"
-                               href="<?php echo $this->root_path; ?>/home/?navbar=active_home&nav_scroller=active_marketplace">
-                                Marketplace
-                                <?php
-                                if ($active_marketplace) {
-                                    echo "<i class=\"material-icons\" style='color: var(--red);font-size: 15px;position:relative;top:.2rem;padding-left: 2px;'>store</i>";
-                                } else {
-                                    echo "<i class=\"material-icons\" style='font-size: 15px;position:relative;top:.2rem;padding-left: 2px;'>store</i>";
-                                }
-                                ?>
-                            </a>
-                            <a class="nav-link <?php echo $active_friends; ?>"
-                               href="<?php echo $this->root_path; ?>/home/friends/?navbar=active_home&nav_scroller=active_friends">
-                                Friends
-                                <?php
-                                if ($active_friends) {
-                                    echo "<i class=\"material-icons\" style='color: var(--red);font-size: 15px; padding-left: 2px;position:relative;top:.1rem;'>people</i>";
-                                } else {
-                                    echo "<i class=\"material-icons\" style='font-size: 15px; padding-left: 2px;position:relative;top:.1rem;'>people_outline</i>";
-                                }
-                                ?>
-                            </a>
-                            <a class="nav-link <?php  echo $active_chat; ?>"
-                               href="<?php echo $this->root_path; ?>/home/chat/?navbar=active_home&nav_scroller=active_chat">
-                                Chat
-                                <?php
-                                if ($active_chat) {
-                                    echo "<i class=\"material-icons\" style='color: var(--red);font-size: 15px; padding-left: 2px;position:relative;top:.2rem;'>chat_bubble</i>";
-                                } else {
-                                    echo "<i class=\"material-icons\" style='font-size: 15px; padding-left: 2px;position:relative;top:.2rem;'>chat_bubble_outline</i>";
-                                }
-                                ?>
-                            </a>
-                            <a class="nav-link "
-                               href="<?php echo $this->root_path; ?>/home/payments">
-                                Payments
-                                <?php
-
-                                echo "<i class=\"material-icons\" style='font-size: 15px; padding-left: 2px;position:relative;top:.2rem;'>attach_money</i>";
-
-                                ?>
-                            </a>
+                            <div class="col-sm-6" style="max-width: 200px">
+                                <a class="nav-link <?php echo $active_marketplace; ?>"
+                                   href="<?php echo $this->root_path; ?>/home/?navbar=active_home&nav_scroller=active_marketplace">
+                                    Marketplace
+                                    <?php
+                                    if ($active_marketplace) {
+                                        echo "<i class=\"material-icons\" style='color: var(--red);font-size: 15px;position:relative;top:.2rem;padding-left: 2px;'>store</i>";
+                                    } else {
+                                        echo "<i class=\"material-icons\" style='font-size: 15px;position:relative;top:.2rem;padding-left: 2px;'>store</i>";
+                                    }
+                                    ?>
+                                </a>
+                            </div>
+                            <div class="col-sm-6" style="max-width: 200px;">
+                                <a class="nav-link <?php echo $active_friends; ?>"
+                                   href="<?php echo $this->root_path; ?>/home/friends/?navbar=active_home&nav_scroller=active_friends">
+                                    Friends
+                                    <?php
+                                    if ($active_friends) {
+                                        echo "<i class=\"material-icons\" style='color: var(--red);font-size: 15px; padding-left: 2px;position:relative;top:.1rem;'>people</i>";
+                                    } else {
+                                        echo "<i class=\"material-icons\" style='font-size: 15px; padding-left: 2px;position:relative;top:.1rem;'>people_outline</i>";
+                                    }
+                                    ?>
+                                </a>
+                            </div>
                             <!--                    <a id="suggestions" onclick="focusNoScrollMethod()" class="nav-link -->
                             <?php //echo  $active_suggestions; ?><!--" href="?nav_scroller=active_suggestions">Suggestions</a>-->
                         </nav>
@@ -1603,7 +1614,6 @@ class Web_Page
     }
 
     /**
-     * TODO: use client side store to keep freelancer array and accepted task information
      * Render main notifications
      *
      * @param array $userInfo
@@ -1636,15 +1646,30 @@ class Web_Page
                 AND friends_since IS NULL 
         ";
 
+        $notifications_friend_favr_request_query = "
+                                SELECT *, ffr.id as ffrid
+                                FROM friends_favr_requests ffr 
+                                JOIN users u
+                                ON u.id = ffr.customer_id
+                                AND ffr.customer_id = $userID 
+                                AND ffr.friend_id IS NOT NULL 
+                                AND NOT ffr.task_status = '$completed'
+                                OR ffr.friend_id = $userID 
+                                AND u.id = ffr.friend_id
+                                AND NOT ffr.task_status = '$completed'";
+
         $result = $this->db->query($notifications_request_query);
         $result1 = $this->db->query($notifications_friend_request_query);
-        if (!$result || !$result1) {
+        $result2 = $this->db->query($notifications_friend_favr_request_query);
+
+        if (!$result || !$result1 || !$result2) {
             // failed to render notifications
             return false;
         } else {
             $rows = $result->fetchAll(PDO::FETCH_ASSOC);
             $rows1 = $result1->fetchAll(PDO::FETCH_ASSOC);
-            if (!empty($rows) || !empty($rows1)) {
+            $rows2 = $result2->fetchAll(PDO::FETCH_ASSOC);
+            if (!empty($rows) || !empty($rows1) || !empty($rows2)) {
                 // There are results
                 // request notifications
                 foreach ($rows as $row) {
@@ -2028,7 +2053,7 @@ class Web_Page
 
                                 if ($task_status == Data_Constants::DB_TASK_STATUS_PAID) {
                                     echo "<div class='d-block mt-4 pt-2 border-gray border-top text-center'>
-                                            <a href=\"$this->root_path/components/notifications/?navbar=active_notifications&freelancer_arrived=true&arrived_request_id=$task_id&ALERT_MESSAGE=You've arrived! Make sure you're at the correct location and that the customer is who they say they are!\" class='text-success'>
+                                            <a href=\"$this->root_path/components/notifications/?navbar=active_notifications&friend_arrived=true&arrived_friend_request_id=$task_id&ALERT_MESSAGE=You've arrived! Make sure you're at the correct location and that the customer is who they say they are!\" class='text-success'>
                                             Freelancer Arrived</a>
                                           </div>
                                         ";
@@ -2223,6 +2248,507 @@ class Web_Page
                         </div>
                     </div>";
                 }
+
+                // friend favr request notifications
+                foreach ($rows2 as $row2) {
+                    $freelancer_id = $row2['friend_id'];
+                    $id = md5($row2['customer_id'] . "-$freelancer_id"); // div id
+                    $task_id = $row2['ffrid'];
+                    $freelancerInfo = $this->getUserInfo($freelancer_id);
+                    $freelancer_username = $freelancerInfo['username'];
+                    $freelancer_first_name = $freelancerInfo['first_name'];
+                    $freelancer_accepted = $row2['task_freelancer_accepted'];
+                    $task_freelancer_count = $row2['task_freelancer_count'];
+
+                    $customer_id = $row2['customer_id'];
+                    $customerInfo = $this->getUserInfo($customer_id);
+                    $customer_username = $customerInfo['username'];
+                    $customer_first_name = $customerInfo['first_name'];
+                    $customer_phone = $customerInfo['phone'];
+
+                    $task_description = $row2['task_description'];
+                    $task_date = date("n/j/Y", strtotime($row2['task_date']));
+                    $task_location = $row2['task_location'];
+                    $task_time_to_accomplish = date('h:i A, l, n/j/Y', strtotime($row2['task_date']));
+                    $task_price = $row2['favr_price'];
+                    $task_difficulty = $row2['task_intensity'];
+                    $task_status = $row2['task_status'];
+
+                    $profile_img_data_array = unserialize($customerInfo['profile_picture_path']);
+
+                    if (isset($profile_img_data_array['name'], $profile_img_data_array['type'])) {
+                        $profile_img_name = $profile_img_data_array['name'];
+                        $profile_img_type = $profile_img_data_array['type'];
+                    } else {
+                        $profile_img_name = "";
+                        $profile_img_type = "";
+                    }
+
+                    $task1_img_data_array = unserialize($row2['task_picture_path_1']);
+                    $task1_img_name = $task1_img_data_array['name'];
+                    $task1_img_type = $task1_img_data_array['type'];
+
+                    $task2_img_data_array = unserialize($row2['task_picture_path_2']);
+                    $task2_img_name = $task2_img_data_array['name'];
+                    $task2_img_type = $task2_img_data_array['type'];
+
+                    $task3_img_data_array = unserialize($row2['task_picture_path_3']);
+                    $task3_img_name = $task3_img_data_array['name'];
+                    $task3_img_type = $task3_img_data_array['type'];
+
+                    // hide shrink button and non essential form information
+
+                    echo "<div class=\"my-3 p-3 bg-white rounded box-shadow\">
+                        <div class='pb-2 mb-0 border-bottom border-gray'>
+                            <a href='$this->root_path/components/profile/profile.php?id=$customer_id'>
+                                <img src=\"data:image/svg+xml;charset=UTF-8,%3Csvg%20width%3D%22128%22%20height%3D%22128%22%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20viewBox%3D%220%200%20128%20128%22%20preserveAspectRatio%3D%22none%22%3E%3Cdefs%3E%3Cstyle%20type%3D%22text%2Fcss%22%3E%23holder_164a9f2d749%20text%20%7B%20fill%3A%23007bff%3Bfont-weight%3Abold%3Bfont-family%3AArial%2C%20Helvetica%2C%20Open%20Sans%2C%20sans-serif%2C%20monospace%3Bfont-size%3A6pt%20%7D%20%3C%2Fstyle%3E%3C%2Fdefs%3E%3Cg%20id%3D%22holder_164a9f2d749%22%3E%3Crect%20width%3D%22128%22%20height%3D%22128%22%20fill%3D%22%23007bff%22%3E%3C%2Frect%3E%3Cg%3E%3Ctext%20x%3D%2248.4296875%22%20y%3D%2266.7%22%3E128x128%3C%2Ftext%3E%3C%2Fg%3E%3C%2Fg%3E%3C%2Fsvg%3E\" 
+                                data-src=\"$this->root_path/image.php?i=$profile_img_name&i_t=$profile_img_type&i_p=true\" height='32' width='32' alt=\"Profile Image\" class=\"mr-2 rounded\">
+                            </a>   
+                            <strong style='font-size: 80%' class=\"d - block text - gray - dark\">
+                                ";
+
+                    if ($customer_id == $_SESSION['user_info']['id']) {
+                        echo "<p class='font-weight-light text-muted d-inline-flex'>Accepted by</p> <a href='$this->root_path/components/profile/profile.php?id=$freelancer_id'>@$freelancer_username</a>";
+                    } else {
+                        echo "<a href='$this->root_path/components/profile/profile.php?id=$customer_id'>@$customer_username</a>";
+                    }
+
+
+                    echo "</strong>
+                            ";
+                    if (isset($_GET['request_completed_id']) && $task_status == Data_Constants::DB_TASK_STATUS_IN_PROGRESS) {
+                        echo "</div>";
+                        echo "<div class='mt-3 text-center'>";
+                        echo "    <p class=\"small d-inline-flex\">";
+
+                        // rating system 1 - 5 stars + optional review
+                        if (isset($_GET['stars'])) {
+                            if ($_GET['stars'] == 1) {
+                                echo "<i style=\"color: var(--yellow)\" class=\"material-icons\">star</i>";
+                                echo "<a href='?navbar=active_notifications&request_completed_id=$task_id&stars=2'><i style=\"color: var(--dark)\" class=\"material-icons\">star_border</i></a>";
+                                echo "<a href='?navbar=active_notifications&request_completed_id=$task_id&stars=3'><i style=\"color: var(--dark)\" class=\"material-icons\">star_border</i></a>";
+                                echo "<a href='?navbar=active_notifications&request_completed_id=$task_id&stars=4'><i style=\"color: var(--dark)\" class=\"material-icons\">star_border</i></a>";
+                                echo "<a href='?navbar=active_notifications&request_completed_id=$task_id&stars=5'><i style=\"color: var(--dark)\" class=\"material-icons\">star_border</i></a>";
+                            } else if ($_GET['stars'] == 2) {
+                                echo "<a href='?navbar=active_notifications&request_completed_id=$task_id&stars=1'><i style=\"color: var(--yellow)\" class=\"material-icons\">star</i></a>";
+                                echo "<i style=\"color: var(--yellow)\" class=\"material-icons\">star</i>";
+                                echo "<a href='?navbar=active_notifications&request_completed_id=$task_id&stars=3'><i style=\"color: var(--dark)\" class=\"material-icons\">star_border</i></a>";
+                                echo "<a href='?navbar=active_notifications&request_completed_id=$task_id&stars=4'><i style=\"color: var(--dark)\" class=\"material-icons\">star_border</i></a>";
+                                echo "<a href='?navbar=active_notifications&request_completed_id=$task_id&stars=5'><i style=\"color: var(--dark)\" class=\"material-icons\">star_border</i></a>";
+                            } else if ($_GET['stars'] == 3) {
+                                echo "<a href='?navbar=active_notifications&request_completed_id=$task_id&stars=1'><i style=\"color: var(--yellow)\" class=\"material-icons\">star</i></a>";
+                                echo "<a href='?navbar=active_notifications&request_completed_id=$task_id&stars=2'><i style=\"color: var(--yellow)\" class=\"material-icons\">star</i></a>";
+                                echo "<i style=\"color: var(--yellow)\" class=\"material-icons\">star</i>";
+                                echo "<a href='?navbar=active_notifications&request_completed_id=$task_id&stars=4'><i style=\"color: var(--dark)\" class=\"material-icons\">star_border</i></a>";
+                                echo "<a href='?navbar=active_notifications&request_completed_id=$task_id&stars=5'><i style=\"color: var(--dark)\" class=\"material-icons\">star_border</i></a>";
+                            } else if ($_GET['stars'] == 4) {
+                                echo "<a href='?navbar=active_notifications&request_completed_id=$task_id&stars=1'><i style=\"color: var(--yellow)\" class=\"material-icons\">star</i></a>";
+                                echo "<a href='?navbar=active_notifications&request_completed_id=$task_id&stars=2'><i style=\"color: var(--yellow)\" class=\"material-icons\">star</i></a>";
+                                echo "<a href='?navbar=active_notifications&request_completed_id=$task_id&stars=3'><i style=\"color: var(--yellow)\" class=\"material-icons\">star</i></a>";
+                                echo "<i style=\"color: var(--yellow)\" class=\"material-icons\">star</i>";
+                                echo "<a href='?navbar=active_notifications&request_completed_id=$task_id&stars=5'><i style=\"color: var(--dark)\" class=\"material-icons\">star_border</i></a>";
+                            } else if ($_GET['stars'] == 5) {
+                                echo "<a href='?navbar=active_notifications&request_completed_id=$task_id&stars=1'><i style=\"color: var(--yellow)\" class=\"material-icons\">star</i></a>";
+                                echo "<a href='?navbar=active_notifications&request_completed_id=$task_id&stars=2'><i style=\"color: var(--yellow)\" class=\"material-icons\">star</i></a>";
+                                echo "<a href='?navbar=active_notifications&request_completed_id=$task_id&stars=3'><i style=\"color: var(--yellow)\" class=\"material-icons\">star</i></a>";
+                                echo "<a href='?navbar=active_notifications&request_completed_id=$task_id&stars=4'><i style=\"color: var(--yellow)\" class=\"material-icons\">star</i></a>";
+                                echo "<i style=\"color: var(--yellow)\" class=\"material-icons\">star</i>";
+                            }
+                        } else {
+                            echo "<a href='?navbar=active_notifications&request_completed_id=$task_id&stars=1'><i style=\"color: var(--dark)\" class=\"material-icons\">star_border</i></a>";
+                            echo "<a href='?navbar=active_notifications&request_completed_id=$task_id&stars=2'><i style=\"color: var(--dark)\" class=\"material-icons\">star_border</i></a>";
+                            echo "<a href='?navbar=active_notifications&request_completed_id=$task_id&stars=3'><i style=\"color: var(--dark)\" class=\"material-icons\">star_border</i></a>";
+                            echo "<a href='?navbar=active_notifications&request_completed_id=$task_id&stars=4'><i style=\"color: var(--dark)\" class=\"material-icons\">star_border</i></a>";
+                            echo "<a href='?navbar=active_notifications&request_completed_id=$task_id&stars=5'><i style=\"color: var(--dark)\" class=\"material-icons\">star_border</i></a>";
+                        }
+
+                        echo " </p>";
+                        echo "</div>";
+
+                        $review = isset($_POST['review']) ? $_POST['review'] : null;
+                        $stars = isset($_GET['stars']) ? $_GET['stars'] : 3;
+                        // optional review preview
+                        if (isset($_POST['review'])) {
+                            $review = $_POST['review'];
+                            echo "<div class='mt-1 text-center'>
+                                    <p class='d-inline-flex text-lg-left'>$review</p> 
+                                    <i class='material-icons text-muted text-lg-right'>format_quote</i> 
+                                  </div>";
+                        }
+
+                        echo "<div class='mt-2 p-2 text-center'>";
+                        echo "<!-- Button trigger modal -->
+                                <button type=\"button\" class=\"btn btn-primary\" data-toggle=\"modal\" data-target=\"#exampleModalCenter\">
+                                  Leave an optional review
+                                </button>
+                                
+                                <!-- Modal -->
+                                <div class=\"modal fade\" id=\"exampleModalCenter\" tabindex=\"-1\" role=\"dialog\" aria-labelledby=\"exampleModalCenterTitle\" aria-hidden=\"true\">
+                                  <form action='$this->root_path/components/notifications/?navbar=active_notifications&request_completed_id=$task_id&stars=$stars' method='post'>
+                                      <div class=\"modal-dialog\" role=\"document\">
+                                        <div class=\"modal-content\">
+                                          <div class=\"modal-header\">
+                                            <h5 class=\"modal-title\" id=\"exampleModalLongTitle\">Leave a review for $freelancer_first_name</h5>
+                                            <button type=\"button\" class=\"close\" data-dismiss=\"modal\" aria-label=\"Close\">
+                                              <span aria-hidden=\"true\">&times;</span>
+                                            </button>
+                                          </div>
+                                          <div class=\"modal-body\">
+                                            <textarea name='review' class='form-control' placeholder='Leave a review of your experience...'>$review</textarea>
+                                          </div>
+                                          <div class=\"modal-footer\">
+                                            <button type=\"button\" class=\"btn btn-secondary\" data-dismiss=\"modal\">Close</button>
+                                            <input type=\"submit\" name='submit' class=\"btn btn-primary\" value='Save Changes'>
+                                          </div>
+                                        </div>
+                                      </div>
+                                  </form>
+                                </div>";
+
+                        echo "  <div class='mt-3 border-top border-gray pt-3'>
+                                    <div class='d-inline-flex text-center'>
+                                        <form action='$this->root_path/components/notifications/?navbar=active_notifications&completed_request_id=$task_id&stars=$stars' method='post'>
+                                            <input type='hidden' name='request_rating' value='$stars' required>
+                                            <input type='hidden' name='freelancer_id' value='$freelancer_id' required>
+                                            <input type='hidden' name='customer_id' value='$customer_id' required>
+                                            <input type='hidden' name='request_review' value='$review'>
+                                            <input class='btn btn-sm btn-outline-success'
+                                                type='submit'
+                                                name='complete_request'
+                                                value='Submit' />
+                                        </form>
+                                    </div>
+                                </div>";
+                        echo "</div>";
+                    } else {
+
+                        if (isset($task_difficulty) && $customer_id != $_SESSION['user_info']['id']) {
+                            if ($task_difficulty == Data_Constants::DB_TASK_INTENSITY_EASY) {
+                                echo "<button type=\"button\" class=\"ml-2 btn-sm btn btn-success p-1 rounded\" style='opacity: .9' value=\"Easy\" disabled>Easy 👌</button>";
+                            } else if ($task_difficulty == Data_Constants::DB_TASK_INTENSITY_MEDIUM) {
+                                echo "<button type=\"button\" class=\"ml-2 btn-sm btn btn-warning p-1 rounded\" style='opacity: .9' value=\"Medium\" disabled>Medium 💪🏿</button>";
+                            } else if ($task_difficulty == Data_Constants::DB_TASK_INTENSITY_HARD) {
+                                echo "<button type=\"button\" class=\"ml-2 btn-sm btn btn-danger p-1 rounded\" style='opacity: .9' value=\"Hard\" disabled>Hard 🔥</button>";
+                            }
+                        }
+
+                        if ($customer_id == $_SESSION['user_info']['id']) {
+                            echo "<div class='float-right small' style='padding-top: .3rem;color: var(--red)'>- $task_price FAVR</div>";
+                        } else {
+                            echo "<div class='float-right small' style='padding-top: .3rem;color: var(--green)'>+ $task_price FAVR</div>";
+                        }
+
+                        echo "</div><div class=\"media text-muted pt-3\">
+                        <div class='container'>
+                            <p id='$id' class=\"media-body text-dark mb-0 small lh-125\">
+                                $task_description
+                                <div id='$id-location' class='pt-1 border-top small border-gray d-none'>
+                                    <label for='location'>Location:</label>";
+
+                        // TODO: add contact info for customer and freelancer
+                        // share location of customer to freelancer if task is in progress or paid for
+                        if ($task_status == Data_Constants::DB_TASK_STATUS_PAID || $task_status == Data_Constants::DB_TASK_STATUS_IN_PROGRESS) {
+                            echo "<p class='text-dark'>$task_location</p>";
+                            echo "<div class='pt-1 border-top border-bottom border-gray'>
+                                    <label for='contact'>Contact:</label>
+                                    <p class='text-dark'>$customer_phone</p>
+                                  </div>";
+                        } else {
+                            echo "<!-- TODO: calculate location distance by zipcode -->
+                                    <p class='text-dark'>Within 3 Miles of your location.</p>";
+                        }
+
+                        echo "
+                                    <div id='$id-completeby' class='pt-1 border-top border-bottom border-gray'>
+                                        <label for='completeby'>Complete FAVR by:</label>
+                                        <p class='text-dark'>$task_time_to_accomplish</p>
+                                    </div>
+                                </div>
+                                <div id='$id-freelancer-count' class='pt-1 small d-none'>
+                                    <label for='freelancer-count'>Amount of freelancer(s) wanted: (accepted/requested)</label>
+                                    <p class='text-dark'>$freelancer_accepted/$task_freelancer_count</p>
+                                </div>";
+                        echo "
+                                <div id='$id-image1' class='pt-1 border-top border-gray small d-none'>
+                                    <label for='image1'>Attached Image 1:</label>
+                                    <img id='$id-img1' style='cursor: pointer' src='data:image/svg+xml;charset=UTF-8,%3Csvg%20width%3D%22128%22%20height%3D%22128%22%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20viewBox%3D%220%200%20128%20128%22%20preserveAspectRatio%3D%22none%22%3E%3Cdefs%3E%3Cstyle%20type%3D%22text%2Fcss%22%3E%23holder_164a9f2d749%20text%20%7B%20fill%3A%23007bff%3Bfont-weight%3Abold%3Bfont-family%3AArial%2C%20Helvetica%2C%20Open%20Sans%2C%20sans-serif%2C%20monospace%3Bfont-size%3A6pt%20%7D%20%3C%2Fstyle%3E%3C%2Fdefs%3E%3Cg%20id%3D%22holder_164a9f2d749%22%3E%3Crect%20width%3D%22128%22%20height%3D%22128%22%20fill%3D%22%23007bff%22%3E%3C%2Frect%3E%3Cg%3E%3Ctext%20x%3D%2248.4296875%22%20y%3D%2266.7%22%3E128x128%3C%2Ftext%3E%3C%2Fg%3E%3C%2Fg%3E%3C%2Fsvg%3E' 
+                                        data-src='$this->root_path/image.php?i=$task1_img_name&i_t=$task1_img_type' height='30%' width='30%' alt='FAVR image 1'>
+                                </div>";
+                        // Image 1 modal
+                        echo "
+                            <div id=\"$id-image1-modal\" class=\"modal\">
+                              <span id='$id-close1' class=\"modal-close\">&times;</span>
+                              <img class=\"modal-content\" id=\"$id-image1-modal-content\">
+                              <div id=\"$id-caption1\" class='caption'></div>
+                            </div>";
+
+                        echo "
+                                <div id='$id-image2' class='pt-1 border-top border-gray small d-none'>
+                                    <label for='image2'>Attached Image 2:</label>
+                                    <img id='$id-img2' style='cursor: pointer' src='data:image/svg+xml;charset=UTF-8,%3Csvg%20width%3D%22128%22%20height%3D%22128%22%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20viewBox%3D%220%200%20128%20128%22%20preserveAspectRatio%3D%22none%22%3E%3Cdefs%3E%3Cstyle%20type%3D%22text%2Fcss%22%3E%23holder_164a9f2d749%20text%20%7B%20fill%3A%23007bff%3Bfont-weight%3Abold%3Bfont-family%3AArial%2C%20Helvetica%2C%20Open%20Sans%2C%20sans-serif%2C%20monospace%3Bfont-size%3A6pt%20%7D%20%3C%2Fstyle%3E%3C%2Fdefs%3E%3Cg%20id%3D%22holder_164a9f2d749%22%3E%3Crect%20width%3D%22128%22%20height%3D%22128%22%20fill%3D%22%23007bff%22%3E%3C%2Frect%3E%3Cg%3E%3Ctext%20x%3D%2248.4296875%22%20y%3D%2266.7%22%3E128x128%3C%2Ftext%3E%3C%2Fg%3E%3C%2Fg%3E%3C%2Fsvg%3E' 
+                                        data-src='$this->root_path/image.php?i=$task2_img_name&i_t=$task2_img_type' height='30%' width='30%' alt='FAVR image 2'>
+                                </div>";
+                        // Image 2 modal
+                        echo "
+                            <div id=\"$id-image2-modal\" class=\"modal\">
+                              <span id='$id-close2' class=\"modal-close\">&times;</span>
+                              <img class=\"modal-content\" id=\"$id-image2-modal-content\" alt='FAVR image 2'>
+                              <div id=\"$id-caption2\" class='caption'></div>
+                            </div>";
+
+                        echo "
+                                <div id='$id-image3' class='pt-1 border-top border-gray small d-none'>
+                                    <label for='image3'>Attached Image 3:</label>
+                                    <img id='$id-img3' style='cursor: pointer' src='data:image/svg+xml;charset=UTF-8,%3Csvg%20width%3D%22128%22%20height%3D%22128%22%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20viewBox%3D%220%200%20128%20128%22%20preserveAspectRatio%3D%22none%22%3E%3Cdefs%3E%3Cstyle%20type%3D%22text%2Fcss%22%3E%23holder_164a9f2d749%20text%20%7B%20fill%3A%23007bff%3Bfont-weight%3Abold%3Bfont-family%3AArial%2C%20Helvetica%2C%20Open%20Sans%2C%20sans-serif%2C%20monospace%3Bfont-size%3A6pt%20%7D%20%3C%2Fstyle%3E%3C%2Fdefs%3E%3Cg%20id%3D%22holder_164a9f2d749%22%3E%3Crect%20width%3D%22128%22%20height%3D%22128%22%20fill%3D%22%23007bff%22%3E%3C%2Frect%3E%3Cg%3E%3Ctext%20x%3D%2248.4296875%22%20y%3D%2266.7%22%3E128x128%3C%2Ftext%3E%3C%2Fg%3E%3C%2Fg%3E%3C%2Fsvg%3E' 
+                                    data-src='$this->root_path/image.php?i=$task3_img_name&i_t=$task3_img_type' height='30%' width='30%' alt='FAVR image 3'>
+                                </div>";
+                        // Image 3 modal
+                        echo "
+                            <div id=\"$id-image3-modal\" class=\"modal\">
+                              <span id='$id-close3' class=\"modal-close\">&times;</span>
+                              <img class=\"modal-content\" id=\"$id-image3-modal-content\">
+                              <div id=\"$id-caption3\" class='caption'></div>
+                            </div>";
+                        echo "
+                            </p>
+                            <div class='row p-0 border-top border-gray'>
+                                <div class='col-sm-12 small'>
+                                    <div class=\"float-left d-inline\">
+                                        <div id='$id-expand' class='text-info d-inline-flex'
+                                             style='cursor: pointer'
+                                             onclick=\"
+                                              $('#$id').animate({height: '4rem'});
+                                              $('#$id-location').removeClass('d-none');
+                                              $('#$id-freelancer-count').removeClass('d-none');
+                                              $('#$id-collapse').removeClass('d-none');
+                                              $('#$id-collapse').addClass('d-inline-flex');
+                                              $('#$id-expand').removeClass('d-inline-flex');
+                                              $('#$id-expand').addClass('d-none');";
+
+                        for ($i = 1; $i <= Data_Constants::MAXIMUM_IMAGE_UPLOAD_COUNT; $i++) {
+                            echo "
+                            var modal = document.getElementById('$id-image$i-modal');
+                            var img = document.getElementById('$id-img$i');
+                            var modalImg = document.getElementById('$id-image$i-modal-content');
+                            var captionText = document.getElementById('$id-caption$i');
+                            img.onclick = function(){
+                                modal.style.display = 'block';
+                                modalImg.src = this.src;
+                                captionText.innerHTML = this.alt;
+                            }
+                            var span = document.getElementById('$id-close$i');
+                            span.onclick = function() { 
+                                modal.style.display = 'none';
+                            }
+                         ";
+                        }
+
+                        if (!empty($task1_img_data_array)) {
+                            echo "$('#$id-image1').removeClass('d-none');";
+                        }
+
+                        if (!empty($task2_img_data_array)) {
+                            echo "$('#$id-image2').removeClass('d-none');";
+                        }
+
+                        if (!empty($task3_img_data_array)) {
+                            echo "$('#$id-image3').removeClass('d-none');";
+                        }
+
+                        echo "
+                                              
+                                        \">Details</div>
+                                         <div id='$id-collapse' class='text-info d-none'
+                                             style='cursor: pointer'
+                                             onclick=\"
+                                              $('#$id-location').addClass('d-none');
+                                              $('#$id-freelancer-count').addClass('d-none');
+                                              $('#$id').css({height: 'auto'});
+                                              $('#$id-collapse').removeClass('d-inline-flex');
+                                              $('#$id-collapse').addClass('d-none');
+                                              $('#$id-expand').removeClass('d-none');
+                                              $('#$id-expand').addClass('d-inline-flex');";
+
+                        if (!empty($task1_img_data_array)) {
+                            echo "$('#$id-image1').addClass('d-none');";
+                        }
+
+                        if (!empty($task2_img_data_array)) {
+                            echo "$('#$id-image2').addClass('d-none');";
+                        }
+
+                        if (!empty($task3_img_data_array)) {
+                            echo "$('#$id-image3').addClass('d-none');";
+                        }
+
+                        echo "
+                                        \">Collapse</div>
+                                        ";
+
+
+                        echo "
+                                    </div>
+                                       ";
+
+                        // Customer and freelancer request actions
+                        if ($customer_id != $_SESSION['user_info']['id']) { // if not this user
+
+                            if ($task_status == Data_Constants::DB_TASK_STATUS_PENDING_APPROVAL || $task_status == Data_Constants::DB_TASK_STATUS_REQUESTED) {
+                                echo "<div class='float-right d-inline'>
+                                <p class='d-inline-flex mb-1'>
+                                Status: You Accepted</p>
+                              </div>";
+                            } else {
+                                echo "<div class='float-right d-inline'>
+                                    <p class='d-inline-flex mb-1'>
+                                    ";
+                                // TODO: use class defined constants here to validate verified freelancers from regular customers
+                                if ($task_status == Data_Constants::DB_TASK_STATUS_PAID && $customer_id != $_SESSION['user_info']['id']) {
+                                    echo "Status: Go to location";
+                                } else {
+                                    echo "Status: $task_status";
+                                }
+
+                                echo "  </p>
+                                  </div>";
+                            }
+
+                            if ($task_status == Data_Constants::DB_TASK_STATUS_PAID) {
+                                echo "<div class='d-block mt-4 pt-2 border-gray border-top text-center'>
+                                        <a href=\"$this->root_path/components/notifications/?navbar=active_notifications&freelancer_arrived=true&arrived_friend_id=$task_id&ALERT_MESSAGE=You've arrived! Make sure you're at the correct location and that the customer is who they say they are!\" class='text-success'>
+                                        Freelancer Arrived</a>
+                                      </div>
+                                    ";
+
+                                echo "<div class='d-block mt-2 pt-2 border-gray border-top text-center'>
+                                    <a class='text-danger' href=\"$this->root_path/components/notifications/?navbar=active_notifications&withdraw_friend_request_id=$task_id&friend_id=$freelancer_id&ALERT_MESSAGE=You've withdrawn from this task: the customer has been notified!\">
+                                    Withdraw From Task</a>
+                                  </div>";
+                            } else {
+                                echo "<div class='d-block mt-4 pt-2 border-gray border-top text-center'>
+                                    <a class='text-danger' href=\"$this->root_path/components/notifications/?navbar=active_notifications&withdraw_friend_request_id=$task_id&friend_id=$freelancer_id&ALERT_MESSAGE=You've withdrawn from this task: the customer has been notified!\">
+                                    Withdraw From Task</a>
+                                  </div>";
+                            }
+                        } else {
+                            $select_freelancers_query = "SELECT * 
+                                                     FROM friends_favr_requests
+                                                     WHERE id = $task_id
+                                                     AND friend_id = $freelancer_id";
+                            $result = $this->db->query($select_freelancers_query);
+                            $row2 = $result->fetch(PDO::FETCH_ASSOC);
+                            if (!empty($row2)) {
+                                if ($row2['approved'] == 1) { // this user is approved
+                                    echo "<div class='float-right d-inline'>
+                                        <p class='d-inline-flex mb-1'>
+                                        ";
+                                    // TODO: use class defined constants here to validate verified freelancers from regular customers
+                                    if ($task_status == Data_Constants::DB_TASK_STATUS_PAID && $customer_id == $_SESSION['user_info']['id']) {
+                                        echo "Status: Help en-route";
+                                    } else {
+                                        echo "Status: $task_status";
+                                    }
+
+                                    echo "  </p>
+                                      </div>";
+
+                                    if ($task_status == Data_Constants::DB_TASK_STATUS_IN_PROGRESS) {
+                                        echo "<div class='d-block mt-4 pt-2 mb-0 pt-2 border-gray border-top text-center'>
+                                            <a href=\"$this->root_path/components/notifications/?navbar=active_notifications&request_completed_id=$task_id&ALERT_MESSAGE=You've marked this request as completed now please rate your experience!\" class='text-success'>
+                                                 Request Completed</a>
+                                          </div>
+                                    ";
+
+                                        echo "<div class='d-block mt-2 pt-2 border-gray border-top text-center'>";
+                                    } else {
+                                        echo "<div class='d-block mt-4 pt-2 border-gray border-top text-center'>";
+                                    }
+
+
+                                    if ($task_status == Data_Constants::DB_TASK_STATUS_REQUESTED || $task_status == Data_Constants::DB_TASK_STATUS_PENDING_APPROVAL) {
+                                        echo "<a href=\"$this->root_path/home/friends/?navbar=active_home&nav_scroller=active_friends&d_request_id=$task_id&ALERT_MESSAGE=You've cancelled this request!\" class='mt-0 text-danger'>
+                                        Cancel Request</a>
+                                        ";
+                                    } else {
+                                        echo "<div style='cursor: pointer;' class='text-danger d-inline' data-toggle=\"modal\" data-target=\"#cancelInProgressModal\">
+                                            Cancel Request</div>
+                                        ";
+                                    }
+                                    echo "</div>";
+
+                                    echo "
+                                    <!-- Modal -->
+                                    <div class=\"modal fade\" id=\"cancelInProgressModal\" tabindex=\"-1\" role=\"dialog\" aria-labelledby=\"cancelInProgressTitle\" aria-hidden=\"true\">
+                                      <div class=\"modal-dialog\" role=\"document\">
+                                        <div class=\"modal-content\">
+                                          <div class=\"modal-header\">
+                                            <h5 class=\"modal-title\" id=\"exampleModalLongTitle\">You are canceling an in progress request</h5>
+                                            <button type=\"button\" class=\"close\" data-dismiss=\"modal\" aria-label=\"Close\">
+                                              <span aria-hidden=\"true\">&times;</span>
+                                            </button>
+                                          </div>
+                                          <div class=\"modal-body\">By canceling a request that is in progress you're aware that this will invalidate any and all FAVRS owed to you by this individual.
+                                                                Are you sure you wish to proceed with the cancellation of this request?
+                                          </div>
+                                          <div class=\"modal-footer\">
+                                            <button type=\"button\" class=\"btn btn-secondary\" data-dismiss=\"modal\">Close</button>
+                                            <a href=\"$this->root_path/home/friends/?navbar=active_home&d_request_id=$task_id&ALERT_MESSAGE=You've cancelled this request!\"
+                                               class='btn btn-primary'>
+                                                Cancel Request
+                                            </a>
+                                          </div>
+                                        </div>
+                                      </div>
+                                    </div>";
+                                } else { // user has not been approved yet
+                                    //                        echo "<p>Respond</p>";
+                                    echo "<!-- Button trigger modal -->
+                                          <div class='float-right d-inline'>
+                                            <div style='cursor: pointer;' class='text-success d-inline' data-toggle=\"modal\" data-target=\"#acceptModal\">
+                                            Accept</div> | ";
+                                    echo "<a href=\"$this->root_path/components/notifications/?navbar=active_notifications&reject_customer_friend_request_id=$task_id&friend_id=$freelancer_id&ALERT_MESSAGE=You've rejected this freelancer for this task! They've been notified!\" class='text-danger'>
+                                            Reject</a></div>";
+
+                                    echo "<div class='d-block mt-4 pt-2 border-gray border-top text-center'>
+                                        <a href=\"$this->root_path/home/friends/?navbar=active_home&d_request_id=$task_id&ALERT_MESSAGE=You've cancelled this request!\" class='mt-3 text-danger'>
+                                            Cancel Request</a>
+                                      </div>
+                                    ";
+
+                                    echo "
+                                    <!-- Modal -->
+                                    <div class=\"modal fade\" id=\"acceptModal\" tabindex=\"-1\" role=\"dialog\" aria-labelledby=\"acceptModalTitle\" aria-hidden=\"true\">
+                                      <div class=\"modal-dialog\" role=\"document\">
+                                        <div class=\"modal-content\">
+                                          <div class=\"modal-header\">
+                                            <h5 class=\"modal-title\" id=\"exampleModalLongTitle\">You are accepting $freelancer_first_name</h5>
+                                            <button type=\"button\" class=\"close\" data-dismiss=\"modal\" aria-label=\"Close\">
+                                              <span aria-hidden=\"true\">&times;</span>
+                                            </button>
+                                          </div>
+                                          <div class=\"modal-body\">By accepting this freelancer you are affirming that you have adequately reviewed their profile and qualifications. By accepting this freelancer you will also share sensitive information with them which may include location and contact information.</div>
+                                          <div class=\"modal-footer\">
+                                            <button type=\"button\" class=\"btn btn-secondary\" data-dismiss=\"modal\">Close</button>
+                                            <a href=\"$this->root_path/components/notifications/?navbar=active_notifications&accept_customer_friend_request_id=$task_id&friend_id=$freelancer_id&ALERT_MESSAGE=You've approved this freelancer for this task! They're on their way to complete your FAVR!\"
+                                               class='btn btn-primary'>
+                                                Accept Freelancer
+                                            </a>
+                                          </div>
+                                        </div>
+                                      </div>
+                                    </div>";
+                                }
+                            }
+                        }
+
+                        echo "
+                                    </div>
+                                </div>
+                            </div>
+                        </div>";
+                    }
+                    echo "</div>";
+                }
             } else {
                 echo "<p class='p-3 text-muted'>No notifications at the moment!</p>";
                 return false;
@@ -2356,110 +2882,206 @@ class Web_Page
      * Render request favr web and mobile form for friends sub section
      *
      * @param boolean $render_favr_request_form
+     * @param int $targetUserID
      *
      * @return boolean
      */
-    function renderFavrFriendsRequestForm($render_favr_request_form = true)
+    function renderFavrFriendsRequestForm($render_favr_request_form = true, $targetUserID = null)
     {
         if ($render_favr_request_form) {
-            $userInfo = $this->getUserInfo($_SESSION['user_info']['id']);
-            $userID = $userInfo['id'];
-            $profile_img = unserialize($userInfo['profile_picture_path']);
+            if ($targetUserID != null) {
+                $user_id = $targetUserID;
+                $friend_id = $_SESSION['user_info']['id'];
+                $isFriends = $this->assertFriends($user_id, $friend_id);
+                if ($isFriends) {
+                    // allow this user to ask a direct FAVR to the friend
+                    $friendInfo = $this->getUserInfo($user_id);
+                    $friendFullName = $friendInfo['first_name'] . " " . $friendInfo['last_name'];
 
-            if (isset($profile_img['name'], $profile_img['type'])) {
-                $profile_img_name = $profile_img['name'];
-                $profile_img_type = $profile_img['type'];
-            } else {
-                $profile_img_name = "";
-                $profile_img_type = "";
-            }
-            ?>
-            <div class="p-3 text-center request-favr-web">
-                <button class="btn btn-lg btn-primary" id="request-favr-web">
-                    <div class="d-inline-flex">
-                        <i class="material-icons">build</i>
-                        Request FAVR
-                    </div>
-                </button>
-            </div>
+                    $userInfo = $this->getUserInfo($_SESSION['user_info']['id']);
+                    $userID = $userInfo['id'];
+                    $profile_img = unserialize($userInfo['profile_picture_path']);
 
-            <div class="favr-fab">
-                <a class="favr-fab-fab favr-fab-btn-large text-center" id="favr-fabBtn">
-                    <i style="padding: .8rem;background: transparent;color: var(--white);font-size: xx-large" class="material-icons">build</i>
-                </a>
-            </div>
+                    if (isset($profile_img['name'], $profile_img['type'])) {
+                        $profile_img_name = $profile_img['name'];
+                        $profile_img_type = $profile_img['type'];
+                    } else {
+                        $profile_img_name = "";
+                        $profile_img_type = "";
+                    }
+                    ?>
+                    <form action="" method="post" enctype="multipart/form-data">
+                        <div class="my-3 p-3 bg-white rounded box-shadow">
+                            <h6 class="border-bottom border-gray pb-2 mb-0">Asking <?php echo $friendFullName; ?> for a FAVR</h6>
+                            <div class="media text-muted pt-3">
+                                <a href='<?php echo "$this->root_path/components/profile/profile.php?id=$userID"; ?>'>
+                                    <img src='data:image/svg+xml;charset=UTF-8,%3Csvg%20width%3D%22128%22%20height%3D%22128%22%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20viewBox%3D%220%200%20128%20128%22%20preserveAspectRatio%3D%22none%22%3E%3Cdefs%3E%3Cstyle%20type%3D%22text%2Fcss%22%3E%23holder_164a9f2d749%20text%20%7B%20fill%3A%23007bff%3Bfont-weight%3Abold%3Bfont-family%3AArial%2C%20Helvetica%2C%20Open%20Sans%2C%20sans-serif%2C%20monospace%3Bfont-size%3A6pt%20%7D%20%3C%2Fstyle%3E%3C%2Fdefs%3E%3Cg%20id%3D%22holder_164a9f2d749%22%3E%3Crect%20width%3D%22128%22%20height%3D%22128%22%20fill%3D%22%23007bff%22%3E%3C%2Frect%3E%3Cg%3E%3Ctext%20x%3D%2248.4296875%22%20y%3D%2266.7%22%3E128x128%3C%2Ftext%3E%3C%2Fg%3E%3C%2Fg%3E%3C%2Fsvg%3E'
+                                         data-src='<?php echo "$this->root_path/image.php?i=$profile_img_name&i_t=$profile_img_type&i_p=true"; ?>' height='32' width='32' alt='Profile Image' class='mr-2 rounded'>
+                                </a>
+                                <div class="media-body pb-3 mb-0 small lh-125">
+                                    <strong class="d-block text-gray-dark">@<?php echo $_SESSION['user_info']['username']; ?></strong>
+                                    <div class="form-label-group">
+                                        <textarea name="requestTaskDescription" class="form-control" placeholder="What is your task?"></textarea>
+                                    </div>
+                                    <div class="form-label-group">
+                                        <input type="datetime-local" name="requestDate" id="inputDate"
+                                               class="form-control"
+                                               placeholder="When do you want your FAVR?" value="<?php echo date("Y-m-d\TH:i", time()); ?>" required="">
+                                        <label for="inputDate">When do you want your FAVR?</label>
+                                    </div>
 
-            <form class="request-favr-mobile" action="" method="post" enctype="multipart/form-data">
-                <div class="my-3 p-3 bg-white rounded box-shadow">
-                    <h6 class="border-bottom border-gray pb-2 mb-0">Post a FAVR request for help from Friends</h6>
-                    <div class="media text-muted pt-3">
-                        <a href='<?php echo "$this->root_path/components/profile/profile.php?id=$userID"; ?>'>
-                            <img src='data:image/svg+xml;charset=UTF-8,%3Csvg%20width%3D%22128%22%20height%3D%22128%22%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20viewBox%3D%220%200%20128%20128%22%20preserveAspectRatio%3D%22none%22%3E%3Cdefs%3E%3Cstyle%20type%3D%22text%2Fcss%22%3E%23holder_164a9f2d749%20text%20%7B%20fill%3A%23007bff%3Bfont-weight%3Abold%3Bfont-family%3AArial%2C%20Helvetica%2C%20Open%20Sans%2C%20sans-serif%2C%20monospace%3Bfont-size%3A6pt%20%7D%20%3C%2Fstyle%3E%3C%2Fdefs%3E%3Cg%20id%3D%22holder_164a9f2d749%22%3E%3Crect%20width%3D%22128%22%20height%3D%22128%22%20fill%3D%22%23007bff%22%3E%3C%2Frect%3E%3Cg%3E%3Ctext%20x%3D%2248.4296875%22%20y%3D%2266.7%22%3E128x128%3C%2Ftext%3E%3C%2Fg%3E%3C%2Fg%3E%3C%2Fsvg%3E'
-                                 data-src='<?php echo "$this->root_path/image.php?i=$profile_img_name&i_t=$profile_img_type&i_p=true"; ?>' height='32' width='32' alt='Profile Image' class='mr-2 rounded'>
-                        </a>
-                        <div class="media-body pb-3 mb-0 small lh-125">
-                            <strong class="d-block text-gray-dark">@<?php echo $_SESSION['user_info']['username']; ?></strong>
-                            <div class="form-label-group">
-                                <textarea name="requestTaskDescription" class="form-control" placeholder="What is your task?"></textarea>
-                            </div>
-                            <div class="form-label-group">
-                                <input type="datetime-local" name="requestDate" id="inputDate"
-                                       class="form-control"
-                                       placeholder="When do you want your FAVR?" value="<?php echo date("Y-m-d\TH:i", time()); ?>" required="">
-                                <label for="inputDate">When do you want your FAVR?</label>
-                            </div>
+                                    <!--                            TODO: Add informational popup telling the user we won't share sensitive information until freelancer accepts request -->
 
-                            <!--                            TODO: Add informational popup telling the user we won't share sensitive information until freelancer accepts request -->
-
-                            <div class="form-label-group">
-                                <input type="text" name="requestStreetAddress" id="inputStreetAddress"
-                                       class="form-control"
-                                       placeholder="What's your street address?"
-                                       value="<?php echo $_SESSION['user_info']['street'] . ", " . $_SESSION['user_info']['city'] . ", " . $_SESSION['user_info']['state_province'] . ", " . $_SESSION['user_info']['zip']; ?>"
-                                       required="">
-                                <label for="inputStreetAddress">What's your street address?</label>
-                            </div>
-                            <label for="inputCategory">What category do you want your FAVR listed?</label>
-                            <div class="form-label-group">
-                                <select name="requestCategory" id="inputCategory"
-                                        class="form-control"
-                                        required="">
-                                    <option value="General Request" selected>General Request</option>
-                                    <option value="Home Improvement">Home Improvement</option>
-                                    <option value="Yard Work">Yard Work</option>
-                                </select>
-                            </div>
-                            <label for="inputDifficulty">What difficulty is the task?</label>
-                            <div class="form-label-group">
-                                <button id="easy-button" type="button" class="btn btn-success p-2 rounded" value="Easy">Easy 👌</button>
-                                <button id="medium-button" type="button" class="btn btn-warning p-2 rounded" value="Medium">Medium 💪🏿</button>
-                                <button id="hard-button" type="button" class="btn btn-danger p-2 rounded" value="Hard">Hard 🔥</button>
-                                <input id="difficulty" type="hidden" name="requestDifficulty">
-                            </div>
-                            <label for="inputPricing">Price (A future FAVR instead of cash 😉)</label>
-                            <div class="input-group pb-3">
-                                <div class="input-group-prepend">
-                                    <span class="input-group-text" style="color: var(--red)">FAVR</span>
+                                    <div class="form-label-group">
+                                        <input type="text" name="requestStreetAddress" id="inputStreetAddress"
+                                               class="form-control"
+                                               placeholder="What's your street address?"
+                                               value="<?php echo $_SESSION['user_info']['street'] . ", " . $_SESSION['user_info']['city'] . ", " . $_SESSION['user_info']['state_province'] . ", " . $_SESSION['user_info']['zip']; ?>"
+                                               required="">
+                                        <label for="inputStreetAddress">What's your street address?</label>
+                                    </div>
+                                    <label for="inputCategory">What category do you want your FAVR listed?</label>
+                                    <div class="form-label-group">
+                                        <select name="requestCategory" id="inputCategory"
+                                                class="form-control"
+                                                required="">
+                                            <option value="General Request" selected>General Request</option>
+                                            <option value="Home Improvement">Home Improvement</option>
+                                            <option value="Yard Work">Yard Work</option>
+                                        </select>
+                                    </div>
+                                    <label for="inputDifficulty">What difficulty is the task?</label>
+                                    <div class="form-label-group">
+                                        <button id="easy-button" type="button" class="btn btn-success p-2 rounded" value="Easy">Easy 👌</button>
+                                        <button id="medium-button" type="button" class="btn btn-warning p-2 rounded" value="Medium">Medium 💪🏿</button>
+                                        <button id="hard-button" type="button" class="btn btn-danger p-2 rounded" value="Hard">Hard 🔥</button>
+                                        <input id="difficulty" type="hidden" name="requestDifficulty">
+                                    </div>
+                                    <label for="inputPricing">Price (A future FAVR instead of cash 😉)</label>
+                                    <div class="input-group pb-3">
+                                        <div class="input-group-prepend">
+                                            <span class="input-group-text" style="color: var(--red)">FAVR</span>
+                                        </div>
+                                        <input type="number" name="requestPrice" id="inputPricing"
+                                               class="form-control"
+                                               style="border-radius: 0 5px 5px 0"
+                                               value="1" min="1" max="5" required="">
+                                    </div>
+                                    <label for="inputPictures">Only image files < 5 Mb can be attached</label>
+                                    <div class="form-label-group">
+                                        <input type="file" name="requestPictures[]" id="inputPictures"
+                                               class="form-control"
+                                               placeholder="Attach picture(s)" multiple>
+                                        <label for="inputPictures">Attach picture(s): at most 3...</label>
+                                    </div>
+                                    <input type="submit" name="requestFavr" class="btn btn-lg btn-primary btn-block"
+                                           value="Request FAVR">
                                 </div>
-                                <input type="number" name="requestPrice" id="inputPricing"
-                                       class="form-control"
-                                       style="border-radius: 0 5px 5px 0"
-                                       value="1" min="1" max="5" required="">
                             </div>
-                            <label for="inputPictures">Only image files < 5 Mb can be attached</label>
-                            <div class="form-label-group">
-                                <input type="file" name="requestPictures[]" id="inputPictures"
-                                       class="form-control"
-                                       placeholder="Attach picture(s)" multiple>
-                                <label for="inputPictures">Attach picture(s): at most 3...</label>
+                        </div>
+                    </form>
+                    <?php
+                }
+            } else {
+                $userInfo = $this->getUserInfo($_SESSION['user_info']['id']);
+                $userID = $userInfo['id'];
+                $profile_img = unserialize($userInfo['profile_picture_path']);
+
+                if (isset($profile_img['name'], $profile_img['type'])) {
+                    $profile_img_name = $profile_img['name'];
+                    $profile_img_type = $profile_img['type'];
+                } else {
+                    $profile_img_name = "";
+                    $profile_img_type = "";
+                }
+                ?>
+                <div class="p-3 text-center request-favr-web">
+                    <button class="btn btn-lg btn-dark" id="request-favr-web">
+                        <div class="d-inline-flex">
+                            <i class="material-icons">build</i>
+                            Request FAVR
+                        </div>
+                    </button>
+                </div>
+
+                <div class="favr-fab">
+                    <a class="favr-fab-fab favr-fab-btn-large bg-dark text-center" id="favr-fabBtn">
+                        <i style="padding: .8rem;background: transparent;color: var(--white);font-size: xx-large" class="material-icons">build</i>
+                    </a>
+                </div>
+
+                <form id="favr-friends" class="request-favr-mobile" action="" method="post" enctype="multipart/form-data">
+                    <div class="my-3 p-3 bg-white rounded box-shadow">
+                        <h6 class="border-bottom border-gray pb-2 mb-0">Post a FAVR request for help from Friends</h6>
+                        <div class="media text-muted pt-3">
+                            <a href='<?php echo "$this->root_path/components/profile/profile.php?id=$userID"; ?>'>
+                                <img src='data:image/svg+xml;charset=UTF-8,%3Csvg%20width%3D%22128%22%20height%3D%22128%22%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20viewBox%3D%220%200%20128%20128%22%20preserveAspectRatio%3D%22none%22%3E%3Cdefs%3E%3Cstyle%20type%3D%22text%2Fcss%22%3E%23holder_164a9f2d749%20text%20%7B%20fill%3A%23007bff%3Bfont-weight%3Abold%3Bfont-family%3AArial%2C%20Helvetica%2C%20Open%20Sans%2C%20sans-serif%2C%20monospace%3Bfont-size%3A6pt%20%7D%20%3C%2Fstyle%3E%3C%2Fdefs%3E%3Cg%20id%3D%22holder_164a9f2d749%22%3E%3Crect%20width%3D%22128%22%20height%3D%22128%22%20fill%3D%22%23007bff%22%3E%3C%2Frect%3E%3Cg%3E%3Ctext%20x%3D%2248.4296875%22%20y%3D%2266.7%22%3E128x128%3C%2Ftext%3E%3C%2Fg%3E%3C%2Fg%3E%3C%2Fsvg%3E'
+                                     data-src='<?php echo "$this->root_path/image.php?i=$profile_img_name&i_t=$profile_img_type&i_p=true"; ?>' height='32' width='32' alt='Profile Image' class='mr-2 rounded'>
+                            </a>
+                            <div class="media-body pb-3 mb-0 small lh-125">
+                                <strong class="d-block text-gray-dark">@<?php echo $_SESSION['user_info']['username']; ?></strong>
+                                <div class="form-label-group">
+                                    <textarea name="requestTaskDescription" class="form-control" placeholder="What is your task?"></textarea>
+                                </div>
+                                <div class="form-label-group">
+                                    <input type="datetime-local" name="requestDate" id="inputDate"
+                                           class="form-control"
+                                           placeholder="When do you want your FAVR?" value="<?php echo date("Y-m-d\TH:i", time()); ?>" required="">
+                                    <label for="inputDate">When do you want your FAVR?</label>
+                                </div>
+
+                                <!--                            TODO: Add informational popup telling the user we won't share sensitive information until freelancer accepts request -->
+
+                                <div class="form-label-group">
+                                    <input type="text" name="requestStreetAddress" id="inputStreetAddress"
+                                           class="form-control"
+                                           placeholder="What's your street address?"
+                                           value="<?php echo $_SESSION['user_info']['street'] . ", " . $_SESSION['user_info']['city'] . ", " . $_SESSION['user_info']['state_province'] . ", " . $_SESSION['user_info']['zip']; ?>"
+                                           required="">
+                                    <label for="inputStreetAddress">What's your street address?</label>
+                                </div>
+                                <label for="inputCategory">What category do you want your FAVR listed?</label>
+                                <div class="form-label-group">
+                                    <select name="requestCategory" id="inputCategory"
+                                            class="form-control"
+                                            required="">
+                                        <option value="General Request" selected>General Request</option>
+                                        <option value="Home Improvement">Home Improvement</option>
+                                        <option value="Yard Work">Yard Work</option>
+                                    </select>
+                                </div>
+                                <label for="inputDifficulty">What difficulty is the task?</label>
+                                <div class="form-label-group">
+                                    <button id="easy-button" type="button" class="btn btn-success p-2 rounded" value="Easy">Easy 👌</button>
+                                    <button id="medium-button" type="button" class="btn btn-warning p-2 rounded" value="Medium">Medium 💪🏿</button>
+                                    <button id="hard-button" type="button" class="btn btn-danger p-2 rounded" value="Hard">Hard 🔥</button>
+                                    <input id="difficulty" type="hidden" name="requestDifficulty">
+                                </div>
+                                <label for="inputPricing">Price (A future FAVR instead of cash 😉)</label>
+                                <div class="input-group pb-3">
+                                    <div class="input-group-prepend">
+                                        <span class="input-group-text" style="color: var(--red)">FAVR</span>
+                                    </div>
+                                    <input type="number" name="requestPrice" id="inputPricing"
+                                           class="form-control"
+                                           style="border-radius: 0 5px 5px 0"
+                                           value="1" min="1" max="5" required="">
+                                </div>
+                                <label for="inputPictures">Only image files < 5 Mb can be attached</label>
+                                <div class="form-label-group">
+                                    <input type="file" name="requestPictures[]" id="inputPictures"
+                                           class="form-control"
+                                           placeholder="Attach picture(s)" multiple>
+                                    <label for="inputPictures">Attach picture(s): at most 3...</label>
+                                </div>
+                                <input type="submit" name="requestFavr" class="btn btn-lg btn-primary btn-block"
+                                       value="Request FAVR" onclick="alert("This will be posted publically")">
                             </div>
-                            <input type="submit" name="requestFavr" class="btn btn-lg btn-primary btn-block"
-                                   value="Request FAVR" onclick="alert("This will be posted publically")">
                         </div>
                     </div>
-                </div>
-            </form>
-            <?php
+                </form>
+                <?php
+            }
         }
 
         return $render_favr_request_form;
@@ -2524,7 +3146,7 @@ class Web_Page
                                                 <strong class="text-gray-dark"><?php echo $friendFullName; ?></strong>
                                                 <?php
                                                     if ($crow['COUNT(*)'] != 0) {
-                                                        echo "<a href=\"#\"
+                                                        echo "<a href=\"$this->root_path/home/friends/?navbar=active_home&nav_scroller=active_friends&ask_favr=true&id=$friend_id\"
                                                             class=\"float-right\">Ask FAVR</a>";
                                                     }
                                                 ?>
@@ -2544,7 +3166,7 @@ class Web_Page
                                                     <?php
                                                 } else {
                                                     ?>
-                                                    <a href="<?php echo "$this->root_path/home/friends/?friends_list=true&add_friend=false&id=$friend_id&ALERT_MESSAGE=You have canceled your friend request!"; ?>"
+                                                    <a href="<?php echo "$this->root_path/home/friends/?friends_list=true&add_friend=false&id=$friend_id&ALERT_MESSAGE=You have cancelled your friend request!"; ?>"
                                                        class="text-danger">Cancel Friend Request</a>
                                                     <?php
                                                 }
@@ -2749,29 +3371,27 @@ class Web_Page
     function renderFavrFriendsMarketplace($scope="global", $orderBy = "task_date", $orientation = "DESC", $limit="LIMIT 3")
     {
         if ($scope == $_SESSION['user_info']['id']) {
-
             $requested = Data_Constants::DB_TASK_STATUS_REQUESTED;
             $selectMarketplaceQuery = "
-                                   SELECT *, mfr.id as mfrid
-                                   FROM marketplace_favr_requests mfr
+                                   SELECT *, ffr.id as ffrid
+                                   FROM friends_favr_requests ffr
                                    INNER JOIN users u
                                    WHERE u.id = $scope
-                                   AND u.id = mfr.customer_id
-                                   AND mfr.task_status = '$requested'
+                                   AND u.id = ffr.customer_id
+                                   AND ffr.task_status = '$requested'
                                    ORDER BY $orderBy
                                    $orientation
                                    $limit
             ";
 
         } else if ($scope == "global") {
-
             $requested = Data_Constants::DB_TASK_STATUS_REQUESTED;
             $selectMarketplaceQuery = "
-                                   SELECT *, mfr.id as mfrid
-                                   FROM marketplace_favr_requests mfr
+                                   SELECT *, ffr.id as ffrid
+                                   FROM friends_favr_requests ffr 
                                    INNER JOIN users u
-                                   WHERE u.id = mfr.customer_id
-                                   AND mfr.task_status = '$requested'
+                                   WHERE u.id = ffr.customer_id
+                                   AND ffr.task_status = '$requested'
                                    ORDER BY $orderBy
                                    $orientation
                                    $limit
@@ -2789,47 +3409,50 @@ class Web_Page
             $rows = $result->fetchAll(PDO::FETCH_ASSOC);
             if (!empty($rows)) {
                 foreach ($rows as $row) {
-                    $id = md5($row['mfrid']);
-                    $task_id = $row['mfrid'];
-                    $freelancer_id = $row['freelancer_id'];
+                    $id = md5($row['ffrid']);
+                    $task_id = $row['ffrid'];
                     $freelancer_accepted = $row['task_freelancer_accepted'];
                     $task_freelancer_count = $row['task_freelancer_count'];
                     $customer_id = $row['customer_id'];
-                    $customerInfo = $this->getUserInfo($customer_id);
-                    $customer_username = $customerInfo['username'];
-                    $customer_first_name = $customerInfo['first_name'];
-                    $task_description = $row['task_description'];
-                    $task_date = date("n/j/Y", strtotime($row['task_date']));
-                    $task_location = $row['task_location'];
-                    $task_time_to_accomplish = date('h:i A, l, n/j/Y', strtotime($row['task_date']));
-                    $task_price = $row['task_price'];
-                    $task_difficulty = $row['task_intensity'];
 
-                    $profile_img_data_array = unserialize($customerInfo['profile_picture_path']);
+                    $isFriends = $this->assertFriends($customer_id, $_SESSION['user_info']['id']);
+                    if ($isFriends || $customer_id == $_SESSION['user_info']['id']) {
 
-                    if (isset($profile_img_data_array['name'], $profile_img_data_array['type'])) {
-                        $profile_img_name = $profile_img_data_array['name'];
-                        $profile_img_type = $profile_img_data_array['type'];
-                    } else {
-                        $profile_img_name = "";
-                        $profile_img_type = "";
-                    }
+                        $customerInfo = $this->getUserInfo($customer_id);
+                        $customer_username = $customerInfo['username'];
+                        $customer_first_name = $customerInfo['first_name'];
+                        $task_description = $row['task_description'];
+                        $task_date = date("n/j/Y", strtotime($row['task_date']));
+                        $task_location = $row['task_location'];
+                        $task_time_to_accomplish = date('h:i A, l, n/j/Y', strtotime($row['task_date']));
+                        $task_price = $row['favr_price'];
+                        $task_difficulty = $row['task_intensity'];
 
-                    $task1_img_data_array = unserialize($row['task_picture_path_1']);
-                    $task1_img_name = $task1_img_data_array['name'];
-                    $task1_img_type = $task1_img_data_array['type'];
+                        $profile_img_data_array = unserialize($customerInfo['profile_picture_path']);
 
-                    $task2_img_data_array = unserialize($row['task_picture_path_2']);
-                    $task2_img_name = $task2_img_data_array['name'];
-                    $task2_img_type = $task2_img_data_array['type'];
+                        if (isset($profile_img_data_array['name'], $profile_img_data_array['type'])) {
+                            $profile_img_name = $profile_img_data_array['name'];
+                            $profile_img_type = $profile_img_data_array['type'];
+                        } else {
+                            $profile_img_name = "";
+                            $profile_img_type = "";
+                        }
 
-                    $task3_img_data_array = unserialize($row['task_picture_path_3']);
-                    $task3_img_name = $task3_img_data_array['name'];
-                    $task3_img_type = $task3_img_data_array['type'];
+                        $task1_img_data_array = unserialize($row['task_picture_path_1']);
+                        $task1_img_name = $task1_img_data_array['name'];
+                        $task1_img_type = $task1_img_data_array['type'];
 
-                    // hide shrink button and non essential form information
+                        $task2_img_data_array = unserialize($row['task_picture_path_2']);
+                        $task2_img_name = $task2_img_data_array['name'];
+                        $task2_img_type = $task2_img_data_array['type'];
 
-                    echo "<div class=\"my-3 p-3 bg-white rounded box-shadow\">
+                        $task3_img_data_array = unserialize($row['task_picture_path_3']);
+                        $task3_img_name = $task3_img_data_array['name'];
+                        $task3_img_type = $task3_img_data_array['type'];
+
+                        // hide shrink button and non essential form information
+
+                        echo "<div class=\"my-3 p-3 bg-white rounded box-shadow\">
                         <div class='pb-2 mb-0 border-bottom border-gray'>
                             <a href='$this->root_path/components/profile/profile.php?id=$customer_id'>
                                 <img src=\"data:image/svg+xml;charset=UTF-8,%3Csvg%20width%3D%22128%22%20height%3D%22128%22%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20viewBox%3D%220%200%20128%20128%22%20preserveAspectRatio%3D%22none%22%3E%3Cdefs%3E%3Cstyle%20type%3D%22text%2Fcss%22%3E%23holder_164a9f2d749%20text%20%7B%20fill%3A%23007bff%3Bfont-weight%3Abold%3Bfont-family%3AArial%2C%20Helvetica%2C%20Open%20Sans%2C%20sans-serif%2C%20monospace%3Bfont-size%3A6pt%20%7D%20%3C%2Fstyle%3E%3C%2Fdefs%3E%3Cg%20id%3D%22holder_164a9f2d749%22%3E%3Crect%20width%3D%22128%22%20height%3D%22128%22%20fill%3D%22%23007bff%22%3E%3C%2Frect%3E%3Cg%3E%3Ctext%20x%3D%2248.4296875%22%20y%3D%2266.7%22%3E128x128%3C%2Ftext%3E%3C%2Fg%3E%3C%2Fg%3E%3C%2Fsvg%3E\" 
@@ -2840,23 +3463,23 @@ class Web_Page
                             </strong>
                             ";
 
-                    if (isset($task_difficulty)) {
-                        if ($task_difficulty == Data_Constants::DB_TASK_INTENSITY_EASY) {
-                            echo "<button type=\"button\" class=\"ml-2 btn-sm btn btn-success p-1 rounded\" style='opacity: .9' value=\"Easy\" disabled>Easy 👌</button>";
-                        } else if ($task_difficulty == Data_Constants::DB_TASK_INTENSITY_MEDIUM) {
-                            echo "<button type=\"button\" class=\"ml-2 btn-sm btn btn-warning p-1 rounded\" style='opacity: .9' value=\"Medium\" disabled>Medium 💪🏿</button>";
-                        } else if ($task_difficulty == Data_Constants::DB_TASK_INTENSITY_HARD) {
-                            echo "<button type=\"button\" class=\"ml-2 btn-sm btn btn-danger p-1 rounded\" style='opacity: .9' value=\"Hard\" disabled>Hard 🔥</button>";
+                        if (isset($task_difficulty)) {
+                            if ($task_difficulty == Data_Constants::DB_TASK_INTENSITY_EASY) {
+                                echo "<button type=\"button\" class=\"ml-2 btn-sm btn btn-success p-1 rounded\" style='opacity: .9' value=\"Easy\" disabled>Easy 👌</button>";
+                            } else if ($task_difficulty == Data_Constants::DB_TASK_INTENSITY_MEDIUM) {
+                                echo "<button type=\"button\" class=\"ml-2 btn-sm btn btn-warning p-1 rounded\" style='opacity: .9' value=\"Medium\" disabled>Medium 💪🏿</button>";
+                            } else if ($task_difficulty == Data_Constants::DB_TASK_INTENSITY_HARD) {
+                                echo "<button type=\"button\" class=\"ml-2 btn-sm btn btn-danger p-1 rounded\" style='opacity: .9' value=\"Hard\" disabled>Hard 🔥</button>";
+                            }
                         }
-                    }
 
-                    if ($customer_id == $_SESSION['user_info']['id']) {
-                        echo "<div class='float-right small' style='padding-top: .3rem;color: var(--red)'>- $$task_price</div>";
-                    } else {
-                        echo "<div class='float-right small' style='padding-top: .3rem;color: var(--dark)'>$$task_price</div>";
-                    }
+                        if ($customer_id == $_SESSION['user_info']['id']) {
+                            echo "<div class='float-right small' style='padding-top: .3rem;color: var(--red)'>- $task_price FAVR</div>";
+                        } else {
+                            echo "<div class='float-right small' style='padding-top: .3rem;color: var(--dark)'>$task_price FAVR</div>";
+                        }
 
-                    echo "</div><div class=\"media text-muted pt-3\">
+                        echo "</div><div class=\"media text-muted pt-3\">
                         <div class='container'>
                             <p id='$id' class=\"media-body text-dark mb-0 small lh-125\">
                                 $task_description
@@ -2873,49 +3496,49 @@ class Web_Page
                                     <label for='freelancer-count'>Amount of freelancer(s) wanted: (accepted/requested)</label>
                                     <p class='text-dark'>$freelancer_accepted/$task_freelancer_count</p>
                                 </div>";
-                    echo "
+                        echo "
                                 <div id='$id-image1' class='pt-1 border-top border-gray small d-none'>
                                     <label for='image1'>Attached Image 1:</label>
                                     <img id='$id-img1' style='cursor: pointer' src='data:image/svg+xml;charset=UTF-8,%3Csvg%20width%3D%22128%22%20height%3D%22128%22%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20viewBox%3D%220%200%20128%20128%22%20preserveAspectRatio%3D%22none%22%3E%3Cdefs%3E%3Cstyle%20type%3D%22text%2Fcss%22%3E%23holder_164a9f2d749%20text%20%7B%20fill%3A%23007bff%3Bfont-weight%3Abold%3Bfont-family%3AArial%2C%20Helvetica%2C%20Open%20Sans%2C%20sans-serif%2C%20monospace%3Bfont-size%3A6pt%20%7D%20%3C%2Fstyle%3E%3C%2Fdefs%3E%3Cg%20id%3D%22holder_164a9f2d749%22%3E%3Crect%20width%3D%22128%22%20height%3D%22128%22%20fill%3D%22%23007bff%22%3E%3C%2Frect%3E%3Cg%3E%3Ctext%20x%3D%2248.4296875%22%20y%3D%2266.7%22%3E128x128%3C%2Ftext%3E%3C%2Fg%3E%3C%2Fg%3E%3C%2Fsvg%3E' 
                                         data-src='$this->root_path/image.php?i=$task1_img_name&i_t=$task1_img_type' height='30%' width='30%' alt='FAVR image 1'>
                                 </div>";
-                    // Image 1 modal
-                    echo "
+                        // Image 1 modal
+                        echo "
                             <div id=\"$id-image1-modal\" class=\"modal\">
                               <span id='$id-close1' class=\"modal-close\">&times;</span>
                               <img class=\"modal-content\" id=\"$id-image1-modal-content\">
                               <div id=\"$id-caption1\" class='caption'></div>
                             </div>";
 
-                    echo "
+                        echo "
                                 <div id='$id-image2' class='pt-1 border-top border-gray small d-none'>
                                     <label for='image2'>Attached Image 2:</label>
                                     <img id='$id-img2' style='cursor: pointer' src='data:image/svg+xml;charset=UTF-8,%3Csvg%20width%3D%22128%22%20height%3D%22128%22%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20viewBox%3D%220%200%20128%20128%22%20preserveAspectRatio%3D%22none%22%3E%3Cdefs%3E%3Cstyle%20type%3D%22text%2Fcss%22%3E%23holder_164a9f2d749%20text%20%7B%20fill%3A%23007bff%3Bfont-weight%3Abold%3Bfont-family%3AArial%2C%20Helvetica%2C%20Open%20Sans%2C%20sans-serif%2C%20monospace%3Bfont-size%3A6pt%20%7D%20%3C%2Fstyle%3E%3C%2Fdefs%3E%3Cg%20id%3D%22holder_164a9f2d749%22%3E%3Crect%20width%3D%22128%22%20height%3D%22128%22%20fill%3D%22%23007bff%22%3E%3C%2Frect%3E%3Cg%3E%3Ctext%20x%3D%2248.4296875%22%20y%3D%2266.7%22%3E128x128%3C%2Ftext%3E%3C%2Fg%3E%3C%2Fg%3E%3C%2Fsvg%3E' 
                                         data-src='$this->root_path/image.php?i=$task2_img_name&i_t=$task2_img_type' height='30%' width='30%' alt='FAVR image 2'>
                                 </div>";
-                    // Image 2 modal
-                    echo "
+                        // Image 2 modal
+                        echo "
                             <div id=\"$id-image2-modal\" class=\"modal\">
                               <span id='$id-close2' class=\"modal-close\">&times;</span>
                               <img class=\"modal-content\" id=\"$id-image2-modal-content\">
                               <div id=\"$id-caption2\" class='caption'></div>
                             </div>";
 
-                    echo "
+                        echo "
                                 <div id='$id-image3' class='pt-1 border-top border-gray small d-none'>
                                     <label for='image3'>Attached Image 3:</label>
                                     <img id='$id-img3' style='cursor: pointer' src='data:image/svg+xml;charset=UTF-8,%3Csvg%20width%3D%22128%22%20height%3D%22128%22%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20viewBox%3D%220%200%20128%20128%22%20preserveAspectRatio%3D%22none%22%3E%3Cdefs%3E%3Cstyle%20type%3D%22text%2Fcss%22%3E%23holder_164a9f2d749%20text%20%7B%20fill%3A%23007bff%3Bfont-weight%3Abold%3Bfont-family%3AArial%2C%20Helvetica%2C%20Open%20Sans%2C%20sans-serif%2C%20monospace%3Bfont-size%3A6pt%20%7D%20%3C%2Fstyle%3E%3C%2Fdefs%3E%3Cg%20id%3D%22holder_164a9f2d749%22%3E%3Crect%20width%3D%22128%22%20height%3D%22128%22%20fill%3D%22%23007bff%22%3E%3C%2Frect%3E%3Cg%3E%3Ctext%20x%3D%2248.4296875%22%20y%3D%2266.7%22%3E128x128%3C%2Ftext%3E%3C%2Fg%3E%3C%2Fg%3E%3C%2Fsvg%3E' 
                                     data-src='$this->root_path/image.php?i=$task3_img_name&i_t=$task3_img_type' height='30%' width='30%' alt='FAVR image 3'>
                                 </div>";
-                    // Image 3 modal
-                    echo "
+                        // Image 3 modal
+                        echo "
                             <div id=\"$id-image3-modal\" class=\"modal\">
                               <span id='$id-close3' class=\"modal-close\">&times;</span>
                               <img class=\"modal-content\" id=\"$id-image3-modal-content\">
                               <div id=\"$id-caption3\" class='caption'></div>
                             </div>";
 
-                    echo "
+                        echo "
                             </p>
                             <div class='row p-0 border-top border-gray'>
                                 <div class='col-sm-12 small'>
@@ -2932,8 +3555,8 @@ class Web_Page
                                               $('#$id-expand').removeClass('d-inline-flex');
                                               $('#$id-expand').addClass('d-none');";
 
-                    for ($i = 1; $i <= Data_Constants::MAXIMUM_IMAGE_UPLOAD_COUNT; $i++) {
-                        echo "
+                        for ($i = 1; $i <= Data_Constants::MAXIMUM_IMAGE_UPLOAD_COUNT; $i++) {
+                            echo "
                             var modal = document.getElementById('$id-image$i-modal');
                             var img = document.getElementById('$id-img$i');
                             var modalImg = document.getElementById('$id-image$i-modal-content');
@@ -2948,21 +3571,21 @@ class Web_Page
                                 modal.style.display = 'none';
                             }
                          ";
-                    }
+                        }
 
-                    if (!empty($task1_img_data_array)) {
-                        echo "$('#$id-image1').removeClass('d-none');";
-                    }
+                        if (!empty($task1_img_data_array)) {
+                            echo "$('#$id-image1').removeClass('d-none');";
+                        }
 
-                    if (!empty($task2_img_data_array)) {
-                        echo "$('#$id-image2').removeClass('d-none');";
-                    }
+                        if (!empty($task2_img_data_array)) {
+                            echo "$('#$id-image2').removeClass('d-none');";
+                        }
 
-                    if (!empty($task3_img_data_array)) {
-                        echo "$('#$id-image3').removeClass('d-none');";
-                    }
+                        if (!empty($task3_img_data_array)) {
+                            echo "$('#$id-image3').removeClass('d-none');";
+                        }
 
-                    echo "
+                        echo "
                                               
                                         \">Details</div>
                                          <div id='$id-collapse' class='text-info d-none'
@@ -2976,66 +3599,67 @@ class Web_Page
                                               $('#$id-expand').removeClass('d-none');
                                               $('#$id-expand').addClass('d-inline-flex');";
 
-                    if (!empty($task1_img_data_array)) {
-                        echo "$('#$id-image1').addClass('d-none');";
-                    }
+                        if (!empty($task1_img_data_array)) {
+                            echo "$('#$id-image1').addClass('d-none');";
+                        }
 
-                    if (!empty($task2_img_data_array)) {
-                        echo "$('#$id-image2').addClass('d-none');";
-                    }
+                        if (!empty($task2_img_data_array)) {
+                            echo "$('#$id-image2').addClass('d-none');";
+                        }
 
-                    if (!empty($task3_img_data_array)) {
-                        echo "$('#$id-image3').addClass('d-none');";
-                    }
+                        if (!empty($task3_img_data_array)) {
+                            echo "$('#$id-image3').addClass('d-none');";
+                        }
 
-                    echo "
+                        echo "
                                               
                                               $('.favr-fab').css({display: ''})
                                         \">Collapse</div> | $task_date
                                         ";
 
-                    echo "
+                        echo "
                                     </div>
                                     <div class='float-right d-inline'>
                                        ";
 
-                    if ($customer_id != $_SESSION['user_info']['id']) { // if not this user
-                        $freelancerAccepted = false;
-                        $freelancer_id = null;
-                        $user_id = $_SESSION['user_info']['id'];
-                        $select_freelancers_query = "SELECT * 
+                        if ($customer_id != $_SESSION['user_info']['id']) { // if not this user
+                            $freelancerAccepted = false;
+                            $freelancer_id = null;
+                            $user_id = $_SESSION['user_info']['id'];
+                            $select_freelancers_query = "SELECT * 
                                                      FROM marketplace_favr_freelancers
                                                      WHERE request_id = $task_id
                                                      AND user_id = $user_id";
-                        $result = $this->db->query($select_freelancers_query);
-                        if ($result) {
-                            $row = $result->fetch(PDO::FETCH_ASSOC);
-                            if (!empty($row)) {
-                                $freelancerAccepted = true;
-                                $freelancer_id = $row['user_id'];
+                            $result = $this->db->query($select_freelancers_query);
+                            if ($result) {
+                                $row = $result->fetch(PDO::FETCH_ASSOC);
+                                if (!empty($row)) {
+                                    $freelancerAccepted = true;
+                                    $freelancer_id = $row['user_id'];
+                                }
                             }
-                        }
 
-                        if ($freelancerAccepted) {
-                            echo "<a class='text-danger' href=\"$this->root_path/components/notifications/?navbar=active_notifications&withdraw_request_id=$task_id&freelancer_id=$freelancer_id&ALERT_MESSAGE=You've withdrawn from this task: the customer has been notified!\">
+                            if ($freelancerAccepted) {
+                                echo "<a class='text-danger' href=\"$this->root_path/components/notifications/?navbar=active_notifications&withdraw_request_id=$task_id&freelancer_id=$freelancer_id&ALERT_MESSAGE=You've withdrawn from this task: the customer has been notified!\">
                                 Withdraw</a>";
-                        } else {
-                            echo "<a href=\"$this->root_path/components/notifications/?navbar=active_notifications&accept_freelancer_request_id=$task_id&ALERT_MESSAGE=You've signed up to take this task! The task requester has been notified of your interest and is reviewing your offer to help: they can accept or reject your offer to help! You'll be notified of their decision; you can withdraw your offer to help before they decide. \">
+                            } else {
+                                echo "<a href=\"$this->root_path/components/notifications/?navbar=active_notifications&accept_freelancer_request_id=$task_id&ALERT_MESSAGE=You've signed up to take this task! The task requester has been notified of your interest and is reviewing your offer to help: they can accept or reject your offer to help! You'll be notified of their decision; you can withdraw your offer to help before they decide. \">
                                 Accept Request</a>";
-                        }
-                    } else {
-                        echo "<a href=\"?navbar=active_home&d_request_id=$task_id&ALERT_MESSAGE=Your request has been deleted!\" class='text-danger'>
+                            }
+                        } else {
+                            echo "<a href=\"?navbar=active_home&d_request_id=$task_id&ALERT_MESSAGE=Your request has been deleted!\" class='text-danger'>
                             Cancel Request</a>";
-                    }
+                        }
 
-                    echo "
+                        echo "
                                     </div>
                                 </div>
                             </div>
                         </div>
                     </div>";
-                    echo "</div>";
+                        echo "</div>";
 
+                    }
                 }
             } else {
                 echo "<p class='p-3 text-muted'>No FAVR requests at the moment!</p>";
@@ -3310,28 +3934,31 @@ class Web_Page
                                        ";
 
                     if ($customer_id != $_SESSION['user_info']['id']) { // if not this user
-                        $freelancerAccepted = false;
-                        $freelancer_id = null;
-                        $user_id = $_SESSION['user_info']['id'];
-                        $select_freelancers_query = "SELECT * 
+                        $freelancerInfo = $this->getUserInfo($_SESSION['user_info']['id']);
+                        if ($freelancerInfo['class'] == Data_Constants::DB_USER_CLASS_VERIFIED) {
+                            $freelancerAccepted = false;
+                            $freelancer_id = null;
+                            $user_id = $_SESSION['user_info']['id'];
+                            $select_freelancers_query = "SELECT * 
                                                      FROM marketplace_favr_freelancers
                                                      WHERE request_id = $task_id
                                                      AND user_id = $user_id";
-                        $result = $this->db->query($select_freelancers_query);
-                        if ($result) {
-                            $row = $result->fetch(PDO::FETCH_ASSOC);
-                            if (!empty($row)) {
-                                $freelancerAccepted = true;
-                                $freelancer_id = $row['user_id'];
+                            $result = $this->db->query($select_freelancers_query);
+                            if ($result) {
+                                $row = $result->fetch(PDO::FETCH_ASSOC);
+                                if (!empty($row)) {
+                                    $freelancerAccepted = true;
+                                    $freelancer_id = $row['user_id'];
+                                }
                             }
-                        }
 
-                        if ($freelancerAccepted) {
-                            echo "<a class='text-danger' href=\"$this->root_path/components/notifications/?navbar=active_notifications&withdraw_request_id=$task_id&freelancer_id=$freelancer_id&ALERT_MESSAGE=You've withdrawn from this task: the customer has been notified!\">
+                            if ($freelancerAccepted) {
+                                echo "<a class='text-danger' href=\"$this->root_path/components/notifications/?navbar=active_notifications&withdraw_request_id=$task_id&freelancer_id=$freelancer_id&ALERT_MESSAGE=You've withdrawn from this task: the customer has been notified!\">
                                 Withdraw</a>";
-                        } else {
-                            echo "<a href=\"$this->root_path/components/notifications/?navbar=active_notifications&accept_freelancer_request_id=$task_id&ALERT_MESSAGE=You've signed up to take this task! The task requester has been notified of your interest and is reviewing your offer to help: they can accept or reject your offer to help! You'll be notified of their decision; you can withdraw your offer to help before they decide. \">
+                            } else {
+                                echo "<a href=\"$this->root_path/components/notifications/?navbar=active_notifications&accept_freelancer_request_id=$task_id&ALERT_MESSAGE=You've signed up to take this task! The task requester has been notified of your interest and is reviewing your offer to help: they can accept or reject your offer to help! You'll be notified of their decision; you can withdraw your offer to help before they decide. \">
                                 Accept Request</a>";
+                            }
                         }
                     } else {
                         echo "<a href=\"?navbar=active_home&d_request_id=$task_id&ALERT_MESSAGE=Your request has been deleted!\" class='text-danger'>
@@ -3648,6 +4275,7 @@ class Web_Page
                 // process attached images logic
 
                 if (isset($inputPictures)) {
+                    $requested = Data_Constants::DB_TASK_STATUS_REQUESTED;
                     $select_requested_task_query = "SELECT id 
                                                   FROM marketplace_favr_requests
                                                   WHERE customer_id = '$userId'
@@ -3655,7 +4283,7 @@ class Web_Page
                                                   AND task_description = '$inputTaskDetails'
                                                   AND task_location = '$address'
                                                   AND task_category = '$inputCategory'
-                                                  AND task_status = 'Requested'
+                                                  AND task_status = '$requested'
                                                   AND task_intensity = '$inputDifficulty'
                                                   AND task_price = '$inputPricing'
                                                   AND task_freelancer_count = '$inputFreelancerCount'";
@@ -3702,6 +4330,160 @@ class Web_Page
                                                     $imageDataArray = serialize($imageDataArray);
 
                                                     $update_path_query = "UPDATE marketplace_favr_requests 
+                                                                          SET $task_picture_path_x = '$imageDataArray'
+                                                                          WHERE id = '$task_id'";
+
+                                                    $result = $this->db->query($update_path_query);
+                                                    if (!$result) {
+                                                        // unsuccessful
+                                                        return false;
+                                                    }
+                                                } else {
+                                                    // failed to copy file to destination
+                                                    return false;
+                                                }
+                                            } else {
+                                                // throw an error
+                                                return false;
+                                            }
+                                        } else {
+                                            // throw an error
+                                            return false;
+                                        }
+                                    } else {
+                                        // throw an error
+                                        return false;
+                                    }
+
+                                } else {
+                                    // throw an error
+                                    // TODO: improve error reporting for FAVR requests
+                                    return false;
+                                }
+                            }
+                        }
+                    } else {
+                        return false;
+                    }
+                }
+                return true;
+            } else {
+                return false;
+            }
+        } else {
+            return false;
+        }
+    }
+
+    /**
+     * Process favr friends request from form and serve into database to display in marketplace
+     *
+     * @param array $userInfo // array with user details such as location
+     * @param string $inputDate
+     * @param string $inputCategory
+     * @param string $inputTaskDetails
+     * @param int $inputFreelancerCount
+     * @param double $inputPricing
+     * @param string $inputLocation
+     * @param string $inputDifficulty
+     * @param array $inputPictures
+     * @param mixed $inputScope // pre-alpha scope is public
+     *
+     * @return boolean // successful process or not print error
+     *
+     */
+    function processFavrFriendRequestToDB($userInfo, $inputDate, $inputCategory, $inputTaskDetails, $inputPricing, $inputFreelancerCount, $inputLocation, $inputDifficulty,  $inputPictures, $inputScope="public")
+    {
+        if (isset($userInfo, $inputDate, $inputFreelancerCount, $inputCategory, $inputTaskDetails, $inputPricing, $inputScope)) {
+            $userId = $userInfo['id'];
+            $address = $inputLocation;
+
+            $insert_request_query = "INSERT INTO `friends_favr_requests`
+                                  (
+                                    `customer_id`,
+                                    `task_description`,
+                                    `task_date`,
+                                    `task_freelancer_count`,
+                                    `task_location`,
+                                    `task_category`,
+                                    `task_intensity`,
+                                    `favr_price`
+                                  )
+                              VALUES
+                                  (
+                                    '$userId',
+                                    '$inputTaskDetails',
+                                    '$inputDate',
+                                    '$inputFreelancerCount',
+                                    '$address',
+                                    '$inputCategory',
+                                    '$inputDifficulty',
+                                    '$inputPricing'
+                                  )
+            ";
+
+            $result = $this->db->query($insert_request_query);
+//            $result = true; // for testing
+
+            if ($result) {
+                // process attached images logic
+
+                if (isset($inputPictures)) {
+                    $requested = Data_Constants::DB_TASK_STATUS_REQUESTED;
+                    $select_requested_task_query = "SELECT id 
+                                                  FROM friends_favr_requests
+                                                  WHERE customer_id = '$userId'
+                                                  AND task_date = '$inputDate'
+                                                  AND task_description = '$inputTaskDetails'
+                                                  AND task_location = '$address'
+                                                  AND task_category = '$inputCategory'
+                                                  AND task_status = '$requested'
+                                                  AND task_intensity = '$inputDifficulty'
+                                                  AND favr_price = '$inputPricing'
+                                                  AND task_freelancer_count = '$inputFreelancerCount'";
+
+                    $result = $this->db->query($select_requested_task_query);
+                    if ($result) {
+                        $row = $result->fetch(PDO::FETCH_ASSOC);
+                        $task_id = $row['id'];
+
+                        for ($i = 0; $i < Data_Constants::MAXIMUM_IMAGE_UPLOAD_COUNT; $i++) {
+                            // check if atleast one image is set
+                            if (!empty($inputPictures['name'][$i])) {
+                                // validate file is an image of type jpeg or png
+                                if ($inputPictures['type'][$i] == "image/jpeg" || $inputPictures['type'][$i] == "image/png") {
+                                    // continue validating file size is below allowed size of 5 MB
+                                    if ($inputPictures['size'][$i] <=  Data_Constants::MAXIMUM_IMAGE_UPLOAD_SIZE) {
+                                        // validate temp_name exists
+                                        if (!empty($inputPictures['tmp_name'][$i])) {
+                                            // validate no file errors were detected
+                                            if ($inputPictures['error'][$i] == 0) {
+                                                // hash the image file with the following convention: $task_id-$customer_id-request-image$i
+                                                $imageFileName = md5("$task_id-$userId-request-image$i");
+                                                if ($inputPictures['type'][$i] == 'image/jpeg') {
+                                                    $imageFileName = "$imageFileName.jpeg";
+                                                } else if ($inputPictures['type'][$i] == 'image/png') {
+                                                    $imageFileName = "$imageFileName.png";
+                                                }
+                                                $imageFileType = $inputPictures['type'][$i];
+
+                                                $imageFilePath =  Data_Constants::IMAGE_UPLOAD_FILE_PATH . "$imageFileName";
+
+                                                // copy image into backend and execute update query on request to update file paths
+                                                if (copy($inputPictures['tmp_name'][$i], $imageFilePath)) {
+                                                    //                                                    echo "<pre>";
+                                                    //                                                    die(print_r($inputPictures));
+                                                    // file copied to destination
+                                                    $x = $i + 1;
+                                                    $task_picture_path_x = "task_picture_path_$x";
+                                                    $imageDataArray = array('name' => "$imageFileName",
+                                                        'type' => "$imageFileType",
+                                                        'size' => $inputPictures['size'][$i],
+                                                        'task_id' => $task_id);
+
+                                                    $imageDataArray = serialize($imageDataArray);
+
+                                                    $update_path_query = "UPDATE friends_favr_requests 
                                                                           SET $task_picture_path_x = '$imageDataArray'
                                                                           WHERE id = '$task_id'";
 
@@ -4040,94 +4822,6 @@ class Web_Page
     /**
      * Process accept request
      *
-     * Flow: Marketplace -> Verified freelancer accepts -> Notify customer -> customer accepts -> Notify freelancer -> Change status of request to pending job
-     *                                                      |-> freelancer or customer rejects -> Marketplace
-     *
-     * @param int $requestID
-     * @param int $freelancerID
-     *
-     * @return mixed
-     */
-    function processFreelancerAcceptRequest($requestID, $freelancerID)
-    {
-        if (isset($requestID, $freelancerID)) {
-            // freelancer has accepted
-            $select_request_query = "SELECT * 
-                                     FROM marketplace_favr_requests
-                                     WHERE id = $requestID";
-            $result = $this->db->query($select_request_query);
-            if ($result) {
-                $row = $result->fetch(PDO::FETCH_ASSOC);
-                $freelancer_accepted = $row['task_freelancer_accepted'];
-                $freelancer_count = $row['task_freelancer_count'];
-                $freelancer_id = $row['freelancer_id'];
-                $request_id = $row['id'];
-                $setTaskStatusPending = ""; // still need more freelancers
-
-                // ensure there's not already enough freelancers signed up for this job
-                if ($freelancer_accepted < $freelancer_count) {
-                    $select_freelancers_query = "INSERT INTO marketplace_favr_freelancers
-                                                 (
-                                                    request_id, 
-                                                    user_id
-                                                 ) 
-                                                 VALUES
-                                                 (
-                                                    $request_id,
-                                                    $freelancerID
-                                                 )";
-
-                    $result = $this->db->query($select_freelancers_query);
-                    if ($result) {
-                        $freelancer_accepted += 1; // add user to freelancer queue
-
-                        $update_request_query = "UPDATE marketplace_favr_requests
-                                                 SET task_freelancer_accepted = $freelancer_accepted,
-                                                     freelancer_id = $request_id
-                                                 WHERE id = $request_id";
-
-                        $result = $this->db->query($update_request_query);
-//                        die(print_r($result));
-                        if (!$result) {
-                            return false;
-                        }
-
-                    } else {
-                        return false;
-                    }
-                }
-
-                if ($freelancer_accepted == $freelancer_count) {
-                    $setTaskStatusPending = Data_Constants::DB_TASK_STATUS_PENDING_APPROVAL;
-
-                    $update_request_query = "UPDATE marketplace_favr_requests
-                                             SET task_status = '$setTaskStatusPending'
-                                             WHERE id = $request_id";
-
-                    $result = $this->db->query($update_request_query);
-                    if ($result) {
-                        return $freelancerID;
-                    } else {
-                        return false;
-                    }
-                }
-
-                if ($freelancer_accepted > $freelancer_count) {
-                    // impossible
-                    return false;
-                }
-
-                return $freelancerID;
-            }
-        } else {
-            // not set
-            return false;
-        }
-    }
-
-    /**
-     * Process accept request
-     *
      * Flow: Marketplace -> Verified freelancer accepts -> Notify customer -> customer accepts -> Notify freelancer -> Change status of request to paid job
      *                                                      |-> freelancer or customer rejects -> Marketplace
      *
@@ -4210,6 +4904,288 @@ class Web_Page
     }
 
     /**
+     * Process accept a friend's request
+     *
+     * Flow: Friends -> friend accepts -> Notify customer -> customer accepts -> Notify freelancer -> Change status of request to pending job
+     *                                                      |-> freelancer or customer rejects -> Marketplace
+     *
+     * @param int $requestID
+     * @param int $freelancerID
+     *
+     * @return mixed
+     */
+    function processFriendFreelancerAcceptRequest($requestID, $freelancerID)
+    {
+        if (isset($requestID, $freelancerID)) {
+            // freelancer has accepted
+            $select_request_query = "SELECT * 
+                                     FROM friends_favr_requests
+                                     WHERE id = $requestID";
+            $result = $this->db->query($select_request_query);
+            if ($result) {
+                $row = $result->fetch(PDO::FETCH_ASSOC);
+                $freelancer_accepted = $row['task_freelancer_accepted'];
+                $freelancer_count = $row['task_freelancer_count'];
+                $freelancer_id = $row['freelancer_id'];
+                $request_id = $row['id'];
+                $setTaskStatusPending = ""; // still need more freelancers
+
+                // ensure there's not already enough freelancers signed up for this job
+                if ($freelancer_accepted < $freelancer_count) {
+                    $select_freelancers_query = "INSERT INTO friends_favr_requests
+                                                 (
+                                                    request_id, 
+                                                    user_id
+                                                 ) 
+                                                 VALUES
+                                                 (
+                                                    $request_id,
+                                                    $freelancerID
+                                                 )";
+
+                    $result = $this->db->query($select_freelancers_query);
+                    if ($result) {
+                        $freelancer_accepted += 1; // add user to freelancer queue
+
+                        $update_request_query = "UPDATE friends_favr_requests
+                                                 SET task_freelancer_accepted = $freelancer_accepted,
+                                                     freelancer_id = $request_id
+                                                 WHERE id = $request_id";
+
+                        $result = $this->db->query($update_request_query);
+//                        die(print_r($result));
+                        if (!$result) {
+                            return false;
+                        }
+
+                    } else {
+                        return false;
+                    }
+                }
+
+                if ($freelancer_accepted == $freelancer_count) {
+                    $setTaskStatusPending = Data_Constants::DB_TASK_STATUS_PENDING_APPROVAL;
+
+                    $update_request_query = "UPDATE friends_favr_requests
+                                             SET task_status = '$setTaskStatusPending'
+                                             WHERE id = $request_id";
+
+                    $result = $this->db->query($update_request_query);
+                    if ($result) {
+                        return $freelancerID;
+                    } else {
+                        return false;
+                    }
+                }
+
+                if ($freelancer_accepted > $freelancer_count) {
+                    // impossible
+                    return false;
+                }
+
+                return $freelancerID;
+            }
+        } else {
+            // not set
+            return false;
+        }
+    }
+
+    /**
+     * Process accept request
+     *
+     * Flow: Marketplace -> Verified freelancer accepts -> Notify customer -> customer accepts -> Notify freelancer -> Change status of request to paid job
+     *                                                      |-> freelancer or customer rejects -> Marketplace
+     *
+     * @param int $requestID
+     * @param int $freelancerID
+     * @param int $customerID
+     *
+     * @return mixed
+     */
+    function processFriendCustomerAcceptRequest($requestID, $freelancerID, $customerID)
+    {
+        if (isset($requestID, $freelancerID, $customerID)) {
+            // customer has approved of freelancer
+            $select_request_query = "SELECT * 
+                                     FROM friends_favr_requests
+                                     WHERE id = $requestID";
+            $result = $this->db->query($select_request_query);
+            if ($result) {
+                $row = $result->fetch(PDO::FETCH_ASSOC);
+                $freelancer_accepted = $row['task_freelancer_accepted'];
+                $freelancer_count = $row['task_freelancer_count'];
+                $freelancer_id = $row['friend_id'];
+                $request_id = $row['id'];
+
+                // set freelancer to approved
+                if ($freelancer_accepted <= $freelancer_count) {
+
+                    // approve freelancer set approved to true
+                    $update_freelancer_query = "UPDATE friends_favr_requests 
+                                                SET approved = 1
+                                                WHERE id = $requestID
+                                                AND friend_id = $freelancerID";
+
+                    $result = $this->db->query($update_freelancer_query);
+                    if ($result) {
+                        // set status of task to paid if enough help has been found and approved
+                        if ($freelancer_accepted == $freelancer_count) {
+                            $select_freelancer_query = "SELECT COUNT(*)
+                                                        FROM friends_favr_requests
+                                                        WHERE id = $requestID
+                                                        AND approved = 1";
+                            $result = $this->db->query($select_freelancer_query);
+                            if ($result) {
+                                $row = $result->fetch(PDO::FETCH_ASSOC);
+                                $approvedCount = $row['COUNT(*)'];
+                                if ($approvedCount == $freelancer_count) { // user has approved all freelancers
+                                    $paid = Data_Constants::DB_TASK_STATUS_PAID;
+                                    $update_request_query = "UPDATE friends_favr_requests
+                                                             SET task_status = '$paid'
+                                                             WHERE id = $request_id";
+
+                                    $result = $this->db->query($update_request_query);
+                                    if ($result) {
+                                        return $customerID;
+                                    } else {
+                                        return false;
+                                    }
+                                }
+                            } else {
+                                return false;
+                            }
+                        }
+                    } else {
+                        // error
+                        return false;
+                    }
+
+                    return $customerID;
+                }
+
+                if ($freelancer_accepted > $freelancer_count) {
+                    // impossible
+                    return false;
+                }
+            }
+        } else {
+            // not set
+            return false;
+        }
+    }
+
+    /**
+     * TODO: needs logic development
+     * Process cancel pending friend request
+     *
+     * @param int $requestID
+     * @param int $freelancerID // user id of the freelancer
+     * @param int $customerID // user id of the customer
+     *
+     * @return boolean
+     */
+    function processFriendCancelPendingRequest($requestID,  $freelancerID = null, $customerID = null)
+    {
+        if (isset($requestID) && ($freelancerID != null || $customerID != null)) {
+            $select_task_query = "SELECT friend_id, task_freelancer_accepted 
+                                  FROM friend_favr_requests
+                                  WHERE id = '$requestID'";
+            $result = $this->db->query($select_task_query);
+            if ($result) {
+                if ($freelancerID != null) {
+                    $row = $result->fetch(PDO::FETCH_ASSOC);
+                    $freelancer_id = $row['freelancer_id'];
+                    $freelancer_accepted = $row['task_freelancer_accepted'];
+
+                    // delete request from freelancers table and decrement freelancers accepted count
+
+                    // freelancer has been removed from task
+                    $freelancer_accepted -= 1;
+//                        $set_task_status = "";
+                    $requested = Data_Constants::DB_TASK_STATUS_REQUESTED;
+                    $set_task_status = ", task_status = '$requested'";
+
+                    // update request to null if freelancers accepted is 0 and set status back to requested
+                    if ($freelancer_accepted == 0) {
+                        $freelancer_id = "NULL";
+                    }
+
+                    $update_request_query = "UPDATE friends_favr_requests
+                                             SET task_freelancer_accepted = $freelancer_accepted,
+                                                 friend_id = $freelancer_id
+                                                 $set_task_status
+                                             WHERE id = $requestID";
+
+                    $result = $this->db->query($update_request_query);
+                    if ($result) {
+                        // successfully withdrew freelancer from task
+                        return true;
+                    } else {
+                        // failure in withdrawal
+                        return false;
+                    }
+                }
+
+                if ($customerID != null) {
+                    return true;
+                }
+                // TODO: javaScript validation warning user of action
+
+                return false;
+            } else {
+                return false;
+            }
+        } else {
+            return false;
+        }
+    }
+
+    /**
+     * Process friend freelancer arrival and log the time
+     *
+     * @param boolean $freelancerArrived
+     * @param int $timestamp
+     * @param int $requestID
+     * @param int $freelancerID // this user!
+     *
+     * @return mixed // timestamp of arrival or false
+     */
+    function processFriendFreelancerArrived($freelancerArrived, $timestamp, $requestID, $freelancerID)
+    {
+        if (isset($freelancerArrived, $timestamp, $requestID, $freelancerID)) {
+            if ($freelancerID == $_SESSION['user_info']['id']) { // must be this user
+                // log time of arrival
+                $inProgress = Data_Constants::DB_TASK_STATUS_IN_PROGRESS;
+                $update_request_query = "UPDATE friend_favr_requests
+                                         SET task_status = '$inProgress'
+                                         WHERE id = $requestID";
+
+                $result = $this->db->query($update_request_query);
+                if ($result) {
+                    $update_freelancers_query = "UPDATE marketplace_favr_freelancers
+                                             SET arrival_time = '$timestamp'
+                                             WHERE request_id = $requestID
+                                             AND user_id = $freelancerID";
+
+                    $result = $this->db->query($update_freelancers_query);
+                    if ($result) {
+                        return $timestamp;
+                    } else {
+                        return false;
+                    }
+                } else {
+                    return false;
+                }
+            } else {
+                return false;
+            }
+        } else {
+            return false;
+        }
+    }
+
+    /**
      * Process notifications
      *
      * @param array $userInfo
@@ -4242,13 +5218,27 @@ class Web_Page
                 AND friends_since IS NULL 
         ";
 
+        $notifications_friend_favr_request_query = "
+                                SELECT COUNT(*)
+                                FROM friends_favr_requests ffr 
+                                JOIN users u
+                                ON u.id = ffr.customer_id
+                                AND ffr.customer_id = $userID 
+                                AND ffr.friend_id IS NOT NULL 
+                                AND NOT ffr.task_status = '$completed'
+                                OR ffr.friend_id = $userID 
+                                AND u.id = ffr.friend_id
+                                AND NOT ffr.task_status = '$completed'";
+
         $result = $this->db->query($notifications_query);
         $result1 = $this->db->query($notifications_friend_request_query);
-        if ($result || $result1) {
+        $result2 = $this->db->query($notifications_friend_favr_request_query);
+        if ($result || $result1 || $result2) {
             $row = $result->fetch(PDO::FETCH_ASSOC);
             $row1 = $result1->fetch(PDO::FETCH_ASSOC);
+            $row2 = $result2->fetch(PDO::FETCH_ASSOC);
 
-            $_SESSION['main_notifications'] = $row['COUNT(*)'] + $row1['COUNT(*)'];
+            $_SESSION['main_notifications'] = $row['COUNT(*)'] + $row1['COUNT(*)'] + $row2['COUNT(*)'];
         } else {
             $_SESSION['main_notifications'] = 0;
         }
