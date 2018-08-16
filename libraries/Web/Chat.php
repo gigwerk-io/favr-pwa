@@ -63,6 +63,7 @@ class Web_Chat
     }
 
     function connect()
+
     {
         //Set up PDO connection
         try {
