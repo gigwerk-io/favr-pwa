@@ -8,7 +8,7 @@
  * @author solomonantoine
  */
 
-require '../Api/Stripe/init.php';
+//require '../Api/Stripe/init.php';
 
 
 
@@ -103,10 +103,10 @@ class Web_Payment
      */
     public function checkOut(int $id)
     {
-        if($this->status == "Pending Approval")
-        {
+//        if($this->status == "Pending Approval")
+//        {
             echo "
-                <form action='TestPage.php?id=$id' method='post'>
+                <form action='process_payment?id=$id' method='post'>
                     <script
                         src='https://checkout.stripe.com/checkout.js' class='stripe-button'
                         data-key= " . Data_Constants::STRIPE_PUBLIC . "
@@ -117,9 +117,9 @@ class Web_Payment
                         data-locale='auto'>
                     </script>
                 </form>";
-        } else{
-            header("location: http://localhost:1234/favr-pwa");
-        }
+//        } else{
+//            //header("location: http://localhost:1234/favr-pwa");
+//        }
         return $this;
     }
 
@@ -136,7 +136,7 @@ class Web_Payment
             "description" => $this->description,
             "source" => $token,
         ));
-        print_r($charge);
+        //print_r($charge);
         return $this;
     }
 
@@ -156,26 +156,6 @@ class Web_Payment
         return $this;
     }
 
-    /**
-     * @return $this
-     */
-    public function createChat()
-    {
-        $message_file = "message_" . time() . ".txt";
-        fopen("../../storage/$message_file", "x");
-        $success = $this->db->query("INSERT INTO marketplace_favr_chat (message_file, customer_id, freelancer_id_1) 
-                                    VALUES ('$message_file', $this->customer_id, $this->freelancer_id)");
-        if($success)
-        {
-            echo "<script> 
-                    alert('Chat Created.');
-                    //window.location.href = 'TestPage.php?file=$message_file&customer=$this->customer_id&freelancer=$this->freelancer_id';
-                </script> \n";
-        }else{
-            echo "Chat Unsuccessful \n";
-        }
-        return $this;
-    }
 
 
 
