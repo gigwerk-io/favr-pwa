@@ -103,8 +103,8 @@ class Web_Payment
      */
     public function checkOut(int $id)
     {
-        if($this->status == "Pending Approval")
-        {
+//        if($this->status == "Pending Approval")
+//        {
             echo "
                 <form action='process_payment?id=$id' method='post'>
                     <script
@@ -117,9 +117,9 @@ class Web_Payment
                         data-locale='auto'>
                     </script>
                 </form>";
-        } else{
-            //header("location: http://localhost:1234/favr-pwa");
-        }
+//        } else{
+//            //header("location: http://localhost:1234/favr-pwa");
+//        }
         return $this;
     }
 
