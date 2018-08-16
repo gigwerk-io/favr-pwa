@@ -8,7 +8,7 @@
  * @author solomonantoine
  */
 
-require '../Api/Stripe/init.php';
+//require '../Api/Stripe/init.php';
 
 
 
