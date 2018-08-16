@@ -33,7 +33,7 @@ if (isset($_FILES['profile_image']) ||  isset($_POST['profile_description'])) {
                 $profile_image_name = md5($userID) . "-profile.png";
             }
 
-            $profile_image_path = "../../" . Data_Constants::IMAGE_UPLOAD_PROFILE_IMAGE_FILE_PATH;
+            $profile_image_path = Data_Constants::IMAGE_UPLOAD_PROFILE_IMAGE_FILE_PATH;
 
             if (copy($profile_image['tmp_name'], "$profile_image_path" . $profile_image_name)) {
 
