@@ -156,26 +156,6 @@ class Web_Payment
         return $this;
     }
 
-    /**
-     * @return $this
-     */
-    public function createChat()
-    {
-        $message_file = "message_" . time() . ".txt";
-        fopen("../../storage/$message_file", "x");
-        $success = $this->db->query("INSERT INTO marketplace_favr_chat (message_file, customer_id, freelancer_id_1) 
-                                    VALUES ('$message_file', $this->customer_id, $this->freelancer_id)");
-        if($success)
-        {
-            echo "<script> 
-                    alert('Chat Created.');
-                    //window.location.href = 'TestPage.php?file=$message_file&customer=$this->customer_id&freelancer=$this->freelancer_id';
-                </script> \n";
-        }else{
-            echo "Chat Unsuccessful \n";
-        }
-        return $this;
-    }
 
 
 

@@ -18,6 +18,7 @@ if (isset($_SESSION['user_info'])) {
 }
 
 $page = new Web_Page($USER);
+$chat = new Web_Chat();
 
 //handle friend requests
 if (isset($_GET['add_friend'])) {
@@ -33,6 +34,7 @@ if (isset($_GET['add_friend'])) {
 // handle freelancer acceptance and withdrawal
 if (isset($_GET['accept_freelancer_request_id'])) {
     $page->processFreelancerAcceptRequest($_GET['accept_freelancer_request_id'], $_SESSION['user_info']['id']);
+
 } else if (isset($_GET['withdraw_request_id'], $_GET['freelancer_id'])) {
     $page->processCancelPendingRequest($_GET['withdraw_request_id'], $_GET['freelancer_id']);
 }
@@ -40,6 +42,7 @@ if (isset($_GET['accept_freelancer_request_id'])) {
 // handle customer accept and reject freelancer
 if (isset($_GET['accept_customer_request_id'], $_GET['freelancer_id'])) {
     $page->processCustomerAcceptRequest($_GET['accept_customer_request_id'], $_GET['freelancer_id'], $_SESSION['user_info']['id']);
+    $chat->createChat($_SESSION['user_info']['id'], $_GET['freelancer_id']);
 } else if (isset($_GET['reject_customer_request_id'], $_GET['freelancer_id'])) {
     $page->processCancelPendingRequest($_GET['reject_customer_request_id'], $_GET['freelancer_id'], $_SESSION['user_info']['id']);
 }
