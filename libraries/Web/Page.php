@@ -5099,6 +5099,8 @@ class Web_Page
 
                     $result = $this->db->query($update_request_query);
                     if ($result) {
+                        $checkout = new Web_Payment();
+                        $checkout->select($requestID)->checkOut($requestID); //redirects to payment process
                         return $freelancerID;
                     } else {
                         return false;
