@@ -105,7 +105,7 @@ class Web_Payment
     {
 //        if($this->status == "Pending Approval")
 //        {
-            echo "
+            echo $message = "
                 <form action='process_payment?id=$id' method='post'>
                     <script
                         src='https://checkout.stripe.com/checkout.js' class='stripe-button'
@@ -117,6 +117,7 @@ class Web_Payment
                         data-locale='auto'>
                     </script>
                 </form>";
+            var_dump($message);die;
 //        } else{
 //            //header("location: http://localhost:1234/favr-pwa");
 //        }
