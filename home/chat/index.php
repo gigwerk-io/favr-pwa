@@ -88,7 +88,7 @@ if (!empty($_POST['Text']))
                 if(el !== document.activeElement) {
                     //document.location.reload();
                     var x = window.location;
-                    $('#incoming').load(x);
+                    $('#incoming').on('load', (x));
                 }
             }, 12500)
 
