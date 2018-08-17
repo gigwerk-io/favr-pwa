@@ -8,7 +8,7 @@
 require_once '../../libraries/Api/Stripe/init.php';
 $payment = new Web_Payment();
 if(isset($_POST['stripeToken'])){
-    $payment->charge($_POST['stripeToken'])->update($_GET['id']);
+    $payment->charge($_POST['stripeToken'])->update($_GET['id'])->createChat();
 }else{
 
 }

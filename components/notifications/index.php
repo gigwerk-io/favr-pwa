@@ -18,6 +18,7 @@ if (isset($_SESSION['user_info'])) {
 }
 
 $page = new Web_Page($USER);
+$checkout = new Web_Payment();
 
 //handle friend requests
 if (isset($_GET['add_friend'])) {
@@ -34,6 +35,7 @@ if (isset($_GET['add_friend'])) {
 // handle freelancer acceptance and withdrawal
 if (isset($_GET['accept_friend_request_id'])) {
     $page->processFriendFreelancerAcceptRequest($_GET['accept_friend_request_id'], $_SESSION['user_info']['id']);
+    $checkout->select($_GET['accept_friend_request_id'])->checkOut($_GET['accept_friend_request_id']); //redirects to payment process
 } else if (isset($_GET['withdraw_friend_request_id'], $_GET['friend_id'])) {
     $page->processFriendCancelPendingRequest($_GET['withdraw_friend_request_id'], $_GET['friend_id']);
 }
