@@ -22,9 +22,9 @@ if (isset($image, $imageType)) {
     if (!empty($image) && !empty($imageType) && $notImageProfile) {
         readfile("../../favr-request-images/$image");
     } else if (!empty($image) && !empty($imageType) && !$notImageProfile) {
-        readfile("favr-profile-images/$image");
+        readfile("../../favr-profile-images/$image");
     } else {
-        readfile("favr-profile-images/placeholder.png");
+        readfile("../../favr-profile-images/placeholder.png");
     }
 } else {
     header("Location: index.php");
