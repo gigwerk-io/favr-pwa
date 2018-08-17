@@ -86,7 +86,7 @@ if (!empty($_POST['Text']))
 
             setInterval(function () {
                 if(el !== document.activeElement) {
-                    window.location.reload();
+                    document.location.reload();
                 }
             }, 12500)
 
