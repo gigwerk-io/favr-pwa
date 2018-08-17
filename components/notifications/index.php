@@ -18,6 +18,7 @@ if (isset($_SESSION['user_info'])) {
 }
 
 $page = new Web_Page($USER);
+//$checkout = new Web_Payment();
 
 //handle friend requests
 if (isset($_GET['add_friend'])) {
@@ -30,6 +31,16 @@ if (isset($_GET['add_friend'])) {
     }
 }
 //--------------------- friend market action
+
+// handle a direct favr request
+if (isset($_POST['requestFavr'])) {
+    if (isset($_GET['ask_favr'], $_GET['id']) && $_GET['ask_favr'] = 'true') {
+        $successfulProcessToDB = $page->processFavrFriendRequestToDB($_SESSION['user_info'], $_POST['requestDate'], $_POST['requestCategory'], $_POST['requestTaskDescription'], $_POST['requestPrice'], 1, $_POST['requestStreetAddress'], $_POST['requestDifficulty'], $_FILES['requestPictures'], "private", $_GET['id']);
+        if ($successfulProcessToDB) {
+            $ALERT_MESSAGE = ""; // alert message
+        }
+    }
+}
 
 // handle freelancer acceptance and withdrawal
 if (isset($_GET['accept_friend_request_id'])) {
@@ -99,7 +110,7 @@ if (isset($_GET['ALERT_MESSAGE'])) {
     $ALERT_MESSAGE = "
             <div class=\"my-3 p-3 alert alert-success alert-dismissible\" role=\"alert\">
                 <button type=\"button\" class=\"close\" data-dismiss=\"alert\" aria-label=\"Close\"><span aria-hidden=\"true\">&times;</span></button>
-                <strong>Success!</strong> $ALERT_MESSAGE
+                <strong>Success!</strong> $ALERT_MESSAGE. Please Click the Button in the top left corner to ensure your request will be fulfilled.
             </div>
         ";
 }

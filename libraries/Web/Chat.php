@@ -76,28 +76,28 @@ class Web_Chat
         }
     }
 
-    /**
-     * @param int $customer_id
-     * @param int $freelancer_id
-     * @return $this
-     */
-    public function createChat(int $customer_id, int $freelancer_id)
-    {
-        $message_file = "message_" . time() . ".txt";
-        fopen("../../storage/$message_file", "x");
-        $success = $this->db->query("INSERT INTO marketplace_favr_chat (message_file, customer_id, freelancer_id_1) 
-                                    VALUES ('$message_file', $customer_id, $freelancer_id)");
-        if($success)
-        {
-            echo "<script> 
-                    alert('Chat Created.');
-                    //window.location.href = 'TestPage.php?file=$message_file&customer=$customer_id&freelancer=$freelancer_id';
-                </script> \n";
-        }else{
-            echo "Chat Unsuccessful \n";
-        }
-        return $this;
-    }
+//    /**
+//     * @param int $customer_id
+//     * @param int $freelancer_id
+//     * @return $this
+//     */
+//    public function createChat(int $customer_id, int $freelancer_id)
+//    {
+//        $message_file = "message_" . time() . ".txt";
+//        fopen("../../storage/$message_file", "x");
+//        $success = $this->db->query("INSERT INTO marketplace_favr_chat (message_file, customer_id, freelancer_id_1)
+//                                    VALUES ('$message_file', $customer_id, $freelancer_id)");
+//        if($success)
+//        {
+//            echo "<script>
+//                    alert('Chat Created.');
+//                    //window.location.href = 'TestPage.php?file=$message_file&customer=$customer_id&freelancer=$freelancer_id';
+//                </script> \n";
+//        }else{
+//            echo "Chat Unsuccessful \n";
+//        }
+//        return $this;
+//    }
 
     /**
      * @return $this
