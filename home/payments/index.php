@@ -5,16 +5,18 @@
  * Date: 8/15/18
  * Time: 11:18 AM
  */
-require '../../libraries/Api/Stripe/init.php';
+
 session_start();
 include($_SERVER['DOCUMENT_ROOT'] . "/favr-pwa/include/autoload.php");
+require '../../libraries/Api/Stripe/init.php';
 
 // component constants
 $PAGE_ID = 5;
 $USER = "";
 
 if (isset($_SESSION['user_info'])) {
-    print $USER = $_SESSION['user_info']['username']; die;// user is set from initial configuration
+    print_r($_SESSION);die;
+   $USER = $_SESSION['user_info']['username']; // user is set from initial configuration
 }
 
 $page = new Web_Page($PAGE_ID, $USER);
