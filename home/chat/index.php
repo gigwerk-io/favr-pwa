@@ -60,7 +60,7 @@ if (!empty($_POST['Text']))
                 </div>";
                 ?>
             </div>
-            <div class="web-messaging-contact mesgs p-0">
+            <div class="web-messaging-contact mesgs p-0" id="chat_refresh">
                 <div class="msg_history p-2 pt-5">
                     <?php
                     if(isset($_GET['file']))
@@ -86,13 +86,18 @@ if (!empty($_POST['Text']))
 
             setInterval(function () {
                 if(el !== document.activeElement) {
-                    document.location.reload();
+                    //document.location.reload();
+                    var x = document.location;
+                    $('#chat_refresh').load(x);
                 }
             }, 12500)
 
         }
 
         refreshPageUnlessFocusedOn(document.querySelector('textarea'));
+        // setInterval(function(){
+        //     $('#my_div').load('/path/to/server/source');
+        // }, 2000)
     </script>
 <?php
 $page->addScript("
