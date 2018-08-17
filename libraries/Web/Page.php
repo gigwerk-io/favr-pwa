@@ -4164,12 +4164,17 @@ class Web_Page
                     <div class="col-md-3 request-favr-web border-bottom border-gray"></div>
                 </div>
                 <div class="row pb-1 mb-0">
-                    <div class="col-md-6 p-2 border-bottom border-gray">
+                    <div class="col-md-4 p-2 border-bottom border-gray">
+                        <a href="<?php echo "$this->root_path/home/payments/"; ?>">Set up payments
+                            <i class="mobile-footer float-right text-muted material-icons">chevron_right</i>
+                        </a>
+                    </div>
+                    <div class="col-md-4 p-2 border-bottom border-gray">
                         <a href="#">Terms of Service and Conditions
                             <i class="mobile-footer float-right text-muted material-icons">chevron_right</i>
                         </a>
                     </div>
-                    <div class="col-md-6 p-2 border-bottom border-gray">
+                    <div class="col-md-4 p-2 border-bottom border-gray">
                         <a href="#">Change password
                             <i class="mobile-footer float-right text-muted material-icons">chevron_right</i>
                         </a>
