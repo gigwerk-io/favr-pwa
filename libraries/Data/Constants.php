@@ -15,18 +15,18 @@ class Data_Constants
     const PRODUCT_VERSION = "0.1.1";
 
     // database connection constants
-    const DB_DSN = "mysql:dbname=local_favr;host=localhost";
-    const DB_USERNAME = "haron";
-    const DB_PASSWORD = "Ha7780703";
+    const DB_DSN = "mysql:dbname=local_favr_2;host=favr.cgfeyejwt7qv.us-east-2.rds.amazonaws.com";
+    const DB_USERNAME = "Solomon04";
+    const DB_PASSWORD = "Nomolos.99";
 
     // Root path
-    const ROOT_PATH = "http://localhost/favr-pwa";
+    const ROOT_PATH = "https://askfavr.com/favr-pwa";
 
     // image upload constants
     const MAXIMUM_IMAGE_UPLOAD_COUNT = 3;
     const MAXIMUM_IMAGE_UPLOAD_SIZE = 5242880; // 5 Mb
-    const IMAGE_UPLOAD_FILE_PATH = "/Applications/XAMPP/xamppfiles/favr-request-images/";
-    const IMAGE_UPLOAD_PROFILE_IMAGE_FILE_PATH = "/Applications/XAMPP/xamppfiles/favr-profile-images/";
+    const IMAGE_UPLOAD_FILE_PATH = "/var/www/html/favr-request-images/";
+    const IMAGE_UPLOAD_PROFILE_IMAGE_FILE_PATH = "var/www/html/favr-profile-images/";
 
     // database marketplace task status constants
     const DB_TASK_STATUS_REQUESTED = "Requested";
