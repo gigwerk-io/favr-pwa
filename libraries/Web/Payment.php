@@ -120,6 +120,11 @@ class Web_Payment
                         data-locale='auto'>
                     </script>
                 </form>";
+            echo "<script>
+                    $(window).load(function() {
+                      $('.stripe-button-el').trigger('click');
+                    });
+                </script>";
 //        } else{
 //            //header("location: http://localhost:1234/favr-pwa");
 //        }
@@ -152,7 +157,10 @@ class Web_Payment
         $success = $this->db->query("UPDATE marketplace_favr_requests SET task_status='In Progress' WHERE id=$id");
         if($success)
         {
-            echo "Request Updated \n";
+//            $text = new Web_Notification();
+//            $sth = $this->db->query("SELECT * FROM users WHERE id=$this->freelancer_id");
+//            $row = $sth->fetch(PDO::FETCH_ASSOC);
+//            $text->sendNotification(1, "Here");
         }else{
             echo " Request Failure \n";
         }
