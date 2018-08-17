@@ -14,7 +14,7 @@ $PAGE_ID = 5;
 $USER = "";
 
 if (isset($_SESSION['user_info'])) {
-    $USER = $_SESSION['user_info']['username']; // user is set from initial configuration
+    print $USER = $_SESSION['user_info']['username']; die;// user is set from initial configuration
 }
 
 $page = new Web_Page($PAGE_ID, $USER);
