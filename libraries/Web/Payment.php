@@ -129,6 +129,7 @@ class Web_Payment
      */
     public function charge(string $token)
     {
+        print $this->price;die;
         \Stripe\Stripe::setApiKey(\Data_Constants::STRIPE_SECRET);
         \Stripe\Charge::create($charge = array(
             "amount" => $this->price,
