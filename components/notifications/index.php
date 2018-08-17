@@ -31,6 +31,16 @@ if (isset($_GET['add_friend'])) {
 }
 //--------------------- friend market action
 
+// handle a direct favr request
+if (isset($_POST['requestFavr'])) {
+    if (isset($_GET['ask_favr'], $_GET['id']) && $_GET['ask_favr'] = 'true') {
+        $successfulProcessToDB = $page->processFavrFriendRequestToDB($_SESSION['user_info'], $_POST['requestDate'], $_POST['requestCategory'], $_POST['requestTaskDescription'], $_POST['requestPrice'], 1, $_POST['requestStreetAddress'], $_POST['requestDifficulty'], $_FILES['requestPictures'], "private", $_GET['id']);
+        if ($successfulProcessToDB) {
+            $ALERT_MESSAGE = ""; // alert message
+        }
+    }
+}
+
 // handle freelancer acceptance and withdrawal
 if (isset($_GET['accept_friend_request_id'])) {
     $page->processFriendFreelancerAcceptRequest($_GET['accept_friend_request_id'], $_SESSION['user_info']['id']);

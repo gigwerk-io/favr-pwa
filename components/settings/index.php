@@ -26,82 +26,39 @@ if (isset($_SESSION['navbar']) && $_SESSION['navbar'] != "active_home") {
 
 $page = new Web_Page($USER);
 
+if (isset($_POST['submit_delete'])) {
+    $page->processAccountDelete($_SESSION['user_info']['id']);
+    $page->signOutUser();
+}
+
+if (isset($_POST['submit_settings'], $_POST['default_scope'])) {
+    if (isset($_POST['display_ratings'])) {
+        $_POST['display_ratings'] = 1;
+    } else {
+        $_POST['display_ratings'] = 0;
+    }
+
+    if (isset($_POST['display_receipts'])) {
+        $_POST['display_receipts'] = 1;
+    } else {
+        $_POST['display_receipts'] = 0;
+    }
+
+    if (isset($_POST['display_description'])) {
+        $_POST['display_description'] = 1;
+    } else {
+        $_POST['display_description'] = 0;
+    }
+
+    $page->processSettings($_POST['display_ratings'], $_POST['display_receipts'], $_POST['display_description'], $_POST['default_scope']);
+}
+
 $page->setTitle("Settings");
 $page->addStylesheet("<link rel='stylesheet' type='text/css' href='$page->root_path/assets/css/settings.css' />");
 $page->renderHeader();
 
 echo $ALERT_MESSAGE;
-?>
-    <div class="p-3 pb-0 rounded bg-white box-shadow" style="margin-top: 1.2rem;">
-        <div class="row pb-2 mb-0">
-            <h3 style="width: 100%" class="text-center border-bottom border-gray">Account Settings</h3>
-        </div>
-        <div class="row p-0 mb-0">
-            <div class="col-md-4">
-                <div class="form-group border-bottom border-gray">
-                    <label class="small text-left pb-0">Display my ratings</label>
-                    <span class="float-right switch switch-sm">
-                        <input type="checkbox" checked class="switch" id="rating">
-                        <label for="rating"></label>
-                    </span>
-                </div>
-            </div>
-            <div class="col-md-3">
-                <div class="form-group border-bottom border-gray">
-                    <label class="small text-left pb-0">Display receipts</label>
-                    <span class="float-right switch switch-sm">
-                        <input type="checkbox" checked class="switch" id="receipts">
-                        <label for="receipts"></label>
-                    </span>
-                </div>
-            </div>
-            <div class="col-md-5">
-                <div class="small form-group border-bottom border-gray">
-                    <label class="text-left pb-0">Display my description</label>
-                    <span class="float-right switch switch-sm">
-                        <input type="checkbox" checked class="switch" id="description">
-                        <label for="description"></label>
-                    </span>
-                </div>
-            </div>
-        </div>
-        <div class="row pb-0 pt-0 mb-0">
-            <div class="col-md-3 request-favr-web border-bottom border-gray"></div>
-            <div class="col-md-6 pl-2 pr-2 pt-0 pb-2 border-bottom border-gray">
-                <label for="scope">My default scope</label>
-                <select class="form-control">
-                    <option>Only me</option>
-                    <option selected>Friends</option>
-                    <option>Friends of friends</option>
-                    <option>Public</option>
-                </select>
-            </div>
-            <div class="col-md-3 request-favr-web border-bottom border-gray"></div>
-        </div>
-        <div class="row pb-1 mb-0">
-            <div class="col-md-6 p-2 border-bottom border-gray">
-                <a href="#">Terms of Service and Conditions
-                    <i class="mobile-footer float-right text-muted material-icons">chevron_right</i>
-                </a>
-            </div>
-            <div class="col-md-6 p-2 border-bottom border-gray">
-                <a href="#">Change password
-                    <i class="mobile-footer float-right text-muted material-icons">chevron_right</i>
-                </a>
-            </div>
-        </div>
-        <div class="row pb-1 mb-0">
-            <div class="col-lg-12 text-center">
-                <a href="#" class="text-danger">Delete my account</a>
-            </div>
-        </div>
-    </div>
-    <div class="p-3 pb-0 rounded bg-white box-shadow" style="margin-top: 1.2rem;">
-        <div class="row pb-2 mb-0">
-            <h3 style="width: 100%" class="text-center border-bottom border-gray">Signed-In Sessions</h3>
-        </div>
-    </div>
-<?php
+$page->renderSettings($_SESSION['user_info']['id']);
 $page->addScript("
 <script>
     window.addEventListener('load', function(){
