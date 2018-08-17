@@ -124,7 +124,7 @@ class Web_Chat
             $message = $row['message_file'];
             //$date = date("Y-m-d H:i:s", $row['updated_at']);
             $date = $row['updated_at'];
-            $new_date = date_format(new DateTime($date),"m/d/Y H:i:s");
+            $new_date = date_format(new DateTime($date),"m/d/Y");
             //echo "<a href='?file=$message'>" . $name . "</a>";
             echo "
                     <div class=\"chat_list\">
