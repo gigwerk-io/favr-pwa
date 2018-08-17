@@ -64,6 +64,9 @@ class Web_Payment
 
     function __construct() {
         $this->db = $this->connect();
+        if(isset($_GET['id'])){
+            $this->select($_GET['id']);
+        }
     }
 
     function connect()
