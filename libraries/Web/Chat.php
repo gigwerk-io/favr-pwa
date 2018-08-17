@@ -187,6 +187,19 @@ class Web_Chat
                                 <span class=\"time_date\"> $time</span></div>
                         </div>
                   </div>";
+                echo "<script>
+                        function refreshPageUnlessFocusedOn (el) {
+                
+                            setInterval(function () {
+                                if(el !== document.activeElement) {
+                                    document.location.reload();
+                                }
+                            }, 12500)
+                
+                        }
+                
+                        refreshPageUnlessFocusedOn(document.querySelector('textarea'));
+                    </script>";
             } else {
                 echo "<div class=\"outgoing_msg\" id='incoming'>
                         <div class=\"sent_msg\">
