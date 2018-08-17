@@ -127,8 +127,7 @@ class Web_Chat
             $new_date = date_format(new DateTime($date),"m/d/Y H:i:s");
             //echo "<a href='?file=$message'>" . $name . "</a>";
             echo "
-                   <div class=\"inbox_chat\">
-                        <div class=\"chat_list\">
+                    <div class=\"chat_list\">
                         <a href='?file=$message&to=$to'>
                             <div class=\"chat_people\">
                                 <div class=\"chat_img\"><img src=\"https://ptetutorials.com/images/user-profile.png\"
@@ -137,9 +136,8 @@ class Web_Chat
                                     <h5>$name<span class=\"chat_date\">$new_date</span></h5>
                                 </div>
                             </div>
-                           </a>
-                        </div>
-                   </div>
+                         </a>
+                     </div>
                 ";
         }
         return $this;

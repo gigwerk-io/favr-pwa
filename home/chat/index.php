@@ -53,7 +53,9 @@ if (!empty($_POST['Text']))
                     </div>
                 </div>
                 <?php
+                echo "<div class=\"inbox_chat\">";
                 $list->listChat();
+                echo "</div>";
                 echo "<div id=\"status\">
                 </div>";
                 ?>
