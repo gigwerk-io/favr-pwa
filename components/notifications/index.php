@@ -8,7 +8,6 @@
 
 session_start();
 include($_SERVER['DOCUMENT_ROOT'] . "/favr-pwa/include/autoload.php");
-require_once '../../libraries/Api/Stripe/init.php';
 
 // component constants
 $USER = "";
@@ -19,8 +18,6 @@ if (isset($_SESSION['user_info'])) {
 }
 
 $page = new Web_Page($USER);
-$chat = new Web_Chat();
-$payment = new Web_Payment();
 
 //handle friend requests
 if (isset($_GET['add_friend'])) {
@@ -32,11 +29,42 @@ if (isset($_GET['add_friend'])) {
         $page->processFavrFriendRequest($user_id, $requester_id, false);
     }
 }
+//--------------------- friend market action
+
+// handle freelancer acceptance and withdrawal
+if (isset($_GET['accept_friend_request_id'])) {
+    $page->processFriendFreelancerAcceptRequest($_GET['accept_friend_request_id'], $_SESSION['user_info']['id']);
+} else if (isset($_GET['withdraw_friend_request_id'], $_GET['friend_id'])) {
+    $page->processFriendCancelPendingRequest($_GET['withdraw_friend_request_id'], $_GET['friend_id']);
+}
+
+// handle customer accept and reject freelancer
+if (isset($_GET['accept_customer_friend_request_id'], $_GET['friend_id'])) {
+    $page->processFriendCustomerAcceptRequest($_GET['accept_customer_friend_request_id'], $_GET['friend_id'], $_SESSION['user_info']['id']);
+} else if (isset($_GET['reject_customer_friend_request_id'], $_GET['friend_id'])) {
+    $page->processFriendCancelPendingRequest($_GET['reject_customer_friend_request_id'], $_GET['friend_id'], $_SESSION['user_info']['id']);
+}
+
+// handle freelancer arrival
+if (isset($_GET['friend_arrived'], $_GET['arrived_friend_request_id'])) {
+    if ($_GET['friend_arrived'] == 'true') {
+        $timestamp = date("Y-m-d h:i:s", time());
+        $page->processFriendFreelancerArrived($_GET['friend_arrived'], $timestamp, $_GET['arrived_friend_request_id'], $_SESSION['user_info']['id']);
+    }
+}
+
+// handle customer task completion
+if (isset($_GET['completed_friend_request_id'], $_POST['complete_friend_request'], $_POST['friend_id'], $_POST['customer_id'], $_POST['request_rating'])) {
+    $review = isset($_POST['request_review']) ? $_POST['request_review'] : "";
+    $timestamp = date("Y-m-d h:i:s", time());
+    $page->processFriendCompleteRequest($_GET['completed_friend_request_id'], $_POST['customer_id'], $_POST['friend_id'], $_POST['request_rating'], $review, $timestamp);
+}
+
+//--------------------- marketplace actions
 
 // handle freelancer acceptance and withdrawal
 if (isset($_GET['accept_freelancer_request_id'])) {
     $page->processFreelancerAcceptRequest($_GET['accept_freelancer_request_id'], $_SESSION['user_info']['id']);
-
 } else if (isset($_GET['withdraw_request_id'], $_GET['freelancer_id'])) {
     $page->processCancelPendingRequest($_GET['withdraw_request_id'], $_GET['freelancer_id']);
 }
@@ -44,18 +72,15 @@ if (isset($_GET['accept_freelancer_request_id'])) {
 // handle customer accept and reject freelancer
 if (isset($_GET['accept_customer_request_id'], $_GET['freelancer_id'])) {
     $page->processCustomerAcceptRequest($_GET['accept_customer_request_id'], $_GET['freelancer_id'], $_SESSION['user_info']['id']);
-    $chat->createChat($_SESSION['user_info']['id'], $_GET['freelancer_id']);
 } else if (isset($_GET['reject_customer_request_id'], $_GET['freelancer_id'])) {
     $page->processCancelPendingRequest($_GET['reject_customer_request_id'], $_GET['freelancer_id'], $_SESSION['user_info']['id']);
 }
 
 // handle freelancer arrival
 if (isset($_GET['freelancer_arrived'], $_GET['arrived_request_id'])) {
-    if ($_GET['freelancer_arrived']) {
+    if ($_GET['freelancer_arrived'] == 'true') {
         $timestamp = date("Y-m-d h:i:s", time());
         $page->processFreelancerArrived($_GET['freelancer_arrived'], $timestamp, $_GET['arrived_request_id'], $_SESSION['user_info']['id']);
-        $payment->select($_GET['arrived_request_id'])->checkOut($_GET['arrived_request_id']); //redirects to charge page
-
     }
 }
 

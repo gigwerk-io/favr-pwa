@@ -24,22 +24,43 @@ if (isset($_GET['ALERT_MESSAGE'])) {
         ";
 }
 
+
 if (isset($_SESSION['user_info'])) {
     $USER = $_SESSION['user_info']['username']; // user is set from initial configuration
 }
 
-if (isset($_GET['friends_list']) && $_GET['friends_list'] == true) {
+$page = new Web_Page($USER);
+
+if (isset($_POST['requestFavr'])) {
+    $successfulProcessToDB = $page->processFavrFriendRequestToDB($_SESSION['user_info'], $_POST['requestDate'], $_POST['requestCategory'], $_POST['requestTaskDescription'], $_POST['requestPrice'], 1, $_POST['requestStreetAddress'], $_POST['requestDifficulty'], $_FILES['requestPictures']);
+
+    if (!$successfulProcessToDB) {
+        $ALERT_MESSAGE = "There was a problem submitting your request to the server try again!";
+        $ALERT_MESSAGE = "
+            <div class=\"my-3 p-3 alert alert-warning alert-dismissible\" role=\"alert\">
+                <button type=\"button\" class=\"close\" data-dismiss=\"alert\" aria-label=\"Close\"><span aria-hidden=\"true\">&times;</span></button>
+                <strong>Whoops!</strong> $ALERT_MESSAGE
+            </div>
+        ";
+    }
+}
+
+if (isset($_GET['d_friend_request_id'])) {
+    $page->processFriendDeleteRequest($_GET['d_friend_request_id'], $_SESSION['user_info']['id']);
+}
+
+if (isset($_GET['friends_list']) && $_GET['friends_list'] == 'true') {
+    $render_back_button = true;
+} else if (isset($_GET['ask_favr'], $_GET['id']) && $_GET['ask_favr'] == 'true') {
     $render_back_button = true;
 } else {
     $render_back_button = false;
 }
 
-$page = new Web_Page($USER);
-
 $page->setTitle("Friends");
 $page->renderHeader(true, $render_back_button);
 echo $ALERT_MESSAGE;
-if (isset($_GET['friends_list']) && $_GET['friends_list'] == true) {
+if (isset($_GET['friends_list']) && $_GET['friends_list'] == 'true') {
 
     if (isset($_GET['add_friend'])) {
         $user_id = $_GET['id'];
@@ -53,6 +74,10 @@ if (isset($_GET['friends_list']) && $_GET['friends_list'] == true) {
 
     $_SESSION['navbar'] = "friends_list";
     $page->renderFriendList($_SESSION['user_info']['id']);
+} else if (isset($_GET['ask_favr'], $_GET['id']) && $_GET['ask_favr'] == 'true') {
+    if ($_GET['id'] != $_SESSION['user_info']['id']) { // can't ask yourself for a favr
+        $page->renderFavrFriendsRequestForm(true, $_GET['id']);
+    }
 } else {
     if (isset($_GET['add_friend'])) {
         $user_id = $_GET['id'];

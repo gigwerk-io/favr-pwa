@@ -17,9 +17,6 @@ if (isset($_SESSION['navbar']) && $_SESSION['navbar'] != "active_home") {
 
 $page = new Web_Page($USER);
 
-$page->setTitle("Home");
-$page->renderHeader();
-
 if (isset($_POST['requestFavr'])) {
     $successfulProcessToDB = $page->processFavrRequestToDB($_SESSION['user_info'], $_POST['requestDate'], $_POST['requestCategory'], $_POST['requestTaskDescription'], $_POST['requestPrice'], $_POST['requestFreelancerCount'], $_POST['requestStreetAddress'], $_POST['requestDifficulty'], $_FILES['requestPictures']);
 
@@ -47,6 +44,9 @@ if (isset($_GET['ALERT_MESSAGE'])) {
             </div>
         ";
 }
+
+$page->setTitle("Home");
+$page->renderHeader();
 
 echo $ALERT_MESSAGE;
 

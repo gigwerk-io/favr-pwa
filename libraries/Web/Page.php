@@ -745,23 +745,23 @@ class Web_Page
                     echo "<div class=\"my-3 p-3 bg-white rounded box-shadow\">
                                 <div class='pb-2 mb-0 border-bottom border-gray'>";
 
-                    if ($freelancer_id == $id) {
-                        if (!empty($freelancer_profile_img)) {
-                            $freelancer_profile_img_name = $freelancer_profile_img['name'];
-                            $freelancer_profile_img_type = $freelancer_profile_img['type'];
-                        } else {
-                            $freelancer_profile_img_name = "";
-                            $freelancer_profile_img_type = "";
-                        }
-
-                        echo "<a href='$this->root_path/components/profile/profile.php?id=$freelancer_id'>
-                                <img src=\"data:image/svg+xml;charset=UTF-8,%3Csvg%20width%3D%22128%22%20height%3D%22128%22%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20viewBox%3D%220%200%20128%20128%22%20preserveAspectRatio%3D%22none%22%3E%3Cdefs%3E%3Cstyle%20type%3D%22text%2Fcss%22%3E%23holder_164a9f2d749%20text%20%7B%20fill%3A%23007bff%3Bfont-weight%3Abold%3Bfont-family%3AArial%2C%20Helvetica%2C%20Open%20Sans%2C%20sans-serif%2C%20monospace%3Bfont-size%3A6pt%20%7D%20%3C%2Fstyle%3E%3C%2Fdefs%3E%3Cg%20id%3D%22holder_164a9f2d749%22%3E%3Crect%20width%3D%22128%22%20height%3D%22128%22%20fill%3D%22%23007bff%22%3E%3C%2Frect%3E%3Cg%3E%3Ctext%20x%3D%2248.4296875%22%20y%3D%2266.7%22%3E128x128%3C%2Ftext%3E%3C%2Fg%3E%3C%2Fg%3E%3C%2Fsvg%3E\"
-                                     data-src=\"$this->root_path/image.php?i=$freelancer_profile_img_name&i_t=$freelancer_profile_img_type&i_p=true\" height='32' width='32' alt=\"Profile Image\" class=\"mr-2 rounded\">
-                              </a>
-                              <strong style='font-size: 80%' class=\"d - block text - gray - dark\"><a href='$this->root_path/components/profile/profile.php?id=$freelancer_id'>@$freelancer_username</a></strong>
-                              ";
-                        echo "<div class='float-right small' style='color: var(--green)'>+ $$task_price</div>";
-                    } else if ($customer_id == $id) {
+//                    if ($freelancer_id == $id) {
+//                        if (!empty($freelancer_profile_img)) {
+//                            $freelancer_profile_img_name = $freelancer_profile_img['name'];
+//                            $freelancer_profile_img_type = $freelancer_profile_img['type'];
+//                        } else {
+//                            $freelancer_profile_img_name = "";
+//                            $freelancer_profile_img_type = "";
+//                        }
+//
+//                        echo "<a href='$this->root_path/components/profile/profile.php?id=$freelancer_id'>
+//                                <img src=\"data:image/svg+xml;charset=UTF-8,%3Csvg%20width%3D%22128%22%20height%3D%22128%22%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20viewBox%3D%220%200%20128%20128%22%20preserveAspectRatio%3D%22none%22%3E%3Cdefs%3E%3Cstyle%20type%3D%22text%2Fcss%22%3E%23holder_164a9f2d749%20text%20%7B%20fill%3A%23007bff%3Bfont-weight%3Abold%3Bfont-family%3AArial%2C%20Helvetica%2C%20Open%20Sans%2C%20sans-serif%2C%20monospace%3Bfont-size%3A6pt%20%7D%20%3C%2Fstyle%3E%3C%2Fdefs%3E%3Cg%20id%3D%22holder_164a9f2d749%22%3E%3Crect%20width%3D%22128%22%20height%3D%22128%22%20fill%3D%22%23007bff%22%3E%3C%2Frect%3E%3Cg%3E%3Ctext%20x%3D%2248.4296875%22%20y%3D%2266.7%22%3E128x128%3C%2Ftext%3E%3C%2Fg%3E%3C%2Fg%3E%3C%2Fsvg%3E\"
+//                                     data-src=\"$this->root_path/image.php?i=$freelancer_profile_img_name&i_t=$freelancer_profile_img_type&i_p=true\" height='32' width='32' alt=\"Profile Image\" class=\"mr-2 rounded\">
+//                              </a>
+//                              <strong style='font-size: 80%' class=\"d - block text - gray - dark\"><a href='$this->root_path/components/profile/profile.php?id=$freelancer_id'>@$freelancer_username</a></strong>
+//                              ";
+//                        echo "<div class='float-right small' style='color: var(--green)'>+ $$task_price</div>";
+//                    } else if ($customer_id == $id) {
                         if (!empty($customer_profile_img)) {
                             $customer_profile_img_name = $customer_profile_img['name'];
                             $customer_profile_img_type = $customer_profile_img['type'];
@@ -776,15 +776,34 @@ class Web_Page
                               </a>
                               <strong style='font-size: 80%' class=\"d - block text - gray - dark\"><a href='$this->root_path/components/profile/profile.php?id=$customer_id'>@$customer_username</a></strong>
                               ";
-                        echo "<div class='float-right small' style='color: var(--red)'>- $$task_price</div>";
 
-                    }
+                        if ($customer_id == $id) {
+                            echo "<div class='float-right small' style='color: var(--red)'>- $$task_price</div>";
+                        } else if ($freelancer_id == $id) {
+                            echo "<div class='float-right small' style='color: var(--green)'>+ $$task_price</div>";
+                        }
+
+//                    }
 
                     echo "</div>
                         <div class=\"media text-muted pt-3\">
                             <div class='container'>
-                                <p class=\"media-body text-dark pb-3 mb-0 small lh-125\">
-                                    $task_description";
+                                <p class=\"media-body text-dark pb-3 mb-0 small lh-125\">";
+
+                    if (!empty($freelancer_profile_img)) {
+                        $freelancer_profile_img_name = $freelancer_profile_img['name'];
+                        $freelancer_profile_img_type = $freelancer_profile_img['type'];
+                    } else {
+                        $freelancer_profile_img_name = "";
+                        $freelancer_profile_img_type = "";
+                    }
+
+                    echo "<p class='text-center'>";
+                    echo "<a href='$this->root_path/components/profile/profile.php?id=$freelancer_id'>
+                            <img src=\"data:image/svg+xml;charset=UTF-8,%3Csvg%20width%3D%22128%22%20height%3D%22128%22%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20viewBox%3D%220%200%20128%20128%22%20preserveAspectRatio%3D%22none%22%3E%3Cdefs%3E%3Cstyle%20type%3D%22text%2Fcss%22%3E%23holder_164a9f2d749%20text%20%7B%20fill%3A%23007bff%3Bfont-weight%3Abold%3Bfont-family%3AArial%2C%20Helvetica%2C%20Open%20Sans%2C%20sans-serif%2C%20monospace%3Bfont-size%3A6pt%20%7D%20%3C%2Fstyle%3E%3C%2Fdefs%3E%3Cg%20id%3D%22holder_164a9f2d749%22%3E%3Crect%20width%3D%22128%22%20height%3D%22128%22%20fill%3D%22%23007bff%22%3E%3C%2Frect%3E%3Cg%3E%3Ctext%20x%3D%2248.4296875%22%20y%3D%2266.7%22%3E128x128%3C%2Ftext%3E%3C%2Fg%3E%3C%2Fg%3E%3C%2Fsvg%3E\"
+                                 data-src=\"$this->root_path/image.php?i=$freelancer_profile_img_name&i_t=$freelancer_profile_img_type&i_p=true\" height='32' width='32' alt=\"Profile Image\" class=\"mr-2 rounded-circle\">
+                          </a>";
+                    echo "</p>";
 
                     echo "<p class='text-center'>";
                     if ($task_rating == 1) {
@@ -822,7 +841,7 @@ class Web_Page
 
                     // optional review preview
                     if (!empty($review)) {
-                        echo "<div class='mt-1 text-center'>
+                        echo "<div class='pt-1 text-center'>
                                     <p class='d-inline-flex text-lg-left'>$review</p> 
                                     <i class='material-icons text-muted text-lg-right'>format_quote</i> 
                                   </div>";
@@ -1232,10 +1251,52 @@ class Web_Page
 
                         $isFriend = (!empty($row1) && !empty($row2)) ? true : false;
                         if ($isFriend) {
+                            $userInfo = $this->getUserInfo($row1['user_id']);
+                            $userFirstName = $userInfo['first_name'];
+                            $userFavrsGiven = $row1['given'];
+                            $userFavrsReceived = $row1['received'];
+
+                            if ($userFavrsGiven >= $userFavrsReceived) {
+                                $askFavr = "<a class='small' href='$this->root_path/home/friends/?navbar=active_home&nav_scroller=active_friends&ask_favr=true&id=$userID&last_url=profile'>Ask FAVR</a>";
+                            } else {
+                                $askFavr = "";
+                            }
+
+                            $friendInfo = $this->getUserInfo($row2['user_id']);
+                            $friendFirstName = $friendInfo['first_name'];
+
+                            $friendSinceThen = date("n/j/Y", strtotime($row1['friends_since']));
                             // TODO: give friendship information and ability to manage friendship in modal
                             echo "<button class='text-right btn text-muted bg-white' data-toggle='modal' data-target='#profileFriendInfoModal'>
-                                <i class='material-icons'>group</i>
-                              </button>";
+                                    <i class='material-icons'>group</i>
+                                  </button>";
+
+                            // friends stats modal
+                            echo "<div class=\"modal fade\" id=\"profileFriendInfoModal\" tabindex=\"-1\" role=\"dialog\" aria-labelledby=\"profileFriendInfoTitle\" aria-hidden=\"true\">
+                                    <div class=\"modal-dialog\" role=\"document\">
+                                        <div class=\"modal-content\">
+                                          <div class=\"modal-header\">
+                                            <h5 class=\"modal-title\" id=\"profileFriendInfoTitle\">$userFirstName and $friendFirstName</h5>
+                                            <button type=\"button\" class=\"close\" data-dismiss=\"modal\" aria-label=\"Close\">
+                                              <span aria-hidden=\"true\">&times;</span>
+                                            </button>
+                                          </div>
+                                          <div class=\"modal-body\">
+                                            <label for='friendInfo'>Friends Since</label>
+                                            <p>$friendSinceThen</p>
+                                            <label for='favrGiven'>FAVRs given</label>
+                                            <p>$userFavrsGiven</p>
+                                            <label for='favrsReceived'>FAVRs received</label>
+                                            <p>$userFavrsReceived</p>
+                                            $askFavr
+                                          </div>
+                                          <div class=\"modal-footer\">
+                                            <button type=\"button\" class=\"btn btn-secondary\" data-dismiss=\"modal\">Close</button>
+                                          </div>
+                                        </div>
+                                      </div>
+                                    </div>";
+
                         } else if (!empty($row1)) {
                             // a friend request has been sent to this user
                             echo "<a href='$this->root_path/components/profile/profile.php?id=$userID&add_friend=true&ALERT_MESSAGE=You are now friends on FAVR!'
@@ -1284,7 +1345,9 @@ class Web_Page
             </div>
             <?php
             if ($isFriend) {
-                echo "<a class='small' href='$this->root_path/home/friends/?navbar=active_home&nav_scroller=active_friends&ask_favr=true&id=$userID&last_url=profile'>Ask FAVR</a>";
+                if ($userFavrsGiven >= $userFavrsReceived) {
+                    echo "<a class='small' href='$this->root_path/home/friends/?navbar=active_home&nav_scroller=active_friends&ask_favr=true&id=$userID&last_url=profile'>Ask FAVR</a>";
+                }
             }
         }
     }
@@ -2066,7 +2129,7 @@ class Web_Page
 
                                 if ($task_status == Data_Constants::DB_TASK_STATUS_PAID) {
                                     echo "<div class='d-block mt-4 pt-2 border-gray border-top text-center'>
-                                            <a href=\"$this->root_path/components/notifications/?navbar=active_notifications&friend_arrived=true&arrived_friend_request_id=$task_id&ALERT_MESSAGE=You've arrived! Make sure you're at the correct location and that the customer is who they say they are!\" class='text-success'>
+                                            <a href=\"$this->root_path/components/notifications/?navbar=active_notifications&freelancer_arrived=true&arrived_request_id=$task_id&ALERT_MESSAGE=You've arrived! Make sure you're at the correct location and that the customer is who they say they are!\" class='text-success'>
                                             Freelancer Arrived</a>
                                           </div>
                                         ";
@@ -2329,7 +2392,7 @@ class Web_Page
 
                     echo "</strong>
                             ";
-                    if (isset($_GET['request_completed_id']) && $task_status == Data_Constants::DB_TASK_STATUS_IN_PROGRESS) {
+                    if (isset($_GET['request_friend_completed_id']) && $task_status == Data_Constants::DB_TASK_STATUS_IN_PROGRESS) {
                         echo "</div>";
                         echo "<div class='mt-3 text-center'>";
                         echo "    <p class=\"small d-inline-flex\">";
@@ -2338,41 +2401,41 @@ class Web_Page
                         if (isset($_GET['stars'])) {
                             if ($_GET['stars'] == 1) {
                                 echo "<i style=\"color: var(--yellow)\" class=\"material-icons\">star</i>";
-                                echo "<a href='?navbar=active_notifications&request_completed_id=$task_id&stars=2'><i style=\"color: var(--dark)\" class=\"material-icons\">star_border</i></a>";
-                                echo "<a href='?navbar=active_notifications&request_completed_id=$task_id&stars=3'><i style=\"color: var(--dark)\" class=\"material-icons\">star_border</i></a>";
-                                echo "<a href='?navbar=active_notifications&request_completed_id=$task_id&stars=4'><i style=\"color: var(--dark)\" class=\"material-icons\">star_border</i></a>";
-                                echo "<a href='?navbar=active_notifications&request_completed_id=$task_id&stars=5'><i style=\"color: var(--dark)\" class=\"material-icons\">star_border</i></a>";
+                                echo "<a href='?navbar=active_notifications&request_friend_completed_id=$task_id&stars=2'><i style=\"color: var(--dark)\" class=\"material-icons\">star_border</i></a>";
+                                echo "<a href='?navbar=active_notifications&request_friend_completed_id=$task_id&stars=3'><i style=\"color: var(--dark)\" class=\"material-icons\">star_border</i></a>";
+                                echo "<a href='?navbar=active_notifications&request_friend_completed_id=$task_id&stars=4'><i style=\"color: var(--dark)\" class=\"material-icons\">star_border</i></a>";
+                                echo "<a href='?navbar=active_notifications&request_friend_completed_id=$task_id&stars=5'><i style=\"color: var(--dark)\" class=\"material-icons\">star_border</i></a>";
                             } else if ($_GET['stars'] == 2) {
-                                echo "<a href='?navbar=active_notifications&request_completed_id=$task_id&stars=1'><i style=\"color: var(--yellow)\" class=\"material-icons\">star</i></a>";
+                                echo "<a href='?navbar=active_notifications&request_friend_completed_id=$task_id&stars=1'><i style=\"color: var(--yellow)\" class=\"material-icons\">star</i></a>";
                                 echo "<i style=\"color: var(--yellow)\" class=\"material-icons\">star</i>";
-                                echo "<a href='?navbar=active_notifications&request_completed_id=$task_id&stars=3'><i style=\"color: var(--dark)\" class=\"material-icons\">star_border</i></a>";
-                                echo "<a href='?navbar=active_notifications&request_completed_id=$task_id&stars=4'><i style=\"color: var(--dark)\" class=\"material-icons\">star_border</i></a>";
-                                echo "<a href='?navbar=active_notifications&request_completed_id=$task_id&stars=5'><i style=\"color: var(--dark)\" class=\"material-icons\">star_border</i></a>";
+                                echo "<a href='?navbar=active_notifications&request_friend_completed_id=$task_id&stars=3'><i style=\"color: var(--dark)\" class=\"material-icons\">star_border</i></a>";
+                                echo "<a href='?navbar=active_notifications&request_friend_completed_id=$task_id&stars=4'><i style=\"color: var(--dark)\" class=\"material-icons\">star_border</i></a>";
+                                echo "<a href='?navbar=active_notifications&request_friend_completed_id=$task_id&stars=5'><i style=\"color: var(--dark)\" class=\"material-icons\">star_border</i></a>";
                             } else if ($_GET['stars'] == 3) {
-                                echo "<a href='?navbar=active_notifications&request_completed_id=$task_id&stars=1'><i style=\"color: var(--yellow)\" class=\"material-icons\">star</i></a>";
-                                echo "<a href='?navbar=active_notifications&request_completed_id=$task_id&stars=2'><i style=\"color: var(--yellow)\" class=\"material-icons\">star</i></a>";
+                                echo "<a href='?navbar=active_notifications&request_friend_completed_id=$task_id&stars=1'><i style=\"color: var(--yellow)\" class=\"material-icons\">star</i></a>";
+                                echo "<a href='?navbar=active_notifications&request_friend_completed_id=$task_id&stars=2'><i style=\"color: var(--yellow)\" class=\"material-icons\">star</i></a>";
                                 echo "<i style=\"color: var(--yellow)\" class=\"material-icons\">star</i>";
-                                echo "<a href='?navbar=active_notifications&request_completed_id=$task_id&stars=4'><i style=\"color: var(--dark)\" class=\"material-icons\">star_border</i></a>";
-                                echo "<a href='?navbar=active_notifications&request_completed_id=$task_id&stars=5'><i style=\"color: var(--dark)\" class=\"material-icons\">star_border</i></a>";
+                                echo "<a href='?navbar=active_notifications&request_friend_completed_id=$task_id&stars=4'><i style=\"color: var(--dark)\" class=\"material-icons\">star_border</i></a>";
+                                echo "<a href='?navbar=active_notifications&request_friend_completed_id=$task_id&stars=5'><i style=\"color: var(--dark)\" class=\"material-icons\">star_border</i></a>";
                             } else if ($_GET['stars'] == 4) {
-                                echo "<a href='?navbar=active_notifications&request_completed_id=$task_id&stars=1'><i style=\"color: var(--yellow)\" class=\"material-icons\">star</i></a>";
-                                echo "<a href='?navbar=active_notifications&request_completed_id=$task_id&stars=2'><i style=\"color: var(--yellow)\" class=\"material-icons\">star</i></a>";
-                                echo "<a href='?navbar=active_notifications&request_completed_id=$task_id&stars=3'><i style=\"color: var(--yellow)\" class=\"material-icons\">star</i></a>";
+                                echo "<a href='?navbar=active_notifications&request_friend_completed_id=$task_id&stars=1'><i style=\"color: var(--yellow)\" class=\"material-icons\">star</i></a>";
+                                echo "<a href='?navbar=active_notifications&request_friend_completed_id=$task_id&stars=2'><i style=\"color: var(--yellow)\" class=\"material-icons\">star</i></a>";
+                                echo "<a href='?navbar=active_notifications&request_friend_completed_id=$task_id&stars=3'><i style=\"color: var(--yellow)\" class=\"material-icons\">star</i></a>";
                                 echo "<i style=\"color: var(--yellow)\" class=\"material-icons\">star</i>";
-                                echo "<a href='?navbar=active_notifications&request_completed_id=$task_id&stars=5'><i style=\"color: var(--dark)\" class=\"material-icons\">star_border</i></a>";
+                                echo "<a href='?navbar=active_notifications&request_friend_completed_id=$task_id&stars=5'><i style=\"color: var(--dark)\" class=\"material-icons\">star_border</i></a>";
                             } else if ($_GET['stars'] == 5) {
-                                echo "<a href='?navbar=active_notifications&request_completed_id=$task_id&stars=1'><i style=\"color: var(--yellow)\" class=\"material-icons\">star</i></a>";
-                                echo "<a href='?navbar=active_notifications&request_completed_id=$task_id&stars=2'><i style=\"color: var(--yellow)\" class=\"material-icons\">star</i></a>";
-                                echo "<a href='?navbar=active_notifications&request_completed_id=$task_id&stars=3'><i style=\"color: var(--yellow)\" class=\"material-icons\">star</i></a>";
-                                echo "<a href='?navbar=active_notifications&request_completed_id=$task_id&stars=4'><i style=\"color: var(--yellow)\" class=\"material-icons\">star</i></a>";
+                                echo "<a href='?navbar=active_notifications&request_friend_completed_id=$task_id&stars=1'><i style=\"color: var(--yellow)\" class=\"material-icons\">star</i></a>";
+                                echo "<a href='?navbar=active_notifications&request_friend_completed_id=$task_id&stars=2'><i style=\"color: var(--yellow)\" class=\"material-icons\">star</i></a>";
+                                echo "<a href='?navbar=active_notifications&request_friend_completed_id=$task_id&stars=3'><i style=\"color: var(--yellow)\" class=\"material-icons\">star</i></a>";
+                                echo "<a href='?navbar=active_notifications&request_friend_completed_id=$task_id&stars=4'><i style=\"color: var(--yellow)\" class=\"material-icons\">star</i></a>";
                                 echo "<i style=\"color: var(--yellow)\" class=\"material-icons\">star</i>";
                             }
                         } else {
-                            echo "<a href='?navbar=active_notifications&request_completed_id=$task_id&stars=1'><i style=\"color: var(--dark)\" class=\"material-icons\">star_border</i></a>";
-                            echo "<a href='?navbar=active_notifications&request_completed_id=$task_id&stars=2'><i style=\"color: var(--dark)\" class=\"material-icons\">star_border</i></a>";
-                            echo "<a href='?navbar=active_notifications&request_completed_id=$task_id&stars=3'><i style=\"color: var(--dark)\" class=\"material-icons\">star_border</i></a>";
-                            echo "<a href='?navbar=active_notifications&request_completed_id=$task_id&stars=4'><i style=\"color: var(--dark)\" class=\"material-icons\">star_border</i></a>";
-                            echo "<a href='?navbar=active_notifications&request_completed_id=$task_id&stars=5'><i style=\"color: var(--dark)\" class=\"material-icons\">star_border</i></a>";
+                            echo "<a href='?navbar=active_notifications&request_friend_completed_id=$task_id&stars=1'><i style=\"color: var(--dark)\" class=\"material-icons\">star_border</i></a>";
+                            echo "<a href='?navbar=active_notifications&request_friend_completed_id=$task_id&stars=2'><i style=\"color: var(--dark)\" class=\"material-icons\">star_border</i></a>";
+                            echo "<a href='?navbar=active_notifications&request_friend_completed_id=$task_id&stars=3'><i style=\"color: var(--dark)\" class=\"material-icons\">star_border</i></a>";
+                            echo "<a href='?navbar=active_notifications&request_friend_completed_id=$task_id&stars=4'><i style=\"color: var(--dark)\" class=\"material-icons\">star_border</i></a>";
+                            echo "<a href='?navbar=active_notifications&request_friend_completed_id=$task_id&stars=5'><i style=\"color: var(--dark)\" class=\"material-icons\">star_border</i></a>";
                         }
 
                         echo " </p>";
@@ -2397,7 +2460,7 @@ class Web_Page
                                 
                                 <!-- Modal -->
                                 <div class=\"modal fade\" id=\"exampleModalCenter\" tabindex=\"-1\" role=\"dialog\" aria-labelledby=\"exampleModalCenterTitle\" aria-hidden=\"true\">
-                                  <form action='$this->root_path/components/notifications/?navbar=active_notifications&request_completed_id=$task_id&stars=$stars' method='post'>
+                                  <form action='$this->root_path/components/notifications/?navbar=active_notifications&request_friend_completed_id=$task_id&stars=$stars' method='post'>
                                       <div class=\"modal-dialog\" role=\"document\">
                                         <div class=\"modal-content\">
                                           <div class=\"modal-header\">
@@ -2420,14 +2483,14 @@ class Web_Page
 
                         echo "  <div class='mt-3 border-top border-gray pt-3'>
                                     <div class='d-inline-flex text-center'>
-                                        <form action='$this->root_path/components/notifications/?navbar=active_notifications&completed_request_id=$task_id&stars=$stars' method='post'>
+                                        <form action='$this->root_path/components/notifications/?navbar=active_notifications&completed_friend_request_id=$task_id&stars=$stars' method='post'>
                                             <input type='hidden' name='request_rating' value='$stars' required>
-                                            <input type='hidden' name='freelancer_id' value='$freelancer_id' required>
+                                            <input type='hidden' name='friend_id' value='$freelancer_id' required>
                                             <input type='hidden' name='customer_id' value='$customer_id' required>
                                             <input type='hidden' name='request_review' value='$review'>
                                             <input class='btn btn-sm btn-outline-success'
                                                 type='submit'
-                                                name='complete_request'
+                                                name='complete_friend_request'
                                                 value='Submit' />
                                         </form>
                                     </div>
@@ -2667,7 +2730,7 @@ class Web_Page
 
                                     if ($task_status == Data_Constants::DB_TASK_STATUS_IN_PROGRESS) {
                                         echo "<div class='d-block mt-4 pt-2 mb-0 pt-2 border-gray border-top text-center'>
-                                            <a href=\"$this->root_path/components/notifications/?navbar=active_notifications&request_completed_id=$task_id&ALERT_MESSAGE=You've marked this request as completed now please rate your experience!\" class='text-success'>
+                                            <a href=\"$this->root_path/components/notifications/?navbar=active_notifications&request_friend_completed_id=$task_id&ALERT_MESSAGE=You've marked this request as completed now please rate your experience!\" class='text-success'>
                                                  Request Completed</a>
                                           </div>
                                     ";
@@ -2679,9 +2742,8 @@ class Web_Page
 
 
                                     if ($task_status == Data_Constants::DB_TASK_STATUS_REQUESTED || $task_status == Data_Constants::DB_TASK_STATUS_PENDING_APPROVAL) {
-                                        echo "<a href=\"$this->root_path/home/friends/?navbar=active_home&nav_scroller=active_friends&d_request_id=$task_id&ALERT_MESSAGE=You've cancelled this request!\" class='mt-0 text-danger'>
-                                        Cancel Request</a>
-                                        ";
+                                        echo "<a href=\"?navbar=active_home&nav_scroller=active_friends&d_friend_request_id=$task_id&ALERT_MESSAGE=Your request has been deleted!\" class='text-danger'>
+                                            Cancel Request</a>";
                                     } else {
                                         echo "<div style='cursor: pointer;' class='text-danger d-inline' data-toggle=\"modal\" data-target=\"#cancelInProgressModal\">
                                             Cancel Request</div>
@@ -2695,7 +2757,7 @@ class Web_Page
                                       <div class=\"modal-dialog\" role=\"document\">
                                         <div class=\"modal-content\">
                                           <div class=\"modal-header\">
-                                            <h5 class=\"modal-title\" id=\"exampleModalLongTitle\">You are canceling an in progress request</h5>
+                                            <h5 class=\"modal-title\" id=\"exampleModalLongTitle\">You are canceling an in progress friend FAVR</h5>
                                             <button type=\"button\" class=\"close\" data-dismiss=\"modal\" aria-label=\"Close\">
                                               <span aria-hidden=\"true\">&times;</span>
                                             </button>
@@ -2705,7 +2767,7 @@ class Web_Page
                                           </div>
                                           <div class=\"modal-footer\">
                                             <button type=\"button\" class=\"btn btn-secondary\" data-dismiss=\"modal\">Close</button>
-                                            <a href=\"$this->root_path/home/friends/?navbar=active_home&d_request_id=$task_id&ALERT_MESSAGE=You've cancelled this request!\"
+                                            <a href=\"$this->root_path/home/friends/?navbar=active_home&nav_scroller=active_friends&d_friend_request_id=$task_id&ALERT_MESSAGE=You've cancelled this request!\"
                                                class='btn btn-primary'>
                                                 Cancel Request
                                             </a>
@@ -2723,7 +2785,7 @@ class Web_Page
                                             Reject</a></div>";
 
                                     echo "<div class='d-block mt-4 pt-2 border-gray border-top text-center'>
-                                        <a href=\"$this->root_path/home/friends/?navbar=active_home&d_request_id=$task_id&ALERT_MESSAGE=You've cancelled this request!\" class='mt-3 text-danger'>
+                                        <a href=\"$this->root_path/home/friends/?navbar=active_home&d_friend_request_id=$task_id&ALERT_MESSAGE=You've cancelled this request!\" class='mt-3 text-danger'>
                                             Cancel Request</a>
                                       </div>
                                     ";
@@ -3142,7 +3204,7 @@ class Web_Page
                                         $friendPictureType = "";
                                     }
 
-                                    $check_friend_query = "SELECT COUNT(*)  
+                                    $check_friend_query = "SELECT given, received, COUNT(*)  
                                                            FROM friends 
                                                            WHERE user_id = $friend_id
                                                            AND friend_id = $userId";
@@ -3159,8 +3221,13 @@ class Web_Page
                                                 <strong class="text-gray-dark"><?php echo $friendFullName; ?></strong>
                                                 <?php
                                                     if ($crow['COUNT(*)'] != 0) {
-                                                        echo "<a href=\"$this->root_path/home/friends/?navbar=active_home&nav_scroller=active_friends&ask_favr=true&id=$friend_id\"
-                                                            class=\"float-right\">Ask FAVR</a>";
+                                                        $userFavrGiven = $crow['given'];
+                                                        $userFavrReceived = $crow['received'];
+
+                                                        if ($userFavrGiven >= $userFavrReceived) {
+                                                            echo "<a href=\"$this->root_path/home/friends/?navbar=active_home&nav_scroller=active_friends&ask_favr=true&id=$friend_id\"
+                                                                class=\"float-right\">Ask FAVR</a>";
+                                                        }
                                                     }
                                                 ?>
                                             </div>
@@ -3396,7 +3463,6 @@ class Web_Page
                                    $orientation
                                    $limit
             ";
-
         } else if ($scope == "global") {
             $requested = Data_Constants::DB_TASK_STATUS_REQUESTED;
             $selectMarketplaceQuery = "
@@ -3636,31 +3702,10 @@ class Web_Page
                                        ";
 
                         if ($customer_id != $_SESSION['user_info']['id']) { // if not this user
-                            $freelancerAccepted = false;
-                            $freelancer_id = null;
-                            $user_id = $_SESSION['user_info']['id'];
-                            $select_freelancers_query = "SELECT * 
-                                                     FROM marketplace_favr_freelancers
-                                                     WHERE request_id = $task_id
-                                                     AND user_id = $user_id";
-                            $result = $this->db->query($select_freelancers_query);
-                            if ($result) {
-                                $row = $result->fetch(PDO::FETCH_ASSOC);
-                                if (!empty($row)) {
-                                    $freelancerAccepted = true;
-                                    $freelancer_id = $row['user_id'];
-                                }
-                            }
-
-                            if ($freelancerAccepted) {
-                                echo "<a class='text-danger' href=\"$this->root_path/components/notifications/?navbar=active_notifications&withdraw_request_id=$task_id&freelancer_id=$freelancer_id&ALERT_MESSAGE=You've withdrawn from this task: the customer has been notified!\">
-                                Withdraw</a>";
-                            } else {
-                                echo "<a href=\"$this->root_path/components/notifications/?navbar=active_notifications&accept_freelancer_request_id=$task_id&ALERT_MESSAGE=You've signed up to take this task! The task requester has been notified of your interest and is reviewing your offer to help: they can accept or reject your offer to help! You'll be notified of their decision; you can withdraw your offer to help before they decide. \">
-                                Accept Request</a>";
-                            }
+                            echo "<a href=\"$this->root_path/components/notifications/?navbar=active_notifications&accept_friend_request_id=$task_id&ALERT_MESSAGE=You've signed up to take this task! The task requester has been notified of your interest and is reviewing your offer to help: they can accept or reject your offer to help! You'll be notified of their decision; you can withdraw your offer to help before they decide. \">
+                            Accept Request</a>";
                         } else {
-                            echo "<a href=\"?navbar=active_home&d_request_id=$task_id&ALERT_MESSAGE=Your request has been deleted!\" class='text-danger'>
+                            echo "<a href=\"?navbar=active_home&nav_scroller=active_friends&d_friend_request_id=$task_id&ALERT_MESSAGE=Your request has been deleted!\" class='text-danger'>
                             Cancel Request</a>";
                         }
 
@@ -4663,8 +4708,6 @@ class Web_Page
     }
 
     /**
-     * TODO: delete images from server corresponding to task id and this user, and keep data as virtual receipt in system
-     * TODO: update database image columns to null after completion of task
      * Process complete request
      *
      * @param int $requestID
@@ -4920,7 +4963,6 @@ class Web_Page
         }
     }
 
-
     /**
      * Process accept request
      *
@@ -5028,39 +5070,22 @@ class Web_Page
                 $row = $result->fetch(PDO::FETCH_ASSOC);
                 $freelancer_accepted = $row['task_freelancer_accepted'];
                 $freelancer_count = $row['task_freelancer_count'];
-                $freelancer_id = $row['freelancer_id'];
+                $freelancer_id = $row['friend_id'];
                 $request_id = $row['id'];
                 $setTaskStatusPending = ""; // still need more freelancers
 
                 // ensure there's not already enough freelancers signed up for this job
                 if ($freelancer_accepted < $freelancer_count) {
-                    $select_freelancers_query = "INSERT INTO friends_favr_requests
-                                                 (
-                                                    request_id, 
-                                                    user_id
-                                                 ) 
-                                                 VALUES
-                                                 (
-                                                    $request_id,
-                                                    $freelancerID
-                                                 )";
+                    $freelancer_accepted += 1; // add user to freelancer queue
 
-                    $result = $this->db->query($select_freelancers_query);
-                    if ($result) {
-                        $freelancer_accepted += 1; // add user to freelancer queue
+                    $update_request_query = "UPDATE friends_favr_requests
+                                             SET task_freelancer_accepted = $freelancer_accepted,
+                                                 friend_id = $freelancerID
+                                             WHERE id = $request_id";
 
-                        $update_request_query = "UPDATE friends_favr_requests
-                                                 SET task_freelancer_accepted = $freelancer_accepted,
-                                                     freelancer_id = $request_id
-                                                 WHERE id = $request_id";
-
-                        $result = $this->db->query($update_request_query);
+                    $result = $this->db->query($update_request_query);
 //                        die(print_r($result));
-                        if (!$result) {
-                            return false;
-                        }
-
-                    } else {
+                    if (!$result) {
                         return false;
                     }
                 }
@@ -5216,7 +5241,8 @@ class Web_Page
                     $update_request_query = "UPDATE friends_favr_requests
                                              SET task_freelancer_accepted = $freelancer_accepted,
                                                  friend_id = $freelancer_id,
-                                                 arrival_time = NULL
+                                                 arrival_time = NULL,
+                                                 approved = 0
                                                  $set_task_status
                                              WHERE id = $requestID";
 
@@ -5284,6 +5310,193 @@ class Web_Page
                 return false;
             }
         } else {
+            return false;
+        }
+    }
+
+    /**
+     * Process complete friend request
+     *
+     * @param int $requestID
+     * @param int $customerID
+     * @param int $freelancerID
+     * @param int $requestRating
+     * @param string $requestReview
+     * @param int $timestamp // time of completion
+     *
+     * @return boolean
+     */
+    function processFriendCompleteRequest($requestID, $customerID, $freelancerID, $requestRating, $requestReview, $timestamp)
+    {
+        if (isset($requestID, $customerID, $freelancerID, $requestRating, $timestamp)) {
+            // complete request
+            $complete = Data_Constants::DB_TASK_STATUS_COMPLETED;
+            $requestReview = addslashes($requestReview);
+            $update_request_query = "UPDATE friends_favr_requests 
+                                     SET task_status = '$complete',
+                                         task_rating = '$requestRating',
+                                         task_optional_service_review = '$requestReview'
+                                     WHERE id = $requestID
+                                     AND customer_id = $customerID";
+
+            $result = $this->db->query($update_request_query);
+            if ($result) {
+                // TODO: Should user ratings count from friend interactions
+                // set rating for each freelancer on the task
+//                $select_freelancers_query = "SELECT *
+//                                             FROM friends_favr_requests
+//                                             WHERE id = $requestID";
+//
+//                $result = $this->db->query($select_freelancers_query);
+//                $rows = $result->fetchAll(PDO::FETCH_ASSOC);
+//                foreach ($rows as $row) {
+//                    $userID = $row['user_id'];
+//                    $select_user_query = "SELECT rating
+//                                          FROM users
+//                                          WHERE id = $userID";
+//                    $result = $this->db->query($select_user_query);
+//                    if ($result) {
+//                        $row = $result->fetch(PDO::FETCH_ASSOC);
+//                        $ratings = unserialize($row['rating']);
+//                        if (count($ratings) == Data_Constants::DB_MAX_USER_RATING_COUNT) {
+//                            $ratings = array_reverse($ratings);
+//                            array_pop($ratings);
+//                            $ratings = array_reverse($ratings);
+//                            array_push($ratings, $requestRating);
+//                        } else {
+//                            array_push($ratings, $requestRating);
+//                        }
+//
+//                        $ratings = serialize($ratings);
+//                        $update_user_query = "UPDATE users
+//                                              SET rating = '$ratings'
+//                                              WHERE id = $userID";
+//                        $result = $this->db->query($update_user_query);
+//                        if (!$result) {
+//                            return false;
+//                        }
+//                    }
+//                }
+
+                $select_request_query = "SELECT * 
+                                         FROM friends_favr_requests 
+                                         WHERE id = $requestID";
+
+                $result = $this->db->query($select_request_query);
+                if ($result) {
+                    $row = $result->fetch(PDO::FETCH_ASSOC);
+                    $requestPrice = $row['favr_price'];
+                    // log time of completion
+                    $update_freelancers_query = "UPDATE friends_favr_requests
+                                             SET completion_time = '$timestamp'
+                                             WHERE id = $requestID";
+
+                    // credit friends with favr credit
+                    $update_customer_credit_query = "UPDATE friends 
+                                                 SET given = $requestPrice
+                                                 WHERE user_id = $customerID
+                                                 AND friend_id = $freelancerID";
+
+                    $update_friend_credit_query = "UPDATE friends 
+                                               SET received = $requestPrice
+                                               WHERE user_id = $freelancerID
+                                               AND friend_id = $customerID";
+
+                    $result = $this->db->query($update_freelancers_query);
+                    $result1 = $this->db->query($update_customer_credit_query);
+                    $result2 = $this->db->query($update_friend_credit_query);
+                    if ($result && $result1 && $result2) {
+                        // successfully completed
+                        return true;
+                    } else {
+                        return false;
+                    }
+                } else {
+                    // task doesn't exist
+                    return false;
+                }
+            } else {
+                // error when completing
+                return false;
+            }
+        } else {
+            // not set
+            return false;
+        }
+    }
+
+    /**
+     * Image naming convention: task_id-customer_id-request-image#.x hashed by md5
+     * Process delete request and task associated images
+     *
+     * @param int $requestID
+     * @param int $customerID
+     *
+     * @return boolean
+     */
+    function processFriendDeleteRequest($requestID, $customerID)
+    {
+        if (isset($requestID, $customerID)) {
+            // Delete images
+            $select_request_query = "SELECT *
+                                     FROM friends_favr_requests
+                                     WHERE id = $requestID
+                                     AND customer_id = $customerID";
+
+            $result = $this->db->query($select_request_query);
+            if ($result) {
+                $row = $result->fetch(PDO::FETCH_ASSOC);
+                $task1_image_array = unserialize($row['task_picture_path_1']);
+                $task2_image_array = unserialize($row['task_picture_path_2']);
+                $task3_image_array = unserialize($row['task_picture_path_3']);
+
+                if (!empty($task1_image_array)) {
+                    $imageName = $task1_image_array['name'];
+
+                    if (file_exists(Data_Constants::IMAGE_UPLOAD_FILE_PATH . "$imageName")) {
+                        $removeImage = unlink(Data_Constants::IMAGE_UPLOAD_FILE_PATH . "$imageName");
+                        if (!$removeImage) {
+                            return false;
+                        }
+                    }
+                }
+
+                if (!empty($task2_image_array)) {
+                    $imageName = $task2_image_array['name'];
+
+                    if (file_exists(Data_Constants::IMAGE_UPLOAD_FILE_PATH . "$imageName")) {
+                        $removeImage = unlink(Data_Constants::IMAGE_UPLOAD_FILE_PATH . "$imageName");
+                        if (!$removeImage) {
+                            return false;
+                        }
+                    }
+                }
+
+                if (!empty($task3_image_array)) {
+                    $imageName = $task3_image_array['name'];
+
+                    if (file_exists(Data_Constants::IMAGE_UPLOAD_FILE_PATH . "$imageName")) {
+                        $removeImage = unlink(Data_Constants::IMAGE_UPLOAD_FILE_PATH . "$imageName");
+                        if (!$removeImage) {
+                            return false;
+                        }
+                    }
+                }
+            }
+
+            // Delete request
+            $delete_request_query = "DELETE FROM friends_favr_requests
+                                     WHERE id = '$requestID'
+                                     AND customer_id = '$customerID'";
+            $result = $this->db->query($delete_request_query);
+            if ($result) {
+                return true;
+            } else {
+                // error when deleting
+                return false;
+            }
+        } else {
+            // Not set
             return false;
         }
     }

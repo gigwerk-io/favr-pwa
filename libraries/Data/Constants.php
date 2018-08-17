@@ -39,7 +39,7 @@ class Data_Constants
     const DB_TASK_INTENSITY_HARD = "Hard";
     const DB_TASK_INTENSITY_MEDIUM = "Medium";
     const DB_TASK_INTENSITY_EASY = "Easy";
-    
+
     // database task request maximum/minimum manpower
     const DB_TASK_REQUEST_MAXIMUM_MANPOWER = 5;
     const DB_TASK_REQUEST_MINIMUM_MANPOWER = 1;
@@ -62,12 +62,12 @@ class Data_Constants
     const DB_SCOPE_PRIVATE = "Private";
 
     //Stipe API
-    const STRIPE_PUBLIC = 'pk_test_WRhN4BKmkqctL2nrjCPJCTXi'; 
+    const STRIPE_PUBLIC = 'pk_test_WRhN4BKmkqctL2nrjCPJCTXi';
     const STRIPE_SECRET = 'sk_test_AfPrHBd85yRDmJmdW4uK3a9Y';
 
     //Twilio
     const TWILIO_SID = 'AC67883f19920b3894df25adca46a047f4';
-    const TWILIO_API  = '43e7aaf5082f72883769685c809838cf'; 
+    const TWILIO_API  = '43e7aaf5082f72883769685c809838cf';
 
     //Sendgrid
     const SG_API = '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';
