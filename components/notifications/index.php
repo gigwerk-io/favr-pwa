@@ -142,7 +142,8 @@ $page->addScript("
             }
         }
     }, false);   
-    
+    //hide stripe button, automatically checkout
+    $('.stripe-button-el').hide();
     $(document).ready(function(){
       $('.stripe-button-el').click();
     });
