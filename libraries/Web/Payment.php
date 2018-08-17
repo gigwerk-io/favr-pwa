@@ -120,11 +120,7 @@ class Web_Payment
                         data-locale='auto'>
                     </script>
                 </form>";
-            echo "<script>
-                    $(window).load(function() {
-                      $('.stripe-button-el').trigger('click');
-                    });
-                </script>";
+
 //        } else{
 //            //header("location: http://localhost:1234/favr-pwa");
 //        }

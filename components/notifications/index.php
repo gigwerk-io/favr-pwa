@@ -141,7 +141,12 @@ $page->addScript("
                 allimages[i].setAttribute('src', allimages[i].getAttribute('data-src'));
             }
         }
-    }, false);    
+    }, false);   
+    
+    $(window).load(function() {
+      $('.stripe-button-el').trigger('click');
+    });
+            
     
 //    window.setInterval(function(){
 //      // call your function here
