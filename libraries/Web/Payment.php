@@ -90,7 +90,7 @@ class Web_Payment
         $sth = $this->db->query("SELECT * FROM marketplace_favr_requests WHERE id=$id");
         $row = $sth->fetch(PDO::FETCH_ASSOC);
         $this->status = $row['task_status'];
-        print  $this->price = $row['task_price']*100; die;
+        print  $this->price = $row['task_price']*100;
         $this->description = $row['task_description'];
         $this->customer_id = $row['customer_id'];
         $this->freelancer_id = $row['freelancer_id'];
