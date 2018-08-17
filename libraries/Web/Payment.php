@@ -116,7 +116,7 @@ class Web_Payment
                         data-amount= '$this->price' 
                         data-name='FAVR Inc.'
                         data-description='$this->description'
-                        data-image='https://askfavr.com/img/favicon.png'
+                        data-image='https://askfavr.com/favr-pwa/assets/brand/favicon.ico'
                         data-locale='auto'>
                     </script>
                 </form>";
