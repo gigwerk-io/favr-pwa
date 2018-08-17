@@ -1672,7 +1672,7 @@ class Web_Page
                                     ?>
                                 </a>
                             </div>
-                            <div class="col-sm-4 pl-0 pr-0" style="max-width: 170px;">
+                            <div class="col-sm-4 request-favr-web pl-0 pr-0" style="max-width: 170px;">
                                 <a class="nav-link <?php echo $active_chat; ?>"
                                    href="<?php echo $this->root_path; ?>/home/chat/?navbar=active_home&nav_scroller=active_chat">
                                     Chat

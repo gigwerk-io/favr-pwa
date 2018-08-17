@@ -124,11 +124,10 @@ class Web_Chat
             $message = $row['message_file'];
             //$date = date("Y-m-d H:i:s", $row['updated_at']);
             $date = $row['updated_at'];
-            $new_date = date_format(new DateTime($date),"m/d/Y H:i:s");
+            $new_date = date_format(new DateTime($date),"m/d/Y");
             //echo "<a href='?file=$message'>" . $name . "</a>";
             echo "
-                   <div class=\"inbox_chat\">
-                        <div class=\"chat_list\">
+                    <div class=\"chat_list\">
                         <a href='?file=$message&to=$to'>
                             <div class=\"chat_people\">
                                 <div class=\"chat_img\"><img src=\"https://ptetutorials.com/images/user-profile.png\"
@@ -137,9 +136,8 @@ class Web_Chat
                                     <h5>$name<span class=\"chat_date\">$new_date</span></h5>
                                 </div>
                             </div>
-                           </a>
-                        </div>
-                   </div>
+                         </a>
+                     </div>
                 ";
         }
         return $this;
@@ -189,8 +187,21 @@ class Web_Chat
                                 <span class=\"time_date\"> $time</span></div>
                         </div>
                   </div>";
+                echo "<script>
+                        function refreshPageUnlessFocusedOn (el) {
+                
+                            setInterval(function () {
+                                if(el !== document.activeElement) {
+                                    document.location.reload();
+                                }
+                            }, 12500)
+                
+                        }
+                
+                        refreshPageUnlessFocusedOn(document.querySelector('textarea'));
+                    </script>";
             } else {
-                echo "<div class=\"outgoing_msg\">
+                echo "<div class=\"outgoing_msg\" id='incoming'>
                         <div class=\"sent_msg\">
                             <p>$text</p>
                             <span class=\"time_date\"> $time</span></div>

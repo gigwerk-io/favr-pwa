@@ -5,19 +5,20 @@
  * Date: 8/15/18
  * Time: 11:18 AM
  */
-require '../../libraries/Api/Stripe/init.php';
+
 session_start();
 include($_SERVER['DOCUMENT_ROOT'] . "/favr-pwa/include/autoload.php");
+require '../../libraries/Api/Stripe/init.php';
 
 // component constants
-$PAGE_ID = 5;
 $USER = "";
+$ALERT_MESSAGE = "";
 
 if (isset($_SESSION['user_info'])) {
     $USER = $_SESSION['user_info']['username']; // user is set from initial configuration
 }
 
-$page = new Web_Page($PAGE_ID, $USER);
+$page = new Web_Page($USER);
 $connect = new Web_Connect();
 if(!is_null($connect->payment_id)) {
         $connect->stripeLogin($connect->payment_id);

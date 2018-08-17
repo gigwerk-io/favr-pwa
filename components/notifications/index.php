@@ -141,7 +141,13 @@ $page->addScript("
                 allimages[i].setAttribute('src', allimages[i].getAttribute('data-src'));
             }
         }
-    }, false);    
+    }, false);   
+    //hide stripe button, automatically checkout
+    $('.stripe-button-el').hide();
+    $(document).ready(function(){
+      $('.stripe-button-el').click();
+    });
+            
     
 //    window.setInterval(function(){
 //      // call your function here

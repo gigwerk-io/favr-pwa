@@ -116,10 +116,11 @@ class Web_Payment
                         data-amount= '$this->price' 
                         data-name='FAVR Inc.'
                         data-description='$this->description'
-                        data-image='https://askfavr.com/img/favicon.png'
+                        data-image='https://askfavr.com/favr-pwa/assets/brand/favicon.ico'
                         data-locale='auto'>
                     </script>
                 </form>";
+
 //        } else{
 //            //header("location: http://localhost:1234/favr-pwa");
 //        }
@@ -152,7 +153,10 @@ class Web_Payment
         $success = $this->db->query("UPDATE marketplace_favr_requests SET task_status='In Progress' WHERE id=$id");
         if($success)
         {
-            echo "Request Updated \n";
+//            $text = new Web_Notification();
+//            $sth = $this->db->query("SELECT * FROM users WHERE id=$this->freelancer_id");
+//            $row = $sth->fetch(PDO::FETCH_ASSOC);
+//            $text->sendNotification(1, "Here");
         }else{
             echo " Request Failure \n";
         }

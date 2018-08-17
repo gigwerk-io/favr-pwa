@@ -53,7 +53,9 @@ if (!empty($_POST['Text']))
                     </div>
                 </div>
                 <?php
+                echo "<div class=\"inbox_chat\">";
                 $list->listChat();
+                echo "</div>";
                 echo "<div id=\"status\">
                 </div>";
                 ?>
@@ -80,17 +82,17 @@ if (!empty($_POST['Text']))
         </div>
     </div>
     <script>
-        function refreshPageUnlessFocusedOn (el) {
-
-            setInterval(function () {
-                if(el !== document.activeElement) {
-                    document.location.reload();
-                }
-            }, 12500)
-
-        }
-
-        refreshPageUnlessFocusedOn(document.querySelector('textarea'));
+        // function refreshPageUnlessFocusedOn (el) {
+        //
+        //     setInterval(function () {
+        //         if(el !== document.activeElement) {
+        //             document.location.reload();
+        //         }
+        //     }, 12500)
+        //
+        // }
+        //
+        // refreshPageUnlessFocusedOn(document.querySelector('textarea'));
     </script>
 <?php
 $page->addScript("
