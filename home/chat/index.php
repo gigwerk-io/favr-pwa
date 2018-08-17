@@ -88,7 +88,7 @@ if (!empty($_POST['Text']))
                 if(el !== document.activeElement) {
                     //document.location.reload();
                     var x = document.location;
-                    $('#chat_refresh').load(x);
+                    $('#incoming').load(x);
                 }
             }, 12500)
 

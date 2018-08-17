@@ -188,7 +188,7 @@ class Web_Chat
                         </div>
                   </div>";
             } else {
-                echo "<div class=\"outgoing_msg\">
+                echo "<div class=\"outgoing_msg\" id='incoming'>
                         <div class=\"sent_msg\">
                             <p>$text</p>
                             <span class=\"time_date\"> $time</span></div>
