@@ -19,8 +19,6 @@ if (isset($_SESSION['user_info'])) {
 }
 
 $page = new Web_Page($USER);
-echo '<pre>';
-print_r($page);die;
 $connect = new Web_Connect();
 if(!is_null($connect->payment_id)) {
         $connect->stripeLogin($connect->payment_id);
