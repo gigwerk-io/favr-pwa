@@ -15,12 +15,12 @@ class Data_Constants
     const PRODUCT_VERSION = "0.1.1";
 
     // database connection constants
-    const DB_DSN = "mysql:dbname=local_favr_2;host=favr.cgfeyejwt7qv.us-east-2.rds.amazonaws.com";
+    const DB_DSN = "mysql:dbname=favr_pwa_schema;host=favr.cgfeyejwt7qv.us-east-2.rds.amazonaws.com";
     const DB_USERNAME = "Solomon04";
     const DB_PASSWORD = "Nomolos.99";
 
     // Root path
-    const ROOT_PATH = "http://localhost:1234/favr-pwa";
+    const ROOT_PATH = "https://askfavr.com/favr-pwa";
 
     // image upload constants
     const MAXIMUM_IMAGE_UPLOAD_COUNT = 3;
