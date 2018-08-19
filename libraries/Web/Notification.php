@@ -7,7 +7,6 @@
  */
 
 use Twilio\Rest\Client;
-require '../Api/Twilio/twilio-php-master/Twilio/autoload.php';
 class Web_Notification
 {
     /**
@@ -17,6 +16,7 @@ class Web_Notification
      */
     public function sendNotification(string $phone, string $message)
     {
+        $phone = "+1" . str_replace("-", "", $phone);
         $client = new Client(Data_Constants::TWILIO_SID, Data_Constants::TWILIO_API);
         //send message to customer
         $client->messages->create(
@@ -27,6 +27,7 @@ class Web_Notification
                 'body' => $message,
             )
         );
+        header("location: http://localhost:1234/favr-pwa/components/notifications/?navbar=active_notifications");
     }
 
 

@@ -5258,6 +5258,15 @@ class Web_Page
 
                                     $result = $this->db->query($update_request_query);
                                     if ($result) {
+                                        include '../../libraries/Api/Twilio/twilio-php-master/Twilio/autoload.php';
+                                        $statement = "SELECT * FROM users WHERE id=$freelancerID";
+                                        $get_freelancer_number = $this->db->query($statement);
+                                        $res = $get_freelancer_number->fetch(PDO::FETCH_ASSOC);
+                                        //Send SMS Notification
+                                        $sms = new Web_Notification();
+                                        $freelancerPhoneNumber = $res['phone'];
+                                        $freelancerName = $res['first_name'];
+                                        $sms->sendNotification($freelancerPhoneNumber, "Hey $freelancerName, the FAVR your proposed to complete has been paid. Please check your notifications within the app to see necessary details to complete");
                                         return $customerID;
                                     } else {
                                         return false;
