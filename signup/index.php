@@ -26,8 +26,8 @@ if (isset($_POST['signUp'], $_POST['signUpUsername'], $_POST['signUpFirstName'],
     $signUpEmail = $_POST['signUpEmail'];
     $signUpFirstName = $_POST['signUpFirstName'];
     $signUpLastName = $_POST['signUpLastName'];
-    $signUpPass = md5($_POST['signUpPass']);
-    $signUpPassConfirm = md5($_POST['signUpPassConfirm']);
+    $signUpPass = $_POST['signUpPass'];
+    $signUpPassConfirm = $_POST['signUpPassConfirm'];
 
     $signUpSuccessful = $page->signUpUser($signUpUsername, $signUpEmail, $signUpFirstName, $signUpLastName, $signUpPass, $signUpPassConfirm);
 

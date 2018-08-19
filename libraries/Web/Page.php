@@ -268,18 +268,13 @@ class Web_Page
         $select_sign_in_query = "SELECT * 
                                  FROM users
                                  WHERE email='$signInUsernameEmail'
-                                 AND password='$signInPass'
-                                 OR username='$signInUsernameEmail'
-                                 AND password='$signInPass'";
+                                 OR username='$signInUsernameEmail'";
 
         $sign_in_result = $this->db->query($select_sign_in_query);
         $sign_in_row = $sign_in_result->fetch(PDO::FETCH_ASSOC);
-
-        if (!empty($sign_in_row)) {
-            // successful sign in
+        if(password_verify($signInPass, $sign_in_row['password'])){
             $this->user = $sign_in_row;
             $_SESSION['user_info'] = $sign_in_row;
-
             return true;
         } else {
             // failed to sign in
@@ -308,7 +303,7 @@ class Web_Page
             return false;
         } else {
             // success
-
+            $signUpPassConfirm = password_hash($signUpPassConfirm, PASSWORD_DEFAULT);
             $insert_sign_up_query = "INSERT INTO users
                                     (username,
                                      password, 

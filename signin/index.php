@@ -75,7 +75,7 @@ if (isset($_GET['signout']) && $_GET['signout'] == true) {
 // Script to process user sign in
 if (isset($_POST['signIn'], $_POST['signInUsernameEmail'], $_POST['signInPass'])) {
     $signInUsernameEmail = $_POST['signInUsernameEmail'];
-    $signInPass = md5($_POST['signInPass']);
+    $signInPass = $_POST['signInPass'];
 
     $signInSuccessful = $page->signInUser($signInUsernameEmail, $signInPass);
 
