@@ -5160,7 +5160,7 @@ class Web_Page
 
                         $update_request_query = "UPDATE marketplace_favr_requests
                                                  SET task_freelancer_accepted = $freelancer_accepted,
-                                                     freelancer_id = $request_id
+                                                     freelancer_id = $freelancerID
                                                  WHERE id = $request_id";
 
                         $result = $this->db->query($update_request_query);
