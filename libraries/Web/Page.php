@@ -4980,6 +4980,10 @@ class Web_Page
 
                 $result = $this->db->query($select_freelancers_query);
                 $rows = $result->fetchAll(PDO::FETCH_ASSOC);
+                //Send Invoice to Customer
+                include '../../libraries/Api/Sendgrid/vendor/autoload.php';
+                $invoice = new Web_Invoice();
+                $invoice->sendCustomerInvoice($requestID)->sendFreelancerInvoice($requestID);
                 foreach ($rows as $row) {
                     $userID = $row['user_id'];
                     $select_user_query = "SELECT rating
@@ -5203,16 +5207,13 @@ class Web_Page
     }
 
     /**
-     * Process accept request
-     *
      * Flow: Marketplace -> Verified freelancer accepts -> Notify customer -> customer accepts -> Notify freelancer -> Change status of request to paid job
      *                                                      |-> freelancer or customer rejects -> Marketplace
-     *
-     * @param int $requestID
-     * @param int $freelancerID
-     * @param int $customerID
-     *
-     * @return mixed
+     * @param $requestID
+     * @param $freelancerID
+     * @param $customerID
+     * @return bool
+     * @throws \Twilio\Exceptions\ConfigurationException
      */
     function processCustomerAcceptRequest($requestID, $freelancerID, $customerID)
     {
@@ -5267,6 +5268,7 @@ class Web_Page
                                         $freelancerPhoneNumber = $res['phone'];
                                         $freelancerName = $res['first_name'];
                                         $sms->sendNotification($freelancerPhoneNumber, "Hey $freelancerName, the FAVR your proposed to complete has been paid. Please check your notifications within the app to see necessary details to complete");
+                                        header("Refresh:2; url=$this->root_path/home");
                                         return $customerID;
                                     } else {
                                         return false;
