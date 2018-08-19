@@ -110,7 +110,7 @@ if (isset($_GET['ALERT_MESSAGE'])) {
     $ALERT_MESSAGE = "
             <div class=\"my-3 p-3 alert alert-success alert-dismissible\" role=\"alert\">
                 <button type=\"button\" class=\"close\" data-dismiss=\"alert\" aria-label=\"Close\"><span aria-hidden=\"true\">&times;</span></button>
-                <strong>Success!</strong> $ALERT_MESSAGE. Please Click the Button in the top left corner to ensure your request will be fulfilled.
+                <strong>Success!</strong> $ALERT_MESSAGE.
             </div>
         ";
 }

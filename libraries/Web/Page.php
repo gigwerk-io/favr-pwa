@@ -1629,9 +1629,9 @@ class Web_Page
                     case "active_friends":
                         $active_friends = "active";
                         break;
-                    case "active_chat":
-                        $active_chat = "active";
-                        break;
+//                    case "active_chat":
+//                        $active_chat = "active";
+//                        break;
                     default:
                         // none active
                         break;
@@ -1667,19 +1667,19 @@ class Web_Page
                                     ?>
                                 </a>
                             </div>
-                            <div class="col-sm-4 request-favr-web pl-0 pr-0" style="max-width: 170px;">
-                                <a class="nav-link <?php echo $active_chat; ?>"
-                                   href="<?php echo $this->root_path; ?>/home/chat/?navbar=active_home&nav_scroller=active_chat">
-                                    Chat
-                                    <?php
-                                    if ($active_chat) {
-                                        echo "<i class=\"material-icons\" style='color: var(--red);font-size: 15px; padding-left: 2px;position:relative;top:.1rem;'>chat</i>";
-                                    } else {
-                                        echo "<i class=\"material-icons\" style='font-size: 15px; padding-left: 2px;position:relative;top:.1rem;'>chat</i>";
-                                    }
-                                    ?>
-                                </a>
-                            </div>
+<!--                            <div class="col-sm-4 request-favr-web pl-0 pr-0" style="max-width: 170px;">-->
+<!--                                <a class="nav-link --><?php //echo $active_chat; ?><!--"-->
+<!--                                   href="--><?php //echo $this->root_path; ?><!--/home/chat/?navbar=active_home&nav_scroller=active_chat">-->
+<!--                                    Chat-->
+<!--                                    --><?php
+//                                    if ($active_chat) {
+//                                        echo "<i class=\"material-icons\" style='color: var(--red);font-size: 15px; padding-left: 2px;position:relative;top:.1rem;'>chat</i>";
+//                                    } else {
+//                                        echo "<i class=\"material-icons\" style='font-size: 15px; padding-left: 2px;position:relative;top:.1rem;'>chat</i>";
+//                                    }
+//                                    ?>
+<!--                                </a>-->
+<!--                            </div>-->
                             <!--                    <a id="suggestions" onclick="focusNoScrollMethod()" class="nav-link -->
                             <?php //echo  $active_suggestions; ?><!--" href="?nav_scroller=active_suggestions">Suggestions</a>-->
                         </nav>
@@ -2256,6 +2256,7 @@ class Web_Page
                                             Cancel Request</a>
                                       </div>
                                     ";
+                                    $url = "$this->root_path/components/notifications/?navbar=active_notifications%26accept_customer_request_id=$task_id%26freelancer_id=$freelancer_id%26ALERT_MESSAGE=You%27ve approved this freelancer for this task! They're on their way to complete your FAVR!";
 
                                     echo "
                                     <!-- Modal -->
@@ -2271,7 +2272,7 @@ class Web_Page
                                           <div class=\"modal-body\">By accepting this freelancer you are affirming that you have adequately reviewed their profile and qualifications. By accepting this freelancer you will also share sensitive information with them which may include location and contact information.</div>
                                           <div class=\"modal-footer\">
                                             <button type=\"button\" class=\"btn btn-secondary\" data-dismiss=\"modal\">Close</button>
-                                            <a href=\"$this->root_path/components/notifications/?navbar=active_notifications&accept_customer_request_id=$task_id&freelancer_id=$freelancer_id&ALERT_MESSAGE=You've approved this freelancer for this task! They're on their way to complete your FAVR!\"
+                                            <a href=\"$this->root_path/components/notifications/checkout.php?task_id=$task_id&url=$url\"
                                                class='btn btn-primary'>
                                                 Accept Freelancer
                                             </a>
@@ -5257,8 +5258,6 @@ class Web_Page
 
                                     $result = $this->db->query($update_request_query);
                                     if ($result) {
-                                        $checkout = new Web_Payment();
-                                        $checkout->select($requestID)->checkOut($requestID); //redirects to payment process
                                         return $customerID;
                                     } else {
                                         return false;

@@ -62,6 +62,7 @@ class Web_Payment
      */
     public $freelancer_id;
 
+
     function __construct() {
         $this->db = $this->connect();
         if(isset($_GET['id'])){
@@ -102,14 +103,17 @@ class Web_Payment
 
     /**
      * @param int $id
+     * @param string $url
      * @return $this
      */
-    public function checkOut(int $id)
+    public function checkOut(int $id, string $url)
     {
 //        if($this->status == "Pending Approval")
 //        {
+        $url = str_replace("&","%26", $url);
+        $url = str_replace("'", "%27", $url);
             echo "
-                <form action='process_payment?id=$id' method='post'>
+                <form action='process_payment.php?id=$id&url=$url' method='post'>
                     <script
                         src='https://checkout.stripe.com/checkout.js' class='stripe-button'
                         data-key= " . Data_Constants::STRIPE_PUBLIC . "
@@ -146,13 +150,18 @@ class Web_Payment
 
     /**
      * @param int $id
+     * @param string $callback_url
      * @return $this
      */
-    public function update(int $id)
+    public function update(int $id, string $callback_url)
     {
         $success = $this->db->query("UPDATE marketplace_favr_requests SET task_status='In Progress' WHERE id=$id");
         if($success)
         {
+            header("location: $callback_url");
+//            echo "<script>
+//                    window.location.href = '$callback_url';
+//                </script>";
 //            $text = new Web_Notification();
 //            $sth = $this->db->query("SELECT * FROM users WHERE id=$this->freelancer_id");
 //            $row = $sth->fetch(PDO::FETCH_ASSOC);
@@ -163,6 +172,9 @@ class Web_Payment
         return $this;
     }
 
+    /**
+     * @return $this
+     */
     public function createChat()
     {
         $message_file = "message_" . time() . ".txt";
