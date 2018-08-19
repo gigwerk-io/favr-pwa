@@ -27,7 +27,7 @@ class Web_Notification
                 'body' => $message,
             )
         );
-        header("location: http://localhost:1234/favr-pwa/components/notifications/?navbar=active_notifications");
+//        header("location: http://localhost:1234/favr-pwa/components/notifications/?navbar=active_notifications");
     }
 
 
