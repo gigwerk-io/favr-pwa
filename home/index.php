@@ -79,8 +79,8 @@ $page->renderFavrRequestForm($_SESSION['user_info'], $_SESSION['filter_marketpla
 $page->renderFavrMarketplace($_SESSION['scope'], $_SESSION['filter_marketplace_by'], $_SESSION['orient_marketplace_by'], $_SESSION['limit_marketplace_by']);
 
 $page->addScript("
+<!-- Hotjar Tracking Code for askfavr.com -->
     <script>
-    <!-- Hotjar Tracking Code for askfavr.com -->
         (function(h,o,t,j,a,r){
             h.hj=h.hj||function(){(h.hj.q=h.hj.q||[]).push(arguments)};
             h._hjSettings={hjid:893054,hjsv:6};
@@ -88,8 +88,11 @@ $page->addScript("
             r=o.createElement('script');r.async=1;
             r.src=t+h._hjSettings.hjid+j+h._hjSettings.hjsv;
             a.appendChild(r);
-
-    
+        })(window,document,'https://static.hotjar.com/c/hotjar-','.js?sv=');
+    </script>
+   
+    <!-- Facebook Pixel Code -->
+        <script>
         !function(f,b,e,v,n,t,s)
         {if(f.fbq)return;n=f.fbq=function(){n.callMethod?
         n.callMethod.apply(n,arguments):n.queue.push(arguments)};
@@ -99,15 +102,14 @@ $page->addScript("
         s.parentNode.insertBefore(t,s)}(window, document,'script',
         'https://connect.facebook.net/en_US/fbevents.js');
         fbq('init', '1650241185015256');
-        fbq('track', 'PageView')
-    
+        fbq('track', 'PageView');
+        </script>
         <noscript>
             <img height=\"1\" width=\"1\" style=\"display:none\"
             src=\"https://www.facebook.com/tr?id=1650241185015256&ev=PageView&noscript=1\"/>
         </noscript>
-        
-
-<!-- End Facebook Pixel Code -->
+        <!-- End Facebook Pixel Code -->
+    <script>
 
     $(function(){
         var dtToday = new Date();
