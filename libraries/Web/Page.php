@@ -438,8 +438,9 @@ class Web_Page
      * Render page header
      * @param boolean $render_top_nav
      * @param boolean $render_back_button
+     * @param boolean $render_alt_nav
      */
-    function renderHeader($render_top_nav = true, $render_back_button = false)
+    function renderHeader($render_top_nav = true, $render_back_button = false, $render_alt_nav = false)
     {
         if (empty($_SESSION['user'])) {
             header("location: $this->root_path/signin/ ");
@@ -544,7 +545,7 @@ class Web_Page
         <body class="bg-light" onload="pageLoader()">
         <div id="loader"></div>
         <?php
-        $this->renderMainNavigation($render_top_nav, $render_back_button);
+        $this->renderMainNavigation($render_top_nav, $render_back_button, $render_alt_nav);
         ?>
         <main role="main" class="container animate-bottom" style="max-width: 750px">
         <?php
@@ -1380,8 +1381,10 @@ class Web_Page
      *
      * @param boolean $render_main_navigation
      * @param boolean $render_back_button
+     * @param boolean $render_alt_nav
+     *
      */
-    function renderMainNavigation($render_main_navigation = true, $render_back_button = false)
+    function renderMainNavigation($render_main_navigation = true, $render_back_button = false, $render_alt_nav = false)
     {
         if ($render_main_navigation) {
             $active_home = "";
@@ -1689,8 +1692,43 @@ class Web_Page
                     <?php
                 }
             }
+        } else if ($render_alt_nav) {
+            ?>
+            <header class="fixed-top">
+                <div class="collapse bg-dark" id="navbarHeader">
+                    <div class="container">
+                        <div class="row">
+                            <div class="col-sm-8 col-md-7 py-4">
+                                <h4 class="text-white">About</h4>
+                                <p class="text-muted">Add some information about the album below, the author, or any other background context. Make it a few sentences long so folks can pick up some informative tidbits. Then, link them off to some social networking sites or contact information.</p>
+                            </div>
+                            <div class="col-sm-4 offset-md-1 py-4">
+                                <h4 class="text-white">Contact</h4>
+                                <ul class="list-unstyled">
+                                    <li><a href="#" class="text-white">Follow on Twitter</a></li>
+                                    <li><a href="#" class="text-white">Like on Facebook</a></li>
+                                    <li><a href="#" class="text-white">Email me</a></li>
+                                </ul>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="navbar navbar-dark bg-dark box-shadow">
+                    <div class="container d-flex justify-content-between">
+                        <a href="#" class="navbar-brand d-flex align-items-center">
+                            <strong>
+                                <img src="<?php echo $this->root_path; ?>/assets/brand/favr_logo_rd.png" height="21" width="70"
+                                     class="navbar-brand mr-0" style="padding-top: 0; padding-bottom: 0" alt="Logo">
+                            </strong>
+                        </a>
+                        <button class="navbar-toggler border-0" type="button" data-toggle="collapse" data-target="#navbarHeader" aria-controls="navbarHeader" aria-expanded="false" aria-label="Toggle navigation">
+                            <i class="material-icons text-danger">menu</i>
+                        </button>
+                    </div>
+                </div>
+            </header>
+            <?php
         }
-
     }
 
     /**
@@ -3879,7 +3917,7 @@ class Web_Page
                                 <div id='$id-location' class='pt-1 border-top small border-gray d-none'>
                                     <label for='location'>Location:</label>
                                     <!-- TODO: calculate location distance by zipcode -->
-                                    <p class='text-dark'>Rochester. MN</p>
+                                    <p class='text-dark'>Rochester, MN</p>
                                     <div id='$id-completeby' class='pt-1 border-top border-bottom border-gray'>
                                         <label for='completeby'>Complete FAVR by:</label>
                                         <p class='text-dark'>$task_time_to_accomplish</p>
