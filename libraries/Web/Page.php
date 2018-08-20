@@ -7,7 +7,7 @@
  *
  * @author haronarama
  */
-
+include '../../libraries/Api/Twilio/twilio-php-master/Twilio/autoload.php';
 class Web_Page
 {
     /**
@@ -94,6 +94,7 @@ class Web_Page
      */
     public $editor = false;
 
+    public $sms;
     /**
      * Constructor for the page. Sets up most of the properties of this object.
      *
@@ -103,6 +104,7 @@ class Web_Page
      */
     function __construct($user = "", $page_title = "FAVR", $render_main_navigation = true)
     {
+        $this->sms = new Web_Notification();
         $this->page_title = $page_title;
         $this->render_main_navigation = $render_main_navigation;
 
@@ -4930,6 +4932,17 @@ class Web_Page
                                              AND user_id = $freelancerID";
 
                     $result = $this->db->query($update_freelancers_query);
+                    //Get Customer Info
+                    $getCustomerID = $this->db->query("SELECT * FROM marketplace_favr_requests WHERE id=$requestID");
+                    $row = $getCustomerID->fetch(PDO::FETCH_ASSOC);
+                    $customerID = $row['customer_id'];
+
+                    $getCustomerNumber = $this->db->query("SELECT * FROM users WHERE =$customerID");
+                    $row = $getCustomerNumber->fetch(PDO::FETCH_ASSOC);
+                    $customerNumber = $row['phone'];
+                    $customerName = $row['first_name'];
+                    $this->sms->sendNotification($customerNumber, "Hey $customerName, your freelancer has arrived!");
+
                     if ($result) {
                         return $timestamp;
                     } else {
@@ -5259,15 +5272,13 @@ class Web_Page
 
                                     $result = $this->db->query($update_request_query);
                                     if ($result) {
-                                        include '../../libraries/Api/Twilio/twilio-php-master/Twilio/autoload.php';
                                         $statement = "SELECT * FROM users WHERE id=$freelancerID";
                                         $get_freelancer_number = $this->db->query($statement);
                                         $res = $get_freelancer_number->fetch(PDO::FETCH_ASSOC);
                                         //Send SMS Notification
-                                        $sms = new Web_Notification();
                                         $freelancerPhoneNumber = $res['phone'];
                                         $freelancerName = $res['first_name'];
-                                        $sms->sendNotification($freelancerPhoneNumber, "Hey $freelancerName, the FAVR your proposed to complete has been paid. Please check your notifications within the app to see necessary details to complete");
+                                        $this->sms->sendNotification($freelancerPhoneNumber, "Hey $freelancerName, the FAVR your proposed to complete has been paid. Please check your notifications within the app to see necessary details to complete");
                                         header("Refresh:2; url=$this->root_path/home");
                                         return $customerID;
                                     } else {
