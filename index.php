@@ -15,10 +15,7 @@ if (isset($_SESSION['user'])) {
     $USER = 'guest';
 }
 
-$page = new Web_Page('ENTRY_POINT', $USER);
-
-
-//header("Location: home/");
+$page = new Web_Page('ENTRY_POINT');
 
 if (isset($_POST['persistUsernameEmail'], $_POST['persistPassword'])) {
     $signInSuccessful = $page->signInUser($_POST['persistUsernameEmail'], $_POST['persistPassword']);
@@ -30,13 +27,11 @@ if (isset($_POST['persistUsernameEmail'], $_POST['persistPassword'])) {
     } else {
         // error in persist
         header("Location: signin/");
-//        die(print_r($_POST));
     }
 }
 
 $page->renderHeader(false);
 
-//print_r($_POST);
 ?>
     <form name="entry_point" method="POST">
         <input id="username" type="hidden" name="persistUsernameEmail" required>
