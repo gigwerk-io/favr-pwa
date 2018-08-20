@@ -4997,9 +4997,9 @@ class Web_Page
                     //Get Customer Info
                     $getCustomerID = $this->db->query("SELECT * FROM marketplace_favr_requests WHERE id=$requestID");
                     $row = $getCustomerID->fetch(PDO::FETCH_ASSOC);
-                    print $customerID = $row['customer_id'];die;
+                    $customerID = $row['customer_id'];
 
-                    $getCustomerNumber = $this->db->query("SELECT * FROM users WHERE =$customerID");
+                    $getCustomerNumber = $this->db->query("SELECT * FROM users WHERE id=$customerID");
                     $row = $getCustomerNumber->fetch(PDO::FETCH_ASSOC);
                     $customerNumber = $row['phone'];
                     $customerName = $row['first_name'];
