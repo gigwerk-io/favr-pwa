@@ -82,7 +82,7 @@ if (isset($_POST['signIn'], $_POST['signInUsernameEmail'], $_POST['signInPass'])
     if ($signInSuccessful) {
         // successful signin with redirect
         $_SESSION['user'] = $signInUsernameEmail;
-        header("Location: ../");
+        header("Location: ../home/");
     } else {
         // failure
         $ALERT_MESSAGE = "

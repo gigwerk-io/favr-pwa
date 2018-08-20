@@ -2,8 +2,8 @@
 /**
  * Created by PhpStorm.
  * User: haronarama
- * Date: 8/7/18
- * Time: 8:25 PM
+ * Date: 8/20/18
+ * Time: 2:57 AM
  */
 
 session_start();
@@ -18,4 +18,6 @@ if (isset($_SESSION['user_info'])) {
 }
 
 $page = new Web_Page($USER);
-$page->renderMainNotifications($_SESSION['user_info']);
+$notificationCount = $page->processNotifications($_SESSION['user_info']);
+
+$page->renderNotificationCount($notificationCount);

@@ -129,19 +129,11 @@ echo $ALERT_MESSAGE;
 <!--            <small class="col-sm-6 pl-0"></small>-->
         </h6>
     </div>
-<!--    <div id="notifications"></div>-->
+    <div id="notifications"></div>
 <?php
 $page->renderMainNotifications($_SESSION['user_info']);
 $page->addScript("
 <script>
-    window.addEventListener('load', function(){
-        var allimages= document.getElementsByTagName('img');
-        for (var i=0; i<allimages.length; i++) {
-            if (allimages[i].getAttribute('data-src')) {
-                allimages[i].setAttribute('src', allimages[i].getAttribute('data-src'));
-            }
-        }
-    }, false);   
     //hide stripe button, automatically checkout
     $('.stripe-button-el').hide();
     $(document).ready(function(){

@@ -23,10 +23,9 @@ if (isset($_POST['persistUsernameEmail'], $_POST['persistPassword'])) {
         // successful persistent sign in
         $_SESSION['user'] = $_POST['persistUsernameEmail'];
         header("Location: home/?navbar=active_home&nav_scroller=active_marketplace");
-//        die(print_r($_POST));
     } else {
         // error in persist
-        header("Location: signin/");
+        header("Location: h/"); // send guests to the homepage
     }
 }
 
