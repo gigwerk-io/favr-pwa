@@ -4999,7 +4999,7 @@ class Web_Page
                     $row = $getCustomerID->fetch(PDO::FETCH_ASSOC);
                     $customerID = $row['customer_id'];
 
-                    $getCustomerNumber = $this->db->query("SELECT * FROM users WHERE =$customerID");
+                    $getCustomerNumber = $this->db->query("SELECT * FROM users WHERE id=$customerID");
                     $row = $getCustomerNumber->fetch(PDO::FETCH_ASSOC);
                     $customerNumber = $row['phone'];
                     $customerName = $row['first_name'];
