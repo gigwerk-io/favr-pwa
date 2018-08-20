@@ -287,7 +287,7 @@ class Web_Page
 
         $sign_in_result = $this->db->query($select_sign_in_query);
         $sign_in_row = $sign_in_result->fetch(PDO::FETCH_ASSOC);
-        if(password_verify($signInPass, $sign_in_row['password']) || !empty($sign_in_row)){
+        if(password_verify($signInPass, $sign_in_row['password']) || (!empty($sign_in_row) && isset($_POST['persistPassword']))){
             $this->user = $sign_in_row;
             $_SESSION['user_info'] = $sign_in_row;
             return true;
