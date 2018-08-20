@@ -1722,7 +1722,7 @@ class Web_Page
                                 <h4 class="text-white">Contact</h4>
                                 <ul class="list-unstyled">
                                     <li><a href="https://www.facebook.com/FAVR-1932902273417961/" class="text-white">Like on Facebook <i class="material-icons">thumb_up</i></a></li>
-                                    <li><a href="#" class="text-white">contact@askfavr.com</a></li>
+                                    <li><a href="mailto:contact@askfavr.com" class="text-white">contact@askfavr.com</a></li>
                                 </ul>
                             </div>
                         </div>
