@@ -174,7 +174,7 @@ class Web_Payment
 
     public function addStripeToken(string $token , int $id)
     {
-        $this->db->query("UPDATE marketplace_favr_requests SET task_stripe_token=$token WHERE id=$id");
+        $this->db->query("UPDATE marketplace_favr_requests SET task_stripe_token='$token' WHERE id=$id");
     }
 
     /**
