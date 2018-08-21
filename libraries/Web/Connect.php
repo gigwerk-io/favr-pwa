@@ -46,10 +46,12 @@ class Web_Connect{
 
     function __construct() {
         $this->db = $this->connect();
-        $this->id = $_SESSION['user_info']['id'];
-        $sth = $this->db->query("SELECT payment_id FROM users WHERE id=$this->id");
-        $row = $sth->fetch(PDO::FETCH_ASSOC);
-        $this->payment_id = $row['payment_id'];
+        if(isset($_SESSION)){
+            $this->id = $_SESSION['user_info']['id'];
+            $sth = $this->db->query("SELECT payment_id FROM users WHERE id=$this->id");
+            $row = $sth->fetch(PDO::FETCH_ASSOC);
+            $this->payment_id = $row['payment_id'];
+        }
     }
 
     function connect()
@@ -107,4 +109,87 @@ class Web_Connect{
         $url = $link->url;
         header("location: $url");
     }
+
+    /**
+     * @param string $account_id
+     * @return mixed
+     */
+    public function viewBalance(string $account_id)
+    {
+        \Stripe\Stripe::setApiKey(\Data_Constants::STRIPE_SECRET);
+        $balance = \Stripe\Balance::retrieve(
+            array("stripe_account" => $account_id)
+        );
+        $arr = json_decode(json_encode($balance), true);
+        return $arr['available'][0]['amount'];
+    }
+
+    /**
+     * @param int $price
+     * @param string $token
+     * @param string $account_id
+     */
+    public function payoutFunds(int $price, string $token, string $account_id)
+    {
+        \Stripe\Stripe::setApiKey(\Data_Constants::STRIPE_SECRET);
+        $transfer = \Stripe\Transfer::create(array(
+            "amount" => $price,
+            "currency" => "usd",
+            "source_transaction" => $token,
+            "destination" => $account_id,
+        ));
+        echo '<pre>';
+        print_r($transfer);
+    }
+
+    /**
+     * @param int $id
+     * @return mixed
+     */
+    public function selectStripeToken(int $id)
+    {
+        $sth = $this->db->query("SELECT * FROM marketplace_favr_requests WHERE id=$id");
+        $row = $sth->fetch(PDO::FETCH_ASSOC);
+        $stripeToken = $row['task_stripe_token'];
+
+        return $stripeToken;
+    }
+
+    /**
+     * @param int $id
+     * @return mixed
+     */
+    public function selectStripeAccount(int $id)
+    {
+        $sth = $this->db->query("SELECT * FROM users WHERE id=$id");
+        $row = $sth->fetch(PDO::FETCH_ASSOC);
+        $stripeAccount =  $row['payment_id'];
+        return $stripeAccount;
+    }
+
+    /**
+     * @param int $id
+     * @return mixed
+     */
+    public function selectFreelancer(int $id)
+    {
+        $sth = $this->db->query("SELECT * FROM marketplace_favr_requests WHERE id=$id");
+        $row = $sth->fetch(PDO::FETCH_ASSOC);
+        $freelancer_id = $row['freelancer_id'];
+        return $freelancer_id;
+    }
+
+    /**
+     * @param int $id
+     * @return float|int
+     */
+    public function selectPrice(int $id)
+    {
+        $sth = $this->db->query("SELECT * FROM marketplace_favr_requests WHERE id=$id");
+        $row = $sth->fetch(PDO::FETCH_ASSOC);
+        $price = $row['task_price'] * 100 * 0.8;
+
+        return $price;
+    }
+
 }

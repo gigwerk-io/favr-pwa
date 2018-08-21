@@ -8,6 +8,8 @@
  * @author haronarama
  */
 include '../../libraries/Api/Twilio/twilio-php-master/Twilio/autoload.php';
+include '../../libraries/Api/Sendgrid/vendor/autoload.php';
+include '../../libraries/Api/Stripe/init.php';
 class Web_Page
 {
     /**
@@ -100,6 +102,16 @@ class Web_Page
     public $sms;
 
     /**
+     * @var Web_Invoice
+     */
+    public $invoice;
+
+    /**
+     * @var Web_Connect
+     */
+    public $payout;
+
+    /**
      * Constructor for the page. Sets up most of the properties of this object.
      *
      * @param string $page_title
@@ -109,6 +121,8 @@ class Web_Page
     function __construct($user = "", $page_title = "FAVR", $render_main_navigation = true)
     {
         $this->sms = new Web_Notification();
+        $this->invoice = new Web_Invoice();
+        $this->payout = new Web_Connect();
         $this->page_title = $page_title;
         $this->render_main_navigation = $render_main_navigation;
 
@@ -5056,9 +5070,15 @@ class Web_Page
                 $result = $this->db->query($select_freelancers_query);
                 $rows = $result->fetchAll(PDO::FETCH_ASSOC);
                 //Send Invoice to Customer
-                include '../../libraries/Api/Sendgrid/vendor/autoload.php';
-                $invoice = new Web_Invoice();
-                $invoice->sendCustomerInvoice($requestID)->sendFreelancerInvoice($requestID);
+                $this->invoice->sendCustomerInvoice($requestID)->sendFreelancerInvoice($requestID);
+                //Send Pay out to Freelancer
+                $this->payout->payoutFunds(
+                    $this->payout->selectPrice($requestID),
+                    $this->payout->selectStripeToken($requestID),
+                    $this->payout->selectStripeAccount(
+                        $this->payout->selectFreelancer($requestID)
+                    )
+                );
                 foreach ($rows as $row) {
                     $userID = $row['user_id'];
                     $select_user_query = "SELECT rating
@@ -5066,6 +5086,7 @@ class Web_Page
                                           WHERE id = $userID";
                     $result = $this->db->query($select_user_query);
                     if ($result) {
+
                         $row = $result->fetch(PDO::FETCH_ASSOC);
                         $ratings = unserialize($row['rating']);
                         if (count($ratings) == Data_Constants::DB_MAX_USER_RATING_COUNT) {

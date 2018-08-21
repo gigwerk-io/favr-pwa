@@ -172,6 +172,11 @@ class Web_Payment
         return $this;
     }
 
+    public function addStripeToken(string $token , int $id)
+    {
+        $this->db->query("UPDATE marketplace_favr_requests SET task_stripe_token=$token WHERE id=$id");
+    }
+
     /**
      * @return $this
      */
@@ -192,6 +197,8 @@ class Web_Payment
         }
         return $this;
     }
+
+
 
 
 
