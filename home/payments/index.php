@@ -18,8 +18,8 @@ if (isset($_SESSION['user_info'])) {
     $USER = $_SESSION['user_info']['username']; // user is set from initial configuration
 }
 
-print_r($page = new Web_Page($USER));die;
-$connect = new Web_Connect();
+$page = new Web_Page($USER);
+print_r($connect = new Web_Connect());die;
 if(!is_null($connect->payment_id)) {
         $connect->stripeLogin($connect->payment_id);
 } else{
