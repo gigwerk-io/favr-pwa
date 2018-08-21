@@ -25,7 +25,7 @@ if(!empty($connect->payment_id)) {
 } else{
     if(!isset($_GET['code']))
     {
-        echo "<script> window.location.href = 'https://connect.stripe.com/express/oauth/authorize?redirect_uri=htts://askfavr.com/favr-pwa/home/payments/&client_id=ca_C2CKbfLxpwpxjuTp9xdtuBcL5zSws9mN&state=true'; </script>";
+        echo "<script> window.location.href = 'https://connect.stripe.com/express/oauth/authorize?redirect_uri=https://askfavr.com/favr-pwa/home/payments/&client_id=ca_C2CKbfLxpwpxjuTp9xdtuBcL5zSws9mN&state=true'; </script>";
     }
     elseif(isset($_GET['code']))
     {
