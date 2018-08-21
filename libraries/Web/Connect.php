@@ -128,18 +128,19 @@ class Web_Connect{
      * @param int $price
      * @param string $token
      * @param string $account_id
+     * @return \Stripe\ApiOperations\ApiResource
      */
     public function payoutFunds(int $price, string $token, string $account_id)
     {
         \Stripe\Stripe::setApiKey(\Data_Constants::STRIPE_SECRET);
-        $transfer = \Stripe\Transfer::create(array(
+        $data = \Stripe\Transfer::create(array(
             "amount" => $price,
             "currency" => "usd",
             "source_transaction" => $token,
             "destination" => $account_id,
         ));
-        echo '<pre>';
-        print_r($transfer);
+        $transfer = json_decode(json_encode($data), true);
+        return $transfer;
     }
 
     /**
