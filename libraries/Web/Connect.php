@@ -46,7 +46,7 @@ class Web_Connect{
 
     function __construct() {
         $this->db = $this->connect();
-        if(isset($_SESSION)){
+        if(!empty($_SESSION['user_info'])){
             $this->id = $_SESSION['user_info']['id'];
             $sth = $this->db->query("SELECT payment_id FROM users WHERE id=$this->id");
             $row = $sth->fetch(PDO::FETCH_ASSOC);

@@ -122,7 +122,7 @@ class Web_Page
     {
         $this->sms = new Web_Notification();
         $this->invoice = new Web_Invoice();
-        //$this->payout = new Web_Connect();
+        $this->payout = new Web_Connect();
         $this->page_title = $page_title;
         $this->render_main_navigation = $render_main_navigation;
 
