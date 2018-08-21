@@ -5018,7 +5018,7 @@ class Web_Page
                     $customerNumber = $row['phone'];
                     $customerName = $row['first_name'];
                     $this->sms->sendNotification($customerNumber, "Hey $customerName, your freelancer has arrived!");
-
+                    header("Refresh:2; url=$this->root_path/home");
                     if ($result) {
                         return $timestamp;
                     } else {
@@ -5079,6 +5079,7 @@ class Web_Page
                         $this->payout->selectFreelancer($requestID)
                     )
                 );
+                header("Refresh:2; url=$this->root_path/home");
                 foreach ($rows as $row) {
                     $userID = $row['user_id'];
                     $select_user_query = "SELECT rating

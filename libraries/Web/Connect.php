@@ -128,7 +128,6 @@ class Web_Connect{
      * @param int $price
      * @param string $token
      * @param string $account_id
-     * @return \Stripe\ApiOperations\ApiResource
      */
     public function payoutFunds(int $price, string $token, string $account_id)
     {
@@ -140,7 +139,7 @@ class Web_Connect{
             "destination" => $account_id,
         ));
         $transfer = json_decode(json_encode($data), true);
-        return $transfer;
+        header("");
     }
 
     /**
