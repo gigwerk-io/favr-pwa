@@ -12,7 +12,7 @@ main {
     padding-top: var(--jumbotron-padding-y);
     padding-bottom: var(--jumbotron-padding-y);
     margin-bottom: 0;
-    background-color: #fff;
+    background-image: url('../../favr-profile-images/sunrise.jpg');
 }
 @media (min-width: 768px) {
     .jumbotron {

@@ -108,13 +108,19 @@ if (isset($_GET['friends_list']) && $_GET['friends_list'] == 'true') {
                 <a href="?filter_marketplace_by=<?php echo $_SESSION['filter_marketplace_by']; ?>&orient_marketplace_by=DESC&limit_marketplace_by=<?php echo $_SESSION['limit_marketplace_by']; ?>">Desc</a>
             </small>
         </h6>
-        <small class="d-block mt-3">
-            <a href="?filter_marketplace_by=<?php echo $_SESSION['filter_marketplace_by']; ?>&orient_marketplace_by=<?php echo $_SESSION['orient_marketplace_by']; ?>&limit_marketplace_by=<?php echo $_SESSION['limit_marketplace_by']; ?>"
-               class="float-left">Refresh</a>
-            <a href="?friends_list=true"
-               class="ml-5">My friends</a>
-            <a href="?filter_marketplace_by=<?php echo $_SESSION['filter_marketplace_by']; ?>&orient_marketplace_by=<?php echo $_SESSION['orient_marketplace_by']; ?>&limit_marketplace_by="
-               class="float-right">All updates</a>
+        <small class="row" style="max-width: 700px">
+            <div class="col-sm-4" style="max-width: 33%">
+                <a href="?filter_marketplace_by=<?php echo $_SESSION['filter_marketplace_by']; ?>&orient_marketplace_by=<?php echo $_SESSION['orient_marketplace_by']; ?>&limit_marketplace_by=<?php echo $_SESSION['limit_marketplace_by']; ?>">
+                    Refresh</a>
+            </div>
+            <div class="col-sm-4" style="max-width: 33%">
+                <a href="?friends_list=true">
+                    My friends</a>
+            </div>
+            <div class="col-sm-4" style="max-width: 33%">
+                <a href="?filter_marketplace_by=<?php echo $_SESSION['filter_marketplace_by']; ?>&orient_marketplace_by=<?php echo $_SESSION['orient_marketplace_by']; ?>&limit_marketplace_by=">
+                    All updates</a>
+            </div>
         </small>
     </div>
     <?php
@@ -144,15 +150,6 @@ $page->addScript("
         var maxDate = year + '-' + month + '-' + day + '\T' + hour + ':' + minute;
         $('#inputDate').attr('min', maxDate);
     });
-    
-    window.addEventListener('load', function(){
-        var allimages= document.getElementsByTagName('img');
-        for (var i=0; i<allimages.length; i++) {
-            if (allimages[i].getAttribute('data-src')) {
-                allimages[i].setAttribute('src', allimages[i].getAttribute('data-src'));
-            }
-        }
-    }, false);
         
     $(document).ready(function() {
 //        window.setInterval(function(){

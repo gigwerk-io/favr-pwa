@@ -131,20 +131,18 @@ class Web_Payment
         return $this;
     }
 
-    /**
-     * @param string $token
-     * @return $this
-     */
-    public function charge(string $token)
+
+    public function charge(string $token, int $id)
     {
         \Stripe\Stripe::setApiKey(\Data_Constants::STRIPE_SECRET);
-        \Stripe\Charge::create($charge = array(
+        $charge = \Stripe\Charge::create(array(
             "amount" => $this->price,
             "currency" => "usd",
             "description" => $this->description,
             "source" => $token,
         ));
-        //print_r($charge);
+        $chargeToken = json_decode(json_encode($charge), true);
+        $this->addStripeToken($chargeToken['id'], $id);
         return $this;
     }
 
@@ -159,17 +157,15 @@ class Web_Payment
         if($success)
         {
             header("location: $callback_url");
-//            echo "<script>
-//                    window.location.href = '$callback_url';
-//                </script>";
-//            $text = new Web_Notification();
-//            $sth = $this->db->query("SELECT * FROM users WHERE id=$this->freelancer_id");
-//            $row = $sth->fetch(PDO::FETCH_ASSOC);
-//            $text->sendNotification(1, "Here");
         }else{
             echo " Request Failure \n";
         }
         return $this;
+    }
+
+    public function addStripeToken(string $token , int $id)
+    {
+        $this->db->query("UPDATE marketplace_favr_requests SET task_stripe_token='$token' WHERE id=$id");
     }
 
     /**
@@ -192,6 +188,8 @@ class Web_Payment
         }
         return $this;
     }
+
+
 
 
 

@@ -85,15 +85,7 @@ $page->renderFavrProfile($_SESSION['user_info']['id']);
 echo "<a class='small' href='$page->root_path/home/friends/?navbar=active_home&nav_scroller=active_friends'>Go to friends</a>";
 $page->renderFavrProfileHistory($_SESSION['user_info']['id']);
 $page->addScript("
-<script>
-    window.addEventListener('load', function(){
-        var allimages= document.getElementsByTagName('img');
-        for (var i=0; i<allimages.length; i++) {
-            if (allimages[i].getAttribute('data-src')) {
-                allimages[i].setAttribute('src', allimages[i].getAttribute('data-src'));
-            }
-        }
-    }, false);    
+<script> 
     
 //    window.setInterval(function(){
 //      // call your function here

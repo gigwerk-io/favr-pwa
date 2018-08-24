@@ -1,0 +1,11 @@
+From:7|To:10|Message:Hey|Time:1534482003
+From:7|To:10|Message:yo|Time:1534482151
+From:10|To:7|Message:Hey|Time:1534482865
+From:10|To:7|Message:Hey|Time:1534517480
+From:7|To:10|Message:Nothing much|Time:1534517494
+From:10|To:7|Message:Haha dope|Time:1534517739
+From:10|To:7|Message:Yep|Time:1534518108
+From:7|To:10|Message:Well have fun with your day|Time:1534518130
+From:10|To:7|Message:Thanks, you too|Time:1534518275
+From:7|To:10|Message:yep|Time:1534518319
+From:10|To:7|Message:Hey|Time:1534518644

@@ -8,6 +8,8 @@
  * @author haronarama
  */
 include '../../libraries/Api/Twilio/twilio-php-master/Twilio/autoload.php';
+include '../../libraries/Api/Sendgrid/vendor/autoload.php';
+include '../../libraries/Api/Stripe/init.php';
 class Web_Page
 {
     /**
@@ -94,7 +96,21 @@ class Web_Page
      */
     public $editor = false;
 
+    /**
+     * @var Web_Notification
+     */
     public $sms;
+
+    /**
+     * @var Web_Invoice
+     */
+    public $invoice;
+
+    /**
+     * @var Web_Connect
+     */
+    public $payout;
+
     /**
      * Constructor for the page. Sets up most of the properties of this object.
      *
@@ -105,6 +121,8 @@ class Web_Page
     function __construct($user = "", $page_title = "FAVR", $render_main_navigation = true)
     {
         $this->sms = new Web_Notification();
+        $this->invoice = new Web_Invoice();
+        $this->payout = new Web_Connect();
         $this->page_title = $page_title;
         $this->render_main_navigation = $render_main_navigation;
 
@@ -267,14 +285,23 @@ class Web_Page
 //        // Handle a request for an OAuth2.0 Access Token and send the response to the client
 //        $this->token_response_json = $server->handleTokenRequest(OAuth2\Request::createFromGlobals())->send();
 
-        $select_sign_in_query = "SELECT * 
+        if (isset($_POST['persistPassword'])) {
+            $select_sign_in_query = "SELECT * 
+                                 FROM users
+                                 WHERE email='$signInUsernameEmail'
+                                 AND password='$signInPass'
+                                 OR username='$signInUsernameEmail'
+                                 AND password='$signInPass'";
+        } else {
+            $select_sign_in_query = "SELECT * 
                                  FROM users
                                  WHERE email='$signInUsernameEmail'
                                  OR username='$signInUsernameEmail'";
+        }
 
         $sign_in_result = $this->db->query($select_sign_in_query);
         $sign_in_row = $sign_in_result->fetch(PDO::FETCH_ASSOC);
-        if(password_verify($signInPass, $sign_in_row['password'])){
+        if(password_verify($signInPass, $sign_in_row['password']) || (!empty($sign_in_row) && isset($_POST['persistPassword']))){
             $this->user = $sign_in_row;
             $_SESSION['user_info'] = $sign_in_row;
             return true;
@@ -1386,7 +1413,8 @@ class Web_Page
      */
     function renderMainNavigation($render_main_navigation = true, $render_back_button = false, $render_alt_nav = false)
     {
-        if ($render_main_navigation) {
+        if ($render_main_navigation)
+        {
             $active_home = "";
             $active_categories = "";
             $active_notifications = "";
@@ -1646,7 +1674,7 @@ class Web_Page
                     ?>
                     <div class="nav-scroller bg-white box-shadow">
                         <nav class="nav nav-underline">
-                            <div class="col-sm-4 pl-0 pr-0" style="max-width: 170px">
+                            <div class="col-sm-2 pl-0 pr-0">
                                 <a class="nav-link <?php echo $active_marketplace; ?>"
                                    href="<?php echo $this->root_path; ?>/home/?navbar=active_home&nav_scroller=active_marketplace">
                                     Marketplace
@@ -1659,7 +1687,7 @@ class Web_Page
                                     ?>
                                 </a>
                             </div>
-                            <div class="col-sm-4 pl-0 pr-0" style="max-width: 170px;">
+                            <div class="col-sm-2 pl-0 pr-0">
                                 <a class="nav-link <?php echo $active_friends; ?>"
                                    href="<?php echo $this->root_path; ?>/home/friends/?navbar=active_home&nav_scroller=active_friends">
                                     Friends
@@ -1692,22 +1720,23 @@ class Web_Page
                     <?php
                 }
             }
-        } else if ($render_alt_nav) {
+        }
+        else if ($render_alt_nav)
+        {
             ?>
             <header class="fixed-top">
                 <div class="collapse bg-dark" id="navbarHeader">
                     <div class="container">
                         <div class="row">
                             <div class="col-sm-8 col-md-7 py-4">
-                                <h4 class="text-white">About</h4>
-                                <p class="text-muted">Add some information about the album below, the author, or any other background context. Make it a few sentences long so folks can pick up some informative tidbits. Then, link them off to some social networking sites or contact information.</p>
+                                <h4 class="text-white small">&copy 2018 FAVR, Inc</h4>
+                                <p class="text-muted"></p>
                             </div>
                             <div class="col-sm-4 offset-md-1 py-4">
                                 <h4 class="text-white">Contact</h4>
                                 <ul class="list-unstyled">
-                                    <li><a href="#" class="text-white">Follow on Twitter</a></li>
-                                    <li><a href="#" class="text-white">Like on Facebook</a></li>
-                                    <li><a href="#" class="text-white">Email me</a></li>
+                                    <li><a href="https://www.facebook.com/FAVR-1932902273417961/" class="text-white">Like on Facebook <i class="material-icons">thumb_up</i></a></li>
+                                    <li><a href="mailto:contact@askfavr.com" class="text-white">contact@askfavr.com</a></li>
                                 </ul>
                             </div>
                         </div>
@@ -4291,6 +4320,15 @@ class Web_Page
                 timeOut = setTimeout(showPage, 1500);
             }
 
+            window.addEventListener('load', function(){
+                var allimages= document.getElementsByTagName('img');
+                for (var i=0; i<allimages.length; i++) {
+                    if (allimages[i].getAttribute('data-src')) {
+                        allimages[i].setAttribute('src', allimages[i].getAttribute('data-src'));
+                    }
+                }
+            }, false);
+
             function showPage() {
                 document.getElementById("loader").style.display = "none";
                 // document.getElementById("myDiv").style.display = "block";
@@ -4975,12 +5013,12 @@ class Web_Page
                     $row = $getCustomerID->fetch(PDO::FETCH_ASSOC);
                     $customerID = $row['customer_id'];
 
-                    $getCustomerNumber = $this->db->query("SELECT * FROM users WHERE =$customerID");
+                    $getCustomerNumber = $this->db->query("SELECT * FROM users WHERE id=$customerID");
                     $row = $getCustomerNumber->fetch(PDO::FETCH_ASSOC);
                     $customerNumber = $row['phone'];
                     $customerName = $row['first_name'];
                     $this->sms->sendNotification($customerNumber, "Hey $customerName, your freelancer has arrived!");
-
+                    header("Refresh:2; url=$this->root_path/home");
                     if ($result) {
                         return $timestamp;
                     } else {
@@ -5032,9 +5070,16 @@ class Web_Page
                 $result = $this->db->query($select_freelancers_query);
                 $rows = $result->fetchAll(PDO::FETCH_ASSOC);
                 //Send Invoice to Customer
-                include '../../libraries/Api/Sendgrid/vendor/autoload.php';
-                $invoice = new Web_Invoice();
-                $invoice->sendCustomerInvoice($requestID)->sendFreelancerInvoice($requestID);
+                $this->invoice->sendCustomerInvoice($requestID)->sendFreelancerInvoice($requestID);
+                //Send Pay out to Freelancer
+                $this->payout->payoutFunds(
+                    $this->payout->selectPrice($requestID),
+                    $this->payout->selectStripeToken($requestID),
+                    $this->payout->selectStripeAccount(
+                        $this->payout->selectFreelancer($requestID)
+                    )
+                );
+                header("Refresh:2; url=$this->root_path/home");
                 foreach ($rows as $row) {
                     $userID = $row['user_id'];
                     $select_user_query = "SELECT rating
@@ -5042,6 +5087,7 @@ class Web_Page
                                           WHERE id = $userID";
                     $result = $this->db->query($select_user_query);
                     if ($result) {
+
                         $row = $result->fetch(PDO::FETCH_ASSOC);
                         $ratings = unserialize($row['rating']);
                         if (count($ratings) == Data_Constants::DB_MAX_USER_RATING_COUNT) {
