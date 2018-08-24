@@ -25,7 +25,8 @@ if(!is_null($connect->payment_id)) {
 } else{
     if(!isset($_GET['code']))
     {
-        echo "<script> window.location.href = 'https://connect.stripe.com/express/oauth/authorize?redirect_uri=htts://askfavr.com/favr-pwa/home/payments/&client_id=ca_C2CKbfLxpwpxjuTp9xdtuBcL5zSws9mN&state=true'; </script>";
+        $connect_site = Data_Constants::STRIPE_CONNECT;
+        echo "<script> window.location.href = '$connect_site'; </script>";
     }
     elseif(isset($_GET['code']))
     {
