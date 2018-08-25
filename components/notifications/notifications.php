@@ -18,4 +18,15 @@ if (isset($_SESSION['user_info'])) {
 }
 
 $page = new Web_Page($USER);
+$page->addScript("
+<!-- Global site tag (gtag.js) - Google Analytics -->
+<script async src=\"https://www.googletagmanager.com/gtag/js?id=UA-122971401-1\"></script>
+<script>
+  window.dataLayer = window.dataLayer || [];
+  function gtag(){dataLayer.push(arguments);}
+  gtag('js', new Date());
+
+  gtag('config', 'UA-122971401-1');
+</script>
+");
 $page->renderMainNotifications($_SESSION['user_info']);

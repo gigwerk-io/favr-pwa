@@ -21,8 +21,25 @@ if (isset($_SESSION['user_info'])) {
 }
 
 $page = new Web_Page($USER);
+$page->addScript("
+<!-- Global site tag (gtag.js) - Google Analytics -->
+<script async src=\"https://www.googletagmanager.com/gtag/js?id=UA-122971401-1\"></script>
+<script>
+  window.dataLayer = window.dataLayer || [];
+  function gtag(){dataLayer.push(arguments);}
+  gtag('js', new Date());
+
+  gtag('config', 'UA-122971401-1');
+</script>
+");
 $checkout = new Web_Payment();
-$checkout->select($_GET['task_id'])->checkOut($_GET['task_id'], $_GET['url']); //redirects to payment process
+if(!empty($_GET['task_id']) && !empty($_GET['url'])){
+    $checkout->select($_GET['task_id'])->checkOut($_GET['task_id'], $_GET['url']); //redirects to payment process
+}else{
+    echo "<script> window.location.href = '$connect_site'; </script>";
+}
+
+
 
 $page->addScript("
 <script>

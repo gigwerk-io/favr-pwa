@@ -17,6 +17,17 @@ if (isset($_SESSION['user'])) {
 
 $page = new Web_Page($USER);
 $page->setTitle("Welcome");
+$page->addScript("
+<!-- Global site tag (gtag.js) - Google Analytics -->
+<script async src=\"https://www.googletagmanager.com/gtag/js?id=UA-122971401-1\"></script>
+<script>
+  window.dataLayer = window.dataLayer || [];
+  function gtag(){dataLayer.push(arguments);}
+  gtag('js', new Date());
+
+  gtag('config', 'UA-122971401-1');
+</script>
+");
 $page->addStylesheet("<link href='$page->root_path/assets/css/favr-home.css' rel='stylesheet' />");
 $page->renderHeader(false, false, true);
 ?>
