@@ -501,9 +501,11 @@ class Web_Page
                   content="width=device-width, initial-scale=1.0, minimum-scale=1.0, maximum-scale=5.0, shrink-to-fit=yes, user-scalable=no"/>
             <meta name="HandheldFriendly" content="true"/>
             <meta name="description"
-                  content="Post job requests at your price and have access to verified freelancers for open tasks. Chat with friends and trade FAVRs.">
+                  content="Request On Demand Services Like Home Chores, Lawn Care, or Delivery Services At Your Own Set Price. Also Chat with friends and trade FAVRs.">
             <meta name="author"
-                  content="Solken Technoloy LLC: Solomon Antoione, Haron Arama, D'Angelo Tines, and Ken Nguyen">
+                  content="FAVR Inc. & Solken Technologies LLC">
+            <meta name="keywords"
+                  content="Home Chores, Lawn Care, Food Delivery, Grocery Delivery, Delivery Services, Mowing, Raking, Snow Removal, TaskRabbit, Handyman, Moving & Packing, Junk Removal, Rochester, FAVR, AskFAVR ">
             <meta name="theme-color" content="#343a40"/>
             <meta name="msapplication-TileColor" content="#da532c">
             <meta name="theme-color" content="#f5f5f5">

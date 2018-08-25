@@ -16,7 +16,7 @@ if (isset($_SESSION['user'])) {
 }
 
 $page = new Web_Page($USER);
-$page->setTitle("Welcome");
+$page->setTitle("FAVR | On Demand Services");
 $page->addStylesheet("<link href='$page->root_path/assets/css/favr-home.css' rel='stylesheet' />");
 $page->renderHeader(false, false, true);
 ?>

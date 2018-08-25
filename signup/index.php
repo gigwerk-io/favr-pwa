@@ -16,7 +16,7 @@ $USER = "guest";
 $ALERT_MESSAGE = "";
 
 $page = new Web_Page($USER);
-$page->setTitle("Sign Up");
+$page->setTitle("FAVR | Sign Up");
 $page->addStylesheet("<link rel='stylesheet' href='$page->root_path/assets/css/signin.css' />");
 $page->renderHeader(false);
 
