@@ -508,7 +508,16 @@ class Web_Page
                   content="Home Chores, Lawn Care, Food Delivery, Grocery Delivery, Delivery Services, Mowing, Raking, Snow Removal, TaskRabbit, Handyman, Moving & Packing, Junk Removal, Rochester, FAVR, AskFAVR ">
             <meta name="theme-color" content="#343a40"/>
             <meta name="msapplication-TileColor" content="#da532c">
-            <meta name="theme-color" content="#f5f5f5">
+            <meta name="theme-color"
+                  content="#f5f5f5">
+            <meta property="og:title"
+                  content="FAVR - On Demand Services"/>
+            <meta property="og:type" content="application"/>
+            <meta property="og:image"
+                  content="https://askfavr.com/favr-pwa/assets/brand/apple-touch-icon.png">
+            <meta property="og:description"
+                  content="Request On Demand Services Like Home Chores, Lawn Care, or Delivery Services At Your Own Set Price."/>
+            <meta property="og:url" content="https://askfavr.com/favr-pwa"/>
             <link rel="icon" href="<?php echo $this->root_path; ?>/assets/brand/favicon.ico">
 
             <title><?php echo $this->page_title; ?></title>
@@ -578,6 +587,25 @@ class Web_Page
                 gtag('js', new Date());
 
                 gtag('config', 'UA-122971401-1');
+            </script>
+            <span itemscope itemtype="http://schema.org/Organization">
+              <link itemprop="url" href="https://askfavr.com/favr-pwa/">
+              <a itemprop="sameAs" href="https://www.facebook.com/FAVR-1932902273417961/">FB</a>
+              <a itemprop="sameAs" href="https://www.instagram.com/askfavr/">Instagram</a>
+              <a itemprop="sameAs" href="https://www.linkedin.com/company/askfavr">LinkedIn</a>
+            </span>
+            <script type="application/ld+json">
+            {
+              "@context": "http://schema.org",
+              "@type": "Organization",
+              "url": "https://askfavr.com/favr-pwa/",
+              "logo": "https://askfavr.com/favr-pwa/assets/brand/apple-touch-icon.png",
+              "contactPoint": [{
+                "@type": "ContactPoint",
+                "telephone": "+1-507-440-7130",
+                "contactType": "technical support"
+              }]
+            }
             </script>
 
             <!-- Hotjar Tracking Code for askfavr.com -->
