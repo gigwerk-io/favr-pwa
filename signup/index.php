@@ -17,17 +17,6 @@ $ALERT_MESSAGE = "";
 
 $page = new Web_Page($USER);
 $page->setTitle("Sign Up");
-$page->addScript("
-<!-- Global site tag (gtag.js) - Google Analytics -->
-<script async src=\"https://www.googletagmanager.com/gtag/js?id=UA-122971401-1\"></script>
-<script>
-  window.dataLayer = window.dataLayer || [];
-  function gtag(){dataLayer.push(arguments);}
-  gtag('js', new Date());
-
-  gtag('config', 'UA-122971401-1');
-</script>
-");
 $page->addStylesheet("<link rel='stylesheet' href='$page->root_path/assets/css/signin.css' />");
 $page->renderHeader(false);
 

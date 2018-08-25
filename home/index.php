@@ -16,17 +16,6 @@ if (isset($_SESSION['navbar']) && $_SESSION['navbar'] != "active_home") {
 }
 
 $page = new Web_Page($USER);
-$page->addScript("
-<!-- Global site tag (gtag.js) - Google Analytics -->
-<script async src=\"https://www.googletagmanager.com/gtag/js?id=UA-122971401-1\"></script>
-<script>
-  window.dataLayer = window.dataLayer || [];
-  function gtag(){dataLayer.push(arguments);}
-  gtag('js', new Date());
-
-  gtag('config', 'UA-122971401-1');
-</script>
-");
 
 if (isset($_POST['requestFavr'])) {
     $successfulProcessToDB = $page->processFavrRequestToDB($_SESSION['user_info'], $_POST['requestDate'], $_POST['requestCategory'], $_POST['requestTaskDescription'], $_POST['requestPrice'], $_POST['requestFreelancerCount'], $_POST['requestStreetAddress'], $_POST['requestDifficulty'], $_FILES['requestPictures']);
