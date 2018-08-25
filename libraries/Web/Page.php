@@ -588,12 +588,12 @@ class Web_Page
 
                 gtag('config', 'UA-122971401-1');
             </script>
-            <span itemscope itemtype="http://schema.org/Organization">
-              <link itemprop="url" href="https://askfavr.com/favr-pwa/">
-              <a itemprop="sameAs" href="https://www.facebook.com/FAVR-1932902273417961/">FB</a>
-              <a itemprop="sameAs" href="https://www.instagram.com/askfavr/">Instagram</a>
-              <a itemprop="sameAs" href="https://www.linkedin.com/company/askfavr">LinkedIn</a>
-            </span>
+<!--            <span itemscope itemtype="http://schema.org/Organization">-->
+<!--              <link itemprop="url" href="https://askfavr.com/favr-pwa/">-->
+<!--              <a itemprop="sameAs" href="https://www.facebook.com/FAVR-1932902273417961/">FB</a>-->
+<!--              <a itemprop="sameAs" href="https://www.instagram.com/askfavr/">Instagram</a>-->
+<!--              <a itemprop="sameAs" href="https://www.linkedin.com/company/askfavr">LinkedIn</a>-->
+<!--            </span>-->
             <script type="application/ld+json">
             {
               "@context": "http://schema.org",
