@@ -567,6 +567,7 @@ class Web_Page
             <!-- Custom styles for this template -->
             <?php echo $this->stylesheet; ?>
             <link href="<?php echo $this->root_path; ?>/assets/css/main.css" rel="stylesheet">
+
             <!-- Global site tag (gtag.js) - Google Analytics -->
             <script async src="https://www.googletagmanager.com/gtag/js?id=UA-122971401-1"></script>
             <script>
@@ -576,6 +577,7 @@ class Web_Page
 
                 gtag('config', 'UA-122971401-1');
             </script>
+
             <!-- Hotjar Tracking Code for askfavr.com -->
             <script>
                 (function(h,o,t,j,a,r){
@@ -589,26 +591,24 @@ class Web_Page
             </script>
 
             <!-- Facebook Pixel Code -->
-                <script>
-                !function(f,b,e,v,n,t,s)
-                {if(f.fbq)return;n=f.fbq=function(){n.callMethod?
-                n.callMethod.apply(n,arguments):n.queue.push(arguments)};
-                if(!f._fbq)f._fbq=n;n.push=n;n.loaded=!0;n.version='2.0';
-                n.queue=[];t=b.createElement(e);t.async=!0;
-                t.src=v;s=b.getElementsByTagName(e)[0];
-                s.parentNode.insertBefore(t,s)}(window, document,'script',
-                'https://connect.facebook.net/en_US/fbevents.js');
-                fbq('init', '1650241185015256');
-                fbq('track', 'PageView');
-                </script>
-                <noscript>
-                    <img height="1" width="1" style="display:none"
-                    src="https://www.facebook.com/tr?id=1650241185015256&ev=PageView&noscript=1"/>
-                </noscript>
-                <!-- End Facebook Pixel Code -->
             <script>
+            !function(f,b,e,v,n,t,s)
+            {if(f.fbq)return;n=f.fbq=function(){n.callMethod?
+            n.callMethod.apply(n,arguments):n.queue.push(arguments)};
+            if(!f._fbq)f._fbq=n;n.push=n;n.loaded=!0;n.version='2.0';
+            n.queue=[];t=b.createElement(e);t.async=!0;
+            t.src=v;s=b.getElementsByTagName(e)[0];
+            s.parentNode.insertBefore(t,s)}(window, document,'script',
+            'https://connect.facebook.net/en_US/fbevents.js');
+            fbq('init', '1650241185015256');
+            fbq('track', 'PageView');
+            </script>
+            <noscript>
+                <img height="1" width="1" style="display:none"
+                src="https://www.facebook.com/tr?id=1650241185015256&ev=PageView&noscript=1"/>
+            </noscript>
+            <!-- End Facebook Pixel Code -->
         </head>
-
         <body class="bg-light" onload="pageLoader()">
         <div id="loader"></div>
         <?php
