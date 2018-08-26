@@ -21,15 +21,16 @@ $page->addStylesheet("<link rel='stylesheet' href='$page->root_path/assets/css/s
 $page->renderHeader(false);
 
 // Script to process user sign up
-if (isset($_POST['signUp'], $_POST['signUpUsername'], $_POST['signUpFirstName'], $_POST['signUpLastName'], $_POST['signUpEmail'], $_POST['signUpPass'], $_POST['signUpPassConfirm'])) {
+if (isset($_POST['signUp'], $_POST['signUpUsername'], $_POST['signUpFirstName'], $_POST['signUpLastName'], $_POST['signUpEmail'],  $_POST['signUpPhone'], $_POST['signUpPass'], $_POST['signUpPassConfirm'])) {
     $signUpUsername = $_POST['signUpUsername'];
     $signUpEmail = $_POST['signUpEmail'];
+    $signUpPhone = $_POST['signUpPhone'];
     $signUpFirstName = $_POST['signUpFirstName'];
     $signUpLastName = $_POST['signUpLastName'];
     $signUpPass = $_POST['signUpPass'];
     $signUpPassConfirm = $_POST['signUpPassConfirm'];
 
-    $signUpSuccessful = $page->signUpUser($signUpUsername, $signUpEmail, $signUpFirstName, $signUpLastName, $signUpPass, $signUpPassConfirm);
+    $signUpSuccessful = $page->signUpUser($signUpUsername, $signUpEmail, $signUpPhone, $signUpFirstName, $signUpLastName, $signUpPass, $signUpPassConfirm);
 
     if ($signUpSuccessful) {
         // successful sign up
@@ -76,6 +77,10 @@ echo $ALERT_MESSAGE;
                 <label for="inputEmail">Email address</label>
             </div>
             <div class="form-label-group">
+                <input type="tel" name="signUpPhone" id="inputPhone" class="form-control" placeholder="Phone Number" required="">
+                <label for="inputPhone">Phone Number</label>
+            </div>
+            <div class="form-label-group">
                 <input type="password" name="signUpPass" id="inputPassword" class="form-control" placeholder="Password" required="">
                 <label for="inputPassword">Password</label>
             </div>
@@ -94,37 +99,6 @@ echo $ALERT_MESSAGE;
         </form>
     </div>
 <?php
-$page->addScript("<!-- Hotjar Tracking Code for askfavr.com -->
-    <script>
-        (function(h,o,t,j,a,r){
-            h.hj=h.hj||function(){(h.hj.q=h.hj.q||[]).push(arguments)};
-            h._hjSettings={hjid:893054,hjsv:6};
-            a=o.getElementsByTagName('head')[0];
-            r=o.createElement('script');r.async=1;
-            r.src=t+h._hjSettings.hjid+j+h._hjSettings.hjsv;
-            a.appendChild(r);
-        })(window,document,'https://static.hotjar.com/c/hotjar-','.js?sv=');
-    </script>
-   
-    <!-- Facebook Pixel Code -->
-        <script>
-        !function(f,b,e,v,n,t,s)
-        {if(f.fbq)return;n=f.fbq=function(){n.callMethod?
-        n.callMethod.apply(n,arguments):n.queue.push(arguments)};
-        if(!f._fbq)f._fbq=n;n.push=n;n.loaded=!0;n.version='2.0';
-        n.queue=[];t=b.createElement(e);t.async=!0;
-        t.src=v;s=b.getElementsByTagName(e)[0];
-        s.parentNode.insertBefore(t,s)}(window, document,'script',
-        'https://connect.facebook.net/en_US/fbevents.js');
-        fbq('init', '1650241185015256');
-        fbq('track', 'PageView');
-        </script>
-        <noscript>
-            <img height=\"1\" width=\"1\" style=\"display:none\"
-            src=\"https://www.facebook.com/tr?id=1650241185015256&ev=PageView&noscript=1\"/>
-        </noscript>
-        <!-- End Facebook Pixel Code -->
-    <script>");
 $page->renderFooter();
 
 ?>

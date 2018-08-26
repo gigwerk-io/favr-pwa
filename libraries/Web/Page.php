@@ -325,7 +325,7 @@ class Web_Page
      *
      * @author haronarama
      */
-    function signUpUser($signUpUsername, $signUpEmail, $signUpFirstName, $signUpLastName, $signUpPass, $signUpPassConfirm)
+    function signUpUser($signUpUsername, $signUpEmail, $signUpPhone, $signUpFirstName, $signUpLastName, $signUpPass, $signUpPassConfirm)
     {
         if ($signUpPass != $signUpPassConfirm) {
             // error passwords don't match
@@ -338,13 +338,15 @@ class Web_Page
                                      password, 
                                      first_name, 
                                      last_name, 
-                                     email)
+                                     email,
+                                     phone)
                                  VALUES 
                                     ('$signUpUsername',
                                      '$signUpPassConfirm',
                                      '$signUpFirstName',
                                      '$signUpLastName',
-                                     '$signUpEmail'
+                                     '$signUpEmail',
+                                     '$signUpPhone'
                                      )
             ";
 
