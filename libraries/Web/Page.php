@@ -7,9 +7,11 @@
  *
  * @author haronarama
  */
+//error_reporting(E_ERROR);
 include '../../libraries/Api/Twilio/twilio-php-master/Twilio/autoload.php';
 include '../../libraries/Api/Sendgrid/vendor/autoload.php';
 include '../../libraries/Api/Stripe/init.php';
+
 class Web_Page
 {
     /**
@@ -4304,7 +4306,7 @@ class Web_Page
                     <div class="col-md-4 p-2 border-bottom border-gray">
                         <a href="<?php echo "$this->root_path/home/payments/"; ?>">
                             <?php
-                            if(!is_null($_SESSION['user_info']['payment_id'])) {
+                            if(!empty($_SESSION['user_info']['payment_id'])) {
                                 echo 'View Payments';
                             }else{
                                 echo 'Set up payments';
@@ -5307,23 +5309,24 @@ class Web_Page
      */
     function processFreelancerAcceptRequest($requestID, $freelancerID)
     {
-        if (isset($requestID, $freelancerID)) {
-            // freelancer has accepted
-            $select_request_query = "SELECT * 
+        if(!empty($_SESSION['user_info']['payment_id'])) {
+            if (isset($requestID, $freelancerID)) {
+                // freelancer has accepted
+                $select_request_query = "SELECT * 
                                      FROM marketplace_favr_requests
                                      WHERE id = $requestID";
-            $result = $this->db->query($select_request_query);
-            if ($result) {
-                $row = $result->fetch(PDO::FETCH_ASSOC);
-                $freelancer_accepted = $row['task_freelancer_accepted'];
-                $freelancer_count = $row['task_freelancer_count'];
-                $freelancer_id = $row['freelancer_id'];
-                $request_id = $row['id'];
-                $setTaskStatusPending = ""; // still need more freelancers
+                $result = $this->db->query($select_request_query);
+                if ($result) {
+                    $row = $result->fetch(PDO::FETCH_ASSOC);
+                    $freelancer_accepted = $row['task_freelancer_accepted'];
+                    $freelancer_count = $row['task_freelancer_count'];
+                    $freelancer_id = $row['freelancer_id'];
+                    $request_id = $row['id'];
+                    $setTaskStatusPending = ""; // still need more freelancers
 
-                // ensure there's not already enough freelancers signed up for this job
-                if ($freelancer_accepted < $freelancer_count) {
-                    $select_freelancers_query = "INSERT INTO marketplace_favr_freelancers
+                    // ensure there's not already enough freelancers signed up for this job
+                    if ($freelancer_accepted < $freelancer_count) {
+                        $select_freelancers_query = "INSERT INTO marketplace_favr_freelancers
                                                  (
                                                     request_id, 
                                                     user_id
@@ -5334,51 +5337,57 @@ class Web_Page
                                                     $freelancerID
                                                  )";
 
-                    $result = $this->db->query($select_freelancers_query);
-                    if ($result) {
-                        $freelancer_accepted += 1; // add user to freelancer queue
+                        $result = $this->db->query($select_freelancers_query);
+                        if ($result) {
+                            $freelancer_accepted += 1; // add user to freelancer queue
 
-                        $update_request_query = "UPDATE marketplace_favr_requests
+                            $update_request_query = "UPDATE marketplace_favr_requests
                                                  SET task_freelancer_accepted = $freelancer_accepted,
                                                      freelancer_id = $freelancerID
                                                  WHERE id = $request_id";
 
-                        $result = $this->db->query($update_request_query);
+                            $result = $this->db->query($update_request_query);
 //                        die(print_r($result));
-                        if (!$result) {
+                            if (!$result) {
+                                return false;
+                            }
+
+                        } else {
                             return false;
                         }
-
-                    } else {
-                        return false;
                     }
-                }
 
-                if ($freelancer_accepted == $freelancer_count) {
-                    $setTaskStatusPending = Data_Constants::DB_TASK_STATUS_PENDING_APPROVAL;
+                    if ($freelancer_accepted == $freelancer_count) {
+                        $setTaskStatusPending = Data_Constants::DB_TASK_STATUS_PENDING_APPROVAL;
 
-                    $update_request_query = "UPDATE marketplace_favr_requests
+                        $update_request_query = "UPDATE marketplace_favr_requests
                                              SET task_status = '$setTaskStatusPending'
                                              WHERE id = $request_id";
 
-                    $result = $this->db->query($update_request_query);
-                    if ($result) {
-                        return $freelancerID;
-                    } else {
+                        $result = $this->db->query($update_request_query);
+                        if ($result) {
+                            return $freelancerID;
+                        } else {
+                            return false;
+                        }
+                    }
+
+                    if ($freelancer_accepted > $freelancer_count) {
+                        // impossible
                         return false;
                     }
-                }
 
-                if ($freelancer_accepted > $freelancer_count) {
-                    // impossible
-                    return false;
+                    return $freelancerID;
                 }
-
-                return $freelancerID;
+            } else {
+                // not set
+                return false;
             }
-        } else {
-            // not set
-            return false;
+        }else{
+            echo "<script> 
+                    alert('You Have to Setup Your Payments Before Accepting A Job!'); 
+                    window.location.href = 'https://askfavr.com/favr-pwa/home/payments';
+                  </script>";
         }
     }
 
