@@ -5384,9 +5384,10 @@ class Web_Page
                 return false;
             }
         }else{
+            $connect_site = Data_Constants::STRIPE_CONNECT;
             echo "<script> 
                     alert('You Have to Setup Your Payments Before Accepting A Job!'); 
-                    window.location.href = 'https://askfavr.com/favr-pwa/home/payments';
+                    window.location.href = '$this->root_path/home/payments';
                   </script>";
         }
     }
