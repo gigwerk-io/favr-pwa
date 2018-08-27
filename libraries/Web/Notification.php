@@ -12,6 +12,7 @@ class Web_Notification
     /**
      * @param string $phone
      * @param string $message
+     * @return array
      * @throws \Twilio\Exceptions\ConfigurationException
      */
     public function sendNotification(string $phone, string $message)
@@ -21,12 +22,13 @@ class Web_Notification
         //send message to customer
         $client->messages->create(
             $phone,
-            array(
+            $arr = array(
                 //trial number
                 'from' => '+15074734314',
                 'body' => $message,
             )
         );
+        return $arr;
 //        header("location: http://localhost:1234/favr-pwa/components/notifications/?navbar=active_notifications");
     }
 

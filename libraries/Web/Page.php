@@ -4302,7 +4302,14 @@ class Web_Page
                 </div>
                 <div class="row pb-1 mb-0">
                     <div class="col-md-4 p-2 border-bottom border-gray">
-                        <a href="<?php echo "$this->root_path/home/payments/"; ?>">Set up payments
+                        <a href="<?php echo "$this->root_path/home/payments/"; ?>">
+                            <?php
+                            if(!is_null($_SESSION['user_info']['payment_id'])) {
+                                echo 'View Payments';
+                            }else{
+                                echo 'Set up payments';
+                            }
+                            ?>
                             <i class="mobile-footer float-right text-muted material-icons">chevron_right</i>
                         </a>
                     </div>
