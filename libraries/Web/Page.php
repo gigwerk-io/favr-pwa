@@ -5153,13 +5153,13 @@ class Web_Page
                 //Send Invoice to Customer
                 $this->invoice->sendCustomerInvoice($requestID)->sendFreelancerInvoice($requestID);
                 //Send Pay out to Freelancer
-                $this->payout->payoutFunds(
-                    $this->payout->selectPrice($requestID),
-                    $this->payout->selectStripeToken($requestID),
-                    $this->payout->selectStripeAccount(
-                        $this->payout->selectFreelancer($requestID)
-                    )
-                );
+//                $this->payout->payoutFunds(
+//                    $this->payout->selectPrice($requestID),
+//                    $this->payout->selectStripeToken($requestID),
+//                    $this->payout->selectStripeAccount(
+//                        $this->payout->selectFreelancer($requestID)
+//                    )
+//                );
                 header("Refresh:2; url=$this->root_path/home");
                 foreach ($rows as $row) {
                     $userID = $row['user_id'];
