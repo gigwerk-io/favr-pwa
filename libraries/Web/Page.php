@@ -7,7 +7,7 @@
  *
  * @author haronarama
  */
-error_reporting(E_ERROR);
+//error_reporting(E_ERROR);
 include '../../libraries/Api/Twilio/twilio-php-master/Twilio/autoload.php';
 include '../../libraries/Api/Sendgrid/vendor/autoload.php';
 include '../../libraries/Api/Stripe/init.php';
@@ -585,7 +585,6 @@ class Web_Page
 
             <!-- Global site tag (gtag.js) - Google Analytics -->
             <script async src="https://www.googletagmanager.com/gtag/js?id=UA-122971401-1"></script>
-            <script src="<?php echo $this->root_path . '/assets/js/chat.js'; ?>"></script>
             <script>
                 window.dataLayer = window.dataLayer || [];
                 function gtag(){dataLayer.push(arguments);}
@@ -644,7 +643,7 @@ class Web_Page
             </noscript>
             <!-- End Facebook Pixel Code -->
         </head>
-        <body class="bg-light" onload="ajax();">
+        <body class="bg-light" onload="pageLoader()">
         <div id="loader"></div>
         <?php
         $this->renderMainNavigation($render_top_nav, $render_back_button, $render_alt_nav);
