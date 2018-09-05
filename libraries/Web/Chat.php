@@ -7,7 +7,7 @@
  *
  * @author Solomon Antoine
  */
-date_default_timezone_set("America/Chicago");
+//date_default_timezone_set("America/Chicago");
 class Web_Chat
 {
 
