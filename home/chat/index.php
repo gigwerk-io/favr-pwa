@@ -50,7 +50,7 @@ if(isset($_POST['message'])){
                 echo "<div class=\"inbox_chat\">";
                 $chat->getChatList();
                 echo "</div>";
-                echo "<div id=\"status\">
+                echo "<div id=\"status\"> 
                 </div>";
                 ?>
             </div>
