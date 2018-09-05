@@ -22,6 +22,7 @@ class Web_Chat
      */
     private $dsn = Data_Constants::DB_DSN;
 
+    private $root_path;
     /**
      * Backend username
      * @var string
@@ -45,6 +46,7 @@ class Web_Chat
     function __construct() {
         $this->db = $this->connect();
         $this->id = $_SESSION['user_info']['id'];
+        $this->root_path = Data_Constants::ROOT_PATH;
     }
 
     private function connect()
@@ -70,12 +72,12 @@ class Web_Chat
      */
     private function displayList(int $id, string $name, string $date, string $message)
     {
-
+        $path = $this->getProfileImage($this->getRecipient($id, $this->id));
         echo "
                     <div class=\"chat_list\">
                         <a href='?chat_room=$id'>
                             <div class=\"chat_people\">
-                                <div class=\"chat_img\"><img src=\"https://ptetutorials.com/images/user-profile.png\"
+                                <div class=\"chat_img\"><img src=\"h$path\"
                                                            alt=\"sunil\"></div>
                                 <div class=\"chat_ib\">
                                     <h5>$name<span class=\"chat_date\">$date</span></h5>
@@ -125,12 +127,12 @@ class Web_Chat
      * @param string $message
      * @param string $date
      */
-    private function displayChat(int $sender_id,string $message, string $date)
+    private function displayChat(int $sender_id,string $message, string $date, string $img_path)
     {
         if($this->id == $sender_id){
             $this->outgoingMessage($message, $date);
         }else{
-            $this->incomingMessage($message, $date);
+            $this->incomingMessage($message, $date, $img_path);
         }
     }
 
@@ -142,11 +144,13 @@ class Web_Chat
     public function getAllMessages(int $id)
     {
         $query = $this->db->query("SELECT * FROM marketplace_favr_messages WHERE chat_room_id=$id");
+        $img_path = $this->getProfileImage($this->getRecipient($id, $this->id));
         while($messages = $query->fetch(PDO::FETCH_ASSOC)){
             $this->displayChat(
               $messages['sender_id'],
               $messages['message'],
-              $this->timeAgo($messages['created_at'])
+              $this->timeAgo($messages['created_at']),
+              $img_path
             );
         }
         return $this;
@@ -223,10 +227,10 @@ class Web_Chat
               </div>";
     }
 
-    private function incomingMessage(string $message, string $date)
+    private function incomingMessage(string $message, string $date, string $img_path)
     {
         echo "<div class=\"incoming_msg\">
-                <div class=\"incoming_msg_img\"><img src=\"https://ptetutorials.com/images/user-profile.png\"
+                <div class=\"incoming_msg_img\"><img src=\"$img_path\"
                                                alt=\"sunil\"></div>
                 <div class=\"received_msg\">
                     <div class=\"received_withd_msg\">
@@ -237,11 +241,25 @@ class Web_Chat
               </div>";
     }
 
-    public function messagePing()
+    private function messagePing()
     {
         echo "<embed loop='false' src='chat.wav' hidden='true' autoplay='true'/>";
     }
 
+    private function getProfileImage(int $user_id)
+    {
+
+        $query = $this->db->query("SELECT * FROM users WHERE id=$user_id");
+        $user = $query->fetch(PDO::FETCH_ASSOC);
+        $profile_img = unserialize($user['profile_picture_path']);
+        $profile_img_name = "";
+        $profile_img_type = "";
+        if (!empty($profile_img)) {
+            $profile_img_name = $profile_img['name'];
+            $profile_img_type = $profile_img['type'];
+        }
+        return "$this->root_path/image.php?i=$profile_img_name&i_t=$profile_img_type&i_p=true";
+    }
     /**
      * @param $time_ago
      * @return string

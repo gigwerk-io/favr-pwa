@@ -27,6 +27,7 @@ $page->renderHeader();
 
 if(isset($_POST['message'])){
     $chat->sendMessage($_GET['chat_room'], $_SESSION['user_info']['id'], $_POST['message']);
+    $_POST = array();
 }
 ?>
     <!--    <meta http-equiv="refresh" content="30"/>-->
