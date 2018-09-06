@@ -77,7 +77,7 @@ class Web_Chat
                     <div class=\"chat_list\">
                         <a href='?chat_room=$id'>
                             <div class=\"chat_people\">
-                                <div class=\"chat_img\"><img src=\"h$path\"
+                                <div class=\"chat_img\"><img src=\"$path\"
                                                            alt=\"sunil\"></div>
                                 <div class=\"chat_ib\">
                                     <h5>$name<span class=\"chat_date\">$date</span></h5>
