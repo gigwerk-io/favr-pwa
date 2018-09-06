@@ -77,7 +77,7 @@ class Web_Chat
                     <div class=\"chat_list\">
                         <a href='?chat_room=$id'>
                             <div class=\"chat_people\">
-                                <div class=\"chat_img\"><img src=\"h$path\"
+                                <div class=\"chat_img\"><img src=\"$path\"
                                                            alt=\"sunil\"></div>
                                 <div class=\"chat_ib\">
                                     <h5>$name<span class=\"chat_date\">$date</span></h5>
@@ -230,7 +230,7 @@ class Web_Chat
     private function incomingMessage(string $message, string $date, string $img_path)
     {
         echo "<div class=\"incoming_msg\">
-                <div class=\"incoming_msg_img\"><img src=\"$img_path\"
+                <div class=\"incoming_msg_img\"><img src=\"$img_path\" class='rounded-circle'
                                                alt=\"sunil\"></div>
                 <div class=\"received_msg\">
                     <div class=\"received_withd_msg\">
