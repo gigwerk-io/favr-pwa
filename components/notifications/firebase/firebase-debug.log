@@ -1,28 +1,29 @@
-[debug] [2018-09-07T01:18:26.462Z] ----------------------------------------------------------------------
-[debug] [2018-09-07T01:18:26.465Z] Command:       C:\Program Files\nodejs\node.exe C:\Users\Dell\AppData\Roaming\npm\node_modules\firebase-tools\bin\firebase serve -p 8081
-[debug] [2018-09-07T01:18:26.465Z] CLI Version:   4.2.1
-[debug] [2018-09-07T01:18:26.465Z] Platform:      win32
-[debug] [2018-09-07T01:18:26.465Z] Node Version:  v9.8.0
-[debug] [2018-09-07T01:18:26.466Z] Time:          Thu Sep 06 2018 20:18:26 GMT-0500 (Central Daylight Time)
-[debug] [2018-09-07T01:18:26.466Z] ----------------------------------------------------------------------
+[debug] [2018-09-07T12:35:54.310Z] ----------------------------------------------------------------------
+[debug] [2018-09-07T12:35:54.313Z] Command:       C:\Program Files\nodejs\node.exe C:\Users\Dell\AppData\Roaming\npm\node_modules\firebase-tools\bin\firebase serve -p 8081
+[debug] [2018-09-07T12:35:54.313Z] CLI Version:   4.2.1
+[debug] [2018-09-07T12:35:54.313Z] Platform:      win32
+[debug] [2018-09-07T12:35:54.313Z] Node Version:  v9.8.0
+[debug] [2018-09-07T12:35:54.314Z] Time:          Fri Sep 07 2018 07:35:54 GMT-0500 (Central Daylight Time)
+[debug] [2018-09-07T12:35:54.314Z] ----------------------------------------------------------------------
 [debug] 
-[debug] [2018-09-07T01:18:26.476Z] > command requires scopes: ["email","openid","https://www.googleapis.com/auth/cloudplatformprojects.readonly","https://www.googleapis.com/auth/firebase","https://www.googleapis.com/auth/cloud-platform"]
-[debug] [2018-09-07T01:18:26.477Z] > authorizing via signed-in user
-[debug] [2018-09-07T01:18:26.479Z] > refreshing access token with scopes: ["email","https://www.googleapis.com/auth/cloud-platform","https://www.googleapis.com/auth/cloudplatformprojects.readonly","https://www.googleapis.com/auth/firebase","openid"]
-[debug] [2018-09-07T01:18:26.479Z] >>> HTTP REQUEST POST https://www.googleapis.com/oauth2/v3/token  
+[debug] [2018-09-07T12:35:54.325Z] > command requires scopes: ["email","openid","https://www.googleapis.com/auth/cloudplatformprojects.readonly","https://www.googleapis.com/auth/firebase","https://www.googleapis.com/auth/cloud-platform"]
+[debug] [2018-09-07T12:35:54.325Z] > authorizing via signed-in user
+[debug] [2018-09-07T12:35:54.327Z] > refreshing access token with scopes: ["email","https://www.googleapis.com/auth/cloud-platform","https://www.googleapis.com/auth/cloudplatformprojects.readonly","https://www.googleapis.com/auth/firebase","openid"]
+[debug] [2018-09-07T12:35:54.327Z] >>> HTTP REQUEST POST https://www.googleapis.com/oauth2/v3/token  
 
-[debug] [2018-09-07T01:18:26.791Z] <<< HTTP RESPONSE 200
-[debug] [2018-09-07T01:18:26.800Z] >>> HTTP REQUEST GET https://admin.firebase.com/v1/projects/favr-pwa  
+[debug] [2018-09-07T12:35:54.602Z] <<< HTTP RESPONSE 200
+[debug] [2018-09-07T12:35:54.653Z] >>> HTTP REQUEST GET https://admin.firebase.com/v1/projects/favr-pwa  
  
-[debug] [2018-09-07T01:18:27.087Z] <<< HTTP RESPONSE 200
-[debug] [2018-09-07T01:18:27.091Z] >>> HTTP REQUEST GET https://cloudresourcemanager.googleapis.com/v1/projects/favr-pwa  
+[debug] [2018-09-07T12:35:55.034Z] <<< HTTP RESPONSE 200
+[debug] [2018-09-07T12:35:55.038Z] >>> HTTP REQUEST GET https://cloudresourcemanager.googleapis.com/v1/projects/favr-pwa  
  
-[debug] [2018-09-07T01:18:27.449Z] <<< HTTP RESPONSE 200
+[debug] [2018-09-07T12:35:55.385Z] <<< HTTP RESPONSE 200
 [info] 
-[info] === Serving from 'C:\xampp2\htdocs\quickstart-js-master\messaging'...
+[info] === Serving from 'C:\xampp2\htdocs\favr-pwa\components\notifications\firebase'...
 [info] 
-[debug] [2018-09-07T01:18:27.459Z] >>> HTTP REQUEST GET https://mobilesdk-pa.googleapis.com/v1/projects/402299697865/clients/_:getWebAppConfig  
+[debug] [2018-09-07T12:35:55.394Z] >>> HTTP REQUEST GET https://mobilesdk-pa.googleapis.com/v1/projects/402299697865/clients/_:getWebAppConfig  
  
-[debug] [2018-09-07T01:18:27.899Z] <<< HTTP RESPONSE 200
+[debug] [2018-09-07T12:35:55.754Z] <<< HTTP RESPONSE 200
+[warn] !  hosting: Port 8081 is not available. Trying another port...
 [info] i  hosting[favr-pwa]: Serving hosting files from: ./
-[info] +  hosting[favr-pwa]: Local server: http://localhost:8081
+[info] +  hosting[favr-pwa]: Local server: http://localhost:8086
