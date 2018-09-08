@@ -20,7 +20,7 @@ if (isset($image, $imageType)) {
 
     header("Content-Type: $imageType");
     if (!empty($image) && !empty($imageType) && $notImageProfile) {
-        readfile("../../favr-request-images/$image");
+        readfile("favr-request-images/$image");
     } else if (!empty($image) && !empty($imageType) && !$notImageProfile) {
         readfile("favr-profile-images/$image");
     } else {
