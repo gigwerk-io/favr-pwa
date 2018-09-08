@@ -25,7 +25,7 @@ class Data_Constants
     // image upload constants
     const MAXIMUM_IMAGE_UPLOAD_COUNT = 3;
     const MAXIMUM_IMAGE_UPLOAD_SIZE = 5242880; // 5 Mb
-    const IMAGE_UPLOAD_FILE_PATH = "/favr-request-images/";
+    const IMAGE_UPLOAD_FILE_PATH = "./../favr-request-images/";
     const IMAGE_UPLOAD_PROFILE_IMAGE_FILE_PATH = "../../favr-profile-images/";
 
     // database marketplace task status constants
