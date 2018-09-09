@@ -967,7 +967,11 @@ class Web_Page
                             } else if ($task_status == Data_Constants::DB_TASK_STATUS_IN_PROGRESS) {
                                 echo "<p class='mb-0 d-inline-flex'>In Progress(Freelancer)</p>";
                             } else if ($task_status == Data_Constants::DB_TASK_STATUS_COMPLETED) {
-                                echo "<p class='mb-0 d-inline-flex'>You Completed</p>";
+                                if ($freelancer_id == $_SESSION['user_info']['id']) {
+                                    echo "<p class='mb-0 d-inline-flex'>You Completed</p>";
+                                } else {
+                                    echo "<p class='mb-0 d-inline-flex'>They Completed</p>";
+                                }
                             }
                         } else if ($customer_id == $id) {
                             if ($task_status == Data_Constants::DB_TASK_STATUS_REQUESTED) {
