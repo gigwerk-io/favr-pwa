@@ -20,7 +20,7 @@ if (isset($_SESSION['user_info'])) {
 
 $page = new Web_Page($USER);
 $connect = new Web_Connect();
-if(!is_null($connect->payment_id)) {
+if(!empty($connect->payment_id)) {
         $connect->stripeLogin($connect->payment_id);
 } else{
     if(!isset($_GET['code']))

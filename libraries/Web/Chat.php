@@ -7,21 +7,22 @@
  *
  * @author Solomon Antoine
  */
-
+//date_default_timezone_set("America/Chicago");
 class Web_Chat
 {
 
     /**
      * @var PDO
      */
-    public $db;
+    private $db;
 
     /**
      * Data source name
      * @var string
      */
-    public $dsn = Data_Constants::DB_DSN;
+    private $dsn = Data_Constants::DB_DSN;
 
+    private $root_path;
     /**
      * Backend username
      * @var string
@@ -40,29 +41,15 @@ class Web_Chat
     public $id;
 
     /**
-     * @var int
-     */
-    public $freelancer_id;
-
-    /**
-     * @var int
-     */
-    public $customer_id;
-
-    /**
-     * @var string
-     */
-    public $message;
-
-    /**
      * Web_Chat constructor.
      */
     function __construct() {
         $this->db = $this->connect();
         $this->id = $_SESSION['user_info']['id'];
+        $this->root_path = Data_Constants::ROOT_PATH;
     }
 
-    function connect()
+    private function connect()
 
     {
         //Set up PDO connection
@@ -76,166 +63,274 @@ class Web_Chat
         }
     }
 
-//    /**
-//     * @param int $customer_id
-//     * @param int $freelancer_id
-//     * @return $this
-//     */
-//    public function createChat(int $customer_id, int $freelancer_id)
-//    {
-//        $message_file = "message_" . time() . ".txt";
-//        fopen("../../storage/$message_file", "x");
-//        $success = $this->db->query("INSERT INTO marketplace_favr_chat (message_file, customer_id, freelancer_id_1)
-//                                    VALUES ('$message_file', $customer_id, $freelancer_id)");
-//        if($success)
-//        {
-//            echo "<script>
-//                    alert('Chat Created.');
-//                    //window.location.href = 'TestPage.php?file=$message_file&customer=$customer_id&freelancer=$freelancer_id';
-//                </script> \n";
-//        }else{
-//            echo "Chat Unsuccessful \n";
-//        }
-//        return $this;
-//    }
-
     /**
-     * @return $this
+     * Chat List View
+     * @param int $id
+     * @param string $name
+     * @param string $date
+     * @param string $message
      */
-    public function listChat()
+    private function displayList(int $id, string $name, string $date, string $message)
     {
-        $sth = $this->db->query("SELECT * FROM marketplace_favr_chat WHERE customer_id=$this->id or freelancer_id_1=$this->id");
-        while($row = $sth->fetch(PDO::FETCH_ASSOC))
-        {
-            $this->freelancer_id = $row['freelancer_id_1'];
-            $this->customer_id = $row['customer_id'];
-            if($this->id == $this->customer_id)
-            {
-                $name = $this->getName($this->freelancer_id);
-            } else{
-                $name = $this->getName($this->customer_id);
-            }
-            if($this->id == $row['customer_id'])
-            {
-                $to = $row['freelancer_id_1'];
-            } else {
-                $to = $row['customer_id'];
-            }
-            $message = $row['message_file'];
-            //$date = date("Y-m-d H:i:s", $row['updated_at']);
-            $date = $row['updated_at'];
-            $new_date = date_format(new DateTime($date),"m/d/Y");
-            //echo "<a href='?file=$message'>" . $name . "</a>";
-            echo "
+        $path = $this->getProfileImage($this->getRecipient($id, $this->id));
+        echo "
                     <div class=\"chat_list\">
-                        <a href='?file=$message&to=$to'>
+                        <a href='?chat_room=$id'>
                             <div class=\"chat_people\">
-                                <div class=\"chat_img\"><img src=\"https://ptetutorials.com/images/user-profile.png\"
+                                <div class=\"chat_img\"><img src=\"$path\"
                                                            alt=\"sunil\"></div>
                                 <div class=\"chat_ib\">
-                                    <h5>$name<span class=\"chat_date\">$new_date</span></h5>
+                                    <h5>$name<span class=\"chat_date\">$date</span></h5>
+                                    <p>$message</p>
                                 </div>
                             </div>
                          </a>
                      </div>
                 ";
+    }
+
+    /**
+     * List Controller
+     * @return $this
+     */
+    public function getChatList()
+    {
+        $query = $this->db->query("SELECT * FROM marketplace_favr_chat_rooms WHERE customer_id=$this->id or freelancer_id=$this->id");
+        while($chat_room = $query->fetch(PDO::FETCH_ASSOC)) {
+            $data = $this->getLastMessage($chat_room['id']);
+            if ($this->id == $chat_room['customer_id']) {
+                $this->displayList(
+                    $chat_room['id'],
+                    $this->getUser(
+                        $chat_room['freelancer_id']
+                    ),
+                    $data['date'],
+                    $data['message']
+                );
+            } else {
+                $this->displayList(
+                    $chat_room['id'],
+                    $this->getUser(
+                        $chat_room['customer_id']
+                    ),
+                    $data['date'],
+                    $data['message']
+                );
+            }
         }
         return $this;
     }
 
     /**
-     * @param string $file
+     * Message View
+     * @param int $sender_id
+     * @param string $message
+     * @param string $date
+     */
+    private function displayChat(int $sender_id,string $message, string $date, string $img_path)
+    {
+        if($this->id == $sender_id){
+            $this->outgoingMessage($message, $date);
+        }else{
+            $this->incomingMessage($message, $date, $img_path);
+        }
+    }
+
+    /**
+     * Message Controller
+     * @param int $id
      * @return $this
      */
-    public function displayMessage(string $file)
+    public function getAllMessages(int $id)
     {
-        $sth = $this->db->query("SELECT * FROM marketplace_favr_chat WHERE message_file='$file'");
-        $row = $sth->fetch(PDO::FETCH_ASSOC);
-//        if($this->id = $row['customer_id'])
-//        {
-//            $from = $this->getName($row['customer_id']);
-//            $to = $this->getName($row['freelancer_id_1']);
-//        } else {
-//            $to = $this->getName($row['customer_id']);
-//            $from = $this->getName($row['freelancer_id_1']);
-//        }
-        //loop through shared file
-        $convo = file_get_contents("../../storage/$file");
-        $split = explode("\n", $convo);
-        $keys = array();
-        $values = array();
-        $this->message = array();
-        foreach ($split as $line)
-        {
-            $header = explode("|", $line);
-            foreach ($header as $meta)
-            {
-                $item = explode(":", $meta);
-                $keys[] = $item[0];
-                $values[] = $item[1];
-            }
-            $this->message = array_combine($keys, $values);
-            $text = $this->message['Message'];
-            $time = date('F j,g:i a', $this->message['Time']);
-            if($this->id != $this->message['From']){
-                echo "<div class=\"incoming_msg\">
-                        <div class=\"incoming_msg_img\"><img src=\"https://ptetutorials.com/images/user-profile.png\"
-                                                           alt=\"sunil\"></div>
-                        <div class=\"received_msg\">
-                            <div class=\"received_withd_msg\">
-                                <p>$text</p>
-                                <span class=\"time_date\"> $time</span></div>
-                        </div>
-                  </div>";
-                echo "<script>
-                        function refreshPageUnlessFocusedOn (el) {
-                
-                            setInterval(function () {
-                                if(el !== document.activeElement) {
-                                    document.location.reload();
-                                }
-                            }, 12500)
-                
-                        }
-                
-                        refreshPageUnlessFocusedOn(document.querySelector('textarea'));
-                    </script>";
-            } else {
-                echo "<div class=\"outgoing_msg\" id='incoming'>
-                        <div class=\"sent_msg\">
-                            <p>$text</p>
-                            <span class=\"time_date\"> $time</span></div>
-                    </div>";
-            }
-
+        $query = $this->db->query("SELECT * FROM marketplace_favr_messages WHERE chat_room_id=$id");
+        $img_path = $this->getProfileImage($this->getRecipient($id, $this->id));
+        while($messages = $query->fetch(PDO::FETCH_ASSOC)){
+            $this->displayChat(
+              $messages['sender_id'],
+              $messages['message'],
+              $this->timeAgo($messages['created_at']),
+              $img_path
+            );
         }
         return $this;
+    }
+
+    private function verifyUser(int $chat_room)
+    {
 
     }
 
+    public function sendMessage(int $chat_room, int $sender_id, string $message)
+    {
+        $recipient_id = $this->getRecipient($chat_room, $sender_id);
+        $insert_sign_up_query = $this->db->query("INSERT INTO marketplace_favr_messages
+                                    (chat_room_id,
+                                     sender_id, 
+                                     recipient_id, 
+                                     message)
+                                 VALUES 
+                                    ($chat_room,
+                                     $sender_id,
+                                     $recipient_id,
+                                     '$message'
+                                     )
+            ");
+        if($insert_sign_up_query){
+            $this->messagePing();
+        }
+    }
+
+    private function getRecipient(int $chat_room, int $user_id)
+    {
+        $query = $this->db->query("SELECT * FROM marketplace_favr_chat_rooms WHERE id=$chat_room");
+        $result = $query->fetch(PDO::FETCH_ASSOC);
+        if($user_id == $result['freelancer_id']){
+            return $result['customer_id'];
+        }else{
+            return $result['freelancer_id'];
+        }
+    }
     /**
      * @param int $id
      * @return string
      */
-    public function getName(int $id)
+    private function getUser(int $id)
     {
-        $sth = $this->db->query("SELECT * FROM users WHERE id=$id");
-        $row = $sth->fetch(PDO::FETCH_ASSOC);
-        $name = $row['first_name'] . " " . $row['last_name'];
-        return $name;
+        $query = $this->db->query("SELECT * FROM users WHERE id=$id");
+        $user = $query->fetch(PDO::FETCH_ASSOC);
+        return $user['first_name'] . ' ' . $user['last_name'];
     }
 
-    public function updateMessage(array $message)
+    /**
+     * @param int $chat_id
+     * @return array
+     */
+    private function getLastMessage(int $chat_id)
     {
-        $to = $message['To'];
-        $text = $message['Text'];
-        $text = str_replace(array("\r\n","\r","\n"),"<br/>", $text);
-        $time = $message['Time'];
-        $file = fopen("../../storage/" . $message['File'], "a");
-        $data = "\nFrom:$this->id|To:$to|Message:$text|Time:$time";
-        fwrite($file, "$data");
-        fclose($file);
-        $location = $message['File'];
-        echo "<script> window.location.href = 'https://askfavr.com/favr-pwa/home/chat/?file=$location&to=$to'; </script>";
+        $query = $this->db->query("SELECT * FROM marketplace_favr_messages WHERE chat_room_id=$chat_id ORDER BY created_at DESC");
+        $details = $query->fetch(PDO::FETCH_ASSOC);
+        return [
+            'message' => $details['message'],
+            'date' => $this->timeAgo($details['created_at'])
+        ];
+    }
+
+
+    private function outgoingMessage(string $message, string $date)
+    {
+        echo "<div class=\"outgoing_msg\" id='incoming'>
+                    <div class=\"sent_msg\">
+                        <p>$message</p>
+                        <span class=\"time_date\"> $date</span>
+                    </div>
+              </div>";
+    }
+
+    private function incomingMessage(string $message, string $date, string $img_path)
+    {
+        echo "<div class=\"incoming_msg\">
+                <div class=\"incoming_msg_img\"><img src=\"$img_path\" class='rounded-circle'
+                                               alt=\"sunil\"></div>
+                <div class=\"received_msg\">
+                    <div class=\"received_withd_msg\">
+                        <p>$message</p>
+                        <span class=\"time_date\"> $date</span>
+                    </div>
+                </div>
+              </div>";
+    }
+
+    private function messagePing()
+    {
+        echo "<embed loop='false' src='chat.wav' hidden='true' autoplay='true'/>";
+    }
+
+    private function getProfileImage(int $user_id)
+    {
+
+        $query = $this->db->query("SELECT * FROM users WHERE id=$user_id");
+        $user = $query->fetch(PDO::FETCH_ASSOC);
+        $profile_img = unserialize($user['profile_picture_path']);
+        $profile_img_name = "";
+        $profile_img_type = "";
+        if (!empty($profile_img)) {
+            $profile_img_name = $profile_img['name'];
+            $profile_img_type = $profile_img['type'];
+        }
+        return "$this->root_path/image.php?i=$profile_img_name&i_t=$profile_img_type&i_p=true";
+    }
+    /**
+     * @param $time_ago
+     * @return string
+     */
+    private function timeAgo($time_ago)
+    {
+        $time_ago = strtotime($time_ago);
+        $cur_time = time();
+        $time_elapsed = $cur_time - $time_ago;
+        $seconds = $time_elapsed;
+        $minutes = round($time_elapsed / 60);
+        $hours = round($time_elapsed / 3600);
+        $days = round($time_elapsed / 86400);
+        $weeks = round($time_elapsed / 604800);
+        $months = round($time_elapsed / 2600640);
+        $years = round($time_elapsed / 31207680);
+        // Seconds
+        if ($seconds <= 60) {
+            return "just now";
+        } //Minutes
+        else {
+            if ($minutes <= 60) {
+                if ($minutes == 1) {
+                    return "one minute ago";
+                } else {
+                    return "$minutes minutes ago";
+                }
+            } //Hours
+            else {
+                if ($hours <= 24) {
+                    if ($hours == 1) {
+                        return "an hour ago";
+                    } else {
+                        return "$hours hrs ago";
+                    }
+                } //Days
+                else {
+                    if ($days <= 7) {
+                        if ($days == 1) {
+                            return "yesterday";
+                        } else {
+                            return "$days days ago";
+                        }
+                    } //Weeks
+                    else {
+                        if ($weeks <= 4.3) {
+                            if ($weeks == 1) {
+                                return "a week ago";
+                            } else {
+                                return "$weeks weeks ago";
+                            }
+                        } //Months
+                        else {
+                            if ($months <= 12) {
+                                if ($months == 1) {
+                                    return "a month ago";
+                                } else {
+                                    return "$months months ago";
+                                }
+                            } //Years
+                            else {
+                                if ($years == 1) {
+                                    return "one year ago";
+                                } else {
+                                    return "$years years ago";
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        }
     }
 }

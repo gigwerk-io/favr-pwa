@@ -25,7 +25,7 @@ class Data_Constants
     // image upload constants
     const MAXIMUM_IMAGE_UPLOAD_COUNT = 3;
     const MAXIMUM_IMAGE_UPLOAD_SIZE = 5242880; // 5 Mb
-    const IMAGE_UPLOAD_FILE_PATH = "/favr-request-images/";
+    const IMAGE_UPLOAD_FILE_PATH = "./../favr-request-images/";
     const IMAGE_UPLOAD_PROFILE_IMAGE_FILE_PATH = "../../favr-profile-images/";
 
     // database marketplace task status constants
@@ -62,8 +62,8 @@ class Data_Constants
     const DB_SCOPE_PRIVATE = "Private";
 
     //Stipe API
-    const STRIPE_PUBLIC = 'pk_live_YAI3p9uIkvjj6fRIs8sWxBXH';
-    const STRIPE_SECRET = 'sk_live_V2p1RJtZWKRenGgFidXZ0Zil';
+    const STRIPE_PUBLIC = 'pk_test_WRhN4BKmkqctL2nrjCPJCTXi'; //ipk_live_YAI3p9uIkvjj6fRIs8sWxBXH
+    const STRIPE_SECRET = 'sk_test_AfPrHBd85yRDmJmdW4uK3a9Y'; //sk_live_V2p1RJtZWKRenGgFidXZ0Zil
     const STRIPE_CONNECT = 'https://connect.stripe.com/express/oauth/authorize?redirect_uri=https://askfavr.com/favr-pwa/home/payments/&client_id=ca_C2CK5GZpN8ODaBRV1pKZCnA2yTEMjKsu&state=true';
 
     //Twilio
