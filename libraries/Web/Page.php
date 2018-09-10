@@ -1607,7 +1607,7 @@ class Web_Page
 
                 <button class="profile-button small border-0 mr-0 pr-0" style="left: .1rem;padding-bottom: .569rem;" type="button">
                     <a href='<?php echo "$this->root_path/home/chat/?navbar=active_home&nav_scroller=active_chat"; ?>'>
-                        <div class="material-icons pt-2 text-light">chat</div>
+                        <div class="material-icons text-light">chat</div>
                     </a>
                 </button>
 
