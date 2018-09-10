@@ -1203,10 +1203,10 @@ class Web_Page
             }
             ?>
             <div class="p-3 pb-0 rounded bg-white box-shadow" style="margin-top: 3rem;">
-                <div class="row pb-2 mb-0">
+                <div class="row pb-0 mb-0">
                     <div class="col-md-4">
                     </div>
-                    <div class="col-md-4 text-center border-bottom border-gray">
+                    <div class="col-md-4 text-center">
                         <?php
                             echo " <div id='$id-profile-image' style='height: 4.5rem'>
                                         <img id='$id-profile-img' style='cursor: pointer;bottom: 3.5rem;width: 7rem!important;height: 7rem!important;position: relative;' 
@@ -1265,26 +1265,32 @@ class Web_Page
                                   </form>
                                 </div>";
                         ?>
-                        <h3>
+                    </div>
+                    <div class="col-md-4">
+                    </div>
+                </div>
+                <div class="row pb-2 mb-0">
+                    <div class="col-md-2"></div>
+                    <div class="col-md-8 text-center border-bottom border-gray">
+                        <h3 style="width: 100%">
                             <?php
-                                echo $userInfo['first_name'] . " " . $userInfo['last_name'];
+                            echo $userInfo['first_name'] . " " . $userInfo['last_name'];
 
-                                if ($userInfo['class'] == Data_Constants::DB_USER_CLASS_VERIFIED) {
-                                    echo "<i class=\"material-icons text-primary\">verified_user</i>";
-                                }
+                            if ($userInfo['class'] == Data_Constants::DB_USER_CLASS_VERIFIED) {
+                                echo "<i class=\"material-icons text-primary\">check_circle</i>";
+                            }
                             ?>
                         </h3>
-                    <?php
+                        <?php
                         $ratings = unserialize($userInfo['rating']);
                         if ($userInfo['display_ratings'] == 1) {
                             $this->renderFavrProfileRating($ratings);
                         } else {
                             echo "<a href='$this->root_path/components/settings/?navbar=active_settings'>Turn on ratings in settings to view</a>";
                         }
-                    ?>
+                        ?>
                     </div>
-                    <div class="col-md-4">
-                    </div>
+                    <div class="col-md-2"></div>
                 </div>
                 <div class="pb-2 mb-0">
                     <p class="mr-3 text-center">
@@ -1324,10 +1330,10 @@ class Web_Page
 //            echo "</pre>";
             ?>
             <div class="p-3 pb-0 rounded bg-white box-shadow" style="margin-top: 3rem;">
-                <div class="row pb-2 mb-0">
+                <div class="row pb-0 mb-0">
                     <div class="col-md-4">
                     </div>
-                    <div class="col-md-4 text-center border-bottom border-gray">
+                    <div class="col-md-4 text-center">
                         <?php
                         echo " <div id='$id-profile-image' style='height: 4.5rem;'>
                                         <img id='$id-profile-img' style='cursor: pointer;bottom: 3.5rem;width: 7rem!important;height: 7rem!important;position: relative;' 
@@ -1434,12 +1440,18 @@ class Web_Page
                         }
 
                         ?>
-                        <h3>
+                    </div>
+                    <div class="col-md-4"></div>
+                </div>
+                <div class="row pb-2 mb-0">
+                    <div class="col-md-2"></div>
+                    <div class="col-md-8 text-center border-bottom border-gray">
+                        <h3 style="width: 100%">
                             <?php
                             echo $userInfo['first_name'] . " " . $userInfo['last_name'];
 
                             if ($userInfo['class'] == Data_Constants::DB_USER_CLASS_VERIFIED) {
-                                echo "<i class=\"material-icons text-primary\">verified_user</i>";
+                                echo "<i class=\"material-icons text-primary\">check_circle</i>";
                             }
                             ?>
                         </h3>
@@ -1453,8 +1465,7 @@ class Web_Page
 
                         ?>
                     </div>
-                    <div class="col-md-4">
-                    </div>
+                    <div class="col-md-2"></div>
                 </div>
                 <div class="pb-2 mb-0">
                     <p class="mr-3 text-center">
@@ -1594,44 +1605,50 @@ class Web_Page
                     ?>
                 </div>
 
-
-                    <?php
-                    $userInfo = $this->getUserInfo($_SESSION['user_info']['id']);
-                    $profile_image = unserialize($userInfo['profile_picture_path']);
-
-                    if (isset($profile_image['name'], $profile_image['type'])) {
-                        $profile_img_name = $profile_image['name'];
-                        $profile_img_type = $profile_image['type'];
-                        ?>
-                        <button class="profile-button border-0 mr-0 pr-0" style="left: .1rem;padding-bottom: .569rem;" type="button">
-                            <a href='<?php echo "$this->root_path/components/profile/?navbar=active_profile"; ?>'>
-                                <img src='data:image/svg+xml;charset=UTF-8,%3Csvg%20width%3D%22128%22%20height%3D%22128%22%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20viewBox%3D%220%200%20128%20128%22%20preserveAspectRatio%3D%22none%22%3E%3Cdefs%3E%3Cstyle%20type%3D%22text%2Fcss%22%3E%23holder_164a9f2d749%20text%20%7B%20fill%3A%23007bff%3Bfont-weight%3Abold%3Bfont-family%3AArial%2C%20Helvetica%2C%20Open%20Sans%2C%20sans-serif%2C%20monospace%3Bfont-size%3A6pt%20%7D%20%3C%2Fstyle%3E%3C%2Fdefs%3E%3Cg%20id%3D%22holder_164a9f2d749%22%3E%3Crect%20width%3D%22128%22%20height%3D%22128%22%20fill%3D%22%23007bff%22%3E%3C%2Frect%3E%3Cg%3E%3Ctext%20x%3D%2248.4296875%22%20y%3D%2266.7%22%3E128x128%3C%2Ftext%3E%3C%2Fg%3E%3C%2Fg%3E%3C%2Fsvg%3E'
-                                     data-src='<?php echo "$this->root_path/image.php?i=$profile_img_name&i_t=$profile_img_type&i_p=true"; ?>' height='26' width='26' alt='Profile Image'
-                                     style="border: 1px solid red;border-radius: 1rem;">
-                            </a>
-                        </button>
-                        <?php
-                    } else {
-                        if ($_SESSION['navbar'] == "active_profile") {
-                            echo "
-                                <button class=\"profile-button border-0 pb-1 mr-0 pr-0\" style=\"left: .1rem;\" type=\"button\">
-                                    <i class=\"material-icons\" style=\"color: red;border: 1px solid;border-radius: 1rem;\">person</i>
-                                </button>
-                            ";
-                        } else {
-                            echo "
-                                <button class=\"profile-button border-0 pb-1 mr-0 pr-0\" style=\"left: .1rem;\" type=\"button\">
-                                  <a href='$this->root_path/components/profile/?navbar=active_profile'>
-                                     <i class=\"material-icons\" style=\"color: red;border: 1px solid;border-radius: 1rem;\">person_outline</i>
-                                  </a>
-                                </button>";
-                        }
-                    }
-                    ?>
+                <button class="profile-button small border-0 mr-0 pr-0" style="left: .1rem;padding-bottom: .569rem;" type="button">
+                    <a href='<?php echo "$this->root_path/home/chat/?navbar=active_home&nav_scroller=active_chat"; ?>'>
+                        <div class="material-icons pt-2 text-light">chat</div>
+                    </a>
+                </button>
 
 
                 <div class="navbar-collapse offcanvas-collapse" id="navbarsExampleDefault">
                     <ul class="navbar-nav mr-auto">
+                        <li class="mobile-footer nav-item text-center border-bottom pt-3 pb-3 <?php echo $active_profile; ?>">
+                            <?php
+                            $userInfo = $this->getUserInfo($_SESSION['user_info']['id']);
+                            $profile_image = unserialize($userInfo['profile_picture_path']);
+
+                            if (isset($profile_image['name'], $profile_image['type'])) {
+                                $profile_img_name = $profile_image['name'];
+                                $profile_img_type = $profile_image['type'];
+                                ?>
+                                <button class="profile-button border-0 pl-0 mr-0 pr-0" style="left: .1rem;padding-bottom: .569rem;" type="button">
+                                    <a href='<?php echo "$this->root_path/components/profile/?navbar=active_profile"; ?>'>
+                                        <img src='data:image/svg+xml;charset=UTF-8,%3Csvg%20width%3D%22128%22%20height%3D%22128%22%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20viewBox%3D%220%200%20128%20128%22%20preserveAspectRatio%3D%22none%22%3E%3Cdefs%3E%3Cstyle%20type%3D%22text%2Fcss%22%3E%23holder_164a9f2d749%20text%20%7B%20fill%3A%23007bff%3Bfont-weight%3Abold%3Bfont-family%3AArial%2C%20Helvetica%2C%20Open%20Sans%2C%20sans-serif%2C%20monospace%3Bfont-size%3A6pt%20%7D%20%3C%2Fstyle%3E%3C%2Fdefs%3E%3Cg%20id%3D%22holder_164a9f2d749%22%3E%3Crect%20width%3D%22128%22%20height%3D%22128%22%20fill%3D%22%23007bff%22%3E%3C%2Frect%3E%3Cg%3E%3Ctext%20x%3D%2248.4296875%22%20y%3D%2266.7%22%3E128x128%3C%2Ftext%3E%3C%2Fg%3E%3C%2Fg%3E%3C%2Fsvg%3E'
+                                             data-src='<?php echo "$this->root_path/image.php?i=$profile_img_name&i_t=$profile_img_type&i_p=true"; ?>' height='80' width='80' alt='Profile Image'
+                                             style="border: 1px solid red;border-radius: 9rem;">
+                                    </a>
+                                </button>
+                                <?php
+                                echo "<h5 class='text-light'>". $userInfo['first_name'] . " " . $userInfo['last_name'] . "</h5>";
+                                echo "<p class='text-muted'>@". $userInfo['username'] ."</p>";
+                            } else {
+                                ?>
+                                <button class="profile-button border-0 pl-0 mr-0 pr-0" style="left: .1rem;padding-bottom: .569rem;" type="button">
+                                    <a href='<?php echo "$this->root_path/components/profile/?navbar=active_profile"; ?>'>
+                                        <img src='data:image/svg+xml;charset=UTF-8,%3Csvg%20width%3D%22128%22%20height%3D%22128%22%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20viewBox%3D%220%200%20128%20128%22%20preserveAspectRatio%3D%22none%22%3E%3Cdefs%3E%3Cstyle%20type%3D%22text%2Fcss%22%3E%23holder_164a9f2d749%20text%20%7B%20fill%3A%23007bff%3Bfont-weight%3Abold%3Bfont-family%3AArial%2C%20Helvetica%2C%20Open%20Sans%2C%20sans-serif%2C%20monospace%3Bfont-size%3A6pt%20%7D%20%3C%2Fstyle%3E%3C%2Fdefs%3E%3Cg%20id%3D%22holder_164a9f2d749%22%3E%3Crect%20width%3D%22128%22%20height%3D%22128%22%20fill%3D%22%23007bff%22%3E%3C%2Frect%3E%3Cg%3E%3Ctext%20x%3D%2248.4296875%22%20y%3D%2266.7%22%3E128x128%3C%2Ftext%3E%3C%2Fg%3E%3C%2Fg%3E%3C%2Fsvg%3E'
+                                             data-src='<?php echo "$this->root_path/image.php?i=&i_t=&i_p=true"; ?>' height='80' width='80' alt='Profile Image'
+                                             style="border: 1px solid red;border-radius: 9rem;">
+                                    </a>
+                                </button>
+                                <?php
+                                echo "<h5 class='text-light'>". $userInfo['first_name'] . " " . $userInfo['last_name'] . "</h5>";
+                                echo "<p class='text-muted'>@". $userInfo['username'] ."</p>";
+                            }
+                            ?>
+
+                        </li>
                         <li class="nav-item <?php echo $active_home; ?>">
                             <a class="nav-link d-inline-flex" href="<?php echo $this->root_path; ?>/home/?navbar=active_home&nav_scroller=active_marketplace">
                                 <i class="material-icons">home</i>
@@ -1664,7 +1681,7 @@ class Web_Page
                                 ?>
                             </a>
                         </li>
-                        <li class="nav-item <?php echo $active_profile; ?>">
+                        <li class="request-favr-web nav-item <?php echo $active_profile; ?>">
                             <a class="nav-link d-inline-flex" href="<?php echo $this->root_path; ?>/components/profile/?navbar=active_profile">
                                 <?php
                                 if (!empty($active_profile)) {
@@ -1778,19 +1795,19 @@ class Web_Page
                                     ?>
                                 </a>
                             </div>
-<!--                            <div class="col-sm-4 request-favr-web pl-0 pr-0" style="max-width: 170px;">-->
-<!--                                <a class="nav-link --><?php //echo $active_chat; ?><!--"-->
-<!--                                   href="--><?php //echo $this->root_path; ?><!--/home/chat/?navbar=active_home&nav_scroller=active_chat">-->
-<!--                                    Chat-->
-<!--                                    --><?php
-//                                    if ($active_chat) {
-//                                        echo "<i class=\"material-icons\" style='color: var(--red);font-size: 15px; padding-left: 2px;position:relative;top:.1rem;'>chat</i>";
-//                                    } else {
-//                                        echo "<i class=\"material-icons\" style='font-size: 15px; padding-left: 2px;position:relative;top:.1rem;'>chat</i>";
-//                                    }
-//                                    ?>
-<!--                                </a>-->
-<!--                            </div>-->
+                            <div class="col-sm-2 request-favr-web pl-0 pr-0">
+                                <a class="nav-link <?php echo $active_chat; ?>"
+                                   href="<?php echo $this->root_path; ?>/home/chat/?navbar=active_home&nav_scroller=active_chat">
+                                    Chat
+                                    <?php
+                                    if ($active_chat) {
+                                        echo "<i class=\"material-icons\" style='color: var(--red);font-size: 15px; padding-left: 2px;position:relative;top:.1rem;'>chat</i>";
+                                    } else {
+                                        echo "<i class=\"material-icons\" style='font-size: 15px; padding-left: 2px;position:relative;top:.1rem;'>chat</i>";
+                                    }
+                                    ?>
+                                </a>
+                            </div>
                             <!--                    <a id="suggestions" onclick="focusNoScrollMethod()" class="nav-link -->
                             <?php //echo  $active_suggestions; ?><!--" href="?nav_scroller=active_suggestions">Suggestions</a>-->
                         </nav>

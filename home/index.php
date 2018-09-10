@@ -45,7 +45,7 @@ if (isset($_GET['ALERT_MESSAGE'])) {
         ";
 }
 
-$page->setTitle("FAVR | Marketplace");
+$page->setTitle("Marketplace");
 $page->renderHeader();
 
 echo $ALERT_MESSAGE;

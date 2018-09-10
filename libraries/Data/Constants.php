@@ -12,7 +12,7 @@
 class Data_Constants
 {
     // Product version
-    const PRODUCT_VERSION = "0.1.1";
+    const PRODUCT_VERSION = "0.1.2";
 
     // database connection constants
     const DB_DSN = "mysql:dbname=favr_pwa_schema;host=favr.cgfeyejwt7qv.us-east-2.rds.amazonaws.com";
