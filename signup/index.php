@@ -29,15 +29,21 @@ if (isset($_POST['signUp'], $_POST['signUpUsername'], $_POST['signUpFirstName'],
     $signUpLastName = $_POST['signUpLastName'];
     $signUpPass = $_POST['signUpPass'];
     $signUpPassConfirm = $_POST['signUpPassConfirm'];
+    if(isset($_GET['src'])){
+        $signUpSource = $page->encrypt_decrypt('decrypt', $_GET['src']);
+    } else{
+        $signUpSource = null;
+    }
 
-    $signUpSuccessful = $page->signUpUser($signUpUsername, $signUpEmail, $signUpPhone, $signUpFirstName, $signUpLastName, $signUpPass, $signUpPassConfirm);
+
+    $signUpSuccessful = $page->signUpUser($signUpUsername, $signUpEmail, $signUpPhone, $signUpFirstName, $signUpLastName, $signUpPass, $signUpPassConfirm, $signUpSource);
 
     if ($signUpSuccessful) {
         // successful sign up
         $ALERT_MESSAGE = "
             <div class=\"my-3 p-3 alert alert-success alert-dismissible\" role=\"alert\">
                 <button type=\"button\" class=\"close\" data-dismiss=\"alert\" aria-label=\"Close\"><span aria-hidden=\"true\">&times;</span></button>
-                <strong>Congratulations!</strong> You've signed up and are now ready for FAVR: please sign in.
+                <strong>Congratulations!</strong> You've signed up for FAVR. Please check your email to confirm your account!
             </div>";
     } else {
         // error passwords don't match
