@@ -327,7 +327,7 @@ class Web_Page
      *
      * @author haronarama
      */
-    function signUpUser($signUpUsername, $signUpEmail, $signUpPhone, $signUpFirstName, $signUpLastName, $signUpPass, $signUpPassConfirm)
+    function signUpUser($signUpUsername, $signUpEmail, $signUpPhone, $signUpFirstName, $signUpLastName, $signUpPass, $signUpPassConfirm, $signUpSource)
     {
         if ($signUpPass != $signUpPassConfirm) {
             // error passwords don't match
@@ -341,21 +341,49 @@ class Web_Page
                                      first_name, 
                                      last_name, 
                                      email,
-                                     phone)
+                                     phone,
+                                     affiliate_id)
                                  VALUES 
                                     ('$signUpUsername',
                                      '$signUpPassConfirm',
                                      '$signUpFirstName',
                                      '$signUpLastName',
                                      '$signUpEmail',
-                                     '$signUpPhone'
+                                     '$signUpPhone',
+                                     '$signUpSource'
                                      )
             ";
 
             $this->db->query($insert_sign_up_query);
-
+            include '../libraries/Api/Sendgrid/vendor/autoload.php';
+            $confirm = new Web_Confirm();
+            $confirm->sendConfirmationEmail($signUpEmail, $signUpPass);
             return true;
         }
+    }
+
+    /**
+     * @param $action
+     * @param $string
+     * @return bool|string
+     */
+     function encrypt_decrypt($action, $string) {
+        $output = false;
+        $encrypt_method = "AES-256-CBC";
+        $secret_key = 'This is my secret key';
+        $secret_iv = 'This is my secret iv';
+        // hash
+        $key = hash('sha256', $secret_key);
+
+        // iv - encrypt method AES-256-CBC expects 16 bytes - else you will get a warning
+        $iv = substr(hash('sha256', $secret_iv), 0, 16);
+        if ( $action == 'encrypt' ) {
+            $output = openssl_encrypt($string, $encrypt_method, $key, 0, $iv);
+            $output = base64_encode($output);
+        } else if( $action == 'decrypt' ) {
+            $output = openssl_decrypt(base64_decode($string), $encrypt_method, $key, 0, $iv);
+        }
+        return $output;
     }
 
     /**
@@ -1712,8 +1740,8 @@ class Web_Page
                     </ul>
 
 <!--                     WEB ELEMENT ONLY-->
-                    <form class="web-search form-inline my-2 my-lg-0">
-                        <input style="border-radius: 5px 0 0 5px" class="form-control mr-sm-0" type="text" placeholder="Search" aria-label="Search">
+                    <form class="web-search form-inline my-2 my-lg-0" action="<?php echo $this->root_path . 'home/results/?navbar=active_home' ?>">
+                        <input style="border-radius: 5px 0 0 5px" class="form-control mr-sm-0" type="text" name="q" placeholder="Search" aria-label="Search">
                         <button style="border-radius: 0 5px 5px 0" class="btn btn-outline-danger my-2 my-sm-0" type="submit">Search</button>
                     </form>
 <!--                     WEB ELEMENT ONLY-->
@@ -3016,6 +3044,46 @@ class Web_Page
             }
 
             return true;
+        }
+
+    }
+
+    function searchFeature($q)
+    {
+        $results = $this->db->query("SELECT * FROM users WHERE username or first_name LIKE '$q%'");
+        echo "<div class=\"my-3 p-3 bg-white rounded box-shadow\" style=\"width: 100%;\">
+                    <h6 class=\"border-bottom border-gray pb-2 mb-0\">Search Results</h6>";
+        while($rows = $results->fetch(PDO::FETCH_ASSOC)){
+            $id = $rows['id'];
+            $name =  $rows['first_name'] . " " . $rows['last_name'];
+            $username = $rows['username'];
+            $image_path = unserialize($rows['profile_picture_path']);
+            if (isset($image_path['name'], $image_path['type'])) {
+//                print "<pre>";
+//                print_r($image_path);die;
+                $picName = $image_path['name'];
+                $picType = $image_path['type'];
+            } else {
+                $picName = "";
+                $picType = "";
+            }
+            echo "
+                    <div class=\"media text-muted pt-3\">
+                        <a href=\"$this->root_path/components/profile/profile.php?id=$id\">
+                            <img src=\"$this->root_path/image.php?i=$picName&i_t=$picType&i_p=true\" height=\"32\" width=\"32\" alt=\"\" class=\"mr-2 rounded\">
+                        </a>
+                        <div class=\"media-body pb-3 mb-0 small lh-125 border-bottom border-gray\">
+                            <div class=\"d-flex justify-content-between align-items-center w-100\">
+                                <strong class=\"text-gray-dark\">$name</strong>
+                                <a href=\"#\">Send Friend Request</a>
+                            </div>
+                            <span class=\"d-block\">
+                                <a href=\"$this->root_path/components/profile/profile.php?id=$id\">
+                                    @$username
+                                </a>
+                            </span>
+                        </div>
+                    </div>";
         }
 
     }
