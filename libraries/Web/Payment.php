@@ -108,8 +108,12 @@ class Web_Payment
      */
     public function checkOut(int $id, string $url)
     {
-//        if($this->status == "Pending Approval")
-//        {
+        $credit = $this->getUserCredit($this->getCustomerId($id));
+        if($credit > $this->price){
+            $price = 0;
+        } elseif ($credit <= $this->price){
+            $price = $this->price - $credit;
+        }
         $url = str_replace("&","%26", $url);
         $url = str_replace("'", "%27", $url);
             echo "
@@ -117,32 +121,63 @@ class Web_Payment
                     <script
                         src='https://checkout.stripe.com/checkout.js' class='stripe-button'
                         data-key= " . Data_Constants::STRIPE_PUBLIC . "
-                        data-amount= '$this->price' 
+                        data-amount= '$price' 
                         data-name='FAVR Inc.'
                         data-description='$this->description'
                         data-image='https://askfavr.com/favr-pwa/assets/brand/favicon.ico'
                         data-locale='auto'>
                     </script>
                 </form>";
-
-//        } else{
-//            //header("location: http://localhost:1234/favr-pwa");
-//        }
         return $this;
     }
 
-
-    public function charge(string $token, int $id)
+    private function getUserCredit($user_id)
     {
-        \Stripe\Stripe::setApiKey(\Data_Constants::STRIPE_SECRET);
-        $charge = \Stripe\Charge::create(array(
-            "amount" => $this->price,
-            "currency" => "usd",
-            "description" => $this->description,
-            "source" => $token,
-        ));
-        $chargeToken = json_decode(json_encode($charge), true);
-        $this->addStripeToken($chargeToken['id'], $id);
+        $sth = $this->db->query("SELECT * FROM users WHERE id=$user_id");
+        $user = $sth->fetch(PDO::FETCH_ASSOC);
+        if(!is_null($user['favr_credit']) && ($user['favr_credit'] > 0)){
+            return $user['favr_credit']*100;
+        }else{
+            return 0;
+        }
+    }
+
+    private function getCustomerId($request_id)
+    {
+        $sth = $this->db->query("SELECT * FROM marketplace_favr_requests WHERE id='$request_id'");
+        $row = $sth->fetch(PDO::FETCH_ASSOC);
+        return $row['customer_id'];
+    }
+
+    private function processUpdateCredit($customer_id, $credit)
+    {
+        $credit = $credit/100;
+        $this->db->query("UPDATE users SET favr_credit=$credit WHERE id=$customer_id");
+    }
+
+
+    public function charge(string $token, int $id, string $callback_url)
+    {
+        $credit = $this->getUserCredit($this->getCustomerId($id));
+        if($credit > $this->price){
+            $credit = $credit - $this->price;
+            $this->processUpdateCredit($this->getCustomerId($id), $credit);
+            $this->addStripeToken("favr_credit", $id);
+            $this->update($id, $callback_url);
+        } elseif ($credit <= $this->price){
+            $price = $this->price - $credit;
+            $this->processUpdateCredit($this->getCustomerId($id), 0);
+            \Stripe\Stripe::setApiKey(\Data_Constants::STRIPE_SECRET);
+            $charge = \Stripe\Charge::create(array(
+                "amount" => $price,
+                "currency" => "usd",
+                "description" => $this->description,
+                "source" => $token,
+            ));
+            $chargeToken = json_decode(json_encode($charge), true);
+            $this->addStripeToken($chargeToken['id'], $id);
+            $this->update($id, $callback_url);
+        }
         return $this;
     }
 
@@ -151,7 +186,7 @@ class Web_Payment
      * @param string $callback_url
      * @return $this
      */
-    public function update(int $id, string $callback_url)
+    private function update(int $id, string $callback_url)
     {
         $success = $this->db->query("UPDATE marketplace_favr_requests SET task_status='In Progress' WHERE id=$id");
         if($success)

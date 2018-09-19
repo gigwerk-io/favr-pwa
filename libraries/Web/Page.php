@@ -6,7 +6,7 @@
  * Time: 12:25 AM
  *
  * @author haronarama
- * @author solomonantoine
+ * @author Solomon Antoine
  */
 //error_reporting(E_ERROR);
 include '../../libraries/Api/Twilio/twilio-php-master/Twilio/autoload.php';
@@ -680,6 +680,370 @@ class Web_Page
         <main role="main" class="container animate-bottom" style="max-width: 750px">
         <?php
     }
+
+    function verifyAdminUser($id)
+    {
+        if(!($id > 0 && $id < 5))
+        {
+            header("location: $this->root_path");
+        }
+    }
+    function renderAdminHeader($id)
+    {
+        $this->verifyAdminUser($id);
+        echo "<html lang=\"en\">
+                <head>
+                    <meta charset=\"utf-8\">
+                    <meta name=\"viewport\" content=\"width=device-width, initial-scale=1, shrink-to-fit=no\">
+                    <meta name=\"description\" content=\"\">
+                    <meta name=\"author\" content=\"\">
+                    <link rel=\"icon\" href=\"$this->root_path/assets/brand/favicon.ico\">
+                
+                    <title>$this->page_title</title>
+                
+                    <!-- Bootstrap core CSS -->                   
+                    <link rel=\"stylesheet\" href=\"$this->root_path/dist/css/bootstrap.min.css\"/>
+                
+                    <!-- Custom styles for this template -->
+                    <link href=\"$this->root_path/assets/css/admin.css\" rel=\"stylesheet\">
+                </head>
+                <nav class=\"navbar navbar-dark sticky-top bg-dark flex-md-nowrap p-0\">
+                    <a class=\"navbar-brand col-sm-3 col-md-2 mr-0\" href=\"#\">
+                        <img src=\"https://askfavr.com/favr-pwa/assets/brand/favr_logo_rd.png\" height=\"21\" width=\"70\"
+                             class=\"navbar-brand mr-0\" style=\"padding-top: 0; margin-left: 5px; padding-bottom: 0\" alt=\"Logo\">
+                    </a>
+                <!--    <input class=\"form-control form-control-dark w-100\" type=\"text\" placeholder=\"Search\" aria-label=\"Search\">-->
+                    <ul class=\"navbar-nav px-3\">
+                        <li class=\"nav-item text-nowrap\">
+                            <a class=\"nav-link\" href=\"#\">Sign out</a>
+                        </li>
+                    </ul>
+                </nav>";
+    }
+
+    function renderAdmin($type)
+    {
+        if($type == "CFO"){
+            echo $this->cfoNavBar();
+        }
+    }
+
+    function cfoNavBar()
+    {
+        return " <nav class=\"col-md-2 d-none d-md-block bg-light sidebar\">
+            <div class=\"sidebar-sticky\">
+                <ul class=\"nav flex-column\">
+                    <li class=\"nav-item\">
+                        <a class=\"nav-link\" href=\"index.php\">
+                            <span data-feather=\"home\"></span>
+                            Dashboard <span class=\"sr-only\">(current)</span>
+                        </a>
+                    </li>
+                    <li class=\"nav-item\">
+                        <a class=\"nav-link\" href=\"payments.php\">
+                            <span data-feather=\"dollar-sign\"></span>
+                            Payments
+                        </a>
+                    </li>
+                    <li class=\"nav-item\">
+                        <a class=\"nav-link\" href=\"transfers.php\">
+                            <span data-feather=\"move\"></span>
+                            Transfers
+                        </a>
+                    </li>
+                    <li class=\"nav-item\">
+                        <a class=\"nav-link\" href=\"https://c73.qbo.intuit.com/app/homepage\" target=\"_blank\">
+                            <span data-feather=\"bar-chart\"></span>
+                            Quickbooks
+                        </a>
+                    </li>
+                    <li class=\"nav-item\">
+                        <a class=\"nav-link\" href=\"https://dashboard.stripe.com/dashboard\" target=\"_blank\">
+                            <span data-feather=\"credit-card\"></span>
+                            Stripe
+                        </a>
+                    </li>
+                    <li class=\"nav-item\">
+                        <a class=\"nav-link\" href=\"https://www.wellsfargo.com/\" target=\"_blank\">
+                            <span data-feather=\"file-plus\"></span>
+                            Wells Fargo
+                        </a>
+                    </li>
+                </ul>
+
+                <h6 class=\"sidebar-heading d-flex justify-content-between align-items-center px-3 mt-4 mb-1 text-muted\">
+                    <span>Utilized Tools</span>
+                    <a class=\"d-flex align-items-center text-muted\" href=\"#\">
+                        <span data-feather=\"plus-circle\"></span>
+                    </a>
+                </h6>
+                <ul class=\"nav flex-column mb-2\">
+                    <li class=\"nav-item\">
+                        <a class=\"nav-link\" href=\"#\">
+                            <span data-feather=\"file-text\"></span>
+                            Operation Tools
+                        </a>
+                    </li>
+                    <li class=\"nav-item\">
+                        <a class=\"nav-link\" href=\"#\">
+                            <span data-feather=\"file-text\"></span>
+                            Marketing Tools
+                        </a>
+                    </li>
+                    <li class=\"nav-item\">
+                        <a class=\"nav-link\" href=\"#\">
+                            <span data-feather=\"file-text\"></span>
+                            Tech Tools
+                        </a>
+                    </li>
+                </ul>
+            </div>
+        </nav>";
+    }
+
+    function cfoDashboard()
+    {
+        $revenue = number_format((float)$this->getRevenue(), 2, '.', '');
+        $profit = number_format((float)$this->getProfit(), 2, '.', '');
+        $total = $this->getTotalRequests();
+        $average = number_format((float)$revenue/$total, 2, '.', '');
+        echo "<main role=\"main\" class=\"col-md-9 ml-sm-auto col-lg-10 pt-3 px-4\">
+            <div class=\"d-flex justify-content-between flex-wrap flex-md-nowrap align-items-center pb-2 mb-3 border-bottom\">
+                <h1 class=\"h2\">Dashboard</h1>
+            </div>
+
+            <div class=\"row\">
+                <div class=\"col-lg-3 col-md-6 col-sm-6\">
+
+
+                    <div class=\"card card-stats\">
+                        <div class=\"card-header card-header-success card-header-icon\">
+                            <div class=\"card-icon\">
+                                <span data-feather=\"activity\"></span>
+                            </div>
+                            <p class=\"card-category\">Revenue To Date</p>
+                            <h3 class=\"card-title\">$$revenue</h3>
+                        </div>
+                    </div>
+
+                </div>
+                <div class=\"col-lg-3 col-md-6 col-sm-6\">
+
+
+                    <div class=\"card card-stats\">
+                        <div class=\"card-header card-header-warning card-header-icon\">
+                            <div class=\"card-icon\">
+                                <span data-feather=\"dollar-sign\" ></span>
+                            </div>
+                            <p class=\"card-category\">Profit To Date</p>
+                            <h3 class=\"card-title\">$$profit</h3>
+                        </div>
+                    </div>
+
+                </div>
+                <div class=\"col-lg-3 col-md-6 col-sm-6\">
+
+
+                    <div class=\"card card-stats\">
+                        <div class=\"card-header card-header-rose card-header-icon\">
+                            <div class=\"card-icon\">
+                                <span data-feather=\"award\"></span>
+                            </div>
+                            <p class=\"card-category\">Requests To Date</p>
+                            <h3 class=\"card-title\">$total</h3>
+                        </div>
+                    </div>
+
+                </div>
+
+                <div class=\"col-lg-3 col-md-6 col-sm-6\">
+
+
+                    <div class=\"card card-stats\">
+                        <div class=\"card-header card-header-info card-header-icon\">
+                            <div class=\"card-icon\">
+                                <span data-feather=\"user\"></span>
+                            </div>
+                            <p class=\"card-category\">Average Per Request</p>
+                            <h3 class=\"card-title\">$$average/Request</h3>
+                        </div>
+                    </div>
+
+                </div>
+                <div class=\"row\" style=\"margin-top: 3%\">
+                    <div class=\"col-sm-6\">
+                        <div class=\"card\">
+                            <div class=\"card-body\">
+                                <h5 class=\"card-title\">Stripe Payments</h5>
+                                <p class=\"card-text\">With supporting text below as a natural lead-in to additional content.</p>
+                                <form action=\"index.php\" method=\"post\" enctype=\"multipart/form-data\">
+                                    <input type=\"file\" name=\"csv\" value=\"\" />
+                                    <input type=\"submit\" name=\"payment\" class=\"btn btn-primary\" value=\"Save\" />
+                                </form>
+                            </div>
+                        </div>
+                    </div>
+                    <div class=\"col-sm-6\">
+                        <div class=\"card\">
+                            <div class=\"card-body\">
+                                <h5 class=\"card-title\">Stripe Transfers</h5>
+                                <p class=\"card-text\">With supporting text below as a natural lead-in to additional content.</p>
+                                <form action=\"index.php\" method=\"post\" enctype=\"multipart/form-data\">
+                                    <input type=\"file\" name=\"csv\" value=\"\" />
+                                    <input type=\"submit\" name=\"transfer\" class=\"btn btn-primary\" value=\"Save\" />
+                                </form>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </main>";
+    }
+
+
+
+    function getPaymentsTable()
+    {
+        echo "
+        <main role=\"main\" class=\"col-md-9 ml-sm-auto col-lg-10 pt-3 px-4\">
+            <h2>Section title</h2>
+                <div class=\"table-responsive\">
+                    <table class=\"table table-striped table-sm\">
+                        <thead>
+                        <tr>
+                            <th>ID</th>
+                            <th>Customer</th>
+                            <th>Freelancer</th>
+                            <th>Amount</th>
+                            <th>Stripe Fee</th>
+                            <th>Freelancer Fee</th>
+                            <th>Net Profit</th>
+                            <th>Created At</th>
+                            <th>Available At</th>
+                        </tr>
+                        </thead>
+                        <tbody>";
+        $sth = $this->db->query("SELECT * FROM stripe_payments");
+        while($row = $sth->fetch(PDO::FETCH_ASSOC)){
+            $freelancer = $this->getUserInfo($row['freelancer_id']);
+            echo $this->displayPaymentsTable(
+                    $row['id'],
+                    $this->getCustomerFromRequestDB($row['source_id']),
+                    $freelancer['first_name'] . " " . $freelancer['last_name'],
+                    $row['amount'],
+                    $row['stripe_fee'],
+                    $row['freelancer_fee'],
+                    $row['net_profit'],
+                    $row['created_at'],
+                    $row['available_at']
+            );
+        }
+        echo "
+                    </tbody>
+            </table>
+        </div>
+        </main>";
+    }
+
+    function getTransfersTable()
+    {
+        echo "
+        <main role=\"main\" class=\"col-md-9 ml-sm-auto col-lg-10 pt-3 px-4\">
+            <h2>Section title</h2>
+                <div class=\"table-responsive\">
+                    <table class=\"table table-striped table-sm\">
+                        <thead>
+                        <tr>
+                            <th>ID</th>
+                            <th>Freelancer</th>
+                            <th>Amount</th>
+                            <th>Created At</th>
+                        </tr>
+                        </thead>
+                        <tbody>";
+        $sth = $this->db->query("SELECT * FROM stripe_transfers");
+        while($row = $sth->fetch(PDO::FETCH_ASSOC)){
+            echo $this->displayTransfersTable(
+                $row['id'],
+                $this->getFreelancerFromDB($row['account_id']),
+                $row['amount'],
+                $row['created_at']
+            );
+        }
+        echo "
+                    </tbody>
+            </table>
+        </div>
+        </main>";
+    }
+
+    function displayTransfersTable($id, $freelancer, $amount, $date)
+    {
+        $date = date("m/d/Y",strtotime($date));
+        return "
+            <tr>
+            <td>$id</td>
+            <td>$freelancer</td>
+            <td>$$amount</td>
+            <td>$date</td>
+            </tr>";
+    }
+
+    function getFreelancerFromDB($stripeId)
+    {
+        $sth = $this->db->query("SELECT * FROM users WHERE payment_id='$stripeId'");
+        $row = $sth->fetch(PDO::FETCH_ASSOC);
+        return $row['first_name'] . " " . $row['last_name'];
+    }
+
+    function displayPaymentsTable($id, $customer, $freelancer, $amount, $stripeFee, $freelancerFee, $netProfit, $created_at, $available_at)
+    {
+        $created_at = date("m/d/Y",strtotime($created_at));
+        $available_at = date("m/d/Y",strtotime($available_at));
+        return "
+            <tr>
+            <td>$id</td>
+            <td>$customer</td>
+            <td>$freelancer</td>
+            <td>$$amount</td>
+            <td>$$stripeFee</td>
+            <td>$$freelancerFee</td>
+            <td>$$netProfit</td>
+            <td>$created_at</td>
+            <td>$available_at</td>
+            </tr>";
+    }
+
+    function getRevenue()
+    {
+        $sth = $this->db->query("SELECT SUM(amount) As revenue FROM stripe_payments");
+        $row = $sth->fetch(PDO::FETCH_ASSOC);
+        return $row['revenue'];
+    }
+
+    function getCustomerFromRequestDB($stripeToken)
+    {
+        $sth = $this->db->query("SELECT * FROM marketplace_favr_requests WHERE task_stripe_token='$stripeToken'");
+        $row = $sth->fetch(PDO::FETCH_ASSOC);
+        $customer = $this->getUserInfo($row['customer_id']);
+        return $customer['first_name'] . " " . $customer['last_name'];
+    }
+
+    function getProfit()
+    {
+        $sth = $this->db->query("SELECT SUM(net_profit) As profit FROM stripe_payments");
+        $row = $sth->fetch(PDO::FETCH_ASSOC);
+        return $row['profit'];
+    }
+
+    function getTotalRequests()
+    {
+        $sth = $this->db->query("SELECT count(*) FROM marketplace_favr_requests WHERE task_stripe_token is not null");
+        return $sth->fetchColumn();
+    }
+
+
+
 
     /**
      * Render marketplace history for this specific user
@@ -1741,7 +2105,7 @@ class Web_Page
                     </ul>
 
 <!--                     WEB ELEMENT ONLY-->
-                    <form class="web-search form-inline my-2 my-lg-0" action="<?php echo $this->root_path; ?>/home/results/?navbar=active_home">
+                    <form class="web-search form-inline my-2 my-lg-0" action="<?php echo $this->root_path . 'home/results/?navbar=active_home' ?>">
                         <input style="border-radius: 5px 0 0 5px" class="form-control mr-sm-0" type="text" name="q" placeholder="Search" aria-label="Search">
                         <button style="border-radius: 0 5px 5px 0" class="btn btn-outline-danger my-2 my-sm-0" type="submit">Search</button>
                     </form>
@@ -3049,6 +3413,46 @@ class Web_Page
 
     }
 
+    function searchFeature($q)
+    {
+        $results = $this->db->query("SELECT * FROM users WHERE username or first_name LIKE '$q%'");
+        echo "<div class=\"my-3 p-3 bg-white rounded box-shadow\" style=\"width: 100%;\">
+                    <h6 class=\"border-bottom border-gray pb-2 mb-0\">Search Results</h6>";
+        while($rows = $results->fetch(PDO::FETCH_ASSOC)){
+            $id = $rows['id'];
+            $name =  $rows['first_name'] . " " . $rows['last_name'];
+            $username = $rows['username'];
+            $image_path = unserialize($rows['profile_picture_path']);
+            if (isset($image_path['name'], $image_path['type'])) {
+//                print "<pre>";
+//                print_r($image_path);die;
+                $picName = $image_path['name'];
+                $picType = $image_path['type'];
+            } else {
+                $picName = "";
+                $picType = "";
+            }
+            echo "
+                    <div class=\"media text-muted pt-3\">
+                        <a href=\"$this->root_path/components/profile/profile.php?id=$id\">
+                            <img src=\"$this->root_path/image.php?i=$picName&i_t=$picType&i_p=true\" height=\"32\" width=\"32\" alt=\"\" class=\"mr-2 rounded\">
+                        </a>
+                        <div class=\"media-body pb-3 mb-0 small lh-125 border-bottom border-gray\">
+                            <div class=\"d-flex justify-content-between align-items-center w-100\">
+                                <strong class=\"text-gray-dark\">$name</strong>
+                                <a href=\"#\">Send Friend Request</a>
+                            </div>
+                            <span class=\"d-block\">
+                                <a href=\"$this->root_path/components/profile/profile.php?id=$id\">
+                                    @$username
+                                </a>
+                            </span>
+                        </div>
+                    </div>";
+        }
+
+    }
+
     /**
      * Render request favr web and mobile form
      *
@@ -4283,6 +4687,18 @@ class Web_Page
             $displayMyDescription = "";
         }
 
+        if ($userInfo['sms_notifications_enabled'] == 1) {
+            $enableSMS = "checked";
+        } else {
+            $enableSMS = "";
+        }
+
+        if ($userInfo['email_notifications_enabled'] == 1) {
+            $enableEmail = "checked";
+        } else {
+            $enableEmail = "";
+        }
+
         $private = "";
         $friends = "";
         $friendsOfFriends = "";
@@ -4297,6 +4713,11 @@ class Web_Page
         } else if ($userInfo['default_scope'] == "Public") {
             $public = "selected";
         }
+
+        $street = $userInfo['street'];
+        $city = $userInfo['city'];
+        $state = $userInfo['state_province'];
+        $zip = $userInfo['zip'];
 
         ?>
         <div class="p-3 pb-0 rounded bg-white box-shadow" style="margin-top: 1.2rem;">
@@ -4339,6 +4760,30 @@ class Web_Page
                         </div>
                     </div>
                 </div>
+                <div class="row p-0 mb-0">
+                    <div class="col-md-6">
+                        <div class="form-group border-bottom border-gray">
+                            <label class="small text-left pb-0">Enable SMS Notifications</label>
+                            <span class="float-right switch switch-sm">
+                                <input type="checkbox"
+                                       name="enable_sms_notifications"
+                                    <?php echo $enableSMS; ?> class="switch" id="sms">
+                                <label for="sms"></label>
+                            </span>
+                        </div>
+                    </div>
+                    <div class="col-md-6">
+                        <div class="form-group border-bottom border-gray">
+                            <label class="small text-left pb-0">Enable Email Notifications</label>
+                            <span class="float-right switch switch-sm">
+                                <input type="checkbox"
+                                       name="enable_email_notifications"
+                                    <?php echo $enableEmail; ?> class="switch" id="email">
+                                <label for="email"></label>
+                            </span>
+                        </div>
+                    </div>
+                </div>
                 <div class="row pb-0 pt-0 mb-0">
                     <div class="col-md-3 request-favr-web border-bottom border-gray"></div>
                     <div class="col-md-6 pl-2 pr-2 pt-0 pb-2 border-bottom border-gray">
@@ -4352,13 +4797,55 @@ class Web_Page
                     </div>
                     <div class="col-md-3 request-favr-web border-bottom border-gray"></div>
                 </div>
+                <div class="row p-0 mb-0">
+                    Default Location
+                    <div class="col-md-12">
+                        <div class="form-group border-bottom border-gray">
+                            <label class="small text-left pb-0">Street Address</label>
+                                <input type="text"
+                                       name="street"
+                                       value="<?php echo $street;?>"
+                                       class="form-control" id="street">
+                                <label for="street"></label>
+                        </div>
+                    </div><div class="col-md-6">
+                        <div class="form-group border-bottom border-gray">
+                            <label class="small text-left pb-0">City</label>
+                            <input type="text"
+                                   name="city"
+                                   value="<?php echo $city;?>"
+                                   class="form-control" id="city">
+                            <label for="city"></label>
+                        </div>
+                    </div>
+                    <div class="col-md-3">
+                        <div class="form-group border-bottom border-gray">
+                            <label class="small text-left pb-0">State</label>
+                            <input type="text"
+                                   name="state"
+                                   value="<?php echo $state;?>"
+                                   class="form-control" id="state">
+                            <label for="state"></label>
+                        </div>
+                    </div>
+                    <div class="col-md-3">
+                        <div class="form-group border-bottom border-gray">
+                            <label class="small text-left pb-0">Zip</label>
+                            <input type="text"
+                                   name="zip"
+                                   value="<?php echo $zip;?>"
+                                   class="form-control" id="zip">
+                            <label for="zip"></label>
+                        </div>
+                    </div>
+                </div>
                 <div class="row pb-1 mb-0">
                     <div class="col-md-4 p-2 border-bottom border-gray">
                         <a href="<?php echo "$this->root_path/home/payments/"; ?>">
                             <?php
                             if(!empty($_SESSION['user_info']['payment_id'])) {
                                 echo 'View Payments';
-                            }else{
+                            }elseif(($_SESSION['user_info']['class'] == 'Verified Freelancer') && (empty($_SESSION['user_info']['payment_id']) || is_null($_SESSION['user_info']['payment_id']))){
                                 echo 'Set up payments';
                             }
                             ?>
@@ -4366,9 +4853,25 @@ class Web_Page
                         </a>
                     </div>
                     <div class="col-md-4 p-2 border-bottom border-gray">
-                        <a href="#">Terms of Service and Conditions
+                        <a href="#" data-toggle="modal" data-target="#deleteProductModal">Terms of Service and Conditions
                             <i class="mobile-footer float-right text-muted material-icons">chevron_right</i>
                         </a>
+                        <div class="modal fade" id="deleteProductModal" tabindex="-1" role="dialog" aria-labelledby="deleteProductModalLabel" aria-hidden="true">
+                            <div class="modal-dialog">
+                                <div class="modal-content">
+                                    <div class="modal-header">
+                                        <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">×</span></button>
+                                        <h4 class="modal-title" id="deleteProductModalLabel">Confirm Delete</h4>
+                                    </div>
+                                    <div class="modal-body">
+
+                                    </div>
+                                    <div class="modal-footer">
+                                        <button type="button" class="btn btn-danger" data-dismiss="modal">Ok</button>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
                     </div>
                     <div class="col-md-4 p-2 border-bottom border-gray">
                         <a href="#">Change password
@@ -4524,74 +5027,29 @@ class Web_Page
     // From this point forward these are process functions
     //------------------------------------------------------------
 
-
     /**
-     * Process to find users
-     *
-     * @param $q
+     * @param $display_ratings
+     * @param $display_receipts
+     * @param $display_description
+     * @param $default_scope
+     * @param $email_notifications_enabled
+     * @param $sms_notifications_enabled
+     * @return bool
      */
-    function processSearch($q)
-    {
-        $results = $this->db->query("SELECT * 
-                                               FROM users 
-                                               WHERE username LIKE '%$q%' 
-                                               or first_name LIKE '%$q%' 
-                                               or last_name LIKE '%$q%'");
-        echo "<div class=\"my-3 p-3 bg-white rounded box-shadow\" style=\"width: 100%;\">
-                    <h6 class=\"border-bottom border-gray pb-2 mb-0\">Search Results</h6>";
-        while($rows = $results->fetch(PDO::FETCH_ASSOC)){
-            $id = $rows['id'];
-            $name =  $rows['first_name'] . " " . $rows['last_name'];
-            $username = $rows['username'];
-            $image_path = unserialize($rows['profile_picture_path']);
-            if (isset($image_path['name'], $image_path['type'])) {
-//                print "<pre>";
-//                print_r($image_path);die;
-                $picName = $image_path['name'];
-                $picType = $image_path['type'];
-            } else {
-                $picName = "";
-                $picType = "";
-            }
-            echo "
-                    <div class=\"media text-muted pt-3\">
-                        <a href=\"$this->root_path/components/profile/profile.php?id=$id\">
-                            <img src=\"$this->root_path/image.php?i=$picName&i_t=$picType&i_p=true\" height=\"32\" width=\"32\" alt=\"\" class=\"mr-2 rounded\">
-                        </a>
-                        <div class=\"media-body pb-3 mb-0 small lh-125 border-bottom border-gray\">
-                            <div class=\"d-flex justify-content-between align-items-center w-100\">
-                                <strong class=\"text-gray-dark\">$name</strong>
-                                <a href=\"#\">Send Friend Request</a>
-                            </div>
-                            <span class=\"d-block\">
-                                <a href=\"$this->root_path/components/profile/profile.php?id=$id\">
-                                    @$username
-                                </a>
-                            </span>
-                        </div>
-                    </div>";
-        }
-
-    }
-
-    /**
-     * Process settings changes
-     *
-     * @param boolean $display_ratings
-     * @param boolean $display_receipts
-     * @param boolean $display_description
-     * @param string $default_scope
-     *
-     * @return boolean // successful change of settings
-     */
-    function processSettings($display_ratings, $display_receipts, $display_description, $default_scope) {
+    function processSettings($display_ratings, $display_receipts, $display_description, $default_scope, $email_notifications_enabled, $sms_notifications_enabled, $street, $city, $state, $zip) {
 //        die(print_r($display_ratings));
         $userID = $_SESSION['user_info']['id'];
         $update_settings_query = "UPDATE users 
-                                  SET default_scope = '$default_scope',
+                                  SET street = '$street',
+                                      city = '$city',
+                                      state_province = '$state',
+                                      zip = '$zip',
+                                      default_scope = '$default_scope',
                                       display_ratings = $display_ratings,
                                       display_receipts = $display_receipts,
-                                      display_description = $display_description
+                                      display_description = $display_description,
+                                      sms_notifications_enabled = $sms_notifications_enabled,
+                                      email_notifications_enabled = $email_notifications_enabled
                                   WHERE id = $userID";
 
         $result = $this->db->query($update_settings_query);
@@ -4816,7 +5274,10 @@ class Web_Page
                     if ($result) {
                         $row = $result->fetch(PDO::FETCH_ASSOC);
                         $task_id = $row['id'];
-
+                        //include '../libraries/Api/Sendgrid/vendor/autoload.php';
+                        $notify = new Web_Notification();
+                        $notify->emailAllFreelancers($task_id);
+                        $notify->smsAllFreelancers($task_id);
                         for ($i = 0; $i < Data_Constants::MAXIMUM_IMAGE_UPLOAD_COUNT; $i++) {
                             // check if atleast one image is set
                             if (!empty($inputPictures['name'][$i])) {
@@ -5253,13 +5714,13 @@ class Web_Page
                 //Send Invoice to Customer
                 $this->invoice->sendCustomerInvoice($requestID)->sendFreelancerInvoice($requestID);
                 //Send Pay out to Freelancer
-//                $this->payout->payoutFunds(
-//                    $this->payout->selectPrice($requestID),
-//                    $this->payout->selectStripeToken($requestID),
-//                    $this->payout->selectStripeAccount(
-//                        $this->payout->selectFreelancer($requestID)
-//                    )
-//                );
+                $this->payout->payoutFunds(
+                    $this->payout->selectPrice($requestID),
+                    $this->payout->selectStripeToken($requestID),
+                    $this->payout->selectStripeAccount(
+                        $this->payout->selectFreelancer($requestID)
+                    )
+                );
                 header("Refresh:2; url=$this->root_path/home");
                 foreach ($rows as $row) {
                     $userID = $row['user_id'];
@@ -5447,6 +5908,7 @@ class Web_Page
                                                  WHERE id = $request_id";
 
                             $result = $this->db->query($update_request_query);
+                            $this->sms->processCustomerSmsNotification($request_id);
 //                        die(print_r($result));
                             if (!$result) {
                                 return false;

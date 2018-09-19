@@ -132,6 +132,9 @@ class Web_Connect{
     public function payoutFunds(int $price, string $token, string $account_id)
     {
         \Stripe\Stripe::setApiKey(\Data_Constants::STRIPE_SECRET);
+        if($token == 'favr_credit') {
+            $token = null;
+        }
         $data = \Stripe\Transfer::create(array(
             "amount" => $price,
             "currency" => "usd",
