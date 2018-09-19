@@ -3074,8 +3074,8 @@ class Web_Page
             <div class="p-3 text-center request-favr-web">
                 <button class="btn btn-lg btn-primary" id="request-favr-web">
                     <div class="d-inline-flex">
-                        <i class="material-icons">build</i>
-                        Request FAVR
+                        <i class="mr-1 material-icons">build</i>
+                        Request <img class="mt-2 ml-2" src="<?php echo $this->root_path; ?>/assets/brand/favr_logo_blk.png" height="16" width="52.5">
                     </div>
                 </button>
             </div>
@@ -3288,8 +3288,8 @@ class Web_Page
                 <div class="p-3 text-center request-favr-web">
                     <button class="btn btn-lg btn-dark" id="request-favr-web">
                         <div class="d-inline-flex">
-                            <i class="material-icons">build</i>
-                            Request FAVR
+                            <i class="mr-1 material-icons">build</i>
+                            Request <img class="mt-2 ml-2" src="<?php echo $this->root_path; ?>/assets/brand/favr_logo_rd.png" height="16" width="52.5">
                         </div>
                     </button>
                 </div>

@@ -50,7 +50,7 @@ body {
 }
 
 .btn-primary:hover {
-    background-color: var(--gray-dark);
+    background-color: var(--green);
 }
 
 .form-label-group input::-webkit-input-placeholder {

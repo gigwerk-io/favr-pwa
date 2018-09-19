@@ -50,7 +50,7 @@ $page->renderHeader();
 
 echo $ALERT_MESSAGE;
 
-$page->renderFavrRequestForm($_SESSION['user_info'], $_SESSION['filter_marketplace_by'], $_SESSION['orient_marketplace_by'], $_SESSION['limit_marketplace_by']);
+$page->renderFavrRequestForm();
 ?>
 <div class="my-3 p-3">
     <h6 class="border-bottom border-gray pb-2 mb-0">
