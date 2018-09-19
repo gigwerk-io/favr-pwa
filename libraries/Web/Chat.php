@@ -22,7 +22,13 @@ class Web_Chat
      */
     private $dsn = Data_Constants::DB_DSN;
 
+    /**
+     * root path
+     *
+     * @var string
+     */
     private $root_path;
+
     /**
      * Backend username
      * @var string
@@ -75,10 +81,9 @@ class Web_Chat
         $path = $this->getProfileImage($this->getRecipient($id, $this->id));
         echo "
                     <div class=\"chat_list\">
-                        <a href='?chat_room=$id'>
+                        <a id='$id' href='?chat_room=$id'>
                             <div class=\"chat_people\">
-                                <div class=\"chat_img\"><img src=\"$path\"
-                                                           alt=\"sunil\"></div>
+                                <div class=\"chat_img\"><img src=\"$path\" class='rounded-circle' style='overflow: hidden' height='50%' width='50%' alt='$name'></div>
                                 <div class=\"chat_ib\">
                                     <h5>$name<span class=\"chat_date\">$date</span></h5>
                                     <p>$message</p>
@@ -90,6 +95,7 @@ class Web_Chat
     }
 
     /**
+     * TODO: change this function so that it returns an array of the chatroom IDs
      * List Controller
      * @return $this
      */

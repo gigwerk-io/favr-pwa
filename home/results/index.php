@@ -22,6 +22,6 @@ $page->setTitle("Results");
 $page->renderHeader();
 
 if(!empty($_GET['q'])){
-    $page->searchFeature($_GET['q']);
+    $page->processSearch($_GET['q']);
 }
 $page->renderFooter();
