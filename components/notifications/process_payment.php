@@ -11,7 +11,7 @@ require_once '../../libraries/Api/Stripe/init.php';
 $payment = new Web_Payment();
 echo '<pre>';
 if(isset($_POST['stripeToken'])){
-    $payment->charge($_POST['stripeToken'], $_GET['id'])->update($_GET['id'], $_GET['url']);
+    $payment->charge($_POST['stripeToken'], $_GET['id'], $_GET['url']);
 }else{
     echo "<script>
             alert('Payment Failure!');
