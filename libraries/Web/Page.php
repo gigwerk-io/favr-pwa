@@ -3413,9 +3413,9 @@ class Web_Page
 
     }
 
-    function searchFeature($q)
+    function processSearch($q)
     {
-        $results = $this->db->query("SELECT * FROM users WHERE username or first_name LIKE '$q%'");
+        $results = $this->db->query("SELECT * FROM users WHERE username LIKE '%$q%' or first_name LIKE '%$q%'");
         echo "<div class=\"my-3 p-3 bg-white rounded box-shadow\" style=\"width: 100%;\">
                     <h6 class=\"border-bottom border-gray pb-2 mb-0\">Search Results</h6>";
         while($rows = $results->fetch(PDO::FETCH_ASSOC)){
@@ -3432,7 +3432,14 @@ class Web_Page
                 $picName = "";
                 $picType = "";
             }
-            echo "
+            echo $this->renderSearchResult($id, $picName, $picType, $name, $username);
+        }
+
+    }
+
+    function renderSearchResult($id, $picName, $picType, $name, $username)
+    {
+        return "
                     <div class=\"media text-muted pt-3\">
                         <a href=\"$this->root_path/components/profile/profile.php?id=$id\">
                             <img src=\"$this->root_path/image.php?i=$picName&i_t=$picType&i_p=true\" height=\"32\" width=\"32\" alt=\"\" class=\"mr-2 rounded\">
@@ -3449,8 +3456,6 @@ class Web_Page
                             </span>
                         </div>
                     </div>";
-        }
-
     }
 
     /**
