@@ -26,8 +26,8 @@ echo "
 <body>
 <div class=\"container-fluid\">
     <div class=\"row\">";
-        $page->renderAdmin("CFO");
-        $page->renderPaymentsTable();
+$page->renderAdmin("CFO");
+$page->renderAffiliatesTable();
 echo "</div>
 </div>";
 
