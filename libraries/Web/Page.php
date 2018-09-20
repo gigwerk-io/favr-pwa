@@ -1998,7 +1998,7 @@ class Web_Page
                     ?>
                 </div>
 
-                <button class="profile-button small border-0 mr-0 pr-0" style="left: .1rem;padding-bottom: .569rem;" type="button">
+                <button class="profile-button small border-0 mr-0 pr-0 pb-0" style="left: .1rem;padding-bottom: .569rem;" type="button">
                     <a href='<?php echo "$this->root_path/home/chat/?navbar=active_home&nav_scroller=active_chat"; ?>'>
                         <div class="material-icons text-light">chat</div>
                     </a>
@@ -4754,8 +4754,8 @@ class Web_Page
                         </div>
                     </div>
                     <div class="col-md-5">
-                        <div class="small form-group border-bottom border-gray">
-                            <label class="text-left pb-0">Display my description</label>
+                        <div class="form-group border-bottom border-gray">
+                            <label class="small text-left pb-0">Display my description</label>
                             <span class="float-right switch switch-sm">
                                 <input type="checkbox"
                                        name="display_description"
@@ -4789,63 +4789,62 @@ class Web_Page
                         </div>
                     </div>
                 </div>
-                <div class="row pb-0 pt-0 mb-0">
-                    <div class="col-md-3 request-favr-web border-bottom border-gray"></div>
-                    <div class="col-md-6 pl-2 pr-2 pt-0 pb-2 border-bottom border-gray">
-                        <label for="scope">My default scope</label>
-                        <select name="default_scope" class="form-control">
-                            <option value="Private" <?php echo $private; ?>>Only me</option>
-                            <option value="Friends" <?php echo $friends; ?>>Friends</option>
-                            <option value="Friends of Friends" <?php echo $friendsOfFriends; ?>>Friends of friends</option>
-                            <option value="Public" <?php echo $public; ?>>Public</option>
-                        </select>
-                    </div>
-                    <div class="col-md-3 request-favr-web border-bottom border-gray"></div>
-                </div>
                 <div class="row p-0 mb-0">
-                    Default Location
                     <div class="col-md-12">
-                        <div class="form-group border-bottom border-gray">
-                            <label class="small text-left pb-0">Street Address</label>
+                        <label for="scope" class="small text-left pb-0">My default scope</label>
+                        <div class="form-group">
+                            <select name="default_scope" class="form-control">
+                                <option value="Private" <?php echo $private; ?>>Only me</option>
+                                <option value="Friends" <?php echo $friends; ?>>Friends</option>
+                                <option value="Friends of Friends" <?php echo $friendsOfFriends; ?>>Friends of friends</option>
+                                <option value="Public" <?php echo $public; ?>>Public</option>
+                            </select>
+                        </div>
+                    </div>
+                </div>
+                <hr>
+                <div class="row p-0 mb-0">
+                    <div class="col-md-12">
+                        <label class="small text-left pb-0">Default Location</label>
+                        <div class="form-label-group">
                                 <input type="text"
                                        name="street"
                                        value="<?php echo $street;?>"
-                                       class="form-control" id="street">
-                                <label for="street"></label>
+                                       class="form-control" id="street" placeholder="Street Address">
+                                <label for="street">Street Address</label>
                         </div>
-                    </div><div class="col-md-6">
-                        <div class="form-group border-bottom border-gray">
-                            <label class="small text-left pb-0">City</label>
+                    </div>
+                    <div class="col-md-6">
+                        <div class="form-label-group">
                             <input type="text"
                                    name="city"
                                    value="<?php echo $city;?>"
                                    class="form-control" id="city">
-                            <label for="city"></label>
+                            <label for="city">City</label>
                         </div>
                     </div>
                     <div class="col-md-3">
-                        <div class="form-group border-bottom border-gray">
-                            <label class="small text-left pb-0">State</label>
+                        <div class="form-label-group">
                             <input type="text"
                                    name="state"
                                    value="<?php echo $state;?>"
                                    class="form-control" id="state">
-                            <label for="state"></label>
+                            <label for="state">State</label>
                         </div>
                     </div>
                     <div class="col-md-3">
-                        <div class="form-group border-bottom border-gray">
-                            <label class="small text-left pb-0">Zip</label>
+                        <div class="form-label-group">
                             <input type="text"
                                    name="zip"
                                    value="<?php echo $zip;?>"
                                    class="form-control" id="zip">
-                            <label for="zip"></label>
+                            <label for="zip">Zip</label>
                         </div>
                     </div>
                 </div>
+                <hr>
                 <div class="row pb-1 mb-0">
-                    <div class="col-md-4 p-2 border-bottom border-gray">
+                    <div class="col-md-4 p-2">
                         <a href="<?php echo "$this->root_path/home/payments/"; ?>">
                             <?php
                             if(!empty($_SESSION['user_info']['payment_id'])) {
@@ -4857,8 +4856,8 @@ class Web_Page
                             <i class="mobile-footer float-right text-muted material-icons">chevron_right</i>
                         </a>
                     </div>
-                    <div class="col-md-4 p-2 border-bottom border-gray">
-                        <a href="#" data-toggle="modal" data-target="#deleteProductModal">Terms of Service and Conditions
+                    <div class="col-md-4 p-2">
+                        <a href="terms.html">Terms of Service and Conditions
                             <i class="mobile-footer float-right text-muted material-icons">chevron_right</i>
                         </a>
                         <div class="modal fade" id="deleteProductModal" tabindex="-1" role="dialog" aria-labelledby="deleteProductModalLabel" aria-hidden="true">
@@ -4878,20 +4877,22 @@ class Web_Page
                             </div>
                         </div>
                     </div>
-                    <div class="col-md-4 p-2 border-bottom border-gray">
+                    <div class="col-md-4 p-2">
                         <a href="#">Change password
                             <i class="mobile-footer float-right text-muted material-icons">chevron_right</i>
                         </a>
                     </div>
                 </div>
+                <hr>
                 <div class="row pb-1 mb-0">
                     <div class="col-lg-12 text-center">
                         <input type="submit" name="submit_settings" class="btn btn-outline-info" value="Save changes">
                     </div>
                 </div>
             </form>
+            <hr>
             <div class="row pb-1 mb-0">
-                <div class="col-lg-12 pt-2 text-center border-top border-gray">
+                <div class="col-lg-12 text-center">
                     <button class="btn btn-outline-danger" data-toggle="modal" data-target="#deleteModal">
                         Delete my account</button>
 
