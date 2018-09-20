@@ -703,6 +703,7 @@ class Web_Page
                 
                     <!-- Bootstrap core CSS -->                   
                     <link rel=\"stylesheet\" href=\"$this->root_path/dist/css/bootstrap.min.css\"/>
+                    <link rel=\"stylesheet\" href=\"https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css\">
                 
                     <!-- Custom styles for this template -->
                     <link href=\"$this->root_path/assets/css/admin.css\" rel=\"stylesheet\">
@@ -725,6 +726,8 @@ class Web_Page
     {
         if($type == "CFO"){
             echo $this->cfoNavBar();
+        }elseif($type == "CMO"){
+            echo $this->cmoNavBar();
         }
     }
 
@@ -734,38 +737,44 @@ class Web_Page
             <div class=\"sidebar-sticky\">
                 <ul class=\"nav flex-column\">
                     <li class=\"nav-item\">
-                        <a class=\"nav-link\" href=\"index.php\">
-                            <span data-feather=\"home\"></span>
+                        <a style='color: black;' class=\"nav-link\" href=\"index.php\">
+                            <i class=\"fa fa-home\"></i>
                             Dashboard <span class=\"sr-only\">(current)</span>
                         </a>
                     </li>
                     <li class=\"nav-item\">
-                        <a class=\"nav-link\" href=\"payments.php\">
-                            <span data-feather=\"dollar-sign\"></span>
+                        <a style='color: black;' class=\"nav-link\" href=\"payments.php\">
+                            <i class=\"fa fa-dollar\"></i>
                             Payments
                         </a>
                     </li>
                     <li class=\"nav-item\">
-                        <a class=\"nav-link\" href=\"transfers.php\">
-                            <span data-feather=\"move\"></span>
+                        <a style='color: black;' class=\"nav-link\" href=\"transfers.php\">
+                            <i class=\"fa fa-balance-scale\"></i>
                             Transfers
                         </a>
                     </li>
                     <li class=\"nav-item\">
-                        <a class=\"nav-link\" href=\"https://c73.qbo.intuit.com/app/homepage\" target=\"_blank\">
-                            <span data-feather=\"bar-chart\"></span>
+                        <a style='color: black;' class=\"nav-link\" href=\"affiliates.php\" target=\"_blank\">
+                            <i class=\"fa fa-user\" aria-hidden=\"true\"></i>
+                            Affiliates
+                        </a>
+                    </li>
+                    <li class=\"nav-item\">
+                        <a style='color: black;' class=\"nav-link\" href=\"https://c73.qbo.intuit.com/app/homepage\" target=\"_blank\">
+                            <i class=\"fa fa-bar-chart\"></i>
                             Quickbooks
                         </a>
                     </li>
                     <li class=\"nav-item\">
-                        <a class=\"nav-link\" href=\"https://dashboard.stripe.com/dashboard\" target=\"_blank\">
-                            <span data-feather=\"credit-card\"></span>
+                        <a style='color: black;' class=\"nav-link\" href=\"https://dashboard.stripe.com/dashboard\" target=\"_blank\">
+                            <i class=\"fa fa-cc-stripe\"></i>
                             Stripe
                         </a>
                     </li>
                     <li class=\"nav-item\">
-                        <a class=\"nav-link\" href=\"https://www.wellsfargo.com/\" target=\"_blank\">
-                            <span data-feather=\"file-plus\"></span>
+                        <a style='color: black;' class=\"nav-link\" href=\"https://www.wellsfargo.com/\" target=\"_blank\">
+                            <i class=\"fa fa-university\" aria-hidden=\"true\"></i>
                             Wells Fargo
                         </a>
                     </li>
@@ -900,9 +909,17 @@ class Web_Page
         </main>";
     }
 
+    function cmoNavBar()
+    {
+        return $this;
+    }
 
+    function cmoDashboard()
+    {
+        return $this;
+    }
 
-    function getPaymentsTable()
+    function renderPaymentsTable()
     {
         echo "
         <main role=\"main\" class=\"col-md-9 ml-sm-auto col-lg-10 pt-3 px-4\">
@@ -936,6 +953,38 @@ class Web_Page
                     $row['net_profit'],
                     $row['created_at'],
                     $row['available_at']
+            );
+        }
+        echo "
+                    </tbody>
+            </table>
+        </div>
+        </main>";
+    }
+
+    function renderAffiliatesTable()
+    {
+        echo "
+        <main role=\"main\" class=\"col-md-9 ml-sm-auto col-lg-10 pt-3 px-4\">
+            <h2>Section title</h2>
+                <div class=\"table-responsive\">
+                    <table class=\"table table-striped table-sm\">
+                        <thead>
+                        <tr>
+                            <th>Affiliate</th>
+                            <th>New User</th>
+                            <th>Created At</th>
+                        </tr>
+                        </thead>
+                        <tbody>";
+        $sth = $this->db->query("SELECT * FROM users WHERE affiliate_id IS NOT NULL AND confirmed=1");
+        while($row = $sth->fetch(PDO::FETCH_ASSOC)){
+            $customer = $this->getUserInfo($row['id']);
+            $affiliate = $this->getUserInfo($customer['affiliate_id']);
+            echo $this->displayAffiliatesTable(
+                    $affiliate['first_name'] . " " . $affiliate['last_name'],
+                    $customer['first_name'] . " " . $customer['last_name'],
+                    $customer['date_joined']
             );
         }
         echo "
@@ -985,6 +1034,17 @@ class Web_Page
             <td>$id</td>
             <td>$freelancer</td>
             <td>$$amount</td>
+            <td>$date</td>
+            </tr>";
+    }
+
+    function displayAffiliatesTable($affiliate, $user, $date)
+    {
+        $date = date("m/d/Y",strtotime($date));
+        return "
+            <tr>
+            <td>$affiliate</td>
+            <td>$user</td>
             <td>$date</td>
             </tr>";
     }
