@@ -111,6 +111,7 @@ class Web_Payment
         $credit = $this->getUserCredit($this->getCustomerId($id));
         if($credit >= $this->price){
             $price = 0;
+            $label = "data-panel-label=\"Free\"";
         } elseif ($credit < $this->price){
             $price = $this->price - $credit;
         }
@@ -123,6 +124,7 @@ class Web_Payment
                         data-key= " . Data_Constants::STRIPE_PUBLIC . "
                         data-amount= '$price' 
                         data-name='FAVR Inc.'
+                        $label
                         data-description='$this->description'
                         data-image='https://askfavr.com/favr-pwa/assets/brand/favicon.ico'
                         data-locale='auto'>
