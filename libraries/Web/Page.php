@@ -2165,7 +2165,7 @@ class Web_Page
                     </ul>
 
 <!--                     WEB ELEMENT ONLY-->
-                    <form class="web-search form-inline my-2 my-lg-0" action="<?php echo $this->root_path . 'home/results/?navbar=active_home' ?>">
+                    <form class="web-search form-inline my-2 my-lg-0" action="<?php echo $this->root_path . '/home/results/?navbar=active_home' ?>">
                         <input style="border-radius: 5px 0 0 5px" class="form-control mr-sm-0" type="text" name="q" placeholder="Search" aria-label="Search">
                         <button style="border-radius: 0 5px 5px 0" class="btn btn-outline-danger my-2 my-sm-0" type="submit">Search</button>
                     </form>
