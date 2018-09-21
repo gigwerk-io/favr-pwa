@@ -3475,7 +3475,12 @@ class Web_Page
 
     function processSearch($q)
     {
-        $results = $this->db->query("SELECT * FROM users WHERE username LIKE '%$q%' or first_name LIKE '%$q%'");
+        $results = $this->db->query("SELECT * 
+                                               FROM users 
+                                               WHERE username LIKE '%$q%' 
+                                               OR first_name LIKE '%$q%'
+                                               OR last_name LIKE '%q%'
+                                               OR id LIKE '%$q%'");
         echo "<div class=\"my-3 p-3 bg-white rounded box-shadow\" style=\"width: 100%;\">
                     <h6 class=\"border-bottom border-gray pb-2 mb-0\">Search Results</h6>";
         while($rows = $results->fetch(PDO::FETCH_ASSOC)){
