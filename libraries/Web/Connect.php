@@ -138,7 +138,7 @@ class Web_Connect{
         $data = \Stripe\Transfer::create(array(
             "amount" => $price,
             "currency" => "usd",
-            "source_transaction" => $token,
+            "source_transaction" => null, //TODO: Chamge null to $token
             "destination" => $account_id,
         ));
         $transfer = json_decode(json_encode($data), true);
