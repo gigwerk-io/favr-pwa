@@ -109,9 +109,9 @@ class Web_Payment
     public function checkOut(int $id, string $url)
     {
         $credit = $this->getUserCredit($this->getCustomerId($id));
-        if($credit > $this->price){
+        if($credit >= $this->price){
             $price = 0;
-        } elseif ($credit <= $this->price){
+        } elseif ($credit < $this->price){
             $price = $this->price - $credit;
         }
         $url = str_replace("&","%26", $url);
@@ -159,12 +159,12 @@ class Web_Payment
     public function charge(string $token, int $id, string $callback_url)
     {
         $credit = $this->getUserCredit($this->getCustomerId($id));
-        if($credit > $this->price){
+        if($credit >= $this->price){
             $credit = $credit - $this->price;
             $this->processUpdateCredit($this->getCustomerId($id), $credit);
             $this->addStripeToken("favr_credit", $id);
             $this->update($id, $callback_url);
-        } elseif ($credit <= $this->price){
+        } elseif ($credit < $this->price){
             $price = $this->price - $credit;
             $this->processUpdateCredit($this->getCustomerId($id), 0);
             \Stripe\Stripe::setApiKey(\Data_Constants::STRIPE_SECRET);

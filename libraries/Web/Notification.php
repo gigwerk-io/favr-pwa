@@ -105,8 +105,8 @@ class Web_Notification
     public function processCustomerSmsNotification($request_id)
     {
         $user_id = $this->processRecieveRequest($request_id);
-        $customer = $this->processGetCustomerInfo($user_id);
-        $this->sendNotification($customer['phone'], "Hey" . $customer['first_name'] . ", a freelancer has responded to your FAVR request. Please accept or deny them within the app!");
+        $customer = $this->processGetCustomerInfo($user_id['customer_id']);
+        $this->sendNotification($customer['phone'], "Hey " . $customer['first_name'] . ", a freelancer has responded to your FAVR request. Please accept or deny them within the app!");
     }
 
     private function processEmailNotification($name, $email, $message)
@@ -176,7 +176,7 @@ class Web_Notification
     {
         $sth = $this->db->query("SELECT * FROM marketplace_favr_requests WHERE id=$id");
         $row = $sth->fetch(PDO::FETCH_ASSOC);
-        return $row['customer_id'];
+        return $row;
     }
 
     private function processGetCustomerInfo($customer_id)
