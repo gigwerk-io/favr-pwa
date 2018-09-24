@@ -2022,14 +2022,14 @@ class Web_Page
                     if ($render_back_button) {
                         // back button
                         ?>
-                        <a href="<?php echo $last_url; ?>" class="navbar-toggler pt-0 pb-2 border-0" style="height: 44px;">
+                        <a id="leftItem" href="<?php echo $last_url; ?>" class="navbar-toggler pt-0 pb-2 border-0" style="height: 44px;">
                             <span class="sr-only">Toggle back navigate</span>
                             <i class="material-icons text-light">arrow_back</i>
                         </a>
                 <?php
                     } else {
                 ?>
-                        <button class="navbar-toggler pb-2 border-0" type="button" data-toggle="offcanvas">
+                        <button id="leftItem" class="navbar-toggler pb-2 border-0" type="button" data-toggle="offcanvas">
                             <span class="sr-only">Toggle navigation</span>
                             <span></span>
                             <span></span>
@@ -2038,7 +2038,7 @@ class Web_Page
                 <?php
                     }
                 ?>
-                <div class="request-favr pt-0 pr-2 pb-0 mr-0">
+                <div id="logo" class="request-favr pt-0 pr-2 pb-0 mr-0">
                     <?php
                     if ($_SESSION['nav_scroller'] != "active_marketplace" || $_SESSION['navbar'] != "active_home") {
                         echo "
@@ -2055,15 +2055,36 @@ class Web_Page
                             </a>
                         ";
                     }
+
+                    $this->addScript("<script>
+                                                    function renderSearch() {
+                                                      $('#logo').addClass('d-none');
+                                                      $('#searchButton').addClass('d-none');
+                                                      $('#cancelSearch').removeClass('d-none');
+                                                      $('#searchBar').removeClass('d-none');
+                                                    }
+                                                    
+                                                    function renderMainNavigation() {
+                                                      $('#logo').removeClass('d-none');
+                                                      $('#searchButton').removeClass('d-none');
+                                                      $('#cancelSearch').addClass('d-none');
+                                                      $('#searchBar').addClass('d-none');
+                                                    }
+                                                </script>");
                     ?>
                 </div>
 
-                <button class="profile-button small border-0 mr-0 pr-0 pb-0" style="left: .1rem;padding-bottom: .569rem;" type="button">
-                    <a href='<?php echo "$this->root_path/home/chat/?navbar=active_home&nav_scroller=active_chat"; ?>'>
-                        <div class="material-icons text-light">chat</div>
-                    </a>
+                <div id="searchBar" class="d-none pt-0 pl-0 pr-0 pb-0 mr-0 ml-0">
+                    <input type="text" class="form-control" placeholder="Search people...">
+                </div>
+
+                <button id="searchButton" class="profile-button small border-0 mr-0 pr-0 pb-0" style="left: .1rem;padding-bottom: .569rem;" type="button" onclick="renderSearch()">
+                    <i class="material-icons" style="color: var(--red)">search</i>
                 </button>
 
+                <button id="cancelSearch" class="d-none profile-button small border-0 mr-0 pr-0 pb-0" style="color: var(--red);left: .1rem;padding-bottom: .569rem;" type="button" onclick="renderMainNavigation()">
+                    Cancel
+                </button>
 
                 <div class="navbar-collapse offcanvas-collapse" id="navbarsExampleDefault">
                     <ul class="navbar-nav mr-auto">
@@ -2151,12 +2172,12 @@ class Web_Page
                                 ?>
                             </a>
                         </li>
-                        <li class="mobile-search nav-item <?php echo $active_search; ?>">
-                            <a class="nav-link d-inline-flex" href="#">
-                                <i class="material-icons">search</i>
-                                Search
+                        <li class="mobile-search nav-item <?php echo $active_chat; ?>">
+                            <a class="nav-link d-inline-flex" href='<?php echo "$this->root_path/home/chat/?navbar=active_home&nav_scroller=active_chat"; ?>'>
+                                <i class="material-icons">chat</i>
+                                Chat
                                 <?php
-                                if (!empty($active_search)) {
+                                if (!empty($active_chat)) {
                                     echo "<span class=\"sr-only\">(current)</span>";
                                 }
                                 ?>
