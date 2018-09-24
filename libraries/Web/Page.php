@@ -3506,6 +3506,9 @@ class Web_Page
                                                OR id LIKE '%$q%'");
         echo "<div class=\"my-3 p-3 bg-white rounded box-shadow\" style=\"width: 100%;\">
                     <h6 class=\"border-bottom border-gray pb-2 mb-0\">Search Results</h6>";
+        if(empty($results->fetch(PDO::FETCH_ASSOC))){
+            echo "<h6>No  Matches...</h6>";
+        }
         while($rows = $results->fetch(PDO::FETCH_ASSOC)){
             $id = $rows['id'];
             $name =  $rows['first_name'] . " " . $rows['last_name'];
@@ -3520,11 +3523,7 @@ class Web_Page
                 $picName = "";
                 $picType = "";
             }
-            if(!empty($rows)){
-                echo $this->renderSearchResult($id, $picName, $picType, $name, $username);
-            } else{
-                echo "No Matches...";
-            }
+            echo $this->renderSearchResult($id, $picName, $picType, $name, $username);
         }
 
     }
