@@ -2073,12 +2073,12 @@ class Web_Page
                                                 </script>");
                     ?>
                 </div>
-                <form action="<?php echo $this->root_path . '/home/results/?navbar=active_home' ?>">
-                    <div id="searchBar" class="d-none pt-0 pl-0 pr-0 pb-0 mr-0 ml-0">
+
+                    <div id="searchBar" class="d-none pt-0 pl-0 pr-0 pb-0 mr-0 ml-0"><form action="<?php echo $this->root_path . '/home/results/?navbar=active_home' ?>">
                         <input type="text" class="form-control" name="q" placeholder="Search people..." aria-label="Search">
                         <input type="submit" style="display:none"/>
+                        </form>
                     </div>
-                </form>
                 <button id="searchButton" class="profile-button small border-0 mr-0 pr-0 pb-0" style="left: .1rem;padding-bottom: .569rem;" type="button" onclick="renderSearch()">
                     <i class="material-icons" style="color: var(--red)">search</i>
                 </button>
@@ -3499,7 +3499,7 @@ class Web_Page
     {
         $results = $this->db->query("SELECT * 
                                                FROM users 
-                                               WHERE default_scope='Public'
+                                               WHERE default_scope='Public' AND
                                                username LIKE '%$q%' 
                                                OR first_name LIKE '%$q%'
                                                OR last_name LIKE '%$q%'
@@ -3520,7 +3520,11 @@ class Web_Page
                 $picName = "";
                 $picType = "";
             }
-            echo $this->renderSearchResult($id, $picName, $picType, $name, $username);
+            if(!empty($rows)){
+                echo $this->renderSearchResult($id, $picName, $picType, $name, $username);
+            } else{
+                echo "No Matches...";
+            }
         }
 
     }
