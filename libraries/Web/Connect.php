@@ -125,11 +125,11 @@ class Web_Connect{
     }
 
     /**
-     * @param int $price
+     * @param double $price
      * @param string $token
      * @param string $account_id
      */
-    public function payoutFunds(int $price, string $token, string $account_id)
+    public function payoutFunds(double $price, string $token, string $account_id)
     {
         \Stripe\Stripe::setApiKey(\Data_Constants::STRIPE_SECRET);
         if($token == 'favr_credit') {

@@ -136,9 +136,9 @@ class Web_Chat
     private function displayChat(int $sender_id,string $message, string $date, string $img_path)
     {
         if($this->id == $sender_id){
-            $this->outgoingMessage($message, $date);
+            $this->renderOutgoingMessage($message, $date);
         }else{
-            $this->incomingMessage($message, $date, $img_path);
+            $this->renderIncomingMessage($message, $date, $img_path);
         }
     }
 
@@ -153,10 +153,10 @@ class Web_Chat
         $img_path = $this->getProfileImage($this->getRecipient($id, $this->id));
         while($messages = $query->fetch(PDO::FETCH_ASSOC)){
             $this->displayChat(
-              $messages['sender_id'],
-              $messages['message'],
-              $this->timeAgo($messages['created_at']),
-              $img_path
+                $messages['sender_id'],
+                $messages['message'],
+                $this->timeAgo($messages['created_at']),
+                $img_path
             );
         }
         return $this;
@@ -170,7 +170,7 @@ class Web_Chat
     public function sendMessage(int $chat_room, int $sender_id, string $message)
     {
         $recipient_id = $this->getRecipient($chat_room, $sender_id);
-        $insert_sign_up_query = $this->db->query("INSERT INTO marketplace_favr_messages
+        $send_message_query = $this->db->query("INSERT INTO marketplace_favr_messages
                                     (chat_room_id,
                                      sender_id, 
                                      recipient_id, 
@@ -182,8 +182,8 @@ class Web_Chat
                                      '$message'
                                      )
             ");
-        if($insert_sign_up_query){
-            $this->messagePing();
+        if($send_message_query){
+            $this->renderMessagePing();
         }
     }
 
@@ -223,7 +223,7 @@ class Web_Chat
     }
 
 
-    private function outgoingMessage(string $message, string $date)
+    private function renderOutgoingMessage(string $message, string $date)
     {
         echo "<div class=\"outgoing_msg\" id='incoming'>
                     <div class=\"sent_msg\">
@@ -233,7 +233,7 @@ class Web_Chat
               </div>";
     }
 
-    private function incomingMessage(string $message, string $date, string $img_path)
+    private function renderIncomingMessage(string $message, string $date, string $img_path)
     {
         echo "<div class=\"incoming_msg\">
                 <div class=\"incoming_msg_img\"><img src=\"$img_path\" class='rounded-circle'
@@ -247,7 +247,7 @@ class Web_Chat
               </div>";
     }
 
-    private function messagePing()
+    private function renderMessagePing()
     {
         echo "<embed loop='false' src='chat.wav' hidden='true' autoplay='true'/>";
     }
