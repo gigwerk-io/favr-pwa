@@ -7,7 +7,7 @@
  */
 
 session_start();
-include($_SERVER['DOCUMENT_ROOT'] . "/favr-pwa/include/autoload.php");
+include($_SERVER['DOCUMENT_ROOT'] . "/include/autoload.php");
 //require '../../libraries/Api/Stripe/init.php';
 
 // component constants
@@ -21,7 +21,7 @@ if (isset($_SESSION['user_info'])) {
 $page = new Web_Page($USER);
 $connect = new Web_Connect();
 if(!empty($connect->payment_id)) {
-        $connect->stripeLogin($connect->payment_id);
+        $connect->stripeLogin();
 } else{
     if(!isset($_GET['code']))
     {

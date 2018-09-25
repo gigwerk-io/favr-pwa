@@ -117,7 +117,7 @@ class Web_Financials
                                      '$created_at')
             ");
         if($insert_db_query) {
-            echo "<script> window.location.href='http://192.168.64.2/favr-pwa/admin/cfo/transfers.php'; </script>";
+            echo "<script> window.location.href='http://test.askfavr.com/admin/cfo/transfers.php'; </script>";
         }
     }
     private function databaseHandler($stripe_id, $source_id, $freelancer_id, $amount, $stripe_fee, $freelancer_fee, $net_profit, $created_at, $available_at)
