@@ -58,7 +58,7 @@ class Web_Confirm
 
     private function createLink(string $email, string $password)
     {
-        return Data_Constants::ROOT_PATH . "home/confirm/?src=" . $this->encrypt_decrypt('encrypt', $email) . "&auth=" . $this->encrypt_decrypt('encrypt', $password);
+        return Data_Constants::ROOT_PATH . "/home/confirm/?src=" . $this->encrypt_decrypt('encrypt', $email) . "&auth=" . $this->encrypt_decrypt('encrypt', $password);
     }
 
     private function getUser(string $email)
