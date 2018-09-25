@@ -1,6 +1,6 @@
 <?php
 session_start();
-include($_SERVER['DOCUMENT_ROOT'] . "/favr-pwa/include/autoload.php");
+include($_SERVER['DOCUMENT_ROOT'] . "/include/autoload.php");
 include '../libraries/Api/Sendgrid/vendor/autoload.php';
 include '../libraries/Api/Twilio/twilio-php-master/Twilio/autoload.php';
 
