@@ -62,8 +62,8 @@ class Data_Constants
     const DB_SCOPE_PRIVATE = "Private";
 
     //Stipe API
-    const STRIPE_PUBLIC = 'pk_test_WRhN4BKmkqctL2nrjCPJCTXi'; //ipk_live_YAI3p9uIkvjj6fRIs8sWxBXH
-    const STRIPE_SECRET = 'sk_test_AfPrHBd85yRDmJmdW4uK3a9Y'; //sk_live_V2p1RJtZWKRenGgFidXZ0Zil
+    const STRIPE_PUBLIC = 'pk_test_WRhN4BKmkqctL2nrjCPJCTXi';
+    const STRIPE_SECRET = 'sk_test_AfPrHBd85yRDmJmdW4uK3a9Y';
     const STRIPE_CONNECT = 'https://connect.stripe.com/express/oauth/authorize?redirect_uri=https://askfavr.com/favr-pwa/home/payments/&client_id=ca_C2CK5GZpN8ODaBRV1pKZCnA2yTEMjKsu&state=true';
 
     //Twilio

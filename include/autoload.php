@@ -14,7 +14,7 @@
  * @param $classname
  */
 function autoload ($classname) {
-    $base = $_SERVER['DOCUMENT_ROOT']."/favr-pwa/libraries";
+    $base = $_SERVER['DOCUMENT_ROOT']."/libraries";
     $path = "";
 
     if (preg_match("/\\\\/",$classname)) {
