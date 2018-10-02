@@ -1730,7 +1730,7 @@ class Web_Page
                             echo $userInfo['first_name'] . " " . $userInfo['last_name'];
 
                             if ($userInfo['class'] == Data_Constants::DB_USER_CLASS_VERIFIED) {
-                                echo "<i class=\"material-icons text-primary\">check_circle</i>";
+                                echo " <i class=\"material-icons text-primary\">check_circle</i>";
                             }
                             ?>
                         </h3>
@@ -1904,7 +1904,7 @@ class Web_Page
                             echo $userInfo['first_name'] . " " . $userInfo['last_name'];
 
                             if ($userInfo['class'] == Data_Constants::DB_USER_CLASS_VERIFIED) {
-                                echo "<i class=\"material-icons text-primary\">check_circle</i>";
+                                echo " <i class=\"material-icons text-primary\">check_circle</i>";
                             }
                             ?>
                         </h3>
@@ -2018,7 +2018,8 @@ class Web_Page
             }
             ?>
             <nav class="navbar navbar-mobile navbar-expand-md fixed-top navbar-dark bg-dark">
-                <?php
+                <div class="row mobile-navbar ml-0 mr-0 p-0" style="width: 100%;flex-wrap: nowrap">
+                    <?php
                     if ($render_back_button) {
                         // back button
                         ?>
@@ -2026,37 +2027,38 @@ class Web_Page
                             <span class="sr-only">Toggle back navigate</span>
                             <i class="material-icons text-light">arrow_back</i>
                         </a>
-                <?php
+                        <?php
                     } else {
-                ?>
+                        ?>
                         <button id="leftItem" class="navbar-toggler pb-2 border-0" type="button" data-toggle="offcanvas">
                             <span class="sr-only">Toggle navigation</span>
                             <span></span>
                             <span></span>
                             <span></span>
                         </button>
-                <?php
-                    }
-                ?>
-                <div id="logo" class="request-favr pt-0 pr-2 pb-0 mr-0">
-                    <?php
-                    if ($_SESSION['nav_scroller'] != "active_marketplace" || $_SESSION['navbar'] != "active_home") {
-                        echo "
-                            <a href=\"$this->root_path/home/?navbar=active_home&nav_scroller=active_marketplace\">
-                        ";
+                        <?php
                     }
                     ?>
-                    <img src="<?php echo $this->root_path; ?>/assets/brand/favr_logo_rd.png" height="21" width="70"
-                         class="navbar-brand mr-0" style="padding-top: 0; padding-bottom: 0" alt="Logo">
+                    <div class="col-md-11 text-center pt-1 pl-0 pr-0">
+                        <div id="logo" class="request-favr pt-1">
+                            <?php
+                            if ($_SESSION['nav_scroller'] != "active_marketplace" || $_SESSION['navbar'] != "active_home") {
+                                echo "
+                            <a href=\"$this->root_path/home/?navbar=active_home&nav_scroller=active_marketplace\">
+                        ";
+                            }
+                            ?>
+                            <img src="<?php echo $this->root_path; ?>/assets/brand/favr_logo_rd.png" height="21" width="70"
+                                 class="navbar-brand mr-0" style="padding-top: 0; padding-bottom: 0" alt="Logo">
 
-                    <?php
-                    if ($_SESSION['nav_scroller'] != "active_marketplace" || $_SESSION['navbar'] != "active_home") {
-                        echo "
+                            <?php
+                            if ($_SESSION['nav_scroller'] != "active_marketplace" || $_SESSION['navbar'] != "active_home") {
+                                echo "
                             </a>
                         ";
-                    }
+                            }
 
-                    $this->addScript("<script>
+                            $this->addScript("<script>
                                                     function renderSearch() {
                                                       $('#logo').addClass('d-none');
                                                       $('#searchButton').addClass('d-none');
@@ -2071,25 +2073,63 @@ class Web_Page
                                                       $('#searchBar').addClass('d-none');
                                                     }
                                                 </script>");
-                    ?>
+                            ?>
+                        </div>
+                        <div id="searchBar" class="d-none pt-0 pl-0 pr-0 pb-0 mr-0 ml-0">
+                            <form action="<?php echo $this->root_path . '/home/results/?navbar=active_home' ?>">
+                                <input type="text" class="form-control" name="q" placeholder="Search for people..." style="width: 95%;" aria-label="Search">
+                                <input type="submit" style="display:none"/>
+                            </form>
+                        </div>
+                    </div>
+                    <div class="col-md-1 pr-0 pt-1" style="max-width: 44px;">
+                        <button id="searchButton" class="profile-button small border-0 mr-0 pr-0 pb-0 float-right" style="left: .1rem;padding-bottom: .569rem;" type="button" onclick="renderSearch()">
+                            <i class="material-icons" style="color: var(--red)">search</i>
+                        </button>
+
+                        <button id="cancelSearch" class="d-none profile-button small border-0 mr-0 pr-0 pt-1 pb-0 float-right" style="color: var(--red);left: .1rem;" type="button" onclick="renderMainNavigation()">
+                            Cancel
+                        </button>
+                    </div>
                 </div>
 
-                <div id="searchBar" class="d-none pt-0 pl-0 pr-0 pb-0 mr-0 ml-0">
-                    <form action="<?php echo $this->root_path . '/home/results/?navbar=active_home' ?>">
-                        <input type="text" class="form-control" name="q" placeholder="Search for people..." style="width: 11rem;" aria-label="Search">
-                        <input type="submit" style="display:none"/>
-                    </form>
-                </div>
+                <div class="navbar-collapse offcanvas-collapse" id="navbarsExampleDefault" style="background-color: #2b3035">
+                    <div id="logo" class="request-favr request-favr-web pr-3">
+                        <?php
+                        if ($_SESSION['nav_scroller'] != "active_marketplace" || $_SESSION['navbar'] != "active_home") {
+                            echo "
+                            <a href=\"$this->root_path/home/?navbar=active_home&nav_scroller=active_marketplace\">
+                        ";
+                        }
+                        ?>
+                        <img src="<?php echo $this->root_path; ?>/assets/brand/favr_logo_rd.png" height="21" width="70"
+                             class="navbar-brand mr-0" style="padding-top: 0; padding-bottom: 0" alt="Logo">
 
-                <button id="searchButton" class="profile-button small border-0 mr-0 pr-0 pb-0" style="left: .1rem;padding-bottom: .569rem;" type="button" onclick="renderSearch()">
-                    <i class="material-icons" style="color: var(--red)">search</i>
-                </button>
+                        <?php
+                        if ($_SESSION['nav_scroller'] != "active_marketplace" || $_SESSION['navbar'] != "active_home") {
+                            echo "
+                            </a>
+                        ";
+                        }
 
-                <button id="cancelSearch" class="d-none profile-button small border-0 mr-0 pr-0 pb-0" style="color: var(--red);left: .1rem;padding-bottom: .569rem;" type="button" onclick="renderMainNavigation()">
-                    Cancel
-                </button>
+                        $this->addScript("<script>
+                                                    function renderSearch() {
+                                                      $('#logo').addClass('d-none');
+                                                      $('#searchButton').addClass('d-none');
+                                                      $('#cancelSearch').removeClass('d-none');
+                                                      $('#searchBar').removeClass('d-none');
+                                                    }
+                                                    
+                                                    function renderMainNavigation() {
+                                                      $('#logo').removeClass('d-none');
+                                                      $('#searchButton').removeClass('d-none');
+                                                      $('#cancelSearch').addClass('d-none');
+                                                      $('#searchBar').addClass('d-none');
+                                                    }
+                                                </script>");
+                        ?>
+                    </div>
 
-                <div class="navbar-collapse offcanvas-collapse" id="navbarsExampleDefault">
                     <ul class="navbar-nav mr-auto">
                         <li class="mobile-footer nav-item text-center border-bottom pt-3 pb-3 <?php echo $active_profile; ?>">
                             <?php
@@ -2108,7 +2148,7 @@ class Web_Page
                                     </a>
                                 </button>
                                 <?php
-                                echo "<h5 class='text-light'>". $userInfo['first_name'] . " " . $userInfo['last_name'] . "</h5>";
+                                echo "<h5 class='text-light'>". $userInfo['first_name'] . " " . $userInfo['last_name'] . (($userInfo['class'] == Data_Constants::DB_USER_CLASS_VERIFIED) ? " <i class=\"material-icons small text-white\" style='font-size: 16px;'>check_circle</i>" : " ") . "</h5>";
                                 echo "<p class='text-muted'>@". $userInfo['username'] ."</p>";
                             } else {
                                 ?>
@@ -2170,17 +2210,6 @@ class Web_Page
                                 Welcome, <?php echo $_SESSION['user_info']['first_name']; ?>
                                 <?php
                                 if (!empty($active_profile)) {
-                                    echo "<span class=\"sr-only\">(current)</span>";
-                                }
-                                ?>
-                            </a>
-                        </li>
-                        <li class="mobile-search nav-item <?php echo $active_chat; ?>">
-                            <a class="nav-link d-inline-flex" href='<?php echo "$this->root_path/home/chat/?navbar=active_home&nav_scroller=active_chat"; ?>'>
-                                <i class="material-icons">chat</i>
-                                Chat
-                                <?php
-                                if (!empty($active_chat)) {
                                     echo "<span class=\"sr-only\">(current)</span>";
                                 }
                                 ?>
@@ -2268,19 +2297,6 @@ class Web_Page
                                         echo "<i class=\"material-icons\" style='color: var(--red);font-size: 15px; padding-left: 2px;position:relative;top:.1rem;'>people</i>";
                                     } else {
                                         echo "<i class=\"material-icons\" style='font-size: 15px; padding-left: 2px;position:relative;top:.1rem;'>people_outline</i>";
-                                    }
-                                    ?>
-                                </a>
-                            </div>
-                            <div class="col-sm-2 request-favr-web pl-0 pr-0">
-                                <a class="nav-link <?php echo $active_chat; ?>"
-                                   href="<?php echo $this->root_path; ?>/home/chat/?navbar=active_home&nav_scroller=active_chat">
-                                    Chat
-                                    <?php
-                                    if ($active_chat) {
-                                        echo "<i class=\"material-icons\" style='color: var(--red);font-size: 15px; padding-left: 2px;position:relative;top:.1rem;'>chat</i>";
-                                    } else {
-                                        echo "<i class=\"material-icons\" style='font-size: 15px; padding-left: 2px;position:relative;top:.1rem;'>chat</i>";
                                     }
                                     ?>
                                 </a>
@@ -3582,9 +3598,17 @@ class Web_Page
                 </button>
             </div>
 
-            <div class="favr-fab">
-                <a class="favr-fab-fab favr-fab-btn-large text-center" id="favr-fabBtn">
-                    <i style="padding: .8rem;background: transparent;color: var(--white);font-size: xx-large" class="material-icons">build</i>
+            <div class="favr-fab" style="justify-content: center!important;
+                                        width: 100%;
+                                        padding-right: 30px;">
+                <a class="favr-fab-fab favr-fab-btn-large text-center" id="favr-fabBtn"
+                    style=" width: inherit;
+                            justify-self: center!important;
+                            border-radius: 1rem;
+                            background-image: linear-gradient(to right, red, #ffaa00);">
+                    <h4 style="color: #fff;display: inline;">
+                        Request a FAVR
+                    </h4>
                 </a>
             </div>
 
@@ -3796,9 +3820,18 @@ class Web_Page
                     </button>
                 </div>
 
-                <div class="favr-fab">
-                    <a class="favr-fab-fab favr-fab-btn-large bg-dark text-center" id="favr-fabBtn">
-                        <i style="padding: .8rem;background: transparent;color: var(--white);font-size: xx-large" class="material-icons">build</i>
+                <div class="favr-fab" style="justify-content: center!important;
+                                        width: 100%;
+                                        padding-right: 30px;">
+                    <a class="favr-fab-fab favr-fab-btn-large text-center" id="favr-fabBtn" style="
+                            width: inherit;
+                            justify-self: center!important;
+                            border-radius: 1rem;
+                            background-image: linear-gradient(to right, orange, red);
+                            ">
+                        <h4 style="color: #fff;display: inline;font-weight: normal;">
+                            Request a Friend FAVR
+                        </h4>
                     </a>
                 </div>
 
@@ -3912,6 +3945,7 @@ class Web_Page
                                 if (!empty($friendInfo)) {
                                     $friendFullName = $friendInfo['first_name'] . " " . $friendInfo['last_name'];
                                     $friendUsername = $friendInfo['username'];
+                                    $friendClass = $friendInfo['class'];
                                     $friendProfilePicture = unserialize($friendInfo['profile_picture_path']);
                                     if (isset($friendProfilePicture['name'], $friendProfilePicture['type'])) {
                                         $friendPictureName = $friendProfilePicture['name'];
@@ -3935,7 +3969,7 @@ class Web_Page
                                         </a>
                                         <div class="media-body pb-3 mr-0 mb-0 small lh-125 border-bottom border-gray">
                                             <div class="d-flex justify-content-between align-items-center w-100">
-                                                <strong class="text-gray-dark"><?php echo $friendFullName; ?></strong>
+                                                <strong class="text-gray-dark"><?php echo ($friendClass == Data_Constants::DB_USER_CLASS_VERIFIED) ? "$friendFullName <i class=\"material-icons small text-primary\" style='font-size: 13px'>check_circle</i>" : "$friendFullName"; ?></strong>
                                                 <?php
                                                     if ($crow['COUNT(*)'] != 0) {
                                                         $userFavrGiven = $crow['given'];
@@ -4036,6 +4070,7 @@ class Web_Page
                                     $friendOfFriendFullName =  $friendOfFriendInfo['first_name'] . " " . $friendOfFriendInfo['last_name'];
                                     $friendOfFriendUsername = $friendOfFriendInfo['username'];
                                     $friendOfFriendProfilePicPath = $friendOfFriendInfo['profile_picture_path'];
+                                    $friendOfFriendClass = $friendOfFriendInfo['class'];
                                     if (isset($friendOfFriendProfilePicPath['name'], $friendOfFriendProfilePicPath['type'])) {
                                         $picName = $friendOfFriendProfilePicPath['name'];
                                         $picType = $friendOfFriendProfilePicPath['type'];
@@ -4051,8 +4086,18 @@ class Web_Page
                                         </a>
                                         <div class="media-body pb-3 mb-0 small lh-125 border-bottom border-gray">
                                             <div class="d-flex justify-content-between align-items-center w-100">
-                                                <strong class="text-gray-dark"><?php echo $friendOfFriendFullName; ?></strong>
-                                                <a href="#">Send Friend Request</a>
+                                                <strong class="text-gray-dark"><?php echo ($friendOfFriendClass == Data_Constants::DB_USER_CLASS_VERIFIED) ? "$friendOfFriendFullName <i class=\"material-icons small text-primary\" style='font-size: 13px'>check_circle</i>" : "$friendOfFriendFullName"; ?></strong>
+                                                <div class="d-flex justify-content-between align-items-center w-100">
+                                                    <strong class="text-gray-dark"><?php echo $friendOfFriendFullName; ?></strong>
+                                                    <?php
+                                                    if ($_SESSION['navbar'] == "friends_list") {
+                                                        $last_url = "$this->root_path/home/friends/?friends_list=true&add_friend=true&id=$friend_of_friend_id&ALERT_MESSAGE=Your friend request has been sent!";
+                                                    } else {
+                                                        $last_url = "$this->root_path/home/friends/?navbar=active_home&nav_scroller=active_friends&add_friend=true&id=$friend_of_friend_id&ALERT_MESSAGE=Your friend request has been sent!";
+                                                    }
+                                                    ?>
+                                                    <a href="<?php echo $last_url; ?>">Send Friend Request</a>
+                                                </div>
                                             </div>
                                             <span class="d-block">
                                                 <a href="<?php echo "$this->root_path/components/profile/profile.php?id=$friend_of_friend_id"; ?>">
@@ -4109,6 +4154,7 @@ class Web_Page
                                 if ($crow['COUNT(*)'] == 0) {
                                     $friendOfFriendFullName =  $row['first_name'] . " " . $row['last_name'];
                                     $friendOfFriendUsername = $row['username'];
+                                    $friendOfFriendClass = $row['class'];
                                     $friendOfFriendProfilePicPath = unserialize($row['profile_picture_path']);
                                     if (isset($friendOfFriendProfilePicPath['name'], $friendOfFriendProfilePicPath['type'])) {
                                         $picName = $friendOfFriendProfilePicPath['name'];
@@ -4125,7 +4171,7 @@ class Web_Page
                                         </a>
                                         <div class="media-body pb-3 mb-0 small lh-125 border-bottom border-gray">
                                             <div class="d-flex justify-content-between align-items-center w-100">
-                                                <strong class="text-gray-dark"><?php echo $friendOfFriendFullName; ?></strong>
+                                                <strong class="text-gray-dark"><?php echo ($friendOfFriendClass == Data_Constants::DB_USER_CLASS_VERIFIED) ? "$friendOfFriendFullName <i class=\"material-icons small text-primary\" style='font-size: 13px'>check_circle</i>" : "$friendOfFriendFullName"; ?></strong>
                                                 <?php
                                                     if ($_SESSION['navbar'] == "friends_list") {
                                                         $last_url = "$this->root_path/home/friends/?friends_list=true&add_friend=true&id=$friend_of_friend_id&ALERT_MESSAGE=Your friend request has been sent!";
