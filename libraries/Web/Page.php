@@ -3513,11 +3513,18 @@ class Web_Page
 
     }
 
+    /**
+     * TODO: escape strings in input string
+     * TODO: use better naming scheme
+     * TODO: remove renderSearchResult() from process function
+     * @param $q
+     */
     function processSearch($q)
     {
+        $publicScope = Data_Constants::DB_SCOPE_PUBLIC;
         $results = $this->db->query("SELECT * 
                                                FROM users 
-                                               WHERE default_scope='Public' AND
+                                               WHERE default_scope='$publicScope' AND
                                                username LIKE '%$q%' 
                                                OR first_name LIKE '%$q%'
                                                OR last_name LIKE '%$q%'
