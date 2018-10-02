@@ -2033,7 +2033,7 @@ class Web_Page
                         <button id="leftItem" class="navbar-toggler pb-2 border-0" type="button" data-toggle="offcanvas">
                             <span class="sr-only">Toggle navigation</span>
                             <span></span>
-                            <span></span>
+                            <span style="width: 20px;background-color: orange;"></span>
                             <span></span>
                         </button>
                         <?php
