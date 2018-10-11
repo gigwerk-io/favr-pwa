@@ -346,7 +346,7 @@ class Web_Invoice
                     $this->task
                 </td>
                 <td style=\"padding: 5px;vertical-align: top;border-bottom: 1px solid #eee\">
-                    $this->freelancer
+                    $this->customer
                 </td>
                 <td style=\"padding: 5px;vertical-align: top;text-align: right;border-top: 2px solid #eee;font-weight: bold\">
                    $$this->price
