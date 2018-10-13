@@ -62,6 +62,8 @@ class Web_Payment
      */
     public $freelancer_id;
 
+    public $freelancer_count;
+
 
     function __construct() {
         $this->db = $this->connect();
@@ -98,6 +100,7 @@ class Web_Payment
         $this->description = $row['task_description'];
         $this->customer_id = $row['customer_id'];
         $this->freelancer_id = $row['freelancer_id'];
+        $this->freelancer_count = $row['task_freelancer_count'];
         return $this;
     }
 
@@ -113,7 +116,7 @@ class Web_Payment
             $price = 0;
             $label = "data-panel-label=\"Free\"";
         } elseif ($credit < $this->price){
-            $price = $this->price - $credit;
+            $price = $this->price*$this->freelancer_count - $credit;
         }
         $url = str_replace("&","%26", $url);
         $url = str_replace("'", "%27", $url);
@@ -167,7 +170,7 @@ class Web_Payment
             $this->addStripeToken("favr_credit", $id);
             $this->update($id, $callback_url);
         } elseif ($credit < $this->price){
-            $price = $this->price - $credit;
+            $price = $this->price*$this->freelancer_count - $credit;
             $this->processUpdateCredit($this->getCustomerId($id), 0);
             \Stripe\Stripe::setApiKey(\Data_Constants::STRIPE_SECRET);
             $charge = \Stripe\Charge::create(array(
