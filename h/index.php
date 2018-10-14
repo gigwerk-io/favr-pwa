@@ -7,7 +7,7 @@
  */
 
 session_start();
-include($_SERVER['DOCUMENT_ROOT'] . "/include/autoload.php");
+include($_SERVER['DOCUMENT_ROOT'] . "/include/favr-pwa/autoload.php");
 
 if (isset($_SESSION['user'])) {
     $USER = $_SESSION['user'];

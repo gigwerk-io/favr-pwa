@@ -8,7 +8,7 @@
  * @author haronarama
  */
 session_start();
-include($_SERVER['DOCUMENT_ROOT'] . "/include/autoload.php");
+include($_SERVER['DOCUMENT_ROOT'] . "/include/favr-pwa/autoload.php");
 
 // component constants
 $USER = "";

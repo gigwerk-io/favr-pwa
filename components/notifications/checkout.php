@@ -8,7 +8,7 @@
  * @author Solomon Antoine
  */
 
-include($_SERVER['DOCUMENT_ROOT'] . "/include/autoload.php");
+include($_SERVER['DOCUMENT_ROOT'] . "/include/favr-pwa/autoload.php");
 //require '../../libraries/Api/Stripe/init.php';
 
 // component constants

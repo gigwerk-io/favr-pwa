@@ -6,7 +6,7 @@
  * Time: 11:42 PM
  */
 session_start();
-include($_SERVER['DOCUMENT_ROOT'] . "/include/autoload.php");
+include($_SERVER['DOCUMENT_ROOT'] . "/include/favr-pwa/autoload.php");
 
 if (isset($_SESSION['user_info']) && $_SESSION['user_info']['id'] != -1) {
     header("Location: ../home/");
