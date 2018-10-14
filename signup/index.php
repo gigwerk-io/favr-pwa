@@ -65,33 +65,33 @@ echo $ALERT_MESSAGE;
                      width="30%">
             </div>
         </h6>
-        <form class="form-signin" action="" method="post">
+        <form class="form-signin" action="https://api.askfavr.com/api/user/signup" method="post">
             <div class="form-label-group">
-                <input type="text" name="signUpUsername" id="inputUsername" class="form-control" placeholder="Username" required="">
+                <input type="text" name="username" id="inputUsername" class="form-control" placeholder="Username" required="">
                 <label for="inputUsername">Username</label>
             </div>
             <div class="form-label-group">
-                <input type="text" name="signUpFirstName" id="inputFirstName" class="form-control" placeholder="First name" required="">
+                <input type="text" name="first_name" id="inputFirstName" class="form-control" placeholder="First name" required="">
                 <label for="inputFirstName">First name</label>
             </div>
             <div class="form-label-group">
-                <input type="text" name="signUpLastName" id="inputLastName" class="form-control" placeholder="Last name" required="">
+                <input type="text" name="last_name" id="inputLastName" class="form-control" placeholder="Last name" required="">
                 <label for="inputLastName">Last name</label>
             </div>
             <div class="form-label-group">
-                <input type="email" name="signUpEmail" id="inputEmail" class="form-control" placeholder="Email address" required="">
+                <input type="email" name="email" id="inputEmail" class="form-control" placeholder="Email address" required="">
                 <label for="inputEmail">Email address</label>
             </div>
             <div class="form-label-group">
-                <input name="signUpPhone" id="inputPhone" class="form-control" placeholder="Phone Number" maxlength="12" required="">
+                <input name="phone" id="inputPhone" class="form-control" placeholder="Phone Number" maxlength="12" required="">
                 <label for="inputPhone">Phone Number</label>
             </div>
             <div class="form-label-group">
-                <input type="password" name="signUpPass" id="inputPassword" class="form-control" placeholder="Password" required="">
+                <input type="password" name="passowrd" id="inputPassword" class="form-control" placeholder="Password" required="">
                 <label for="inputPassword">Password</label>
             </div>
             <div class="form-label-group">
-                <input type="password" name="signUpPassConfirm" id="inputConfirmPassword" class="form-control" placeholder="Re-enter Password" required="">
+                <input type="password" name="confirm_password" id="inputConfirmPassword" class="form-control" placeholder="Re-enter Password" required="">
                 <label for="inputConfirmPassword">Re-enter Password</label>
             </div>
             <div class="row">
