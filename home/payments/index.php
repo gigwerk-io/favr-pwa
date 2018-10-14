@@ -7,7 +7,7 @@
  */
 
 session_start();
-include($_SERVER['DOCUMENT_ROOT'] . "/include/favr-pwa/autoload.php");
+include($_SERVER['DOCUMENT_ROOT'] . "favr-pwa/include/autoload.php");
 //require '../../libraries/Api/Stripe/init.php';
 
 // component constants
