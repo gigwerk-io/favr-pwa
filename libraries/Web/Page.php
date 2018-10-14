@@ -9,9 +9,9 @@
  * @author Solomon Antoine
  */
 //error_reporting(E_ERROR);
-include '../../libraries/Api/Twilio/twilio-php-master/Twilio/autoload.php';
-include '../../libraries/Api/Sendgrid/vendor/autoload.php';
-include '../../libraries/Api/Stripe/init.php';
+//include '../../libraries/Api/Twilio/twilio-php-master/Twilio/autoload.php';
+//include '../../libraries/Api/Sendgrid/vendor/autoload.php';
+//include '../../libraries/Api/Stripe/init.php';
 
 class Web_Page
 {
@@ -2600,11 +2600,11 @@ class Web_Page
 
                         if (isset($task_difficulty) && $customer_id != $_SESSION['user_info']['id']) {
                             if ($task_difficulty == Data_Constants::DB_TASK_INTENSITY_EASY) {
-                                echo "<button type=\"button\" class=\"ml-2 btn-sm btn btn-success p-1 rounded\" style='opacity: .9' value=\"Easy\" disabled>Easy 👌</button>";
+                                echo "<button type=\"button\" class=\"ml-2 btn-sm btn btn-success p-1 rounded\" style='font-size: .5rem;opacity: .9' value=\"Easy\" disabled>Easy 👌</button>";
                             } else if ($task_difficulty == Data_Constants::DB_TASK_INTENSITY_MEDIUM) {
-                                echo "<button type=\"button\" class=\"ml-2 btn-sm btn btn-warning p-1 rounded\" style='opacity: .9' value=\"Medium\" disabled>Medium 💪🏿</button>";
+                                echo "<button type=\"button\" class=\"ml-2 btn-sm btn btn-warning p-1 rounded\" style='font-size: .5rem;opacity: .9' value=\"Medium\" disabled>Medium 💪🏿</button>";
                             } else if ($task_difficulty == Data_Constants::DB_TASK_INTENSITY_HARD) {
-                                echo "<button type=\"button\" class=\"ml-2 btn-sm btn btn-danger p-1 rounded\" style='opacity: .9' value=\"Hard\" disabled>Hard 🔥</button>";
+                                echo "<button type=\"button\" class=\"ml-2 btn-sm btn btn-danger p-1 rounded\" style='font-size: .5rem;opacity: .9' value=\"Hard\" disabled>Hard 🔥</button>";
                             }
                         }
 
@@ -2616,7 +2616,7 @@ class Web_Page
 
                         echo "</div><div class=\"media text-muted pt-3\">
                         <div class='container'>
-                            <p id='$id' class=\"media-body text-dark mb-0 small lh-125\">
+                            <p id='$id' class=\"media-body text-dark mb-0 small lh-125\" style='padding-bottom: 1rem'>
                                 $task_description
                                 <div id='$id-location' class='pt-1 border-top small border-gray d-none'>
                                     <label for='location'>Location:</label>";
@@ -2631,7 +2631,7 @@ class Web_Page
                                   </div>";
                         } else {
                             echo "<!-- TODO: calculate location distance by zipcode -->
-                                    <p class='text-dark'>Rochester, MN</p>";
+                                    <p class='text-dark'>Rochester, MN</p>"; // TODO: bug spotted
                         }
 
                         echo "
@@ -2693,7 +2693,6 @@ class Web_Page
                                         <div id='$id-expand' class='text-info d-inline-flex'
                                              style='cursor: pointer'
                                              onclick=\"
-                                              $('#$id').animate({height: '4rem'});
                                               $('#$id-location').removeClass('d-none');
                                               $('#$id-freelancer-count').removeClass('d-none');
                                               $('#$id-collapse').removeClass('d-none');
@@ -2787,12 +2786,12 @@ class Web_Page
                             if ($freelancerAccepted) {
                                 if ($task_status == Data_Constants::DB_TASK_STATUS_PENDING_APPROVAL || $task_status == Data_Constants::DB_TASK_STATUS_REQUESTED) {
                                     echo "<div class='float-right d-inline'>
-                                    <p class='d-inline-flex mb-1'>
+                                    <p class='d-inline-flex small mb-1'>
                                     Status: You Accepted</p>
                                   </div>";
                                 } else {
                                     echo "<div class='float-right d-inline'>
-                                        <p class='d-inline-flex mb-1'>
+                                        <p class='d-inline-flex small mb-1'>
                                         ";
                                     // TODO: use class defined constants here to validate verified freelancers from regular customers
                                     if ($task_status == Data_Constants::DB_TASK_STATUS_PAID && $customer_id != $_SESSION['user_info']['id']) {
@@ -2839,7 +2838,7 @@ class Web_Page
                             if (!empty($row)) {
                                 if ($row['approved'] == 1) { // this user is approved
                                     echo "<div class='float-right d-inline'>
-                                        <p class='d-inline-flex mb-1'>
+                                        <p class='d-inline-flex small mb-1'>
                                         ";
                                     // TODO: use class defined constants here to validate verified freelancers from regular customers
                                     if ($task_status == Data_Constants::DB_TASK_STATUS_PAID && $customer_id == $_SESSION['user_info']['id']) {
@@ -3179,11 +3178,11 @@ class Web_Page
 
                         if (isset($task_difficulty) && $customer_id != $_SESSION['user_info']['id']) {
                             if ($task_difficulty == Data_Constants::DB_TASK_INTENSITY_EASY) {
-                                echo "<button type=\"button\" class=\"ml-2 btn-sm btn btn-success p-1 rounded\" style='opacity: .9' value=\"Easy\" disabled>Easy 👌</button>";
+                                echo "<button type=\"button\" class=\"ml-2 btn-sm btn btn-success p-1 rounded\" style='font-size: .5rem;opacity: .9' value=\"Easy\" disabled>Easy 👌</button>";
                             } else if ($task_difficulty == Data_Constants::DB_TASK_INTENSITY_MEDIUM) {
-                                echo "<button type=\"button\" class=\"ml-2 btn-sm btn btn-warning p-1 rounded\" style='opacity: .9' value=\"Medium\" disabled>Medium 💪🏿</button>";
+                                echo "<button type=\"button\" class=\"ml-2 btn-sm btn btn-warning p-1 rounded\" style='font-size: .5rem;opacity: .9' value=\"Medium\" disabled>Medium 💪🏿</button>";
                             } else if ($task_difficulty == Data_Constants::DB_TASK_INTENSITY_HARD) {
-                                echo "<button type=\"button\" class=\"ml-2 btn-sm btn btn-danger p-1 rounded\" style='opacity: .9' value=\"Hard\" disabled>Hard 🔥</button>";
+                                echo "<button type=\"button\" class=\"ml-2 btn-sm btn btn-danger p-1 rounded\" style='font-size: .5rem;opacity: .9' value=\"Hard\" disabled>Hard 🔥</button>";
                             }
                         }
 
@@ -3195,7 +3194,7 @@ class Web_Page
 
                         echo "</div><div class=\"media text-muted pt-3\">
                         <div class='container'>
-                            <p id='$id' class=\"media-body text-dark mb-0 small lh-125\">
+                            <p id='$id' class=\"media-body text-dark mb-0 small lh-125\" style='padding-bottom: 1rem;'>
                                 $task_description
                                 <div id='$id-location' class='pt-1 border-top small border-gray d-none'>
                                     <label for='location'>Location:</label>";
@@ -3350,12 +3349,12 @@ class Web_Page
 
                             if ($task_status == Data_Constants::DB_TASK_STATUS_PENDING_APPROVAL || $task_status == Data_Constants::DB_TASK_STATUS_REQUESTED) {
                                 echo "<div class='float-right d-inline'>
-                                <p class='d-inline-flex mb-1'>
+                                <p class='d-inline-flex small mb-1'>
                                 Status: You Accepted</p>
                               </div>";
                             } else {
                                 echo "<div class='float-right d-inline'>
-                                    <p class='d-inline-flex mb-1'>
+                                    <p class='d-inline-flex small mb-1'>
                                     ";
                                 // TODO: use class defined constants here to validate verified freelancers from regular customers
                                 if ($task_status == Data_Constants::DB_TASK_STATUS_PAID && $customer_id != $_SESSION['user_info']['id']) {
@@ -3395,7 +3394,7 @@ class Web_Page
                             if (!empty($row2)) {
                                 if ($row2['approved'] == 1) { // this user is approved
                                     echo "<div class='float-right d-inline'>
-                                        <p class='d-inline-flex mb-1'>
+                                        <p class='d-inline-flex small mb-1'>
                                         ";
                                     // TODO: use class defined constants here to validate verified freelancers from regular customers
                                     if ($task_status == Data_Constants::DB_TASK_STATUS_PAID && $customer_id == $_SESSION['user_info']['id']) {
@@ -3597,10 +3596,14 @@ class Web_Page
             }
             ?>
             <div class="p-3 text-center request-favr-web">
-                <button class="btn btn-lg btn-primary" id="request-favr-web">
+                <button class="btn btn-lg btn-primary" id="request-favr-web"
+                        style="justify-self: center!important;
+                                border-radius: .875rem;
+                                background-image: linear-gradient(to right, red, #ffaa00);
+                                border: 0px;
+                                box-shadow: 0 2px 2px 0 rgba(0, 0, 0, 0.14), 0 1px 5px 0 rgba(0, 0, 0, 0.12), 0 3px 1px -2px rgba(0, 0, 0, 0.2);">
                     <div class="d-inline-flex">
-                        <i class="mr-1 material-icons">build</i>
-                        Request <img class="mt-2 ml-2" src="<?php echo $this->root_path; ?>/assets/brand/favr_logo_blk.png" height="16" width="52.5">
+                        Request a FAVR
                     </div>
                 </button>
             </div>
@@ -3690,7 +3693,7 @@ class Web_Page
                                 <label for="inputPictures">Attach picture(s): at most 3...</label>
                             </div>
                             <input type="submit" name="requestFavr" class="btn btn-lg btn-primary btn-block"
-                                   value="Request FAVR" onclick="alert("This will be posted publically")">
+                                   value="Request FAVR" onclick="alert("This will be posted publicly")">
                         </div>
                     </div>
                 </div>
@@ -3819,10 +3822,14 @@ class Web_Page
                 }
                 ?>
                 <div class="p-3 text-center request-favr-web">
-                    <button class="btn btn-lg btn-dark" id="request-favr-web">
+                    <button class="btn btn-lg btn-dark" id="request-favr-web"
+                            style="justify-self: center!important;
+                                    border-radius: .875rem;
+                                    background-image: linear-gradient(to left, red, #ffaa00);
+                                    border: 0px;
+                                    box-shadow: 0 2px 2px 0 rgba(0, 0, 0, 0.14), 0 1px 5px 0 rgba(0, 0, 0, 0.12), 0 3px 1px -2px rgba(0, 0, 0, 0.2);">
                         <div class="d-inline-flex">
-                            <i class="mr-1 material-icons">build</i>
-                            Request <img class="mt-2 ml-2" src="<?php echo $this->root_path; ?>/assets/brand/favr_logo_rd.png" height="16" width="52.5">
+                            Request a Friend FAVR
                         </div>
                     </button>
                 </div>
@@ -4314,11 +4321,11 @@ class Web_Page
 
                         if (isset($task_difficulty)) {
                             if ($task_difficulty == Data_Constants::DB_TASK_INTENSITY_EASY) {
-                                echo "<button type=\"button\" class=\"ml-2 btn-sm btn btn-success p-1 rounded\" style='opacity: .9' value=\"Easy\" disabled>Easy 👌</button>";
+                                echo "<button type=\"button\" class=\"ml-2 btn-sm btn btn-success p-1 rounded\" style='font-size: .5rem;opacity: .9' value=\"Easy\" disabled>Easy 👌</button>";
                             } else if ($task_difficulty == Data_Constants::DB_TASK_INTENSITY_MEDIUM) {
-                                echo "<button type=\"button\" class=\"ml-2 btn-sm btn btn-warning p-1 rounded\" style='opacity: .9' value=\"Medium\" disabled>Medium 💪🏿</button>";
+                                echo "<button type=\"button\" class=\"ml-2 btn-sm btn btn-warning p-1 rounded\" style='font-size: .5rem;opacity: .9' value=\"Medium\" disabled>Medium 💪🏿</button>";
                             } else if ($task_difficulty == Data_Constants::DB_TASK_INTENSITY_HARD) {
-                                echo "<button type=\"button\" class=\"ml-2 btn-sm btn btn-danger p-1 rounded\" style='opacity: .9' value=\"Hard\" disabled>Hard 🔥</button>";
+                                echo "<button type=\"button\" class=\"ml-2 btn-sm btn btn-danger p-1 rounded\" style='font-size: .5rem;opacity: .9' value=\"Hard\" disabled>Hard 🔥</button>";
                             }
                         }
 
@@ -4330,7 +4337,7 @@ class Web_Page
 
                         echo "</div><div class=\"media text-muted pt-3\">
                         <div class='container'>
-                            <p id='$id' class=\"media-body text-dark mb-0 small lh-125\">
+                            <p id='$id' class=\"media-body text-dark mb-0 small lh-125\" style='padding-bottom: 1rem'>
                                 $task_description
                                 <div id='$id-location' class='pt-1 border-top small border-gray d-none'>
                                     <label for='location'>Location:</label>
@@ -4604,11 +4611,11 @@ class Web_Page
 
                     if (isset($task_difficulty)) {
                         if ($task_difficulty == Data_Constants::DB_TASK_INTENSITY_EASY) {
-                            echo "<button type=\"button\" class=\"ml-2 btn-sm btn btn-success p-1 rounded\" style='opacity: .9' value=\"Easy\" disabled>Easy 👌</button>";
+                            echo "<button type=\"button\" class=\"ml-2 btn-sm btn btn-success p-1 rounded\" style='font-size: .5rem;opacity: .9' value=\"Easy\" disabled>Easy 👌</button>";
                         } else if ($task_difficulty == Data_Constants::DB_TASK_INTENSITY_MEDIUM) {
-                            echo "<button type=\"button\" class=\"ml-2 btn-sm btn btn-warning p-1 rounded\" style='opacity: .9' value=\"Medium\" disabled>Medium 💪🏿</button>";
+                            echo "<button type=\"button\" class=\"ml-2 btn-sm btn btn-warning p-1 rounded\" style='font-size: .5rem;opacity: .9' value=\"Medium\" disabled>Medium 💪🏿</button>";
                         } else if ($task_difficulty == Data_Constants::DB_TASK_INTENSITY_HARD) {
-                            echo "<button type=\"button\" class=\"ml-2 btn-sm btn btn-danger p-1 rounded\" style='opacity: .9' value=\"Hard\" disabled>Hard 🔥</button>";
+                            echo "<button type=\"button\" class=\"ml-2 btn-sm btn btn-danger p-1 rounded\" style='font-size: .5rem;opacity: .9' value=\"Hard\" disabled>Hard 🔥</button>";
                         }
                     }
 
@@ -4620,7 +4627,7 @@ class Web_Page
 
                     echo "</div><div class=\"media text-muted pt-3\">
                         <div class='container'>
-                            <p id='$id' class=\"media-body text-dark mb-0 small lh-125\">
+                            <p id='$id' class=\"media-body text-dark mb-0 small lh-125\" style='padding-bottom: 1rem'>
                                 $task_description
                                 <div id='$id-location' class='pt-1 border-top small border-gray d-none'>
                                     <label for='location'>Location:</label>
