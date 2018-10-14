@@ -6,7 +6,7 @@
  * Time: 1:49 PM
  */
 session_start();
-include($_SERVER['DOCUMENT_ROOT'] . "favr-pwa/include/autoload.php");
+include($_SERVER['DOCUMENT_ROOT'] . "/favr-pwa/include/autoload.php");
 
 $confirm = new Web_Confirm();
 $USER = "guest";

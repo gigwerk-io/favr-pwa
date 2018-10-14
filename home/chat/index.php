@@ -6,7 +6,7 @@
  * Time: 11:37 AM
  */
 session_start();
-include($_SERVER['DOCUMENT_ROOT'] . "favr-pwa/include/autoload.php");
+include($_SERVER['DOCUMENT_ROOT'] . "/favr-pwa/include/autoload.php");
 
 // component constants
 $PAGE_ID = 5;
