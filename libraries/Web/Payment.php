@@ -116,7 +116,7 @@ class Web_Payment
             $price = 0;
             $label = "data-panel-label=\"Free\"";
         } elseif ($credit < $this->price){
-            $price = $this->price*$this->freelancer_count - $credit;
+            $price = $this->price - $credit;
         }
         $url = str_replace("&","%26", $url);
         $url = str_replace("'", "%27", $url);
@@ -170,7 +170,7 @@ class Web_Payment
             $this->addStripeToken("favr_credit", $id);
             $this->update($id, $callback_url);
         } elseif ($credit < $this->price){
-            $price = $this->price*$this->freelancer_count - $credit;
+            $price = $this->price - $credit;
             $this->processUpdateCredit($this->getCustomerId($id), 0);
             \Stripe\Stripe::setApiKey(\Data_Constants::STRIPE_SECRET);
             $charge = \Stripe\Charge::create(array(
