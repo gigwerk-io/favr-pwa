@@ -62,6 +62,8 @@ class Web_Payment
      */
     public $freelancer_id;
 
+    public $freelancer_count;
+
 
     function __construct() {
         $this->db = $this->connect();
@@ -98,6 +100,7 @@ class Web_Payment
         $this->description = $row['task_description'];
         $this->customer_id = $row['customer_id'];
         $this->freelancer_id = $row['freelancer_id'];
+        $this->freelancer_count = $row['task_freelancer_count'];
         return $this;
     }
 
