@@ -25,6 +25,10 @@ $checkout = new Web_Payment();
 if(!(empty($_GET['task_id'])) && !(empty($_GET['url']))){
     $checkout->select($_GET['task_id'])->checkOut($_GET['task_id'], $_GET['url']); //redirects to payment process
 }else{
+    echo '<pre>';
+    $arr = get_defined_vars();
+    print_r($arr);
+    die;
     echo "<script> window.location.href = 'https://test.askfavr.com/favr-pwa/home'; </script>";
 }
 
