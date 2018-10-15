@@ -259,7 +259,7 @@ class Web_Invoice
 </body>
 </html>
 ";
-        $from = new SendGrid\Email("FAVR", "contact@askfavr.com");
+        $from = new SendGrid\Email("FAVR", "invoice@askfavr.com");
 
         $subject = "Service Receipt ";
         $to = new SendGrid\Email($this->customer, $this->email);

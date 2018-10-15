@@ -112,7 +112,7 @@ class Web_Notification
     private function processEmailNotification($name, $email, $message)
     {
 
-        $from = new SendGrid\Email("FAVR", "contact@askfavr.com");
+        $from = new SendGrid\Email("FAVR", "notification@askfavr.com");
         $subject = "New FAVR Alert";
         $to = new SendGrid\Email($name, $email);
         $content = new SendGrid\Content("text/html", $message);
