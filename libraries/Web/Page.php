@@ -1133,7 +1133,9 @@ class Web_Page
                                    $limit
             ";
 
-        } else if ($friend_id == $_SESSION['user_info']['id']) { // profile history viewing for other users
+        }
+        else if ($friend_id == $_SESSION['user_info']['id'])
+        { // profile history viewing for other users
             $userInfo = $this->getUserInfo($id);
             if (!empty($userInfo)) {
                 $scope = $userInfo['default_scope'];
@@ -1412,23 +1414,7 @@ class Web_Page
                                 <div class='col-sm-12 small'>
                                     <div class=\"float-left d-inline\">
                                             ";
-                        if ($freelancer_id == $id) {
-                            if ($task_status == Data_Constants::DB_TASK_STATUS_REQUESTED) {
-                                echo "<p class='mb-0 d-inline-flex'>Accepted(Freelancer)</p>";
-                            } else if ($task_status == Data_Constants::DB_TASK_STATUS_PENDING_APPROVAL) {
-                                echo "<p class='mb-0 d-inline-flex'>Pending Approval (Freelancer)</p>";
-                            } else if ($task_status == Data_Constants::DB_TASK_STATUS_PAID) {
-                                echo "<p class='mb-0 d-inline-flex'>Go to location</p>";
-                            } else if ($task_status == Data_Constants::DB_TASK_STATUS_IN_PROGRESS) {
-                                echo "<p class='mb-0 d-inline-flex'>In Progress(Freelancer)</p>";
-                            } else if ($task_status == Data_Constants::DB_TASK_STATUS_COMPLETED) {
-                                if ($freelancer_id == $_SESSION['user_info']['id']) {
-                                    echo "<p class='mb-0 d-inline-flex'>You Completed</p>";
-                                } else {
-                                    echo "<p class='mb-0 d-inline-flex'>They Completed</p>";
-                                }
-                            }
-                        } else if ($customer_id == $id) {
+                        if ($customer_id == $_SESSION['user_info']['id']) {
                             if ($task_status == Data_Constants::DB_TASK_STATUS_REQUESTED) {
                                 echo "<p class='mb-0 d-inline-flex'>Requested</p> |";
                                 echo "<a href=\"?navbar=active_profile&d_request_id=$task_id&ALERT_MESSAGE=Your request has been deleted!\" class='text-danger'>
@@ -1474,6 +1460,22 @@ class Web_Page
                                         </div>
                                       </div>
                                     </div>";
+                            }
+                        } else {
+                            if ($task_status == Data_Constants::DB_TASK_STATUS_REQUESTED) {
+                                echo "<p class='mb-0 d-inline-flex'>Accepted(Freelancer)</p>";
+                            } else if ($task_status == Data_Constants::DB_TASK_STATUS_PENDING_APPROVAL) {
+                                echo "<p class='mb-0 d-inline-flex'>Pending Approval (Freelancer)</p>";
+                            } else if ($task_status == Data_Constants::DB_TASK_STATUS_PAID) {
+                                echo "<p class='mb-0 d-inline-flex'>Go to location</p>";
+                            } else if ($task_status == Data_Constants::DB_TASK_STATUS_IN_PROGRESS) {
+                                echo "<p class='mb-0 d-inline-flex'>In Progress(Freelancer)</p>";
+                            } else if ($task_status == Data_Constants::DB_TASK_STATUS_COMPLETED) {
+                                if ($freelancer_id == $_SESSION['user_info']['id']) {
+                                    echo "<p class='mb-0 d-inline-flex'>You Completed</p>";
+                                } else {
+                                    echo "<p class='mb-0 d-inline-flex'>They Completed</p>";
+                                }
                             }
                         }
 
