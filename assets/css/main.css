@@ -236,6 +236,11 @@ body {
     cursor: pointer;
 }
 
+.mobile-navbar {
+    display: none;
+    visibility: hidden;
+}
+
 /* 100% Image Width on Smaller Screens */
 @media only screen and (max-width: 767.98px){
     .modal-content {
@@ -247,6 +252,10 @@ body {
     button:focus {
         box-shadow: none!important;
         outline: 0;
+    }
+    .mobile-navbar {
+        display: flex;
+        visibility: visible;
     }
     .navbar-mobile {
         padding-left: 1rem!important;
@@ -445,7 +454,7 @@ body {
 
     .offcanvas-collapse {
         position: fixed;
-        top: 40px;
+        top: 43px;
         bottom: 0;
         width: 75%;
         padding-right: 1rem;

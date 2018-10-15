@@ -1163,7 +1163,9 @@ class Web_Page
                                    $limit
             ";
 
-        } else if ($friend_id == $_SESSION['user_info']['id']) { // profile history viewing for other users
+        }
+        else if ($friend_id == $_SESSION['user_info']['id'])
+        { // profile history viewing for other users
             $userInfo = $this->getUserInfo($id);
             if (!empty($userInfo)) {
                 $scope = $userInfo['default_scope'];
@@ -1442,23 +1444,7 @@ class Web_Page
                                 <div class='col-sm-12 small'>
                                     <div class=\"float-left d-inline\">
                                             ";
-                        if ($freelancer_id == $id) {
-                            if ($task_status == Data_Constants::DB_TASK_STATUS_REQUESTED) {
-                                echo "<p class='mb-0 d-inline-flex'>Accepted(Freelancer)</p>";
-                            } else if ($task_status == Data_Constants::DB_TASK_STATUS_PENDING_APPROVAL) {
-                                echo "<p class='mb-0 d-inline-flex'>Pending Approval (Freelancer)</p>";
-                            } else if ($task_status == Data_Constants::DB_TASK_STATUS_PAID) {
-                                echo "<p class='mb-0 d-inline-flex'>Go to location</p>";
-                            } else if ($task_status == Data_Constants::DB_TASK_STATUS_IN_PROGRESS) {
-                                echo "<p class='mb-0 d-inline-flex'>In Progress(Freelancer)</p>";
-                            } else if ($task_status == Data_Constants::DB_TASK_STATUS_COMPLETED) {
-                                if ($freelancer_id == $_SESSION['user_info']['id']) {
-                                    echo "<p class='mb-0 d-inline-flex'>You Completed</p>";
-                                } else {
-                                    echo "<p class='mb-0 d-inline-flex'>They Completed</p>";
-                                }
-                            }
-                        } else if ($customer_id == $id) {
+                        if ($customer_id == $_SESSION['user_info']['id']) {
                             if ($task_status == Data_Constants::DB_TASK_STATUS_REQUESTED) {
                                 echo "<p class='mb-0 d-inline-flex'>Requested</p> |";
                                 echo "<a href=\"?navbar=active_profile&d_request_id=$task_id&ALERT_MESSAGE=Your request has been deleted!\" class='text-danger'>
@@ -1504,6 +1490,22 @@ class Web_Page
                                         </div>
                                       </div>
                                     </div>";
+                            }
+                        } else {
+                            if ($task_status == Data_Constants::DB_TASK_STATUS_REQUESTED) {
+                                echo "<p class='mb-0 d-inline-flex'>Accepted(Freelancer)</p>";
+                            } else if ($task_status == Data_Constants::DB_TASK_STATUS_PENDING_APPROVAL) {
+                                echo "<p class='mb-0 d-inline-flex'>Pending Approval (Freelancer)</p>";
+                            } else if ($task_status == Data_Constants::DB_TASK_STATUS_PAID) {
+                                echo "<p class='mb-0 d-inline-flex'>Go to location</p>";
+                            } else if ($task_status == Data_Constants::DB_TASK_STATUS_IN_PROGRESS) {
+                                echo "<p class='mb-0 d-inline-flex'>In Progress(Freelancer)</p>";
+                            } else if ($task_status == Data_Constants::DB_TASK_STATUS_COMPLETED) {
+                                if ($freelancer_id == $_SESSION['user_info']['id']) {
+                                    echo "<p class='mb-0 d-inline-flex'>You Completed</p>";
+                                } else {
+                                    echo "<p class='mb-0 d-inline-flex'>They Completed</p>";
+                                }
                             }
                         }
 
@@ -1760,7 +1762,7 @@ class Web_Page
                             echo $userInfo['first_name'] . " " . $userInfo['last_name'];
 
                             if ($userInfo['class'] == Data_Constants::DB_USER_CLASS_VERIFIED) {
-                                echo "<i class=\"material-icons text-primary\">check_circle</i>";
+                                echo " <i class=\"material-icons text-primary\">check_circle</i>";
                             }
                             ?>
                         </h3>
@@ -1934,7 +1936,7 @@ class Web_Page
                             echo $userInfo['first_name'] . " " . $userInfo['last_name'];
 
                             if ($userInfo['class'] == Data_Constants::DB_USER_CLASS_VERIFIED) {
-                                echo "<i class=\"material-icons text-primary\">check_circle</i>";
+                                echo " <i class=\"material-icons text-primary\">check_circle</i>";
                             }
                             ?>
                         </h3>
@@ -2048,7 +2050,8 @@ class Web_Page
             }
             ?>
             <nav class="navbar navbar-mobile navbar-expand-md fixed-top navbar-dark bg-dark">
-                <?php
+                <div class="row mobile-navbar ml-0 mr-0 p-0" style="width: 100%;flex-wrap: nowrap">
+                    <?php
                     if ($render_back_button) {
                         // back button
                         ?>
@@ -2056,37 +2059,38 @@ class Web_Page
                             <span class="sr-only">Toggle back navigate</span>
                             <i class="material-icons text-light">arrow_back</i>
                         </a>
-                <?php
+                        <?php
                     } else {
-                ?>
+                        ?>
                         <button id="leftItem" class="navbar-toggler pb-2 border-0" type="button" data-toggle="offcanvas">
                             <span class="sr-only">Toggle navigation</span>
                             <span></span>
-                            <span></span>
+                            <span style="width: 20px;background-color: orange;"></span>
                             <span></span>
                         </button>
-                <?php
-                    }
-                ?>
-                <div id="logo" class="request-favr pt-0 pr-2 pb-0 mr-0">
-                    <?php
-                    if ($_SESSION['nav_scroller'] != "active_marketplace" || $_SESSION['navbar'] != "active_home") {
-                        echo "
-                            <a href=\"$this->root_path/home/?navbar=active_home&nav_scroller=active_marketplace\">
-                        ";
+                        <?php
                     }
                     ?>
-                    <img src="<?php echo $this->root_path; ?>/assets/brand/favr_logo_rd.png" height="21" width="70"
-                         class="navbar-brand mr-0" style="padding-top: 0; padding-bottom: 0" alt="Logo">
+                    <div class="col-md-11 text-center pt-1 pl-0 pr-0">
+                        <div id="logo" class="request-favr pt-1">
+                            <?php
+                            if ($_SESSION['nav_scroller'] != "active_marketplace" || $_SESSION['navbar'] != "active_home") {
+                                echo "
+                            <a href=\"$this->root_path/home/?navbar=active_home&nav_scroller=active_marketplace\">
+                        ";
+                            }
+                            ?>
+                            <img src="<?php echo $this->root_path; ?>/assets/brand/favr_logo_rd.png" height="21" width="70"
+                                 class="navbar-brand mr-0" style="padding-top: 0; padding-bottom: 0" alt="Logo">
 
-                    <?php
-                    if ($_SESSION['nav_scroller'] != "active_marketplace" || $_SESSION['navbar'] != "active_home") {
-                        echo "
+                            <?php
+                            if ($_SESSION['nav_scroller'] != "active_marketplace" || $_SESSION['navbar'] != "active_home") {
+                                echo "
                             </a>
                         ";
-                    }
+                            }
 
-                    $this->addScript("<script>
+                            $this->addScript("<script>
                                                     function renderSearch() {
                                                       $('#logo').addClass('d-none');
                                                       $('#searchButton').addClass('d-none');
@@ -2101,25 +2105,63 @@ class Web_Page
                                                       $('#searchBar').addClass('d-none');
                                                     }
                                                 </script>");
-                    ?>
+                            ?>
+                        </div>
+                        <div id="searchBar" class="d-none pt-0 pl-0 pr-0 pb-0 mr-0 ml-0">
+                            <form action="<?php echo $this->root_path . '/home/results/?navbar=active_home' ?>">
+                                <input type="text" class="form-control" name="q" placeholder="Search for people..." style="width: 95%;" aria-label="Search">
+                                <input type="submit" style="display:none"/>
+                            </form>
+                        </div>
+                    </div>
+                    <div class="col-md-1 pr-0 pt-1" style="max-width: 44px;">
+                        <button id="searchButton" class="profile-button small border-0 mr-0 pr-0 pb-0 float-right" style="left: .1rem;padding-bottom: .569rem;" type="button" onclick="renderSearch()">
+                            <i class="material-icons" style="color: var(--red)">search</i>
+                        </button>
+
+                        <button id="cancelSearch" class="d-none profile-button small border-0 mr-0 pr-0 pt-1 pb-0 float-right" style="color: var(--red);left: .1rem;" type="button" onclick="renderMainNavigation()">
+                            Cancel
+                        </button>
+                    </div>
                 </div>
 
-                <div id="searchBar" class="d-none pt-0 pl-0 pr-0 pb-0 mr-0 ml-0">
-                    <form action="<?php echo $this->root_path . '/home/results/?navbar=active_home' ?>">
-                        <input type="text" class="form-control" name="q" placeholder="Search for people..." style="width: 11rem;" aria-label="Search">
-                        <input type="submit" style="display:none"/>
-                    </form>
-                </div>
+                <div class="navbar-collapse offcanvas-collapse" id="navbarsExampleDefault" style="background-color: #2b3035">
+                    <div id="logo" class="request-favr request-favr-web pr-3">
+                        <?php
+                        if ($_SESSION['nav_scroller'] != "active_marketplace" || $_SESSION['navbar'] != "active_home") {
+                            echo "
+                            <a href=\"$this->root_path/home/?navbar=active_home&nav_scroller=active_marketplace\">
+                        ";
+                        }
+                        ?>
+                        <img src="<?php echo $this->root_path; ?>/assets/brand/favr_logo_rd.png" height="21" width="70"
+                             class="navbar-brand mr-0" style="padding-top: 0; padding-bottom: 0" alt="Logo">
 
-                <button id="searchButton" class="profile-button small border-0 mr-0 pr-0 pb-0" style="left: .1rem;padding-bottom: .569rem;" type="button" onclick="renderSearch()">
-                    <i class="material-icons" style="color: var(--red)">search</i>
-                </button>
+                        <?php
+                        if ($_SESSION['nav_scroller'] != "active_marketplace" || $_SESSION['navbar'] != "active_home") {
+                            echo "
+                            </a>
+                        ";
+                        }
 
-                <button id="cancelSearch" class="d-none profile-button small border-0 mr-0 pr-0 pb-0" style="color: var(--red);left: .1rem;padding-bottom: .569rem;" type="button" onclick="renderMainNavigation()">
-                    Cancel
-                </button>
+                        $this->addScript("<script>
+                                                    function renderSearch() {
+                                                      $('#logo').addClass('d-none');
+                                                      $('#searchButton').addClass('d-none');
+                                                      $('#cancelSearch').removeClass('d-none');
+                                                      $('#searchBar').removeClass('d-none');
+                                                    }
+                                                    
+                                                    function renderMainNavigation() {
+                                                      $('#logo').removeClass('d-none');
+                                                      $('#searchButton').removeClass('d-none');
+                                                      $('#cancelSearch').addClass('d-none');
+                                                      $('#searchBar').addClass('d-none');
+                                                    }
+                                                </script>");
+                        ?>
+                    </div>
 
-                <div class="navbar-collapse offcanvas-collapse" id="navbarsExampleDefault">
                     <ul class="navbar-nav mr-auto">
                         <li class="mobile-footer nav-item text-center border-bottom pt-3 pb-3 <?php echo $active_profile; ?>">
                             <?php
@@ -2138,7 +2180,7 @@ class Web_Page
                                     </a>
                                 </button>
                                 <?php
-                                echo "<h5 class='text-light'>". $userInfo['first_name'] . " " . $userInfo['last_name'] . "</h5>";
+                                echo "<h5 class='text-light'>". $userInfo['first_name'] . " " . $userInfo['last_name'] . (($userInfo['class'] == Data_Constants::DB_USER_CLASS_VERIFIED) ? " <i class=\"material-icons small text-white\" style='font-size: 16px;'>check_circle</i>" : " ") . "</h5>";
                                 echo "<p class='text-muted'>@". $userInfo['username'] ."</p>";
                             } else {
                                 ?>
@@ -2200,17 +2242,6 @@ class Web_Page
                                 Welcome, <?php echo $_SESSION['user_info']['first_name']; ?>
                                 <?php
                                 if (!empty($active_profile)) {
-                                    echo "<span class=\"sr-only\">(current)</span>";
-                                }
-                                ?>
-                            </a>
-                        </li>
-                        <li class="mobile-search nav-item <?php echo $active_chat; ?>">
-                            <a class="nav-link d-inline-flex" href='<?php echo "$this->root_path/home/chat/?navbar=active_home&nav_scroller=active_chat"; ?>'>
-                                <i class="material-icons">chat</i>
-                                Chat
-                                <?php
-                                if (!empty($active_chat)) {
                                     echo "<span class=\"sr-only\">(current)</span>";
                                 }
                                 ?>
@@ -2298,19 +2329,6 @@ class Web_Page
                                         echo "<i class=\"material-icons\" style='color: var(--red);font-size: 15px; padding-left: 2px;position:relative;top:.1rem;'>people</i>";
                                     } else {
                                         echo "<i class=\"material-icons\" style='font-size: 15px; padding-left: 2px;position:relative;top:.1rem;'>people_outline</i>";
-                                    }
-                                    ?>
-                                </a>
-                            </div>
-                            <div class="col-sm-2 request-favr-web pl-0 pr-0">
-                                <a class="nav-link <?php echo $active_chat; ?>"
-                                   href="<?php echo $this->root_path; ?>/home/chat/?navbar=active_home&nav_scroller=active_chat">
-                                    Chat
-                                    <?php
-                                    if ($active_chat) {
-                                        echo "<i class=\"material-icons\" style='color: var(--red);font-size: 15px; padding-left: 2px;position:relative;top:.1rem;'>chat</i>";
-                                    } else {
-                                        echo "<i class=\"material-icons\" style='font-size: 15px; padding-left: 2px;position:relative;top:.1rem;'>chat</i>";
                                     }
                                     ?>
                                 </a>
@@ -2614,11 +2632,11 @@ class Web_Page
 
                         if (isset($task_difficulty) && $customer_id != $_SESSION['user_info']['id']) {
                             if ($task_difficulty == Data_Constants::DB_TASK_INTENSITY_EASY) {
-                                echo "<button type=\"button\" class=\"ml-2 btn-sm btn btn-success p-1 rounded\" style='opacity: .9' value=\"Easy\" disabled>Easy 👌</button>";
+                                echo "<button type=\"button\" class=\"ml-2 btn-sm btn btn-success p-1 rounded\" style='font-size: .5rem;opacity: .9' value=\"Easy\" disabled>Easy 👌</button>";
                             } else if ($task_difficulty == Data_Constants::DB_TASK_INTENSITY_MEDIUM) {
-                                echo "<button type=\"button\" class=\"ml-2 btn-sm btn btn-warning p-1 rounded\" style='opacity: .9' value=\"Medium\" disabled>Medium 💪🏿</button>";
+                                echo "<button type=\"button\" class=\"ml-2 btn-sm btn btn-warning p-1 rounded\" style='font-size: .5rem;opacity: .9' value=\"Medium\" disabled>Medium 💪🏿</button>";
                             } else if ($task_difficulty == Data_Constants::DB_TASK_INTENSITY_HARD) {
-                                echo "<button type=\"button\" class=\"ml-2 btn-sm btn btn-danger p-1 rounded\" style='opacity: .9' value=\"Hard\" disabled>Hard 🔥</button>";
+                                echo "<button type=\"button\" class=\"ml-2 btn-sm btn btn-danger p-1 rounded\" style='font-size: .5rem;opacity: .9' value=\"Hard\" disabled>Hard 🔥</button>";
                             }
                         }
 
@@ -2630,7 +2648,7 @@ class Web_Page
 
                         echo "</div><div class=\"media text-muted pt-3\">
                         <div class='container'>
-                            <p id='$id' class=\"media-body text-dark mb-0 small lh-125\">
+                            <p id='$id' class=\"media-body text-dark mb-0 small lh-125\" style='padding-bottom: 1rem'>
                                 $task_description
                                 <div id='$id-location' class='pt-1 border-top small border-gray d-none'>
                                     <label for='location'>Location:</label>";
@@ -2645,7 +2663,7 @@ class Web_Page
                                   </div>";
                         } else {
                             echo "<!-- TODO: calculate location distance by zipcode -->
-                                    <p class='text-dark'>Rochester, MN</p>";
+                                    <p class='text-dark'>Rochester, MN</p>"; // TODO: bug spotted
                         }
 
                         echo "
@@ -2707,7 +2725,6 @@ class Web_Page
                                         <div id='$id-expand' class='text-info d-inline-flex'
                                              style='cursor: pointer'
                                              onclick=\"
-                                              $('#$id').animate({height: '4rem'});
                                               $('#$id-location').removeClass('d-none');
                                               $('#$id-freelancer-count').removeClass('d-none');
                                               $('#$id-collapse').removeClass('d-none');
@@ -2801,12 +2818,12 @@ class Web_Page
                             if ($freelancerAccepted) {
                                 if ($task_status == Data_Constants::DB_TASK_STATUS_PENDING_APPROVAL || $task_status == Data_Constants::DB_TASK_STATUS_REQUESTED) {
                                     echo "<div class='float-right d-inline'>
-                                    <p class='d-inline-flex mb-1'>
+                                    <p class='d-inline-flex small mb-1'>
                                     Status: You Accepted</p>
                                   </div>";
                                 } else {
                                     echo "<div class='float-right d-inline'>
-                                        <p class='d-inline-flex mb-1'>
+                                        <p class='d-inline-flex small mb-1'>
                                         ";
                                     // TODO: use class defined constants here to validate verified freelancers from regular customers
                                     if ($task_status == Data_Constants::DB_TASK_STATUS_PAID && $customer_id != $_SESSION['user_info']['id']) {
@@ -2853,7 +2870,7 @@ class Web_Page
                             if (!empty($row)) {
                                 if ($row['approved'] == 1) { // this user is approved
                                     echo "<div class='float-right d-inline'>
-                                        <p class='d-inline-flex mb-1'>
+                                        <p class='d-inline-flex small mb-1'>
                                         ";
                                     // TODO: use class defined constants here to validate verified freelancers from regular customers
                                     if ($task_status == Data_Constants::DB_TASK_STATUS_PAID && $customer_id == $_SESSION['user_info']['id']) {
@@ -3193,11 +3210,11 @@ class Web_Page
 
                         if (isset($task_difficulty) && $customer_id != $_SESSION['user_info']['id']) {
                             if ($task_difficulty == Data_Constants::DB_TASK_INTENSITY_EASY) {
-                                echo "<button type=\"button\" class=\"ml-2 btn-sm btn btn-success p-1 rounded\" style='opacity: .9' value=\"Easy\" disabled>Easy 👌</button>";
+                                echo "<button type=\"button\" class=\"ml-2 btn-sm btn btn-success p-1 rounded\" style='font-size: .5rem;opacity: .9' value=\"Easy\" disabled>Easy 👌</button>";
                             } else if ($task_difficulty == Data_Constants::DB_TASK_INTENSITY_MEDIUM) {
-                                echo "<button type=\"button\" class=\"ml-2 btn-sm btn btn-warning p-1 rounded\" style='opacity: .9' value=\"Medium\" disabled>Medium 💪🏿</button>";
+                                echo "<button type=\"button\" class=\"ml-2 btn-sm btn btn-warning p-1 rounded\" style='font-size: .5rem;opacity: .9' value=\"Medium\" disabled>Medium 💪🏿</button>";
                             } else if ($task_difficulty == Data_Constants::DB_TASK_INTENSITY_HARD) {
-                                echo "<button type=\"button\" class=\"ml-2 btn-sm btn btn-danger p-1 rounded\" style='opacity: .9' value=\"Hard\" disabled>Hard 🔥</button>";
+                                echo "<button type=\"button\" class=\"ml-2 btn-sm btn btn-danger p-1 rounded\" style='font-size: .5rem;opacity: .9' value=\"Hard\" disabled>Hard 🔥</button>";
                             }
                         }
 
@@ -3209,7 +3226,7 @@ class Web_Page
 
                         echo "</div><div class=\"media text-muted pt-3\">
                         <div class='container'>
-                            <p id='$id' class=\"media-body text-dark mb-0 small lh-125\">
+                            <p id='$id' class=\"media-body text-dark mb-0 small lh-125\" style='padding-bottom: 1rem;'>
                                 $task_description
                                 <div id='$id-location' class='pt-1 border-top small border-gray d-none'>
                                     <label for='location'>Location:</label>";
@@ -3364,12 +3381,12 @@ class Web_Page
 
                             if ($task_status == Data_Constants::DB_TASK_STATUS_PENDING_APPROVAL || $task_status == Data_Constants::DB_TASK_STATUS_REQUESTED) {
                                 echo "<div class='float-right d-inline'>
-                                <p class='d-inline-flex mb-1'>
+                                <p class='d-inline-flex small mb-1'>
                                 Status: You Accepted</p>
                               </div>";
                             } else {
                                 echo "<div class='float-right d-inline'>
-                                    <p class='d-inline-flex mb-1'>
+                                    <p class='d-inline-flex small mb-1'>
                                     ";
                                 // TODO: use class defined constants here to validate verified freelancers from regular customers
                                 if ($task_status == Data_Constants::DB_TASK_STATUS_PAID && $customer_id != $_SESSION['user_info']['id']) {
@@ -3409,7 +3426,7 @@ class Web_Page
                             if (!empty($row2)) {
                                 if ($row2['approved'] == 1) { // this user is approved
                                     echo "<div class='float-right d-inline'>
-                                        <p class='d-inline-flex mb-1'>
+                                        <p class='d-inline-flex small mb-1'>
                                         ";
                                     // TODO: use class defined constants here to validate verified freelancers from regular customers
                                     if ($task_status == Data_Constants::DB_TASK_STATUS_PAID && $customer_id == $_SESSION['user_info']['id']) {
@@ -3527,11 +3544,18 @@ class Web_Page
 
     }
 
+    /**
+     * TODO: escape strings in input string
+     * TODO: use better naming scheme
+     * TODO: remove renderSearchResult() from process function
+     * @param $q
+     */
     function processSearch($q)
     {
+        $publicScope = Data_Constants::DB_SCOPE_PUBLIC;
         $results = $this->db->query("SELECT * 
                                                FROM users 
-                                               WHERE default_scope='Public' AND
+                                               WHERE default_scope='$publicScope' AND
                                                username LIKE '%$q%' 
                                                OR first_name LIKE '%$q%'
                                                OR last_name LIKE '%$q%'
@@ -3604,17 +3628,29 @@ class Web_Page
             }
             ?>
             <div class="p-3 text-center request-favr-web">
-                <button class="btn btn-lg btn-primary" id="request-favr-web">
+                <button class="btn btn-lg btn-primary" id="request-favr-web"
+                        style="justify-self: center!important;
+                                border-radius: .875rem;
+                                background-image: linear-gradient(to right, red, #ffaa00);
+                                border: 0px;
+                                box-shadow: 0 2px 2px 0 rgba(0, 0, 0, 0.14), 0 1px 5px 0 rgba(0, 0, 0, 0.12), 0 3px 1px -2px rgba(0, 0, 0, 0.2);">
                     <div class="d-inline-flex">
-                        <i class="mr-1 material-icons">build</i>
-                        Request <img class="mt-2 ml-2" src="<?php echo $this->root_path; ?>/assets/brand/favr_logo_blk.png" height="16" width="52.5">
+                        Request a FAVR
                     </div>
                 </button>
             </div>
 
-            <div class="favr-fab">
-                <a class="favr-fab-fab favr-fab-btn-large text-center" id="favr-fabBtn">
-                    <i style="padding: .8rem;background: transparent;color: var(--white);font-size: xx-large" class="material-icons">build</i>
+            <div class="favr-fab" style="justify-content: center!important;
+                                        width: 100%;
+                                        padding-right: 30px;">
+                <a class="favr-fab-fab favr-fab-btn-large text-center" id="favr-fabBtn"
+                    style=" width: inherit;
+                            justify-self: center!important;
+                            border-radius: 1rem;
+                            background-image: linear-gradient(to right, red, #ffaa00);">
+                    <h4 style="color: #fff;display: inline;">
+                        Request a FAVR
+                    </h4>
                 </a>
             </div>
 
@@ -3645,14 +3681,37 @@ class Web_Page
                             </div>
 
 <!--                            TODO: Add informational popup telling the user we won't share sensitive information until freelancer accepts request -->
-
                             <div class="form-label-group">
                                 <input type="text" name="requestStreetAddress" id="inputStreetAddress"
                                        class="form-control"
                                        placeholder="What's your street address?"
-                                       value="<?php echo $_SESSION['user_info']['street'] . ", " . $_SESSION['user_info']['city'] . ", " . $_SESSION['user_info']['state_province'] . ", " . $_SESSION['user_info']['zip']; ?>"
+                                       value="<?php echo $_SESSION['user_info']['street'];?>"
                                        required="">
                                 <label for="inputStreetAddress">What's your street address?</label>
+                            </div>
+                            <div class="form-label-group">
+                                <input type="text" name="requestCity" id="inputCity"
+                                       class="form-control"
+                                       placeholder="What's your city?"
+                                       value="<?php echo $_SESSION['user_info']['city'];?>"
+                                       required="">
+                                <label for="inputCity">What's your city?</label>
+                            </div>
+                            <div class="form-label-group">
+                                <input type="text" name="requestState" id="inputState"
+                                       class="form-control"
+                                       placeholder="What's your state?"
+                                       value="<?php echo $_SESSION['user_info']['state_province'];?>"
+                                       required="">
+                                <label for="inputState">What's your state?</label>
+                            </div>
+                            <div class="form-label-group">
+                                <input type="text" name="requestZip" id="inputZip"
+                                       class="form-control"
+                                       placeholder="What's your zip?"
+                                       value="<?php echo $_SESSION['user_info']['zip'];?>"
+                                       required="">
+                                <label for="inputZip">What's your zip code?</label>
                             </div>
                             <label for="inputCategory">What category do you want your FAVR listed?</label>
                             <div class="form-label-group">
@@ -3689,7 +3748,7 @@ class Web_Page
                                 <label for="inputPictures">Attach picture(s): at most 3...</label>
                             </div>
                             <input type="submit" name="requestFavr" class="btn btn-lg btn-primary btn-block"
-                                   value="Request FAVR" onclick="alert("This will be posted publically")">
+                                   value="Request FAVR" onclick="alert("This will be posted publicly")">
                         </div>
                     </div>
                 </div>
@@ -3818,17 +3877,30 @@ class Web_Page
                 }
                 ?>
                 <div class="p-3 text-center request-favr-web">
-                    <button class="btn btn-lg btn-dark" id="request-favr-web">
+                    <button class="btn btn-lg btn-dark" id="request-favr-web"
+                            style="justify-self: center!important;
+                                    border-radius: .875rem;
+                                    background-image: linear-gradient(to left, red, #ffaa00);
+                                    border: 0px;
+                                    box-shadow: 0 2px 2px 0 rgba(0, 0, 0, 0.14), 0 1px 5px 0 rgba(0, 0, 0, 0.12), 0 3px 1px -2px rgba(0, 0, 0, 0.2);">
                         <div class="d-inline-flex">
-                            <i class="mr-1 material-icons">build</i>
-                            Request <img class="mt-2 ml-2" src="<?php echo $this->root_path; ?>/assets/brand/favr_logo_rd.png" height="16" width="52.5">
+                            Request a Friend FAVR
                         </div>
                     </button>
                 </div>
 
-                <div class="favr-fab">
-                    <a class="favr-fab-fab favr-fab-btn-large bg-dark text-center" id="favr-fabBtn">
-                        <i style="padding: .8rem;background: transparent;color: var(--white);font-size: xx-large" class="material-icons">build</i>
+                <div class="favr-fab" style="justify-content: center!important;
+                                        width: 100%;
+                                        padding-right: 30px;">
+                    <a class="favr-fab-fab favr-fab-btn-large text-center" id="favr-fabBtn" style="
+                            width: inherit;
+                            justify-self: center!important;
+                            border-radius: 1rem;
+                            background-image: linear-gradient(to right, orange, red);
+                            ">
+                        <h4 style="color: #fff;display: inline;font-weight: normal;">
+                            Request a Friend FAVR
+                        </h4>
                     </a>
                 </div>
 
@@ -3942,6 +4014,7 @@ class Web_Page
                                 if (!empty($friendInfo)) {
                                     $friendFullName = $friendInfo['first_name'] . " " . $friendInfo['last_name'];
                                     $friendUsername = $friendInfo['username'];
+                                    $friendClass = $friendInfo['class'];
                                     $friendProfilePicture = unserialize($friendInfo['profile_picture_path']);
                                     if (isset($friendProfilePicture['name'], $friendProfilePicture['type'])) {
                                         $friendPictureName = $friendProfilePicture['name'];
@@ -3965,7 +4038,7 @@ class Web_Page
                                         </a>
                                         <div class="media-body pb-3 mr-0 mb-0 small lh-125 border-bottom border-gray">
                                             <div class="d-flex justify-content-between align-items-center w-100">
-                                                <strong class="text-gray-dark"><?php echo $friendFullName; ?></strong>
+                                                <strong class="text-gray-dark"><?php echo ($friendClass == Data_Constants::DB_USER_CLASS_VERIFIED) ? "$friendFullName <i class=\"material-icons small text-primary\" style='font-size: 13px'>check_circle</i>" : "$friendFullName"; ?></strong>
                                                 <?php
                                                     if ($crow['COUNT(*)'] != 0) {
                                                         $userFavrGiven = $crow['given'];
@@ -4066,6 +4139,7 @@ class Web_Page
                                     $friendOfFriendFullName =  $friendOfFriendInfo['first_name'] . " " . $friendOfFriendInfo['last_name'];
                                     $friendOfFriendUsername = $friendOfFriendInfo['username'];
                                     $friendOfFriendProfilePicPath = $friendOfFriendInfo['profile_picture_path'];
+                                    $friendOfFriendClass = $friendOfFriendInfo['class'];
                                     if (isset($friendOfFriendProfilePicPath['name'], $friendOfFriendProfilePicPath['type'])) {
                                         $picName = $friendOfFriendProfilePicPath['name'];
                                         $picType = $friendOfFriendProfilePicPath['type'];
@@ -4081,8 +4155,18 @@ class Web_Page
                                         </a>
                                         <div class="media-body pb-3 mb-0 small lh-125 border-bottom border-gray">
                                             <div class="d-flex justify-content-between align-items-center w-100">
-                                                <strong class="text-gray-dark"><?php echo $friendOfFriendFullName; ?></strong>
-                                                <a href="#">Send Friend Request</a>
+                                                <strong class="text-gray-dark"><?php echo ($friendOfFriendClass == Data_Constants::DB_USER_CLASS_VERIFIED) ? "$friendOfFriendFullName <i class=\"material-icons small text-primary\" style='font-size: 13px'>check_circle</i>" : "$friendOfFriendFullName"; ?></strong>
+                                                <div class="d-flex justify-content-between align-items-center w-100">
+                                                    <strong class="text-gray-dark"><?php echo $friendOfFriendFullName; ?></strong>
+                                                    <?php
+                                                    if ($_SESSION['navbar'] == "friends_list") {
+                                                        $last_url = "$this->root_path/home/friends/?friends_list=true&add_friend=true&id=$friend_of_friend_id&ALERT_MESSAGE=Your friend request has been sent!";
+                                                    } else {
+                                                        $last_url = "$this->root_path/home/friends/?navbar=active_home&nav_scroller=active_friends&add_friend=true&id=$friend_of_friend_id&ALERT_MESSAGE=Your friend request has been sent!";
+                                                    }
+                                                    ?>
+                                                    <a href="<?php echo $last_url; ?>">Send Friend Request</a>
+                                                </div>
                                             </div>
                                             <span class="d-block">
                                                 <a href="<?php echo "$this->root_path/components/profile/profile.php?id=$friend_of_friend_id"; ?>">
@@ -4139,6 +4223,7 @@ class Web_Page
                                 if ($crow['COUNT(*)'] == 0) {
                                     $friendOfFriendFullName =  $row['first_name'] . " " . $row['last_name'];
                                     $friendOfFriendUsername = $row['username'];
+                                    $friendOfFriendClass = $row['class'];
                                     $friendOfFriendProfilePicPath = unserialize($row['profile_picture_path']);
                                     if (isset($friendOfFriendProfilePicPath['name'], $friendOfFriendProfilePicPath['type'])) {
                                         $picName = $friendOfFriendProfilePicPath['name'];
@@ -4155,7 +4240,7 @@ class Web_Page
                                         </a>
                                         <div class="media-body pb-3 mb-0 small lh-125 border-bottom border-gray">
                                             <div class="d-flex justify-content-between align-items-center w-100">
-                                                <strong class="text-gray-dark"><?php echo $friendOfFriendFullName; ?></strong>
+                                                <strong class="text-gray-dark"><?php echo ($friendOfFriendClass == Data_Constants::DB_USER_CLASS_VERIFIED) ? "$friendOfFriendFullName <i class=\"material-icons small text-primary\" style='font-size: 13px'>check_circle</i>" : "$friendOfFriendFullName"; ?></strong>
                                                 <?php
                                                     if ($_SESSION['navbar'] == "friends_list") {
                                                         $last_url = "$this->root_path/home/friends/?friends_list=true&add_friend=true&id=$friend_of_friend_id&ALERT_MESSAGE=Your friend request has been sent!";
@@ -4291,11 +4376,11 @@ class Web_Page
 
                         if (isset($task_difficulty)) {
                             if ($task_difficulty == Data_Constants::DB_TASK_INTENSITY_EASY) {
-                                echo "<button type=\"button\" class=\"ml-2 btn-sm btn btn-success p-1 rounded\" style='opacity: .9' value=\"Easy\" disabled>Easy 👌</button>";
+                                echo "<button type=\"button\" class=\"ml-2 btn-sm btn btn-success p-1 rounded\" style='font-size: .5rem;opacity: .9' value=\"Easy\" disabled>Easy 👌</button>";
                             } else if ($task_difficulty == Data_Constants::DB_TASK_INTENSITY_MEDIUM) {
-                                echo "<button type=\"button\" class=\"ml-2 btn-sm btn btn-warning p-1 rounded\" style='opacity: .9' value=\"Medium\" disabled>Medium 💪🏿</button>";
+                                echo "<button type=\"button\" class=\"ml-2 btn-sm btn btn-warning p-1 rounded\" style='font-size: .5rem;opacity: .9' value=\"Medium\" disabled>Medium 💪🏿</button>";
                             } else if ($task_difficulty == Data_Constants::DB_TASK_INTENSITY_HARD) {
-                                echo "<button type=\"button\" class=\"ml-2 btn-sm btn btn-danger p-1 rounded\" style='opacity: .9' value=\"Hard\" disabled>Hard 🔥</button>";
+                                echo "<button type=\"button\" class=\"ml-2 btn-sm btn btn-danger p-1 rounded\" style='font-size: .5rem;opacity: .9' value=\"Hard\" disabled>Hard 🔥</button>";
                             }
                         }
 
@@ -4307,7 +4392,7 @@ class Web_Page
 
                         echo "</div><div class=\"media text-muted pt-3\">
                         <div class='container'>
-                            <p id='$id' class=\"media-body text-dark mb-0 small lh-125\">
+                            <p id='$id' class=\"media-body text-dark mb-0 small lh-125\" style='padding-bottom: 1rem'>
                                 $task_description
                                 <div id='$id-location' class='pt-1 border-top small border-gray d-none'>
                                     <label for='location'>Location:</label>
@@ -4581,11 +4666,11 @@ class Web_Page
 
                     if (isset($task_difficulty)) {
                         if ($task_difficulty == Data_Constants::DB_TASK_INTENSITY_EASY) {
-                            echo "<button type=\"button\" class=\"ml-2 btn-sm btn btn-success p-1 rounded\" style='opacity: .9' value=\"Easy\" disabled>Easy 👌</button>";
+                            echo "<button type=\"button\" class=\"ml-2 btn-sm btn btn-success p-1 rounded\" style='font-size: .5rem;opacity: .9' value=\"Easy\" disabled>Easy 👌</button>";
                         } else if ($task_difficulty == Data_Constants::DB_TASK_INTENSITY_MEDIUM) {
-                            echo "<button type=\"button\" class=\"ml-2 btn-sm btn btn-warning p-1 rounded\" style='opacity: .9' value=\"Medium\" disabled>Medium 💪🏿</button>";
+                            echo "<button type=\"button\" class=\"ml-2 btn-sm btn btn-warning p-1 rounded\" style='font-size: .5rem;opacity: .9' value=\"Medium\" disabled>Medium 💪🏿</button>";
                         } else if ($task_difficulty == Data_Constants::DB_TASK_INTENSITY_HARD) {
-                            echo "<button type=\"button\" class=\"ml-2 btn-sm btn btn-danger p-1 rounded\" style='opacity: .9' value=\"Hard\" disabled>Hard 🔥</button>";
+                            echo "<button type=\"button\" class=\"ml-2 btn-sm btn btn-danger p-1 rounded\" style='font-size: .5rem;opacity: .9' value=\"Hard\" disabled>Hard 🔥</button>";
                         }
                     }
 
@@ -4597,7 +4682,7 @@ class Web_Page
 
                     echo "</div><div class=\"media text-muted pt-3\">
                         <div class='container'>
-                            <p id='$id' class=\"media-body text-dark mb-0 small lh-125\">
+                            <p id='$id' class=\"media-body text-dark mb-0 small lh-125\" style='padding-bottom: 1rem'>
                                 $task_description
                                 <div id='$id-location' class='pt-1 border-top small border-gray d-none'>
                                     <label for='location'>Location:</label>

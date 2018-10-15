@@ -45,7 +45,7 @@ class Web_Confirm
 
     public function sendConfirmationEmail(string $email, string $password)
     {
-        $from = new SendGrid\Email("FAVR", "contact@askfavr.com");
+        $from = new SendGrid\Email("FAVR", "no-reply@askfavr.com");
 
         $subject = "Confirm Account ";
         $to = new SendGrid\Email($this->getUser($email), $email);

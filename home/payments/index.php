@@ -8,7 +8,7 @@
 
 session_start();
 include($_SERVER['DOCUMENT_ROOT'] . "/favr-pwa/include/autoload.php");
-//require '../../libraries/Api/Stripe/init.php';
+include '../../libraries/Api/Stripe/init.php';
 
 // component constants
 $USER = "";
