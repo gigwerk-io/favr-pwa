@@ -6122,6 +6122,7 @@ class Web_Page
                                                  WHERE id = $request_id";
 
                             $result = $this->db->query($update_request_query);
+                            include($_SERVER['DOCUMENT_ROOT'] . '/favr-pwa/libraries/Api/Twilio/twilio-php-master/Twilio/autoload.php');
                             $this->sms->processCustomerSmsNotification($request_id);
 //                        die(print_r($result));
                             if (!$result) {
