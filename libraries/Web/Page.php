@@ -3649,14 +3649,37 @@ class Web_Page
                             </div>
 
 <!--                            TODO: Add informational popup telling the user we won't share sensitive information until freelancer accepts request -->
-
                             <div class="form-label-group">
                                 <input type="text" name="requestStreetAddress" id="inputStreetAddress"
                                        class="form-control"
                                        placeholder="What's your street address?"
-                                       value="<?php echo $_SESSION['user_info']['street'] . ", " . $_SESSION['user_info']['city'] . ", " . $_SESSION['user_info']['state_province'] . ", " . $_SESSION['user_info']['zip']; ?>"
+                                       value="<?php echo $_SESSION['user_info']['street'];?>"
                                        required="">
                                 <label for="inputStreetAddress">What's your street address?</label>
+                            </div>
+                            <div class="form-label-group">
+                                <input type="text" name="requestCity" id="inputCity"
+                                       class="form-control"
+                                       placeholder="What's your city?"
+                                       value="<?php echo $_SESSION['user_info']['city'];?>"
+                                       required="">
+                                <label for="inputCity">What's your city?</label>
+                            </div>
+                            <div class="form-label-group">
+                                <input type="text" name="requestState" id="inputState"
+                                       class="form-control"
+                                       placeholder="What's your state?"
+                                       value="<?php echo $_SESSION['user_info']['state_province'];?>"
+                                       required="">
+                                <label for="inputState">What's your state?</label>
+                            </div>
+                            <div class="form-label-group">
+                                <input type="text" name="requestZip" id="inputZip"
+                                       class="form-control"
+                                       placeholder="What's your zip?"
+                                       value="<?php echo $_SESSION['user_info']['zip'];?>"
+                                       required="">
+                                <label for="inputZip">What's your zip code?</label>
                             </div>
                             <label for="inputCategory">What category do you want your FAVR listed?</label>
                             <div class="form-label-group">
