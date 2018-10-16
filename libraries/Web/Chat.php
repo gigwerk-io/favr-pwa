@@ -70,77 +70,172 @@ class Web_Chat
     }
 
     /**
-     * Chat List View
-     * @param int $id
-     * @param string $name
-     * @param string $date
-     * @param string $message
+     * Chat Listing View
+     *
+     * @param $name
+     * @param $lastMessage
+     * @param $profileImage
+     * @param $time
      */
-    private function displayList(int $id, string $name, string $date, string $message)
+    private function renderChatListing($chatRoomId, $name, $lastMessage, $profileImage, $time)
     {
-        $path = $this->getProfileImage($this->getRecipient($id, $this->id));
-        echo "
-                    <div class=\"chat_list\">
-                        <a id='$id' href='?chat_room=$id'>
-                            <div class=\"chat_people\">
-                                <div class=\"chat_img\"><img src=\"$path\" class='rounded-circle' style='overflow: hidden' height='50%' width='50%' alt='$name'></div>
-                                <div class=\"chat_ib\">
-                                    <h5>$name<span class=\"chat_date\">$date</span></h5>
-                                    <p>$message</p>
-                                </div>
-                            </div>
-                         </a>
-                     </div>
-                ";
+        echo "<a href='room.php?id=$chatRoomId' style='color: black;'><div class=\"profil\">
+            <div class=\"pfoto\">
+                <img src=\"$profileImage\">
+            </div>
+
+            <div class=\"mesaj\">
+                <b><span>$name</span> <span class=\"right\">$time</span>
+                    <br>
+                    <span>$lastMessage</span></b>
+            </div>
+            <div class=\"temizle\"></div>
+        </div></a>";
     }
 
     /**
-     * TODO: change this function so that it returns an array of the chatroom IDs
-     * List Controller
-     * @return $this
+     * The Chat Listing Controller.
      */
-    public function getChatList()
+    public function processChatListing()
     {
-        $query = $this->db->query("SELECT * FROM marketplace_favr_chat_rooms WHERE customer_id=$this->id or freelancer_id=$this->id");
-        while($chat_room = $query->fetch(PDO::FETCH_ASSOC)) {
-            $data = $this->getLastMessage($chat_room['id']);
-            if ($this->id == $chat_room['customer_id']) {
-                $this->displayList(
-                    $chat_room['id'],
-                    $this->getUser(
-                        $chat_room['freelancer_id']
-                    ),
-                    $data['date'],
-                    $data['message']
-                );
-            } else {
-                $this->displayList(
-                    $chat_room['id'],
-                    $this->getUser(
-                        $chat_room['customer_id']
-                    ),
-                    $data['date'],
-                    $data['message']
-                );
-            }
+        $rooms = $this->getChatListFromDB();
+        foreach ($rooms as $room){
+            $message = $this->getLastMessage($room['id']);
+            $this->renderChatListing(
+                $room['id'],
+                $this->getUser($this->getRecipient($room['id'], $this->id)),
+                $message['message'],
+                $this->getProfileImage($this->getRecipient($room['id'], $this->id)),
+                $message['date']
+            );
         }
-        return $this;
     }
 
     /**
-     * Message View
-     * @param int $sender_id
-     * @param string $message
-     * @param string $date
+     * Chat Listing Model
+     * @return bool|PDOStatement
      */
-    private function displayChat(int $sender_id,string $message, string $date, string $img_path)
+    private function getChatListFromDB()
     {
-        if($this->id == $sender_id){
-            $this->renderOutgoingMessage($message, $date);
+        $select_chat_rooms = "SELECT * FROM marketplace_favr_chat_rooms WHERE customer_id=$this->id or freelancer_id=$this->id";
+        return $this->db->query($select_chat_rooms);
+    }
+
+    /**
+     * Messages View.
+     * @param $senderId
+     * @param $message
+     * @param $time
+     */
+    private function renderChatMessages($senderId, $message, $time)
+    {
+        if($this->id == $senderId){
+            $this->renderOutgoingMessage($message, $time);
         }else{
-            $this->renderIncomingMessage($message, $date, $img_path);
+            $name = $this->getUser($senderId);
+            $this->renderIncomingMessage($message, $time, $name);
         }
     }
+
+    /**
+     * View for Sent Message.
+     * @param $message
+     * @param $time
+     */
+    private function renderOutgoingMessage($message, $time)
+    {
+        echo "<div class=\"balon1 p-2 m-0 position-relative\" data-is=\"You - $time\">
+                <a class=\"float-right\"> $message </a>
+              </div>";
+    }
+
+    /**
+     * View for Received Message.
+     * @param $message
+     * @param $time
+     * @param $name
+     */
+    private function renderIncomingMessage($message, $time, $name)
+    {
+        echo "<div class=\"balon2 p-2 m-0 position-relative\" data-is=\"$name - $time\">
+                <a class=\"float-left sohbet2\"> $message </a>
+             </div>";
+    }
+
+    /**
+     * Chat Header Controller.
+     * @param $chat_id
+     */
+    public function processChatHeader($chat_id)
+    {
+        $recipientId = $this->getRecipient($chat_id, $this->id);
+        $user = $this->getUser($recipientId);
+        $profileImage = $this->getProfileImage($recipientId);
+        $this->renderChatHeader($user, $profileImage);
+    }
+
+    /**
+     * Chat Header View
+     * @param $name
+     * @param $profileImage
+     */
+    private function renderChatHeader($name, $profileImage)
+    {
+        echo "<div class=\"card-header p-1 bg-light border border-top-0 border-left-0 border-right-0\" style=\"color: rgba(96, 125, 139,1.0);\">
+                    <div class=\"dropdown show\">
+                        <a href='chat.php' class=\"btn btn-sm float-left text-secondary\" role=\"button\"><h5><i class=\"fa fa-arrow-left\" title=\"Ayarlar!\" aria-hidden=\"true\"></i>&nbsp; </h5></a>
+                    </div>
+                    <div class=\"container text-center\">
+                    <img class=\"rounded text-center\" style=\"width: 50px; height: 50px;\" src=\"$profileImage\" />
+
+                    <h6 class=\"text-center\" style=\"margin: 0px; margin-left: 10px;\"> $name <i class=\"fa fa-check text-primary\" title=\"Onaylanmış Hesap!\" aria-hidden=\"true\"></i> </br></h6>
+                </div>
+
+                </div>";
+    }
+
+    /**
+     * Opening Div For Messages (View)
+     */
+    private function renderMessageOpeningDiv()
+    {
+        echo "<div class=\"card bg-sohbet border-0 m-0 p-0\" style=\"height: 100vh;\">
+                    <div id=\"sohbet\" class=\"card border-0 m-0 p-0 position-relative bg-transparent\" style=\"overflow-y: auto; height: 100vh;\">";
+    }
+
+    /**
+     * Closing Div For Messages (View)
+     */
+    private function renderMessageClosingDiv()
+    {
+        echo "</div> </div>";
+    }
+
+    /**
+     * Messages Controller
+     * @param $chat_id
+     */
+    public function processChatMessages($chat_id)
+    {
+        $messages = $this->getChatMessagesFromDB($chat_id);
+        $this->renderMessageOpeningDiv();
+        foreach ($messages as $message){
+            $this->renderChatMessages($message['sender_id'], $message['message'], $this->timeAgo($message['created_at']));
+        }
+        $this->renderMessageClosingDiv();
+    }
+
+    /**
+     * Messages Model.
+     * @param $chat_id
+     * @return bool|PDOStatement
+     */
+    private function getChatMessagesFromDB($chat_id)
+    {
+        $get_all_messages = "SELECT * FROM marketplace_favr_messages WHERE chat_room_id=$chat_id";
+        return $this->db->query($get_all_messages);
+    }
+
 
     /**
      * Message Controller
@@ -162,12 +257,13 @@ class Web_Chat
         return $this;
     }
 
-    private function verifyUser(int $chat_room)
-    {
-
-    }
-
-    public function sendMessage(int $chat_room, int $sender_id, string $message)
+    /**
+     * Send Message Controller
+     * @param int $chat_room
+     * @param int $sender_id
+     * @param string $message
+     */
+    public function processSendMessage(int $chat_room, int $sender_id, string $message)
     {
         $recipient_id = $this->getRecipient($chat_room, $sender_id);
         $send_message_query = $this->db->query("INSERT INTO marketplace_favr_messages
@@ -187,6 +283,12 @@ class Web_Chat
         }
     }
 
+    /**
+     * Getter for Recipient
+     * @param int $chat_room
+     * @param int $user_id
+     * @return mixed
+     */
     private function getRecipient(int $chat_room, int $user_id)
     {
         $query = $this->db->query("SELECT * FROM marketplace_favr_chat_rooms WHERE id=$chat_room");
@@ -198,6 +300,7 @@ class Web_Chat
         }
     }
     /**
+     * Getter for User
      * @param int $id
      * @return string
      */
@@ -209,6 +312,7 @@ class Web_Chat
     }
 
     /**
+     * Getter for latest message
      * @param int $chat_id
      * @return array
      */
@@ -222,36 +326,11 @@ class Web_Chat
         ];
     }
 
-
-    private function renderOutgoingMessage(string $message, string $date)
-    {
-        echo "<div class=\"outgoing_msg\" id='incoming'>
-                    <div class=\"sent_msg\">
-                        <p>$message</p>
-                        <span class=\"time_date\"> $date</span>
-                    </div>
-              </div>";
-    }
-
-    private function renderIncomingMessage(string $message, string $date, string $img_path)
-    {
-        echo "<div class=\"incoming_msg\">
-                <div class=\"incoming_msg_img\"><img src=\"$img_path\" class='rounded-circle'
-                                               alt=\"sunil\"></div>
-                <div class=\"received_msg\">
-                    <div class=\"received_withd_msg\">
-                        <p>$message</p>
-                        <span class=\"time_date\"> $date</span>
-                    </div>
-                </div>
-              </div>";
-    }
-
-    private function renderMessagePing()
-    {
-        echo "<embed loop='false' src='chat.wav' hidden='true' autoplay='true'/>";
-    }
-
+    /**
+     * Getter for profile image
+     * @param int $user_id
+     * @return string
+     */
     private function getProfileImage(int $user_id)
     {
 
@@ -266,6 +345,15 @@ class Web_Chat
         }
         return "$this->root_path/image.php?i=$profile_img_name&i_t=$profile_img_type&i_p=true";
     }
+
+    /**
+     * View/Sound for message sending.
+     */
+    private function renderMessagePing()
+    {
+        echo "<embed loop='false' src='chat.wav' hidden='true' autoplay='true'/>";
+    }
+
     /**
      * @param $time_ago
      * @return string
