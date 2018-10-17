@@ -3635,18 +3635,18 @@ class Web_Page
                         <div class="media-body pb-3 mb-0 small lh-125">
                             <strong class="d-block text-gray-dark">@<?php echo $_SESSION['user_info']['username']; ?></strong>
                             <div class="form-label-group">
-                                <textarea name="requestTaskDescription" class="form-control" placeholder="What is your task?"></textarea>
+                                <textarea name="requestTaskDescription" class="form-control" placeholder="What is your task?" required></textarea>
                             </div>
                             <div class="form-label-group">
                                 <input type="number" pattern="\d*" step="1" min="1" max="5" name="requestFreelancerCount" id="inputCount"
                                        class="form-control"
-                                       placeholder="How many people do you need?" value="1" required="">
+                                       placeholder="How many people do you need?" value="1" required>
                                 <label for="inputCount">How many people do you need?</label>
                             </div>
                             <div class="form-label-group">
                                 <input type="datetime-local" name="requestDate" id="inputDate"
                                        class="form-control"
-                                       placeholder="When do you want your FAVR?" value="<?php echo date("Y-m-d\TH:i", time()); ?>" required="">
+                                       placeholder="When do you want your FAVR?" value="<?php echo date("Y-m-d\TH:i", time()); ?>" required>
                                 <label for="inputDate">When do you want your FAVR?</label>
                             </div>
 
@@ -3656,7 +3656,7 @@ class Web_Page
                                        class="form-control"
                                        placeholder="What's your street address?"
                                        value="<?php echo $_SESSION['user_info']['street'];?>"
-                                       required="">
+                                       required>
                                 <label for="inputStreetAddress">What's your street address?</label>
                             </div>
                             <div class="form-label-group">
@@ -3664,7 +3664,7 @@ class Web_Page
                                        class="form-control"
                                        placeholder="What's your city?"
                                        value="<?php echo $_SESSION['user_info']['city'];?>"
-                                       required="">
+                                       required>
                                 <label for="inputCity">What's your city?</label>
                             </div>
                             <div class="form-label-group">
@@ -3672,7 +3672,7 @@ class Web_Page
                                        class="form-control"
                                        placeholder="What's your state?"
                                        value="<?php echo $_SESSION['user_info']['state_province'];?>"
-                                       required="">
+                                       required>
                                 <label for="inputState">What's your state?</label>
                             </div>
                             <div class="form-label-group">
@@ -3680,14 +3680,14 @@ class Web_Page
                                        class="form-control"
                                        placeholder="What's your zip?"
                                        value="<?php echo $_SESSION['user_info']['zip'];?>"
-                                       required="">
+                                       required>
                                 <label for="inputZip">What's your zip code?</label>
                             </div>
                             <label for="inputCategory">What category do you want your FAVR listed?</label>
                             <div class="form-label-group">
                                 <select name="requestCategory" id="inputCategory"
                                         class="form-control"
-                                        required="">
+                                        required>
                                     <option value="General Request" selected>General Request</option>
                                     <option value="Home Improvement">Home Improvement</option>
                                     <option value="Yard Work">Yard Work</option>
@@ -3708,7 +3708,7 @@ class Web_Page
                                 <input type="number" name="requestPrice" id="inputPricing"
                                        class="form-control"
                                        style="border-radius: 0 5px 5px 0"
-                                       placeholder="Set your price ..." min="0.50" max="250.00" step="0.01" required="">
+                                       placeholder="Set your price ..." min="0.50" max="250.00" step="0.01" required>
                             </div>
                             <label for="inputPictures">Only image files < 5 Mb can be attached</label>
                             <div class="form-label-group">
@@ -5408,7 +5408,10 @@ class Web_Page
     {
         if (isset($userInfo, $inputDate, $inputFreelancerCount, $inputCategory, $inputTaskDetails, $inputPricing, $inputScope)) {
             $userId = $userInfo['id'];
-            $address = $inputLocation;
+            $inputTaskDetails = $this->db->quote($inputTaskDetails);
+            $inputCategory = $this->db->quote($inputCategory);
+            $address = $this->db->quote($inputLocation);
+
 
             $insert_request_query = "INSERT INTO `marketplace_favr_requests`
                                   (
