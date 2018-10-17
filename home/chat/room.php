@@ -178,7 +178,6 @@ if(isset($_POST['message'])){
         }
         setInterval(function () {
             ajax();
-            return false
         }, 100)
        
     </script>
@@ -196,7 +195,7 @@ if(isset($_POST['message'])){
                 //$chat->processChatMessages($_GET['id']);
                 ?>
                 <div class="card bg-sohbet border-0 m-0 p-0" style="height: 100vh;">
-                    <div id="sohbet" class="card border-0 m-0 p-0 position-relative bg-transparent" style="overflow-y: auto; height: 100vh;" onload="ajax(); return false;">
+                    <div id="sohbet" class="card border-0 m-0 p-0 position-relative bg-transparent" style="overflow-y: auto; height: 100vh;" onload="ajax();">
                         <div id="content"></div>
                     </div>
                 </div>
