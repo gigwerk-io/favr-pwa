@@ -159,6 +159,10 @@ if(isset($_POST['message'])){
             position: absolute;
 
         }
+        #sohbet {
+            overflow-y: scroll;
+            height: 100vh;
+        }
     </style>
     <?php
     $id = $_GET['id'];
@@ -177,6 +181,9 @@ if(isset($_POST['message'])){
             }
             req.open('GET', 'process.php?id=$id',true);
             req.send();
+            var box = $('#sohbet'); 
+            var height = box.get(0).scrollHeight;
+            box.scrollTop(height);
         }
        ajax();
        
@@ -203,8 +210,8 @@ if(isset($_POST['message'])){
                 $chat->processChatHeader($_GET['id']);
                 //$chat->processChatMessages($_GET['id']);
                 ?>
-                <div class="card bg-sohbet border-0 m-0 p-0" style="height: 100vh;">
-                    <div id="sohbet" class="card border-0 m-0 p-0 position-relative bg-transparent" style="overflow-y: auto; height: 100vh;" onload="ajax();">
+                <div id="area" class="card bg-sohbet border-0 m-0 p-0" style="height: 100vh;">
+                    <div id="sohbet" class="card border-0 m-0 p-0 position-relative bg-transparent"  onload="ajax();">
                         <p id="demo"></p>
                     </div>
                 </div>
