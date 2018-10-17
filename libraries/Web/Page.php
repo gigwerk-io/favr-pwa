@@ -6398,14 +6398,12 @@ class Web_Page
     }
 
     /**
-     * Process freelancer arrival and log the time
-     *
-     * @param boolean $freelancerArrived
-     * @param int $timestamp
-     * @param int $requestID
-     * @param int $freelancerID // this user!
-     *
-     * @return mixed // timestamp of arrival or false
+     * @param $freelancerArrived
+     * @param $timestamp
+     * @param $requestID
+     * @param $freelancerID
+     * @return bool
+     * @throws \Twilio\Exceptions\ConfigurationException
      */
     function processFreelancerArrived($freelancerArrived, $timestamp, $requestID, $freelancerID)
     {
@@ -6434,6 +6432,7 @@ class Web_Page
                     $row = $getCustomerNumber->fetch(PDO::FETCH_ASSOC);
                     $customerNumber = $row['phone'];
                     $customerName = $row['first_name'];
+                    include($_SERVER['DOCUMENT_ROOT'] . "/libraries/Api/Twilio/twilio-php-master/Twilio/autoload.php");
                     $this->sms->sendNotification($customerNumber, "Hey $customerName, your freelancer has arrived!");
                     header("Refresh:2; url=$this->root_path/home");
                     if ($result) {
