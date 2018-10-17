@@ -2050,7 +2050,7 @@ class Web_Page
                     break;
             }
             ?>
-            <nav class="navbar navbar-mobile navbar-expand-md fixed-top navbar-dark bg-dark">
+            <nav class="navbar navbar-mobile navbar-expand-md fixed-top navbar-dark" style="background-color: #2b3035;">
                 <div class="row mobile-navbar ml-0 mr-0 p-0" style="width: 100%;flex-wrap: nowrap">
                     <?php
                     if ($render_back_button) {
@@ -2133,8 +2133,7 @@ class Web_Page
                     </div>
                 </div>
 
-                <div class="navbar-collapse offcanvas-collapse" id="navbarsExampleDefault"
-                     style="background-color: #2b3035">
+                <div class="navbar-collapse offcanvas-collapse" id="navbarsExampleDefault">
                     <div id="logo" class="request-favr request-favr-web pr-3">
                         <?php
                         if ($_SESSION['nav_scroller'] != "active_marketplace" || $_SESSION['navbar'] != "active_home") {
