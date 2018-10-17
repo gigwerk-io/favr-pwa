@@ -21,7 +21,6 @@ if(!isset($_GET['id'])){
 
 
 $page = new Web_Page($USER);
-$page->setTitle("Chat");
 $chat = new Web_Chat();
 if(isset($_POST['message'])){
     $chat->processSendMessage($_GET['id'], $_SESSION['user_info']['id'], $_POST['message']);
@@ -36,6 +35,9 @@ if(isset($_POST['message'])){
     <script src="//maxcdn.bootstrapcdn.com/bootstrap/4.1.1/js/bootstrap.min.js"></script>
     <script src="//cdnjs.cloudflare.com/ajax/libs/jquery/3.2.1/jquery.min.js"></script>
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.css" type="text/css" rel="stylesheet">
+    <link rel="icon" type="image/png" sizes="32x32" href="<?php echo Data_Constants::ROOT_PATH; ?>/assets/brand/favicon-32x32.png">
+    <link rel="icon" type="image/png" sizes="16x16" href="<?php echo Data_Constants::ROOT_PATH; ?>/assets/brand/favicon-16x16.png">
+    <title>FAVR - Chat</title>
     <style>
         body{
 
@@ -175,10 +177,10 @@ if(isset($_POST['message'])){
             }
             req.open('GET', 'process.php?id=$id',true);
             req.send();
+            $(\"html, body\").animate({ scrollTop: $(document).height()-$(window).height() });
         }
-        setInterval(function () {
-            ajax();
-        }, 100)
+        setInterval(ajax(), 5000)
+        clearInterval();
        
     </script>
 ";
