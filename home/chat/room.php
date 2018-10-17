@@ -162,6 +162,7 @@ if(isset($_POST['message'])){
     </style>
     <?php
     $id = $_GET['id'];
+    $user = $_SESSION['user_info']['id'];
     echo
     "<script>
 
@@ -170,16 +171,24 @@ if(isset($_POST['message'])){
 
             req.onreadystatechange = function () {
                 if(req.readyState == 4 && req.status==200){
-                    document.getElementById('content').innerHTML = req.responseText;
+                    console.log(req.responseText);
+                    document.getElementById('demo').innerHTML = req.responseText; 
                 }
             }
             req.open('GET', 'process.php?id=$id',true);
             req.send();
         }
-        setInterval(function () {
-            ajax();
-        }, 100)
+       ajax();
        
+        function submitForm() {
+            var http = new XMLHttpRequest();
+            http.open(\"GET\", 'room.php?id=$id&user=$user&message=' + document.getElementById(text).value, true);
+            http.setRequestHeader(\"Content-type\",\"application/x-www-form-urlencoded\");
+            http.send();
+            http.onload = function() {
+                alert(http.responseText);
+            }
+        }
     </script>
 ";
     ?>
@@ -196,13 +205,13 @@ if(isset($_POST['message'])){
                 ?>
                 <div class="card bg-sohbet border-0 m-0 p-0" style="height: 100vh;">
                     <div id="sohbet" class="card border-0 m-0 p-0 position-relative bg-transparent" style="overflow-y: auto; height: 100vh;" onload="ajax();">
-                        <div id="content"></div>
+                        <p id="demo"></p>
                     </div>
                 </div>
 
                 <div class="w-100 card-footer p-0 bg-light border border-bottom-0 border-left-0 border-right-0">
 
-                    <form class="m-0 p-0" action="room.php?id=<?php echo $_GET['id'];?>" method="POST" autocomplete="off">
+                    <form class="m-0 p-0" action="room.php?id=<?php echo $_GET['id'];?>" method="POST" onsubmit="submitForm();" autocomplete="off">
 
                         <div class="row m-0 p-0">
                             <div class="col-9 m-0 p-1">
