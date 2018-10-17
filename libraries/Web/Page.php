@@ -5408,9 +5408,9 @@ class Web_Page
     {
         if (isset($userInfo, $inputDate, $inputFreelancerCount, $inputCategory, $inputTaskDetails, $inputPricing, $inputScope)) {
             $userId = $userInfo['id'];
-            $inputTaskDetails = $this->db->quote($inputTaskDetails);
-            $inputCategory = $this->db->quote($inputCategory);
-            $address = $this->db->quote($inputLocation);
+            $inputTaskDetails = addslashes($inputTaskDetails);
+            $inputCategory =addslashes($inputCategory);
+            $address = addslashes($inputLocation);
 
 
             $insert_request_query = "INSERT INTO `marketplace_favr_requests`
