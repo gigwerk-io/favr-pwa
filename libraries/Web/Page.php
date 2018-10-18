@@ -2456,7 +2456,8 @@ class Web_Page
                                 FROM marketplace_favr_requests mfr 
                                 WHERE mfr.task_freelancer_count > 1
                                 AND mfr.task_status = '$paid'
-                                OR mfr.task_status = '$inProgress'";
+                                OR mfr.task_freelancer_count > 1
+                                AND mfr.task_status = '$inProgress'";
 
         $notifications_friend_request_query = "
                 SELECT *, f.user_id as uid 
@@ -3036,6 +3037,7 @@ class Web_Page
                         $customer_first_name = $customerInfo['first_name'];
                         $customer_phone = $customerInfo['phone'];
 
+                        $task_id = $row['id'];
                         $task_description = $row['task_description'];
                         $task_date = date("n/j/Y", strtotime($row['task_date']));
                         $task_location = $row['task_location'];
@@ -3139,12 +3141,12 @@ class Web_Page
 
                             echo "<div class='mt-2 p-2 text-center'>";
                             echo "<!-- Button trigger modal -->
-                                <button type=\"button\" class=\"btn btn-primary\" data-toggle=\"modal\" data-target=\"#exampleModalCenter\">
+                                <button type=\"button\" class=\"btn btn-primary\" data-toggle=\"modal\" data-target=\"#exampleModalCenter$task_id\">
                                   Leave an optional review
                                 </button>
                                 
                                 <!-- Modal -->
-                                <div class=\"modal fade\" id=\"exampleModalCenter\" tabindex=\"-1\" role=\"dialog\" aria-labelledby=\"exampleModalCenterTitle\" aria-hidden=\"true\">
+                                <div class=\"modal fade\" id=\"exampleModalCenter$task_id\" tabindex=\"-1\" role=\"dialog\" aria-labelledby=\"exampleModalCenterTitle\" aria-hidden=\"true\">
                                   <form action='$this->root_path/components/notifications/?navbar=active_notifications&request_completed_id=$task_id&stars=$stars' method='post'>
                                       <div class=\"modal-dialog\" role=\"document\">
                                         <div class=\"modal-content\">
@@ -3193,7 +3195,7 @@ class Web_Page
                                 }
                             }
 
-                            echo "<div class='float-right small' style='padding-top: .3rem;color: var(--red)'>- $$task_price x $task_freelancer_count</div>";
+                            echo "<div class='float-right small' style='padding-top: .3rem;color: var(--red)'>- $" . ((($task_price * $task_freelancer_count) % 2 == 0) ? $task_price * $task_freelancer_count . ".00" : $task_price * $task_freelancer_count) . "</div>";
 
                             echo "</div>
                                     <div class=\"media text-muted pt-3\">
@@ -3420,7 +3422,7 @@ class Web_Page
                                         Cancel Request</a>
                                         ";
                                     } else {
-                                        echo "<div style='cursor: pointer;' class='text-danger d-inline' data-toggle=\"modal\" data-target=\"#cancelInProgressModal\">
+                                        echo "<div style='cursor: pointer;' class='text-danger d-inline' data-toggle=\"modal\" data-target=\"#cancelInProgressModal$task_id\">
                                             Cancel Request</div>
                                         ";
                                     }
@@ -3428,7 +3430,7 @@ class Web_Page
 
                                     echo "
                                     <!-- Modal -->
-                                    <div class=\"modal fade\" id=\"cancelInProgressModal\" tabindex=\"-1\" role=\"dialog\" aria-labelledby=\"cancelInProgressTitle\" aria-hidden=\"true\">
+                                    <div class=\"modal fade\" id=\"cancelInProgressModal$task_id\" tabindex=\"-1\" role=\"dialog\" aria-labelledby=\"cancelInProgressTitle\" aria-hidden=\"true\">
                                       <div class=\"modal-dialog\" role=\"document\">
                                         <div class=\"modal-content\">
                                           <div class=\"modal-header\">
