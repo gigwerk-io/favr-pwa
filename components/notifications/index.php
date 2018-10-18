@@ -8,6 +8,7 @@
 
 session_start();
 include($_SERVER['DOCUMENT_ROOT'] . "/favr-pwa/include/autoload.php");
+include '../../libraries/Api/Twilio/twilio-php-master/Twilio/autoload.php';
 
 // component constants
 $USER = "";
