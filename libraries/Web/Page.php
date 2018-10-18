@@ -2484,7 +2484,7 @@ class Web_Page
         $result2 = $this->db->query($notifications_friend_favr_request_query);
         $result3 = $this->db->query($notifications_multi_request_query);
 
-        if (!$result || !$result1 || !$result2) {
+        if (!$result || !$result1 || !$result2 || !$result3) {
             // failed to render notifications
             return false;
         } else {
@@ -2492,7 +2492,7 @@ class Web_Page
             $rows1 = $result1->fetchAll(PDO::FETCH_ASSOC);
             $rows2 = $result2->fetchAll(PDO::FETCH_ASSOC);
             $rows3 = $result3->fetchAll(PDO::FETCH_ASSOC);
-            if (!empty($rows) || !empty($rows1) || !empty($rows2)) {
+            if (!empty($rows) || !empty($rows1) || !empty($rows2) || !empty($rows3)) {
                 // There are results
                 // favr request notifications
                 foreach ($rows as $row) {
@@ -2881,7 +2881,7 @@ class Web_Page
                                 $row = $result->fetch(PDO::FETCH_ASSOC);
                                 $arrived = $row['arrival_time'];
 
-                                if ($task_status == Data_Constants::DB_TASK_STATUS_PAID || $arrived == null) {
+                                if ($task_status == Data_Constants::DB_TASK_STATUS_PAID || ($arrived == null && $task_status == Data_Constants::DB_TASK_STATUS_IN_PROGRESS)) {
                                     echo "<div class='d-block mt-4 pt-2 border-gray border-top text-center'>
                                             <a href=\"$this->root_path/components/notifications/?navbar=active_notifications&freelancer_arrived=true&arrived_request_id=$task_id&ALERT_MESSAGE=You've arrived! Make sure you're at the correct location and that the customer is who they say they are!\" class='text-success'>
                                             Freelancer Arrived</a>
