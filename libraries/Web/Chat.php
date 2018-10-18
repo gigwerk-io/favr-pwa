@@ -199,8 +199,8 @@ class Web_Chat
      */
     private function renderMessageOpeningDiv()
     {
-        echo "<div class=\"card bg-sohbet border-0 m-0 p-0\" style=\"height: 100vh;\">
-                    <div id=\"sohbet\" class=\"card border-0 m-0 p-0 position-relative bg-transparent\" style=\"overflow-y: auto; height: 100vh;\">";
+        echo "<div class=\"card bg-sohbet border-0 m-0 p-0\" >
+                    <div id=\"sohbet\" class=\"card border-0 m-0 p-0 position-relative bg-transparent\" >";
     }
 
     /**

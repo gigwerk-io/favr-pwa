@@ -32,9 +32,7 @@ if(isset($_POST['message'])){
 <html>
 <head>
     <meta name="viewport" content="width=device-width, initial-scale=1">
-    <link href="//maxcdn.bootstrapcdn.com/bootstrap/4.1.1/css/bootstrap.min.css" rel="stylesheet" id="bootstrap-css">
-    <script src="//maxcdn.bootstrapcdn.com/bootstrap/4.1.1/js/bootstrap.min.js"></script>
-    <script src="//cdnjs.cloudflare.com/ajax/libs/jquery/3.2.1/jquery.min.js"></script>
+    <link href="https://maxcdn.bootstrapcdn.com/bootstrap/4.1.1/css/bootstrap.min.css" rel="stylesheet" id="bootstrap-css">
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.css" type="text/css" rel="stylesheet">
     <style>
         body{
@@ -160,7 +158,7 @@ if(isset($_POST['message'])){
 
         }
         #sohbet {
-            overflow-y: scroll;
+            overflow-y: auto;
             height: 100vh;
         }
     </style>
@@ -181,12 +179,13 @@ if(isset($_POST['message'])){
             }
             req.open('GET', 'process.php?id=$id',true);
             req.send();
-            var box = $('#sohbet'); 
-            var height = box.get(0).scrollHeight;
-            box.scrollTop(height);
+        }
+        function scroll(){
+            var d = $('#sohbet');
+            d.animate({ scrollTop: d.prop('scrollHeight') }, 1000);
         }
        ajax();
-       
+       scroll();
         function submitForm() {
             var http = new XMLHttpRequest();
             http.open(\"GET\", 'room.php?id=$id&user=$user&message=' + document.getElementById(text).value, true);
@@ -210,12 +209,12 @@ if(isset($_POST['message'])){
                 $chat->processChatHeader($_GET['id']);
                 //$chat->processChatMessages($_GET['id']);
                 ?>
-                <div id="area" class="card bg-sohbet border-0 m-0 p-0" style="height: 100vh;">
-                    <div id="sohbet" class="card border-0 m-0 p-0 position-relative bg-transparent"  onload="ajax();">
+                <div class="card bg-sohbet border-0 m-0 p-0" style="height: 100vh;">
+                    <div id="sohbet" class="card border-0 m-0 p-0 position-relative bg-transparent"  onload="scroll();">
                         <p id="demo"></p>
                     </div>
+                    <div>f</div>
                 </div>
-
                 <div class="w-100 card-footer p-0 bg-light border border-bottom-0 border-left-0 border-right-0">
 
                     <form class="m-0 p-0" action="room.php?id=<?php echo $_GET['id'];?>" method="POST" onsubmit="submitForm();" autocomplete="off">
