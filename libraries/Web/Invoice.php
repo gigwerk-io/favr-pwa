@@ -7,6 +7,7 @@
  */
 //require '../Api/Sendgrid/vendor/autoload.php';
 
+
 class Web_Invoice
 {
     /**
@@ -129,6 +130,111 @@ class Web_Invoice
         $this->task = $row['task_description'];
     }
 
+    private function getFavrRequest($id)
+    {
+        $result = $this->db->query("SELECT * FROM marketplace_favr_requests WHERE id=$id");
+        return $result->fetch(PDO::FETCH_ASSOC);
+    }
+
+    private function renderHTML($id, $task_date, $customer, $email, $task, $freelancer, $price)
+    {
+        return "<html>
+        <head>
+            <meta charset=\"utf-8\"/>
+            <title>Email</title>
+            
+            </head>
+        
+        <body>
+            <div class=\"invoice-box\" style=\"max-width: 800px;margin: auto;padding: 30px;border: 1px solid #eee;box-shadow: 0 0 10px rgba(0, 0, 0, 0.15);font-size: 16px;line-height: 24px;font-family: &quot;Helvetica Neue&quot;, &quot;Helvetica&quot;, Helvetica, Arial, sans-serif;color: #555\">
+                <table cellpadding=\"0\" cellspacing=\"0\" style=\"width: 100%;line-height: inherit;text-align: left\">
+                    <tr class=\"top\">
+                        <td colspan=\"2\" style=\"padding: 5px;vertical-align: top\">
+                            <table style=\"width: 100%;line-height: inherit;text-align: left\">
+                                <tr>
+                                    <td class=\"title\" style=\"padding: 5px;vertical-align: top;padding-bottom: 20px;font-size: 45px;line-height: 45px;color: #333\">
+                                        <img src=\"https://askfavr.com/favr-pwa/assets/brand/favr_logo_rd.png\" style=\"width:100%; max-width:300px;\"/>
+                                    </td>
+                                    
+                                    <td style=\"padding: 5px;vertical-align: top;padding-bottom: 20px\">
+                                        <b>Request #: $id</b><br/>
+                                        <b>Date: $task_date</b><br/>
+                                    </td>
+                                </tr>
+                            </table>
+                        </td>
+                    </tr>
+                    
+                    <tr class=\"information\">
+                        <td colspan=\"2\" style=\"padding: 5px;vertical-align: top\">
+                            <table style=\"width: 100%;line-height: inherit;text-align: left\">
+                                <tr>
+                                    <td style=\"padding: 5px;vertical-align: top;padding-bottom: 40px\">
+                                        FAVR Inc.<br/>
+                                        14 4th St SW #203<br/>
+                                        Rochester, MN 55902
+                                    </td>
+                                    
+                                    <td style=\"padding: 5px;vertical-align: top;padding-bottom: 40px\">
+                                        $customer<br/>
+                                        $email
+                                    </td>
+                                </tr>
+                            </table>
+                        </td>
+                    </tr>
+                    
+                    <tr class=\"heading\">
+                        <td style=\"padding: 5px;vertical-align: top;background: #FF6F6F ;border-bottom: 1px solid #ddd;font-weight: bold\">
+                            Task Description:
+                        </td>
+                        <td style=\"padding: 5px;vertical-align: top;background: #FF6F6F ;border-bottom: 1px solid #ddd;font-weight: bold\">
+                            Completed By:
+                        </td>
+                        <td style=\"padding: 5px;vertical-align: top;text-align: right;background: #FF6F6F ;border-bottom: 1px solid #ddd;font-weight: bold\">
+                            Price:
+                        </td>
+                    </tr>
+                    
+                  
+                    
+                    <tr class=\"item\">
+                        <td style=\"padding: 5px;vertical-align: top;border-bottom: 1px solid #eee\">
+                            $task
+                        </td>
+                        <td style=\"padding: 5px;vertical-align: top;border-bottom: 1px solid #eee\">
+                            $freelancer
+                        </td>
+                        <td style=\"padding: 5px;vertical-align: top;text-align: right;border-top: 2px solid #eee;font-weight: bold\">
+                           Total: $$price
+                        </td>
+                    </tr>
+                    <tr class=\"total\">
+                        <td style=\"padding: 5px;vertical-align: top;border-bottom: 1px solid #fff\">
+                           
+                        </td>
+                        <td style=\"padding: 5px;vertical-align: top;border-bottom: 1px solid #fff\">
+                            
+                        </td>
+                        <td style=\"padding: 5px;vertical-align: top;text-align: right;border-top: 2px solid #fff;font-weight: bold\">
+                           
+                        </td>
+                    </tr>
+                </table>
+                <br>
+                <br>
+                <p style='margin-top: 0;margin-bottom: 8px;color: #616161;font-family: Roboto, Helvetica, sans-serif;font-weight: 400;font-size: 12px;line-height: 18px'>
+                    With best regards,<br/>
+                    +1 (507) 440-7130, FAVR Inc. <br/>
+                </p>
+                <p style='margin-top: 0;margin-bottom: 8px;color: #616161;font-family: Roboto, Helvetica, sans-serif;font-weight: 400;font-size: 12px;line-height: 18px'>
+                    Support: <a class='strong' href='mailto:<contact@askfavr.com>' target='_blank' style='font-weight: 700;text-decoration: none;color: #616161'>contact@askfavr.com</a>
+                </p>
+            </div>
+        </body>
+        </html>";
+    }
+
     /**
      * @param int $id
      */
@@ -141,6 +247,12 @@ class Web_Invoice
         $this->email = $row['email'];
     }
 
+    private function getCustomer($id)
+    {
+        $result = $this->db->query("SELECT * FROM users WHERE id=$id");
+        return $result->fetch(PDO::FETCH_ASSOC);
+    }
+
     /**
      * @param int $id
      */
@@ -151,6 +263,12 @@ class Web_Invoice
 
         $this->freelancer = $row['first_name'] . " " . $row['last_name'];
         $this->freelancer_email = $row['email'];
+    }
+
+    private function getFreelancers(int $id)
+    {
+        $sth = $this->db->query("SELECT * FROM marketplace_favr_freelancers WHERE request_id=$id AND approved=1");
+        return $sth->fetch(PDO::FETCH_ASSOC);
     }
 
     /**
@@ -377,7 +495,7 @@ class Web_Invoice
 </body>
 </html>
 ";
-        $from = new SendGrid\Email("FAVR", "contact@askfavr.com");
+        $from = new SendGrid\Email("FAVR", "invoice@askfavr.com");
 
         $subject = "Service Receipt ";
         $to = new SendGrid\Email($this->freelancer, $this->freelancer_email);
@@ -386,6 +504,38 @@ class Web_Invoice
         $sg = new \SendGrid(\Data_Constants::SG_API);
         $sg->client->mail()->send()->post($mail);
         return $this;
+    }
+
+    public function processCustomerInvoice($id)
+    {
+        $marketplace = $this->getFavrRequest($id);
+        $freelancers = $this->getFreelancers($id);
+        $customer = $this->getCustomer($id);
+        $message= $this->renderHTML(
+            "$id",
+            date('F j, g:i a', strtotime($marketplace['task_date'])),
+            $customer['first_name'] . " " . $customer['last_name'],
+            $customer['email'],
+            $marketplace['task_description'],
+            $this->printFreelancers($freelancers),
+            $marketplace['task_price']
+        );
+        $from = new SendGrid\Email("FAVR", "invoice@askfavr.com");
+
+        $subject = "Service Receipt ";
+        $to = new SendGrid\Email($customer['first_name'] . " " . $customer['last_name'], $customer['email']);
+        $content = new SendGrid\Content("text/html",  $message);
+        $mail = new SendGrid\Mail($from, $subject, $to, $content);
+        $sg = new \SendGrid(\Data_Constants::SG_API);
+        $sg->client->mail()->send()->post($mail);
+        return $this;
+    }
+
+    private function printFreelancers($rows)
+    {
+        foreach($rows as $row){
+            echo $row['first_name'] . " " . $row['last_name'] . " <br/>";
+        }
     }
 
     //selectRequest($this->request_id)->selectCustomer($this->customer_id)->selectFreelancer($this->freelancer_id)->sendEmail($this->customer, $this->email, $this->message)
