@@ -98,8 +98,9 @@ if (isset($_GET['freelancer_arrived'], $_GET['arrived_request_id'])) {
 
 // handle customer task completion
 if (isset($_GET['completed_request_id'], $_POST['complete_request'], $_POST['freelancer_id'], $_POST['customer_id'], $_POST['request_rating'])) {
-    $review = isset($_POST['request_review']) ? $_POST['request_review'] : "";
+    $review = isset($_POST['request_review']) ? addslashes($_POST['request_review']) : "";
     $timestamp = date("Y-m-d h:i:s", time());
+
     $page->processCompleteRequest($_GET['completed_request_id'], $_POST['customer_id'], $_POST['freelancer_id'], $_POST['request_rating'], $review, $timestamp);
 }
 

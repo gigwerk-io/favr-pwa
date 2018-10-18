@@ -2614,15 +2614,16 @@ class Web_Page
                         echo " </p>";
                         echo "</div>";
 
-                        $review = isset($_POST['review']) ? $_POST['review'] : null;
                         $stars = isset($_GET['stars']) ? $_GET['stars'] : 3;
                         // optional review preview
                         if (isset($_POST['review'])) {
-                            $review = $_POST['review'];
+                            $review = addslashes($_POST['review']);
                             echo "<div class='mt-1 text-center'>
                                     <p class='d-inline-flex text-lg-left'>$review</p> 
                                     <i class='material-icons text-muted text-lg-right'>format_quote</i> 
                                   </div>";
+                        } else {
+                            $review = null;
                         }
 
                         echo "<div class='mt-2 p-2 text-center'>";
@@ -2633,7 +2634,7 @@ class Web_Page
                                 
                                 <!-- Modal -->
                                 <div class=\"modal fade\" id=\"exampleModalCenter\" tabindex=\"-1\" role=\"dialog\" aria-labelledby=\"exampleModalCenterTitle\" aria-hidden=\"true\">
-                                  <form action='$this->root_path/components/notifications/?navbar=active_notifications&request_completed_id=$task_id&stars=$stars' method='post'>
+                                  <form action='$this->root_path/components/notifications/?navbar=active_notifications&completed_request_id=$task_id&stars=$stars' method='post'>
                                       <div class=\"modal-dialog\" role=\"document\">
                                         <div class=\"modal-content\">
                                           <div class=\"modal-header\">
@@ -2643,14 +2644,17 @@ class Web_Page
                                             </button>
                                           </div>
                                           <div class=\"modal-body\">
-                                            <textarea name='review' class='form-control' placeholder='Leave a review of your experience...'>$review</textarea>
+                                            <textarea name='request_review' class='form-control' placeholder='Leave a review of your experience...'>$review</textarea>
                                           </div>
                                           <div class=\"modal-footer\">
                                             <button type=\"button\" class=\"btn btn-secondary\" data-dismiss=\"modal\">Close</button>
-                                            <input type=\"submit\" name='submit' class=\"btn btn-primary\" value='Save Changes'>
+                                            <input type=\"submit\" name='complete_request' class=\"btn btn-primary\" value='Submit Review'>
                                           </div>
                                         </div>
                                       </div>
+                                        <input type='hidden' name='request_rating' value='$stars' required>
+                                        <input type='hidden' name='freelancer_id' value='$freelancer_id' required>
+                                        <input type='hidden' name='customer_id' value='$customer_id' required>
                                   </form>
                                 </div>";
 
@@ -2660,7 +2664,7 @@ class Web_Page
                                             <input type='hidden' name='request_rating' value='$stars' required>
                                             <input type='hidden' name='freelancer_id' value='$freelancer_id' required>
                                             <input type='hidden' name='customer_id' value='$customer_id' required>
-                                            <input type='hidden' name='request_review' value='$review'>
+                                            <input type='hidden' name='request_review' value=''>
                                             <input class='btn btn-sm btn-outline-success'
                                                 type='submit'
                                                 name='complete_request'
@@ -3128,15 +3132,16 @@ class Web_Page
                             echo " </p>";
                             echo "</div>";
 
-                            $review = isset($_POST['review']) ? $_POST['review'] : null;
                             $stars = isset($_GET['stars']) ? $_GET['stars'] : 3;
                             // optional review preview
                             if (isset($_POST['review'])) {
-                                $review = $_POST['review'];
+                                $review = addslashes($_POST['review']);
                                 echo "<div class='mt-1 text-center'>
                                     <p class='d-inline-flex text-lg-left'>$review</p> 
                                     <i class='material-icons text-muted text-lg-right'>format_quote</i> 
                                   </div>";
+                            } else {
+                                $review = null;
                             }
 
                             echo "<div class='mt-2 p-2 text-center'>";
@@ -3147,7 +3152,7 @@ class Web_Page
                                 
                                 <!-- Modal -->
                                 <div class=\"modal fade\" id=\"exampleModalCenter$task_id\" tabindex=\"-1\" role=\"dialog\" aria-labelledby=\"exampleModalCenterTitle\" aria-hidden=\"true\">
-                                  <form action='$this->root_path/components/notifications/?navbar=active_notifications&request_completed_id=$task_id&stars=$stars' method='post'>
+                                  <form action='$this->root_path/components/notifications/?navbar=active_notifications&completed_request_id=$task_id&stars=$stars' method='post'>
                                       <div class=\"modal-dialog\" role=\"document\">
                                         <div class=\"modal-content\">
                                           <div class=\"modal-header\">
@@ -3157,14 +3162,17 @@ class Web_Page
                                             </button>
                                           </div>
                                           <div class=\"modal-body\">
-                                            <textarea name='review' class='form-control' placeholder='Leave a review of your experience...'>$review</textarea>
+                                            <textarea name='request_review' class='form-control' placeholder='Leave a review of your experience...'>$review</textarea>
                                           </div>
                                           <div class=\"modal-footer\">
                                             <button type=\"button\" class=\"btn btn-secondary\" data-dismiss=\"modal\">Close</button>
-                                            <input type=\"submit\" name='submit' class=\"btn btn-primary\" value='Save Changes'>
+                                            <input type=\"submit\" name='complete_request' class=\"btn btn-primary\" value='Submit Review'>
                                           </div>
                                         </div>
                                       </div>
+                                        <input type='hidden' name='request_rating' value='$stars' required>
+                                        <input type='hidden' name='freelancer_id' value='$freelancer_id' required>
+                                        <input type='hidden' name='customer_id' value='$customer_id' required>
                                   </form>
                                 </div>";
 
@@ -3667,15 +3675,16 @@ class Web_Page
                         echo " </p>";
                         echo "</div>";
 
-                        $review = isset($_POST['review']) ? $_POST['review'] : null;
                         $stars = isset($_GET['stars']) ? $_GET['stars'] : 3;
                         // optional review preview
                         if (isset($_POST['review'])) {
-                            $review = $_POST['review'];
+                            $review = addslashes($_POST['review']);
                             echo "<div class='mt-1 text-center'>
                                     <p class='d-inline-flex text-lg-left'>$review</p> 
                                     <i class='material-icons text-muted text-lg-right'>format_quote</i> 
                                   </div>";
+                        } else {
+                            $review = null;
                         }
 
                         echo "<div class='mt-2 p-2 text-center'>";
@@ -3686,7 +3695,7 @@ class Web_Page
                                 
                                 <!-- Modal -->
                                 <div class=\"modal fade\" id=\"exampleModalCenter\" tabindex=\"-1\" role=\"dialog\" aria-labelledby=\"exampleModalCenterTitle\" aria-hidden=\"true\">
-                                  <form action='$this->root_path/components/notifications/?navbar=active_notifications&request_friend_completed_id=$task_id&stars=$stars' method='post'>
+                                  <form action='$this->root_path/components/notifications/?navbar=active_notifications&completed_request_id=$task_id&stars=$stars' method='post'>
                                       <div class=\"modal-dialog\" role=\"document\">
                                         <div class=\"modal-content\">
                                           <div class=\"modal-header\">
@@ -3696,14 +3705,17 @@ class Web_Page
                                             </button>
                                           </div>
                                           <div class=\"modal-body\">
-                                            <textarea name='review' class='form-control' placeholder='Leave a review of your experience...'>$review</textarea>
+                                            <textarea name='request_review' class='form-control' placeholder='Leave a review of your experience...'>$review</textarea>
                                           </div>
                                           <div class=\"modal-footer\">
                                             <button type=\"button\" class=\"btn btn-secondary\" data-dismiss=\"modal\">Close</button>
-                                            <input type=\"submit\" name='submit' class=\"btn btn-primary\" value='Save Changes'>
+                                            <input type=\"submit\" name='complete_request' class=\"btn btn-primary\" value='Submit Review'>
                                           </div>
                                         </div>
                                       </div>
+                                        <input type='hidden' name='request_rating' value='$stars' required>
+                                        <input type='hidden' name='freelancer_id' value='$freelancer_id' required>
+                                        <input type='hidden' name='customer_id' value='$customer_id' required>
                                   </form>
                                 </div>";
 
@@ -6470,7 +6482,7 @@ class Web_Page
         if (isset($requestID, $customerID, $freelancerID, $requestRating, $timestamp)) {
             // complete request
             $complete = Data_Constants::DB_TASK_STATUS_COMPLETED;
-            $requestReview = addslashes($requestReview);
+
             $update_request_query = "UPDATE marketplace_favr_requests 
                                      SET task_status = '$complete',
                                          task_rating = '$requestRating',
@@ -6488,16 +6500,16 @@ class Web_Page
                 $result = $this->db->query($select_freelancers_query);
                 $rows = $result->fetchAll(PDO::FETCH_ASSOC);
                 //Send Invoice to Customer
-                $this->invoice->sendCustomerInvoice($requestID)->sendFreelancerInvoice($requestID);
-                //Send Pay out to Freelancer
-                $this->payout->payoutFunds(
-                    $this->payout->selectPrice($requestID),
-                    $this->payout->selectStripeToken($requestID),
-                    $this->payout->selectStripeAccount(
-                        $this->payout->selectFreelancer($requestID)
-                    )
-                );
-                header("Refresh:2; url=$this->root_path/home");
+//                $this->invoice->sendCustomerInvoice($requestID)->sendFreelancerInvoice($requestID);
+//                //Send Pay out to Freelancer
+//                $this->payout->payoutFunds(
+//                    $this->payout->selectPrice($requestID),
+//                    $this->payout->selectStripeToken($requestID),
+//                    $this->payout->selectStripeAccount(
+//                        $this->payout->selectFreelancer($requestID)
+//                    )
+//                );
+//                header("Refresh:2; url=$this->root_path/home");
                 foreach ($rows as $row) {
                     $userID = $row['user_id'];
                     $select_user_query = "SELECT rating
