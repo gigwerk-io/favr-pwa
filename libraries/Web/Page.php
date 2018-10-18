@@ -6051,7 +6051,7 @@ class Web_Page
                     if ($result) {
                         $row = $result->fetch(PDO::FETCH_ASSOC);
                         $task_id = $row['id'];
-                        include '../libraries/Api/Sendgrid/vendor/autoload.php';
+                        include '../../libraries/Api/Sendgrid/vendor/autoload.php';
                         $notify = new Web_Notification();
                         $notify->emailAllFreelancers($task_id);
                         $notify->smsAllFreelancers($task_id);
