@@ -105,8 +105,8 @@ if (isset($_GET['completed_request_id'], $_POST['complete_request'], $_POST['fre
     $complete = $page->processCompleteRequest($_GET['completed_request_id'], $_POST['customer_id'], $_POST['freelancer_id'], $_POST['request_rating'], $review, $timestamp);
 
     if($complete) {
-        //Send Invoice to Customer
-        $page->invoice->sendCustomerInvoice($_GET['completed_request_id'])->sendFreelancerInvoice($_GET['completed_request_id']);
+        //Send Invoice to Customer & Freelancer
+        $page->invoice->processCustomerInvoice($_GET['completed_request_id'])->processFreelancerInvoice($_GET['completed_request_id']);
 
         //Send Pay out to Freelancer
         $page->payout->payoutFundsToFreelancer($_GET['completed_request_id']);
