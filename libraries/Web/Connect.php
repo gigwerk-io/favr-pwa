@@ -7,7 +7,10 @@
  * @author Solomon Antoine
  */
 
-
+use Stripe\Stripe;
+use Stripe\Balance;
+use Stripe\Transfer;
+use Stripe\Account;
 
 class Web_Connect{
     /**
@@ -45,6 +48,7 @@ class Web_Connect{
     public $payment_id;
 
     function __construct() {
+        Stripe::setApiKey(\Data_Constants::STRIPE_SECRET);
         $this->db = $this->connect();
         if(!empty($_SESSION['user_info'])){
             $this->id = $_SESSION['user_info']['id'];
@@ -103,8 +107,7 @@ class Web_Connect{
 
     public function stripeLogin()
     {
-        \Stripe\Stripe::setApiKey(\Data_Constants::STRIPE_SECRET);
-        $account = \Stripe\Account::retrieve($this->payment_id);
+        $account = Account::retrieve($this->payment_id);
         $link = $account->login_links->create();
         $url = $link->url;
         header("location: $url");
@@ -116,8 +119,7 @@ class Web_Connect{
      */
     public function viewBalance(string $account_id)
     {
-        \Stripe\Stripe::setApiKey(\Data_Constants::STRIPE_SECRET);
-        $balance = \Stripe\Balance::retrieve(
+        $balance = Balance::retrieve(
             array("stripe_account" => $account_id)
         );
         $arr = json_decode(json_encode($balance), true);
@@ -125,31 +127,27 @@ class Web_Connect{
     }
 
     /**
-     * @param double $price
-     * @param string $token
-     * @param string $account_id
+     * @param $id
      */
-    public function payoutFunds(double $price, string $token, string $account_id)
+    public function payoutFundsToFreelancer($id)
     {
-        \Stripe\Stripe::setApiKey(\Data_Constants::STRIPE_SECRET);
-        if($token == 'favr_credit') {
-            $token = null;
+        $freelancers = $this->getFreelancers($id);
+        $price = $this->getPrice($id);
+        foreach ($freelancers as $freelancer){
+            Transfer::create(array(
+                "amount" => $price,
+                "currency" => "usd",
+                "source_transaction" => null,
+                "destination" => $this->getStripeAccount($freelancer['user_id']),
+            ));
         }
-        $data = \Stripe\Transfer::create(array(
-            "amount" => $price,
-            "currency" => "usd",
-            "source_transaction" => null, //TODO: Chamge null to $token
-            "destination" => $account_id,
-        ));
-        $transfer = json_decode(json_encode($data), true);
-        header("");
     }
 
     /**
      * @param int $id
      * @return mixed
      */
-    public function selectStripeToken(int $id)
+    private function getStripeToken(int $id)
     {
         $sth = $this->db->query("SELECT * FROM marketplace_favr_requests WHERE id=$id");
         $row = $sth->fetch(PDO::FETCH_ASSOC);
@@ -159,12 +157,12 @@ class Web_Connect{
     }
 
     /**
-     * @param int $id
+     * @param int $user_id
      * @return mixed
      */
-    public function selectStripeAccount(int $id)
+    private function getStripeAccount(int $user_id)
     {
-        $sth = $this->db->query("SELECT * FROM users WHERE id=$id");
+        $sth = $this->db->query("SELECT * FROM users WHERE id=$user_id");
         $row = $sth->fetch(PDO::FETCH_ASSOC);
         $stripeAccount =  $row['payment_id'];
         return $stripeAccount;
@@ -174,19 +172,17 @@ class Web_Connect{
      * @param int $id
      * @return mixed
      */
-    public function selectFreelancer(int $id)
+    private function getFreelancers(int $id)
     {
-        $sth = $this->db->query("SELECT * FROM marketplace_favr_requests WHERE id=$id");
-        $row = $sth->fetch(PDO::FETCH_ASSOC);
-        $freelancer_id = $row['freelancer_id'];
-        return $freelancer_id;
+        $sth = $this->db->query("SELECT * FROM marketplace_favr_freelancers WHERE request_id=$id AND approved=1");
+        return $sth->fetch(PDO::FETCH_ASSOC);
     }
 
     /**
      * @param int $id
      * @return float|int
      */
-    public function selectPrice(int $id)
+    private function getPrice(int $id)
     {
         $sth = $this->db->query("SELECT * FROM marketplace_favr_requests WHERE id=$id");
         $row = $sth->fetch(PDO::FETCH_ASSOC);
