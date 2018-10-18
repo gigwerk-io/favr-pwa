@@ -193,13 +193,13 @@ class Web_Payment
      */
     private function update(int $id, string $callback_url)
     {
-        $success = $this->db->query("UPDATE marketplace_favr_requests SET task_status='In Progress' WHERE id=$id");
-        if($success)
-        {
+//        $success = $this->db->query("UPDATE marketplace_favr_requests SET task_status='In Progress' WHERE id=$id");
+//        if($success)
+//        {
             header("location: $callback_url");
-        }else{
-            echo " Request Failure \n";
-        }
+//        }else{
+//            echo " Request Failure \n";
+//        }
         return $this;
     }
 

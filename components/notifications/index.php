@@ -8,6 +8,8 @@
 
 session_start();
 include($_SERVER['DOCUMENT_ROOT'] . "/favr-pwa/include/autoload.php");
+include '../../libraries/Api/Twilio/twilio-php-master/Twilio/autoload.php';
+include '../../libraries/Api/Sendgrid/vendor/autoload.php';
 
 // component constants
 $USER = "";
@@ -97,9 +99,21 @@ if (isset($_GET['freelancer_arrived'], $_GET['arrived_request_id'])) {
 
 // handle customer task completion
 if (isset($_GET['completed_request_id'], $_POST['complete_request'], $_POST['freelancer_id'], $_POST['customer_id'], $_POST['request_rating'])) {
-    $review = isset($_POST['request_review']) ? $_POST['request_review'] : "";
+    $review = isset($_POST['request_review']) ? addslashes($_POST['request_review']) : "";
     $timestamp = date("Y-m-d h:i:s", time());
-    $page->processCompleteRequest($_GET['completed_request_id'], $_POST['customer_id'], $_POST['freelancer_id'], $_POST['request_rating'], $review, $timestamp);
+
+    $complete = $page->processCompleteRequest($_GET['completed_request_id'], $_POST['customer_id'], $_POST['freelancer_id'], $_POST['request_rating'], $review, $timestamp);
+
+    if($complete) {
+        //Send Invoice to Customer & Freelancer
+        $page->invoice->processCustomerInvoice($_GET['completed_request_id'])->processFreelancerInvoice($_GET['completed_request_id']);
+
+        //Send Pay out to Freelancer
+        $page->payout->payoutFundsToFreelancer($_GET['completed_request_id']);
+
+        //Redirect to Home to Prevent Double Payout
+        header("Refresh:2; url=$this->root_path/home");
+    }
 }
 
 $page->setTitle("Notifications");

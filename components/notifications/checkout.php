@@ -21,8 +21,11 @@ if (isset($_SESSION['user_info'])) {
 }
 
 $page = new Web_Page($USER);
-$page->setTitle("FAVR | Checkout");
 $checkout = new Web_Payment();
+
+$page->setTitle("Checkout");
+$page->renderHeader(false);
+
 if(!empty($_GET['task_id']) && !empty($_GET['url'])){
     $checkout->select($_GET['task_id'])->checkOut($_GET['task_id'], $_GET['url']); //redirects to payment process
 }else{
