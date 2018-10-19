@@ -69,9 +69,63 @@ class Web_Chat
         }
     }
 
+    /** New Chat Room Model.
+     * @param $customer_id
+     * @param $freelancer_id
+     * @return string
+     */
+    private function processNewChatDB($customer_id, $freelancer_id)
+    {
+        $new_chat_query = $this->db->prepare("INSERT INTO marketplace_favr_chat_rooms
+                                    (customer_id,
+                                     freelancer_id)
+                                 VALUES 
+                                    ($customer_id, 
+                                     '$freelancer_id')
+            ");
+        $new_chat_query->execute();
+        return $this->db->lastInsertId();
+    }
+
     /**
-     * Chat Listing View
+     * New Chat Message Model.
+     * @param $chat_id
+     * @param $sender_id
+     * @param $recipient_id
+     * @return bool|PDOStatement
+     */
+    private function processNewMessageDB($chat_id, $sender_id, $recipient_id)
+    {
+        $message="Hey, I've accepted you to do my job!";
+        $new_message = $this->db->prepare("INSERT INTO marketplace_favr_messages
+                                    (chat_room_id,
+                                    sender_id
+                                    recipient_id,
+                                    message)
+                                 VALUES 
+                                    ($chat_id, 
+                                    '$sender_id'
+                                    '$recipient_id',
+                                    '$message')
+            ");
+        $new_message = $new_message->execute();
+        return $new_message;
+    }
+
+    /**
+     * @param $customer_id
+     * @param $freelancer_id
+     */
+    public function processNewChatRoom($customer_id, $freelancer_id)
+    {
+        $chat_id = $this->processNewChatDB($customer_id, $freelancer_id);
+        $this->processSendMessage($chat_id, $customer_id, "Hey I have accepted you as a freelancer!");
+        return;
+    }
+
+    /**Chat Listing View
      *
+     * @param $chatRoomId
      * @param $name
      * @param $lastMessage
      * @param $profileImage
