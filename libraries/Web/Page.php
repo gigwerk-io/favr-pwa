@@ -4718,7 +4718,6 @@ class Web_Page
                                              style='cursor: pointer'
                                              onclick=\"
                                               $('.favr-fab').fadeOut();
-                                              $('#$id').animate({height: '4rem'});
                                               $('#$id-location').removeClass('d-none');
                                               $('#$id-freelancer-count').removeClass('d-none');
                                               $('#$id-collapse').removeClass('d-none');
