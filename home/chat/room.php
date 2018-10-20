@@ -207,13 +207,12 @@ if(isset($_POST['message'])){
 
                 <?php
                 $chat->processChatHeader($_GET['id']);
-                $chat->processChatMessages($_GET['id']);
+                //$chat->processChatMessages($_GET['id']);
                 ?>
                 <div class="card bg-sohbet border-0 m-0 p-0" style="height: 100vh;">
                     <div id="sohbet" class="card border-0 m-0 p-0 position-relative bg-transparent"  onload="scroll();">
                         <p id="demo"></p>
                     </div>
-                    <div>f</div>
                 </div>
                 <div class="w-100 card-footer p-0 bg-light border border-bottom-0 border-left-0 border-right-0">
 

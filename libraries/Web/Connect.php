@@ -7,10 +7,6 @@
  * @author Solomon Antoine
  */
 
-use Stripe\Stripe;
-use Stripe\Balance;
-use Stripe\Transfer;
-use Stripe\Account;
 
 class Web_Connect{
     /**
@@ -48,7 +44,6 @@ class Web_Connect{
     public $payment_id;
 
     function __construct() {
-        Stripe::setApiKey(\Data_Constants::STRIPE_SECRET);
         $this->db = $this->connect();
         if(!empty($_SESSION['user_info'])){
             $this->id = $_SESSION['user_info']['id'];
@@ -107,7 +102,8 @@ class Web_Connect{
 
     public function stripeLogin()
     {
-        $account = Account::retrieve($this->payment_id);
+        \Stripe\Stripe::setApiKey(\Data_Constants::STRIPE_SECRET);
+        $account = \Stripe\Account::retrieve($this->payment_id);
         $link = $account->login_links->create();
         $url = $link->url;
         header("location: $url");
@@ -119,7 +115,8 @@ class Web_Connect{
      */
     public function viewBalance(string $account_id)
     {
-        $balance = Balance::retrieve(
+        \Stripe\Stripe::setApiKey(\Data_Constants::STRIPE_SECRET);
+        $balance = \Stripe\Balance::retrieve(
             array("stripe_account" => $account_id)
         );
         $arr = json_decode(json_encode($balance), true);
@@ -131,10 +128,11 @@ class Web_Connect{
      */
     public function payoutFundsToFreelancer($id)
     {
+        \Stripe\Stripe::setApiKey(\Data_Constants::STRIPE_SECRET);
         $freelancers = $this->getFreelancers($id);
         $price = $this->getPrice($id);
         foreach ($freelancers as $freelancer){
-            Transfer::create(array(
+            \Stripe\Transfer::create(array(
                 "amount" => $price,
                 "currency" => "usd",
                 "source_transaction" => null,

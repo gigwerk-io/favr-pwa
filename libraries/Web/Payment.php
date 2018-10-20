@@ -9,9 +9,7 @@
  */
 
 //require '../Api/Stripe/init.php';
-use Stripe\Charge;
-use Stripe\Stripe;
-
+include_once($_SERVER['DOCUMENT_ROOT'] . "libraries/Api/Stripe/init.php");
 
 class Web_Payment
 {
@@ -68,7 +66,6 @@ class Web_Payment
 
     function __construct() {
         $this->db = $this->connect();
-        Stripe::setApiKey(\Data_Constants::STRIPE_SECRET);
     }
 
     function connect()
@@ -205,6 +202,7 @@ class Web_Payment
      */
     public function processCharge(string $token, int $id, string $callback_url)
     {
+        \Stripe\Stripe::setApiKey(\Data_Constants::STRIPE_SECRET);
         $marketplace = $this->getFavrRequest($id);
         $price = $marketplace['task_price']*100;
         $credit = $this->getUserCredit($marketplace['customer_id']);
@@ -216,7 +214,7 @@ class Web_Payment
         } elseif ($credit < $price){
             $price = $price - $credit;
             $this->processUpdateCredit($this->getCustomerId($id), 0);
-            $charge = Charge::create(array(
+            $charge = \Stripe\Charge::create(array(
                 "amount" => $price,
                 "currency" => "usd",
                 "description" => $this->description,
