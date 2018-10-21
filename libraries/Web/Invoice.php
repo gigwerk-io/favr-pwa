@@ -523,7 +523,7 @@ class Web_Invoice
         $from = new SendGrid\Email("FAVR", "invoice@askfavr.com");
 
         $subject = "Service Receipt ";
-        $to = new SendGrid\Email($customer['first_name'] . " " . $customer['last_name'], $customer['email']);
+        $to = new SendGrid\Email($customer['first_name'] . "+ " . $customer['last_name'], $customer['email']);
         $content = new SendGrid\Content("text/html",  $message);
         $mail = new SendGrid\Mail($from, $subject, $to, $content);
         $sg = new \SendGrid(\Data_Constants::SG_API);
