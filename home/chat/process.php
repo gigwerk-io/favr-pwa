@@ -17,8 +17,8 @@ if(isset($_GET['id']))
     //echo "<div id=\"chat_data\">";
     $chat->processChatMessages($_GET['id']);
     //echo "</div>";
+    if(isset($_GET['message'])){
+        $chat->processSendMessage($_GET['id'], $_GET['user'], $_GET['message']);
+    }
 }
 
-if(isset($_POST['chat_id'])){
-    $chat->processSendMessage($_POST['chat_id'], $_POST['user_id'], $_POST['message']);
-}
