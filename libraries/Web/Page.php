@@ -2318,9 +2318,9 @@ class Web_Page
                     case "active_friends":
                         $active_friends = "active";
                         break;
-//                    case "active_chat":
-//                        $active_chat = "active";
-//                        break;
+                    case "active_chat":
+                        $active_chat = "active";
+                        break;
                     default:
                         // none active
                         break;
@@ -2352,6 +2352,19 @@ class Web_Page
                                         echo "<i class=\"material-icons\" style='color: var(--red);font-size: 15px; padding-left: 2px;position:relative;top:.1rem;'>people</i>";
                                     } else {
                                         echo "<i class=\"material-icons\" style='font-size: 15px; padding-left: 2px;position:relative;top:.1rem;'>people_outline</i>";
+                                    }
+                                    ?>
+                                </a>
+                            </div>
+                            <div class="col-sm-2 pl-0 pr-0">
+                                <a class="nav-link <?php echo $active_chat; ?>"
+                                   href="<?php echo $this->root_path; ?>/home/chat/chat.php?navbar=active_home&nav_scroller=active_chat">
+                                    Chat
+                                    <?php
+                                    if ($active_chat) {
+                                        echo "<i class=\"material-icons\" style='color: var(--red);font-size: 15px; padding-left: 2px;position:relative;top:.1rem;'>chat</i>";
+                                    } else {
+                                        echo "<i class=\"material-icons\" style='font-size: 15px; padding-left: 2px;position:relative;top:.1rem;'>chat_outline</i>";
                                     }
                                     ?>
                                 </a>
