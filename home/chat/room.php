@@ -14,6 +14,7 @@ $ALERT_MESSAGE = "";
 
 if (isset($_SESSION['user_info'])) {
     $USER = $_SESSION['user_info']['username']; // user is set from initial configuration
+    $user_id = $_SESSION['user_info']['id'];
 }
 if(!isset($_GET['id'])){
     header("location: chat.php");
@@ -21,7 +22,6 @@ if(!isset($_GET['id'])){
 
 
 $page = new Web_Page($USER);
-$page->setTitle("Chat");
 $chat = new Web_Chat();
 if(isset($_POST['message'])){
     $chat->processSendMessage($_GET['id'], $_SESSION['user_info']['id'], $_POST['message']);
@@ -32,8 +32,13 @@ if(isset($_POST['message'])){
 <html>
 <head>
     <meta name="viewport" content="width=device-width, initial-scale=1">
-    <link href="https://maxcdn.bootstrapcdn.com/bootstrap/4.1.1/css/bootstrap.min.css" rel="stylesheet" id="bootstrap-css">
+    <link href="//maxcdn.bootstrapcdn.com/bootstrap/4.1.1/css/bootstrap.min.css" rel="stylesheet" id="bootstrap-css">
+    <script src="//maxcdn.bootstrapcdn.com/bootstrap/4.1.1/js/bootstrap.min.js"></script>
+    <script src="//cdnjs.cloudflare.com/ajax/libs/jquery/3.2.1/jquery.min.js"></script>
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.css" type="text/css" rel="stylesheet">
+    <link rel="icon" type="image/png" sizes="32x32" href="<?php echo Data_Constants::ROOT_PATH; ?>/assets/brand/favicon-32x32.png">
+    <link rel="icon" type="image/png" sizes="16x16" href="<?php echo Data_Constants::ROOT_PATH; ?>/assets/brand/favicon-16x16.png">
+    <title>FAVR - Chat</title>
     <style>
         body{
 
@@ -157,47 +162,16 @@ if(isset($_POST['message'])){
             position: absolute;
 
         }
-        #sohbet {
-            overflow-y: auto;
-            height: 100vh;
+
+        .conv {
+            max-height:100px;
+            overflow:auto;
+        }
+        .msg {
+            padding:50px;
+            border:1px solid red;
         }
     </style>
-    <?php
-    $id = $_GET['id'];
-    $user = $_SESSION['user_info']['id'];
-    echo
-    "<script>
-
-        function ajax() {
-            var req = new XMLHttpRequest();
-
-            req.onreadystatechange = function () {
-                if(req.readyState == 4 && req.status==200){
-                    console.log(req.responseText);
-                    document.getElementById('demo').innerHTML = req.responseText; 
-                }
-            }
-            req.open('GET', 'process.php?id=$id',true);
-            req.send();
-        }
-        function scroll(){
-            var d = $('#sohbet');
-            d.animate({ scrollTop: d.prop('scrollHeight') }, 1000);
-        }
-       ajax();
-       scroll();
-        function submitForm() {
-            var http = new XMLHttpRequest();
-            http.open(\"GET\", 'room.php?id=$id&user=$user&message=' + document.getElementById(text).value, true);
-            http.setRequestHeader(\"Content-type\",\"application/x-www-form-urlencoded\");
-            http.send();
-            http.onload = function() {
-                alert(http.responseText);
-            }
-        }
-    </script>
-";
-    ?>
 </head>
 <body>
 <div class="jumbotron m-0 p-0 bg-transparent">
@@ -210,15 +184,13 @@ if(isset($_POST['message'])){
                 //$chat->processChatMessages($_GET['id']);
                 ?>
                 <div class="card bg-sohbet border-0 m-0 p-0" style="height: 100vh;">
-                    <div id="sohbet" class="card border-0 m-0 p-0 position-relative bg-transparent"  onload="scroll();">
-                        <p id="demo"></p>
+                    <div id="sohbet" class="card border-0 m-0 p-0 position-relative bg-transparent" style="overflow-y: auto; height: 1000px;" onload="ajax();">
+                        <div id="content"></div>
                     </div>
                 </div>
+
                 <div class="w-100 card-footer p-0 bg-light border border-bottom-0 border-left-0 border-right-0">
-
-                    <form class="m-0 p-0" action="room.php?id=<?php echo $_GET['id'];?>" method="POST" onsubmit="submitForm();" autocomplete="off">
-
-                        <div class="row m-0 p-0">
+                 <div class="row m-0 p-0">
                             <div class="col-9 m-0 p-1">
 
                                 <input id="text" class="mw-100 border rounded form-control" type="text" name="message" title="Type a message..." placeholder="Type a message..." required>
@@ -226,15 +198,11 @@ if(isset($_POST['message'])){
                             </div>
                             <div class="col-3 m-0 p-1">
 
-                                <button class="btn btn-outline-secondary rounded border w-100" title="Gönder!" style="padding-right: 16px;"><i class="fa fa-paper-plane" aria-hidden="true"></i></button>
+                                <button class="btn btn-outline-secondary rounded border w-100" id="submit" title="Submit!" style="padding-right: 16px;"><i class="fa fa-paper-plane" aria-hidden="true"></i></button>
 
                             </div>
                         </div>
-
-                    </form>
-
                 </div>
-
             </div>
         </div>
 
@@ -246,6 +214,53 @@ if(isset($_POST['message'])){
 <!-- jQuery first, then Popper.js, then Bootstrap JS -->
 <?php
 $page->renderFooter(false);
+$id = $_GET['id'];
+echo
+"<script>
+
+        function ajax() {
+            var req = new XMLHttpRequest();
+
+            req.onreadystatechange = function () {
+                if(req.readyState == 4 && req.status==200){
+                    document.getElementById('content').innerHTML = req.responseText;
+                }
+            }
+            req.open('GET', 'process.php?id=$id',true);
+            req.send();
+        }
+        
+        function scrollBottom() {
+            $(document).ready(function () {
+                $('#content ').animate({
+                    scrollTop: $('#content .balon1 p-2 m-0 position-relative:last-child').position().top
+                }, 'slow');
+            });
+        }
+        setInterval(function() {
+          ajax();
+          scrollBottom();
+          return false;
+        }, 1000)
+        
+        $('#submit').click(function () {
+        var message = $(\"#text\").val();
+        var user_id ='$user_id';
+        var chat_id = '$id';
+    
+        $.ajax({
+          type: \"POST\",
+          url: \"process.php\",
+          data: { message: message, user_id: user_id, chat_id: chat_id}
+        }).done(function() {
+              $('#text').val('');
+        });
+    });
+       
+       
+       
+    </script>
+";
 ?>
 </body>
 </html>
