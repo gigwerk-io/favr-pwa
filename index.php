@@ -7,7 +7,7 @@
  */
 
 session_start();
-include($_SERVER['DOCUMENT_ROOT'] . "/include/autoload.php");
+include($_SERVER['DOCUMENT_ROOT'] . "/favr-pwa/include/autoload.php");
 
 if (isset($_SESSION['user'])) {
     $USER = $_SESSION['user'];
@@ -76,7 +76,6 @@ $page->addScript("
           $('#submit').click();
        };
       request.onsuccess = function (ev) { 
-//          console.log('YESSSS', ev.target.result.username);
           if (ev.target.result === undefined) {
               console.log('[undefined]');
               $('#username').val('guest');

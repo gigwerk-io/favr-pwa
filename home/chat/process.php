@@ -7,17 +7,18 @@
  */
 
 session_start();
-include($_SERVER['DOCUMENT_ROOT'] . "/include/autoload.php");
+include($_SERVER['DOCUMENT_ROOT'] . "/favr-pwa/include/autoload.php");
 
-// component constants
-$PAGE_ID = 5;
-$USER = "";
 $chat = new Web_Chat();
 
 
-if(isset($_GET['chat_room']))
+if(isset($_GET['id']))
 {
-    echo "<div id=\"chat_data\">";
-    $chat->getAllMessages($_GET['chat_room']);
-    echo "</div>";
+    //echo "<div id=\"chat_data\">";
+    $chat->processChatMessages($_GET['id']);
+    //echo "</div>";
+    if(isset($_GET['message'])){
+        $chat->processSendMessage($_GET['id'], $_GET['user'], $_GET['message']);
+    }
 }
+

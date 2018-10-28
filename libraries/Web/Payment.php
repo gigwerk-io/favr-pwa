@@ -9,8 +9,7 @@
  */
 
 //require '../Api/Stripe/init.php';
-
-
+include_once($_SERVER['DOCUMENT_ROOT'] . "libraries/Api/Stripe/init.php");
 
 class Web_Payment
 {
@@ -62,12 +61,11 @@ class Web_Payment
      */
     public $freelancer_id;
 
+    public $freelancer_count;
+
 
     function __construct() {
         $this->db = $this->connect();
-        if(isset($_GET['id'])){
-            $this->select($_GET['id']);
-        }
     }
 
     function connect()
@@ -83,56 +81,91 @@ class Web_Payment
         }
     }
 
+
     /**
-     * @param int $id
-     * @return $this
+     * Favr Request Model.
+     * @param $id
+     * @return mixed
      */
-    public function select(int $id)
+    private function getFavrRequest($id)
     {
-//        $sth = $this->db->prepare("SELECT * FROM marketplace_favr_requests");
-//        $sth->execute();
-        $sth = $this->db->query("SELECT * FROM marketplace_favr_requests WHERE id=$id");
-        $row = $sth->fetch(PDO::FETCH_ASSOC);
-        $this->status = $row['task_status'];
-        $this->price = $row['task_price']*100;
-        $this->description = $row['task_description'];
-        $this->customer_id = $row['customer_id'];
-        $this->freelancer_id = $row['freelancer_id'];
-        return $this;
+        $result = $this->db->query("SELECT * FROM marketplace_favr_requests WHERE id=$id");
+        return $result->fetch(PDO::FETCH_ASSOC);
     }
 
     /**
+     * Freelancer Id Model.
+     * @param $id
+     * @return mixed
+     */
+    private function getFreelancers($id)
+    {
+        $sth = $this->db->query("SELECT * FROM marketplace_favr_freelancers WHERE request_id=$id AND approved=1");
+        return $sth->fetch(PDO::FETCH_ASSOC);
+    }
+
+    /** User Model
+     * @param $user_id
+     * @return mixed
+     */
+    private function getUser($user_id)
+    {
+        $result = $this->db->query("SELECT * FROM marketplace_favr_requests WHERE id=$user_id");
+        return $result->fetch(PDO::FETCH_ASSOC);
+    }
+
+    /**
+     * Stripe Checkout Controller
      * @param int $id
      * @param string $url
-     * @return $this
      */
-    public function checkOut(int $id, string $url)
+    public function processCheckOut(int $id, string $url)
     {
         $credit = $this->getUserCredit($this->getCustomerId($id));
-        if($credit >= $this->price){
+        $marketplace = $this->getFavrRequest($id);
+        $description = $marketplace['task_description'];
+        if($credit >= $marketplace['task_price']){
             $price = 0;
             $label = "data-panel-label=\"Free\"";
-        } elseif ($credit < $this->price){
-            $price = $this->price - $credit;
+        } elseif ($credit < $marketplace['task_price']){
+            $price = $marketplace['task_price'] - $credit;
+            $label = null;
         }
         $url = str_replace("&","%26", $url);
         $url = str_replace("'", "%27", $url);
-            echo "
-                <form action='process_payment.php?id=$id&url=$url' method='post'>
-                    <script
-                        src='https://checkout.stripe.com/checkout.js' class='stripe-button'
-                        data-key= " . Data_Constants::STRIPE_PUBLIC . "
-                        data-amount= '$price' 
-                        data-name='FAVR Inc.'
-                        $label
-                        data-description='$this->description'
-                        data-image='https://askfavr.com/favr-pwa/assets/brand/favicon.ico'
-                        data-locale='auto'>
-                    </script>
-                </form>";
-        return $this;
+        echo $this->renderCheckoutForm($id, $url, $price*100, $label, $description);
     }
 
+    /** Stripe Payment Form View.
+     * @param $id
+     * @param $url
+     * @param $price
+     * @param $label
+     * @param $description
+     * @return string
+     */
+    private function renderCheckoutForm($id, $url, $price, $label, $description)
+    {
+        return "
+            <form action='process_payment.php?id=$id&url=$url' method='post'>
+                <script
+                    src='https://checkout.stripe.com/checkout.js' class='stripe-button'
+                    data-key= " . Data_Constants::STRIPE_PUBLIC . "
+                    data-amount= '$price' 
+                    data-name='FAVR Inc.'
+                    $label
+                    data-description='$description'
+                    data-image='https://askfavr.com/favr-pwa/assets/brand/favicon.ico'
+                    data-locale='auto'>
+                </script>
+            </form>";
+    }
+
+    /**
+     * User Credit Model.
+     * @param $user_id
+     * @return float|int
+     */
     private function getUserCredit($user_id)
     {
         $sth = $this->db->query("SELECT * FROM users WHERE id=$user_id");
@@ -151,25 +184,36 @@ class Web_Payment
         return $row['customer_id'];
     }
 
+    /**
+     * Update User Credit.
+     * @param $customer_id
+     * @param $credit
+     */
     private function processUpdateCredit($customer_id, $credit)
     {
         $credit = $credit/100;
         $this->db->query("UPDATE users SET favr_credit=$credit WHERE id=$customer_id");
     }
 
-
-    public function charge(string $token, int $id, string $callback_url)
+    /**
+     * @param string $token
+     * @param int $id
+     * @param string $callback_url
+     */
+    public function processCharge(string $token, int $id, string $callback_url)
     {
-        $credit = $this->getUserCredit($this->getCustomerId($id));
-        if($credit >= $this->price){
-            $credit = $credit - $this->price;
-            $this->processUpdateCredit($this->getCustomerId($id), $credit);
-            $this->addStripeToken("favr_credit", $id);
-            $this->update($id, $callback_url);
-        } elseif ($credit < $this->price){
-            $price = $this->price - $credit;
+        \Stripe\Stripe::setApiKey(\Data_Constants::STRIPE_SECRET);
+        $marketplace = $this->getFavrRequest($id);
+        $price = $marketplace['task_price']*100;
+        $credit = $this->getUserCredit($marketplace['customer_id']);
+        if($credit >= $price){
+            $credit = $credit - $price;
+            $this->processUpdateCredit($marketplace['customer_id'], $credit);
+            $this->processStripeTokenDB("favr_credit", $id);
+            $this->redirect($callback_url);
+        } elseif ($credit < $price){
+            $price = $price - $credit;
             $this->processUpdateCredit($this->getCustomerId($id), 0);
-            \Stripe\Stripe::setApiKey(\Data_Constants::STRIPE_SECRET);
             $charge = \Stripe\Charge::create(array(
                 "amount" => $price,
                 "currency" => "usd",
@@ -177,59 +221,42 @@ class Web_Payment
                 "source" => $token,
             ));
             $chargeToken = json_decode(json_encode($charge), true);
-            $this->addStripeToken($chargeToken['id'], $id);
-            $this->update($id, $callback_url);
+            $this->processStripeTokenDB($chargeToken['id'], $id);
+            $this->createChat($id);
+            $this->redirect($callback_url);
         }
-        return $this;
     }
 
     /**
-     * @param int $id
+     * Redirect Back To Accepted Page.
      * @param string $callback_url
-     * @return $this
      */
-    private function update(int $id, string $callback_url)
+    private function redirect(string $callback_url)
     {
-        $success = $this->db->query("UPDATE marketplace_favr_requests SET task_status='In Progress' WHERE id=$id");
-        if($success)
-        {
-            header("location: $callback_url");
-        }else{
-            echo " Request Failure \n";
-        }
-        return $this;
+        header("location: $callback_url");
     }
 
-    public function addStripeToken(string $token , int $id)
+    /**
+     * @param string $token
+     * @param int $id
+     */
+    private function processStripeTokenDB(string $token , int $id)
     {
         $this->db->query("UPDATE marketplace_favr_requests SET task_stripe_token='$token' WHERE id=$id");
     }
 
+
     /**
-     * @return $this
+     * Create Chat Room Controller.
+     * @param $id
      */
-    public function createChat()
+    private function createChat($id)
     {
-        $message_file = "message_" . time() . ".txt";
-        fopen("../../storage/$message_file", "x");
-        $success = $this->db->query("INSERT INTO marketplace_favr_chat (message_file, customer_id, freelancer_id_1) 
-                                    VALUES ('$message_file', $this->customer_id, $this->freelancer_id)");
-        if($success)
-        {
-            echo "<script> 
-                    alert('Chat Created.');
-                    window.location.href = 'https://askfavr.com/favr-pwa/home/chat/?file=$message_file&customer=$this->customer_id&freelancer=$this->freelancer_id';
-                </script> \n";
-        }else{
-            echo "Chat Unsuccessful \n";
+        $marketplace = $this->getFavrRequest($id);
+        $freelancers = $this->getFreelancers($id);
+        $chat = new Web_Chat();
+        foreach ($freelancers as $freelancer) {
+            $chat->processNewChatRoom($marketplace['customer_id'], $freelancer);
         }
-        return $this;
     }
-
-
-
-
-
-
-    // select($id)->charge($_POST['token'], $this->price)->update($id);
 }

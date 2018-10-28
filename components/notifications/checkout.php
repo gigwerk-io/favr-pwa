@@ -8,7 +8,8 @@
  * @author Solomon Antoine
  */
 
-include($_SERVER['DOCUMENT_ROOT'] . "/include/autoload.php");
+session_start();
+include($_SERVER['DOCUMENT_ROOT'] . "/favr-pwa/include/autoload.php");
 //require '../../libraries/Api/Stripe/init.php';
 
 // component constants
@@ -20,12 +21,15 @@ if (isset($_SESSION['user_info'])) {
 }
 
 $page = new Web_Page($USER);
-$page->setTitle("FAVR | Checkout");
 $checkout = new Web_Payment();
+
+$page->setTitle("Checkout");
+$page->renderHeader(false);
+
 if(!empty($_GET['task_id']) && !empty($_GET['url'])){
-    $checkout->select($_GET['task_id'])->checkOut($_GET['task_id'], $_GET['url']); //redirects to payment process
+    $checkout->processCheckOut($_GET['task_id'], $_GET['url']); //redirects to payment process
 }else{
-    echo "<script> window.location.href = 'https://askfavr.com/favr-pwa/home'; </script>";
+    echo "<script> window.location.href = "  . Data_Constants::ROOT_PATH . "</script>";
 }
 
 

@@ -6,8 +6,9 @@
  * Time: 8:25 PM
  */
 
+error_reporting(-1);
 session_start();
-include($_SERVER['DOCUMENT_ROOT'] . "/include/autoload.php");
+include($_SERVER['DOCUMENT_ROOT'] . "/favr-pwa/include/autoload.php");
 
 // component constants
 $USER = "";

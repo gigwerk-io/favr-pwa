@@ -7,7 +7,7 @@
  */
 
 session_start();
-include($_SERVER['DOCUMENT_ROOT'] . "/include/autoload.php");
+include($_SERVER['DOCUMENT_ROOT'] . "/favr-pwa/include/autoload.php");
 
 // component constants
 $USER = "";
@@ -22,7 +22,7 @@ $page = new Web_Page($USER);
 // TODO: put this in a process function
 if (isset($_FILES['profile_image']) ||  isset($_POST['profile_description'])) {
     $profile_image = $_FILES['profile_image'];
-    $profile_description = $_POST['profile_description'];
+    $profile_description = addslashes($_POST['profile_description']);
     $userID = $_SESSION['user_info']['id'];
 
     if ($profile_image['type'] == 'image/jpeg' || $profile_image['type'] == 'image/png') {
@@ -48,6 +48,7 @@ if (isset($_FILES['profile_image']) ||  isset($_POST['profile_description'])) {
                                         'task_id' => $imageFileID);
 
                 $imageDataArray = serialize($imageDataArray);
+
                 // TODO: validation of successsful upload/error reporting
                 $update_profile_query = "UPDATE users 
                                          SET profile_picture_path = '$imageDataArray',

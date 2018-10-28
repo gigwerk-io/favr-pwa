@@ -6,12 +6,12 @@
  * Time: 2:58 PM
  */
 
-include($_SERVER['DOCUMENT_ROOT'] . "/include/autoload.php");
+include($_SERVER['DOCUMENT_ROOT'] . "/favr-pwa/include/autoload.php");
 require_once '../../libraries/Api/Stripe/init.php';
 $payment = new Web_Payment();
 echo '<pre>';
 if(isset($_POST['stripeToken'])){
-    $payment->charge($_POST['stripeToken'], $_GET['id'], $_GET['url']);
+    $payment->processCharge($_POST['stripeToken'], $_GET['id'], $_GET['url']);
 }else{
     echo "<script>
             alert('Payment Failure!');

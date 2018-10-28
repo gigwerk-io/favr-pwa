@@ -1,6 +1,6 @@
 <?php
 session_start();
-include($_SERVER['DOCUMENT_ROOT'] . "/include/autoload.php");
+include($_SERVER['DOCUMENT_ROOT'] . "/favr-pwa/include/autoload.php");
 include '../libraries/Api/Sendgrid/vendor/autoload.php';
 include '../libraries/Api/Twilio/twilio-php-master/Twilio/autoload.php';
 
@@ -20,6 +20,7 @@ if (isset($_SESSION['navbar']) && $_SESSION['navbar'] != "active_home") {
 $page = new Web_Page($USER);
 
 if (isset($_POST['requestFavr'])) {
+    $completeAddress = $_POST['requestStreetAddress'] . " " . $_POST['requestCity'] . " " . $_POST['requestState'] . " " . $_POST['requestZip'];
     $successfulProcessToDB = $page->processFavrRequestToDB($_SESSION['user_info'], $_POST['requestDate'], $_POST['requestCategory'], $_POST['requestTaskDescription'], $_POST['requestPrice'], $_POST['requestFreelancerCount'], $_POST['requestStreetAddress'], $_POST['requestDifficulty'], $_FILES['requestPictures']);
 
     if (!$successfulProcessToDB) {

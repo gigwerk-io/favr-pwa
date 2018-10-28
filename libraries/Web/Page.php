@@ -8,10 +8,10 @@
  * @author haronarama
  * @author Solomon Antoine
  */
-//error_reporting(E_ERROR);
-include '../../libraries/Api/Twilio/twilio-php-master/Twilio/autoload.php';
-include '../../libraries/Api/Sendgrid/vendor/autoload.php';
-include '../../libraries/Api/Stripe/init.php';
+//error_reporting(-1);
+include_once($_SERVER['DOCUMENT_ROOT'] .'/favr-pwa/libraries/Api/Twilio/twilio-php-master/Twilio/autoload.php');
+include_once($_SERVER['DOCUMENT_ROOT'] .'/favr-pwa/libraries/Api/Sendgrid/vendor/autoload.php');
+include_once($_SERVER['DOCUMENT_ROOT'] .'/favr-pwa/libraries/Api/Stripe/init.php');
 
 class Web_Page
 {
@@ -145,7 +145,7 @@ class Web_Page
             // permitted user
             if (empty($_SESSION['user_info'])) {
                 $_SESSION['user_info'] = array(
-                  "id" => '-1'
+                    "id" => '-1'
                 );
             }
 
@@ -304,7 +304,7 @@ class Web_Page
 
         $sign_in_result = $this->db->query($select_sign_in_query);
         $sign_in_row = $sign_in_result->fetch(PDO::FETCH_ASSOC);
-        if(password_verify($signInPass, $sign_in_row['password']) || (!empty($sign_in_row) && isset($_POST['persistPassword']))){
+        if (password_verify($signInPass, $sign_in_row['password']) || (!empty($sign_in_row) && isset($_POST['persistPassword']))) {
             $this->user = $sign_in_row;
             $_SESSION['user_info'] = $sign_in_row;
             return true;
@@ -328,38 +328,69 @@ class Web_Page
      *
      * @author haronarama
      */
-    function signUpUser($signUpUsername, $signUpEmail, $signUpPhone, $signUpFirstName, $signUpLastName, $signUpPass, $signUpPassConfirm, $signUpSource)
-    {
-        if ($signUpPass != $signUpPassConfirm) {
-            // error passwords don't match
-            return false;
-        } else {
-            // success
-            $signUpPassConfirm = password_hash($signUpPassConfirm, PASSWORD_DEFAULT);
-            $insert_sign_up_query = "INSERT INTO users
-                                    (username,
-                                     password, 
-                                     first_name, 
-                                     last_name, 
-                                     email,
-                                     phone,
-                                     affiliate_id)
-                                 VALUES 
-                                    ('$signUpUsername',
-                                     '$signUpPassConfirm',
-                                     '$signUpFirstName',
-                                     '$signUpLastName',
-                                     '$signUpEmail',
-                                     '$signUpPhone',
-                                     '$signUpSource'
-                                     )
-            ";
+//    function signUpUser($signUpUsername, $signUpEmail, $signUpPhone, $signUpFirstName, $signUpLastName, $signUpPass, $signUpPassConfirm, $signUpSource)
+//    {
+//        if ($signUpPass != $signUpPassConfirm) {
+//            // error passwords don't match
+//            return false;
+//        } else {
+//            // success
+//            $signUpPassConfirm = password_hash($signUpPassConfirm, PASSWORD_DEFAULT);
+//            $insert_sign_up_query = "INSERT INTO users
+//                                    (username,
+//                                     password,
+//                                     first_name,
+//                                     last_name,
+//                                     email,
+//                                     phone,
+//                                     affiliate_id)
+//                                 VALUES
+//                                    ('$signUpUsername',
+//                                     '$signUpPassConfirm',
+//                                     '$signUpFirstName',
+//                                     '$signUpLastName',
+//                                     '$signUpEmail',
+//                                     '$signUpPhone',
+//                                     '$signUpSource'
+//                                     )
+//            ";
+//
+//            $this->db->query($insert_sign_up_query);
+//            include '../libraries/Api/Sendgrid/vendor/autoload.php';
+//            $confirm = new Web_Confirm();
+//            $confirm->sendConfirmationEmail($signUpEmail, $signUpPass);
+//            return true;
+//        }
+//    }
 
-            $this->db->query($insert_sign_up_query);
-            include '../libraries/Api/Sendgrid/vendor/autoload.php';
-            $confirm = new Web_Confirm();
-            $confirm->sendConfirmationEmail($signUpEmail, $signUpPass);
-            return true;
+    public function signUpUser($signUpUsername, $signUpEmail, $signUpPhone, $signUpFirstName, $signUpLastName, $signUpPass, $signUpPassConfirm, $signUpSource)
+    {
+        $curl = curl_init();
+
+        curl_setopt_array($curl, array(
+            CURLOPT_URL => "https://api.askfavr.com/api/user/signup",
+            CURLOPT_RETURNTRANSFER => true,
+            CURLOPT_ENCODING => "",
+            CURLOPT_MAXREDIRS => 10,
+            CURLOPT_TIMEOUT => 30,
+            CURLOPT_HTTP_VERSION => CURL_HTTP_VERSION_1_1,
+            CURLOPT_CUSTOMREQUEST => "POST",
+            CURLOPT_POSTFIELDS => "------WebKitFormBoundary7MA4YWxkTrZu0gW\r\nContent-Disposition: form-data; name=\"first_name\"\r\n\r\n$signUpFirstName\r\n------WebKitFormBoundary7MA4YWxkTrZu0gW\r\nContent-Disposition: form-data; name=\"last_name\"\r\n\r\n$signUpLastName\r\n------WebKitFormBoundary7MA4YWxkTrZu0gW\r\nContent-Disposition: form-data; name=\"username\"\r\n\r\n$signUpUsername\r\n------WebKitFormBoundary7MA4YWxkTrZu0gW\r\nContent-Disposition: form-data; name=\"email\"\r\n\r\n$signUpEmail\r\n------WebKitFormBoundary7MA4YWxkTrZu0gW\r\nContent-Disposition: form-data; name=\"phone\"\r\n\r\n$signUpPhone\r\n------WebKitFormBoundary7MA4YWxkTrZu0gW\r\nContent-Disposition: form-data; name=\"password\"\r\n\r\n$signUpPass\r\n------WebKitFormBoundary7MA4YWxkTrZu0gW\r\nContent-Disposition: form-data; name=\"confirm_password\"\r\n\r\n$signUpPassConfirm\r\n------WebKitFormBoundary7MA4YWxkTrZu0gW--",
+            CURLOPT_HTTPHEADER => array(
+                "Postman-Token: c9e97585-1952-4279-b2b7-159092d79665",
+                "cache-control: no-cache",
+                "content-type: multipart/form-data; boundary=----WebKitFormBoundary7MA4YWxkTrZu0gW"
+            ),
+        ));
+
+        $response = curl_exec($curl);
+        $err = curl_error($curl);
+
+        curl_close($curl);
+        if ($err) {
+            return "cURL Error #:" . $err;
+        } else {
+            return json_decode($response);
         }
     }
 
@@ -368,7 +399,8 @@ class Web_Page
      * @param $string
      * @return bool|string
      */
-     function encrypt_decrypt($action, $string) {
+    function encrypt_decrypt($action, $string)
+    {
         $output = false;
         $encrypt_method = "AES-256-CBC";
         $secret_key = 'This is my secret key';
@@ -378,10 +410,10 @@ class Web_Page
 
         // iv - encrypt method AES-256-CBC expects 16 bytes - else you will get a warning
         $iv = substr(hash('sha256', $secret_iv), 0, 16);
-        if ( $action == 'encrypt' ) {
+        if ($action == 'encrypt') {
             $output = openssl_encrypt($string, $encrypt_method, $key, 0, $iv);
             $output = base64_encode($output);
-        } else if( $action == 'decrypt' ) {
+        } else if ($action == 'decrypt') {
             $output = openssl_decrypt(base64_decode($string), $encrypt_method, $key, 0, $iv);
         }
         return $output;
@@ -427,7 +459,8 @@ class Web_Page
      *
      * @return boolean // true if users are friends false otherwise
      */
-    function assertFriends($user_id, $friend_id) {
+    function assertFriends($user_id, $friend_id)
+    {
         if (isset($user_id, $friend_id)) {
             $select_friend_query = "SELECT friends_since FROM friends WHERE user_id = $user_id AND friend_id = $friend_id";
             $result = $this->db->query($select_friend_query);
@@ -616,17 +649,21 @@ class Web_Page
             <script async src="https://www.googletagmanager.com/gtag/js?id=UA-122971401-1"></script>
             <script>
                 window.dataLayer = window.dataLayer || [];
-                function gtag(){dataLayer.push(arguments);}
+
+                function gtag() {
+                    dataLayer.push(arguments);
+                }
+
                 gtag('js', new Date());
 
                 gtag('config', 'UA-122971401-1');
             </script>
-<!--            <span itemscope itemtype="http://schema.org/Organization">-->
-<!--              <link itemprop="url" href="https://askfavr.com/favr-pwa/">-->
-<!--              <a itemprop="sameAs" href="https://www.facebook.com/FAVR-1932902273417961/">FB</a>-->
-<!--              <a itemprop="sameAs" href="https://www.instagram.com/askfavr/">Instagram</a>-->
-<!--              <a itemprop="sameAs" href="https://www.linkedin.com/company/askfavr">LinkedIn</a>-->
-<!--            </span>-->
+            <!--            <span itemscope itemtype="http://schema.org/Organization">-->
+            <!--              <link itemprop="url" href="https://askfavr.com/favr-pwa/">-->
+            <!--              <a itemprop="sameAs" href="https://www.facebook.com/FAVR-1932902273417961/">FB</a>-->
+            <!--              <a itemprop="sameAs" href="https://www.instagram.com/askfavr/">Instagram</a>-->
+            <!--              <a itemprop="sameAs" href="https://www.linkedin.com/company/askfavr">LinkedIn</a>-->
+            <!--            </span>-->
             <script type="application/ld+json">
             {
               "@context": "http://schema.org",
@@ -639,36 +676,50 @@ class Web_Page
                 "contactType": "technical support"
               }]
             }
+
             </script>
 
             <!-- Hotjar Tracking Code for https://askfavr.com/favr-pwa -->
             <script>
-                (function(h,o,t,j,a,r){
-                    h.hj=h.hj||function(){(h.hj.q=h.hj.q||[]).push(arguments)};
-                    h._hjSettings={hjid:1022094,hjsv:6};
-                    a=o.getElementsByTagName('head')[0];
-                    r=o.createElement('script');r.async=1;
-                    r.src=t+h._hjSettings.hjid+j+h._hjSettings.hjsv;
+                (function (h, o, t, j, a, r) {
+                    h.hj = h.hj || function () {
+                        (h.hj.q = h.hj.q || []).push(arguments)
+                    };
+                    h._hjSettings = {hjid: 1022094, hjsv: 6};
+                    a = o.getElementsByTagName('head')[0];
+                    r = o.createElement('script');
+                    r.async = 1;
+                    r.src = t + h._hjSettings.hjid + j + h._hjSettings.hjsv;
                     a.appendChild(r);
-                })(window,document,'https://static.hotjar.com/c/hotjar-','.js?sv=');
+                })(window, document, 'https://static.hotjar.com/c/hotjar-', '.js?sv=');
             </script>
 
             <!-- Facebook Pixel Code -->
             <script>
-            !function(f,b,e,v,n,t,s)
-            {if(f.fbq)return;n=f.fbq=function(){n.callMethod?
-            n.callMethod.apply(n,arguments):n.queue.push(arguments)};
-            if(!f._fbq)f._fbq=n;n.push=n;n.loaded=!0;n.version='2.0';
-            n.queue=[];t=b.createElement(e);t.async=!0;
-            t.src=v;s=b.getElementsByTagName(e)[0];
-            s.parentNode.insertBefore(t,s)}(window, document,'script',
-            'https://connect.facebook.net/en_US/fbevents.js');
-            fbq('init', '1650241185015256');
-            fbq('track', 'PageView');
+                !function (f, b, e, v, n, t, s) {
+                    if (f.fbq) return;
+                    n = f.fbq = function () {
+                        n.callMethod ?
+                            n.callMethod.apply(n, arguments) : n.queue.push(arguments)
+                    };
+                    if (!f._fbq) f._fbq = n;
+                    n.push = n;
+                    n.loaded = !0;
+                    n.version = '2.0';
+                    n.queue = [];
+                    t = b.createElement(e);
+                    t.async = !0;
+                    t.src = v;
+                    s = b.getElementsByTagName(e)[0];
+                    s.parentNode.insertBefore(t, s)
+                }(window, document, 'script',
+                    'https://connect.facebook.net/en_US/fbevents.js');
+                fbq('init', '1650241185015256');
+                fbq('track', 'PageView');
             </script>
             <noscript>
                 <img height="1" width="1" style="display:none"
-                src="https://www.facebook.com/tr?id=1650241185015256&ev=PageView&noscript=1"/>
+                     src="https://www.facebook.com/tr?id=1650241185015256&ev=PageView&noscript=1"/>
             </noscript>
             <!-- End Facebook Pixel Code -->
         </head>
@@ -683,11 +734,11 @@ class Web_Page
 
     function verifyAdminUser($id)
     {
-        if(!($id > 0 && $id < 5))
-        {
+        if (!($id > 0 && $id < 5)) {
             header("location: $this->root_path");
         }
     }
+
     function renderAdminHeader($id)
     {
         $this->verifyAdminUser($id);
@@ -724,9 +775,9 @@ class Web_Page
 
     function renderAdmin($type)
     {
-        if($type == "CFO"){
+        if ($type == "CFO") {
             echo $this->cfoNavBar();
-        }elseif($type == "CMO"){
+        } elseif ($type == "CMO") {
             echo $this->cmoNavBar();
         }
     }
@@ -815,7 +866,7 @@ class Web_Page
         $revenue = number_format((float)$this->getRevenue(), 2, '.', '');
         $profit = number_format((float)$this->getProfit(), 2, '.', '');
         $total = $this->getTotalRequests();
-        $average = number_format((float)$revenue/$total, 2, '.', '');
+        $average = number_format((float)$revenue / $total, 2, '.', '');
         echo "<main role=\"main\" class=\"col-md-9 ml-sm-auto col-lg-10 pt-3 px-4\">
             <div class=\"d-flex justify-content-between flex-wrap flex-md-nowrap align-items-center pb-2 mb-3 border-bottom\">
                 <h1 class=\"h2\">Dashboard</h1>
@@ -941,18 +992,18 @@ class Web_Page
                         </thead>
                         <tbody>";
         $sth = $this->db->query("SELECT * FROM stripe_payments");
-        while($row = $sth->fetch(PDO::FETCH_ASSOC)){
+        while ($row = $sth->fetch(PDO::FETCH_ASSOC)) {
             $freelancer = $this->getUserInfo($row['freelancer_id']);
             echo $this->displayPaymentsTable(
-                    $row['id'],
-                    $this->getCustomerFromRequestDB($row['source_id']),
-                    $freelancer['first_name'] . " " . $freelancer['last_name'],
-                    $row['amount'],
-                    $row['stripe_fee'],
-                    $row['freelancer_fee'],
-                    $row['net_profit'],
-                    $row['created_at'],
-                    $row['available_at']
+                $row['id'],
+                $this->getCustomerFromRequestDB($row['source_id']),
+                $freelancer['first_name'] . " " . $freelancer['last_name'],
+                $row['amount'],
+                $row['stripe_fee'],
+                $row['freelancer_fee'],
+                $row['net_profit'],
+                $row['created_at'],
+                $row['available_at']
             );
         }
         echo "
@@ -978,13 +1029,13 @@ class Web_Page
                         </thead>
                         <tbody>";
         $sth = $this->db->query("SELECT * FROM users WHERE affiliate_id IS NOT NULL AND confirmed=1");
-        while($row = $sth->fetch(PDO::FETCH_ASSOC)){
+        while ($row = $sth->fetch(PDO::FETCH_ASSOC)) {
             $customer = $this->getUserInfo($row['id']);
             $affiliate = $this->getUserInfo($customer['affiliate_id']);
             echo $this->displayAffiliatesTable(
-                    $affiliate['first_name'] . " " . $affiliate['last_name'],
-                    $customer['first_name'] . " " . $customer['last_name'],
-                    $customer['date_joined']
+                $affiliate['first_name'] . " " . $affiliate['last_name'],
+                $customer['first_name'] . " " . $customer['last_name'],
+                $customer['date_joined']
             );
         }
         echo "
@@ -1011,7 +1062,7 @@ class Web_Page
                         </thead>
                         <tbody>";
         $sth = $this->db->query("SELECT * FROM stripe_transfers");
-        while($row = $sth->fetch(PDO::FETCH_ASSOC)){
+        while ($row = $sth->fetch(PDO::FETCH_ASSOC)) {
             echo $this->displayTransfersTable(
                 $row['id'],
                 $this->getFreelancerFromDB($row['account_id']),
@@ -1028,7 +1079,7 @@ class Web_Page
 
     function displayTransfersTable($id, $freelancer, $amount, $date)
     {
-        $date = date("m/d/Y",strtotime($date));
+        $date = date("m/d/Y", strtotime($date));
         return "
             <tr>
             <td>$id</td>
@@ -1040,7 +1091,7 @@ class Web_Page
 
     function displayAffiliatesTable($affiliate, $user, $date)
     {
-        $date = date("m/d/Y",strtotime($date));
+        $date = date("m/d/Y", strtotime($date));
         return "
             <tr>
             <td>$affiliate</td>
@@ -1058,8 +1109,8 @@ class Web_Page
 
     function displayPaymentsTable($id, $customer, $freelancer, $amount, $stripeFee, $freelancerFee, $netProfit, $created_at, $available_at)
     {
-        $created_at = date("m/d/Y",strtotime($created_at));
-        $available_at = date("m/d/Y",strtotime($available_at));
+        $created_at = date("m/d/Y", strtotime($created_at));
+        $available_at = date("m/d/Y", strtotime($available_at));
         return "
             <tr>
             <td>$id</td>
@@ -1103,8 +1154,6 @@ class Web_Page
     }
 
 
-
-
     /**
      * Render marketplace history for this specific user
      *
@@ -1115,7 +1164,7 @@ class Web_Page
      *
      * @return boolean
      */
-    function renderFavrProfileHistory($id, $friend_id = null, $orderBy = "task_date", $orientation = "DESC", $limit="")
+    function renderFavrProfileHistory($id, $friend_id = null, $orderBy = "task_date", $orientation = "DESC", $limit = "")
     {
         if ($id == $_SESSION['user_info']['id']) {
             $selectMarketplaceQuery = "
@@ -1137,8 +1186,7 @@ class Web_Page
             $userInfo = $this->getUserInfo($id);
             if (!empty($userInfo)) {
                 $scope = $userInfo['default_scope'];
-                if ($scope == Data_Constants::DB_SCOPE_PUBLIC)
-                {
+                if ($scope == Data_Constants::DB_SCOPE_PUBLIC) {
                     // the target user has a public profile
                     $selectMarketplaceQuery = "
                                    SELECT *, mfr.id as mfrid
@@ -1154,9 +1202,7 @@ class Web_Page
                                    $orientation
                                    $limit
                     ";
-                }
-                else if ($scope == Data_Constants::DB_SCOPE_FRIENDS_OF_FRIENDS)
-                {
+                } else if ($scope == Data_Constants::DB_SCOPE_FRIENDS_OF_FRIENDS) {
                     $select_friends_query = "SELECT * 
                                              FROM friends 
                                              WHERE user_id = $id";
@@ -1218,9 +1264,7 @@ class Web_Page
                         }
 
                     }
-                }
-                else if ($scope == Data_Constants::DB_SCOPE_FRIENDS)
-                {
+                } else if ($scope == Data_Constants::DB_SCOPE_FRIENDS) {
                     $select_friends_query = "SELECT * 
                                              FROM friends 
                                              WHERE user_id = $id 
@@ -1246,13 +1290,9 @@ class Web_Page
                             ";
                         }
                     }
-                }
-                else if ($scope == Data_Constants::DB_SCOPE_PRIVATE)
-                {
+                } else if ($scope == Data_Constants::DB_SCOPE_PRIVATE) {
                     $selectMarketplaceQuery = "";
-                }
-                else
-                {
+                } else {
                     $selectMarketplaceQuery = "";
                 }
             }
@@ -1412,23 +1452,7 @@ class Web_Page
                                 <div class='col-sm-12 small'>
                                     <div class=\"float-left d-inline\">
                                             ";
-                        if ($freelancer_id == $id) {
-                            if ($task_status == Data_Constants::DB_TASK_STATUS_REQUESTED) {
-                                echo "<p class='mb-0 d-inline-flex'>Accepted(Freelancer)</p>";
-                            } else if ($task_status == Data_Constants::DB_TASK_STATUS_PENDING_APPROVAL) {
-                                echo "<p class='mb-0 d-inline-flex'>Pending Approval (Freelancer)</p>";
-                            } else if ($task_status == Data_Constants::DB_TASK_STATUS_PAID) {
-                                echo "<p class='mb-0 d-inline-flex'>Go to location</p>";
-                            } else if ($task_status == Data_Constants::DB_TASK_STATUS_IN_PROGRESS) {
-                                echo "<p class='mb-0 d-inline-flex'>In Progress(Freelancer)</p>";
-                            } else if ($task_status == Data_Constants::DB_TASK_STATUS_COMPLETED) {
-                                if ($freelancer_id == $_SESSION['user_info']['id']) {
-                                    echo "<p class='mb-0 d-inline-flex'>You Completed</p>";
-                                } else {
-                                    echo "<p class='mb-0 d-inline-flex'>They Completed</p>";
-                                }
-                            }
-                        } else if ($customer_id == $id) {
+                        if ($customer_id == $_SESSION['user_info']['id']) {
                             if ($task_status == Data_Constants::DB_TASK_STATUS_REQUESTED) {
                                 echo "<p class='mb-0 d-inline-flex'>Requested</p> |";
                                 echo "<a href=\"?navbar=active_profile&d_request_id=$task_id&ALERT_MESSAGE=Your request has been deleted!\" class='text-danger'>
@@ -1475,6 +1499,22 @@ class Web_Page
                                       </div>
                                     </div>";
                             }
+                        } else {
+                            if ($task_status == Data_Constants::DB_TASK_STATUS_REQUESTED) {
+                                echo "<p class='mb-0 d-inline-flex'>Accepted(Freelancer)</p>";
+                            } else if ($task_status == Data_Constants::DB_TASK_STATUS_PENDING_APPROVAL) {
+                                echo "<p class='mb-0 d-inline-flex'>Pending Approval (Freelancer)</p>";
+                            } else if ($task_status == Data_Constants::DB_TASK_STATUS_PAID) {
+                                echo "<p class='mb-0 d-inline-flex'>Go to location</p>";
+                            } else if ($task_status == Data_Constants::DB_TASK_STATUS_IN_PROGRESS) {
+                                echo "<p class='mb-0 d-inline-flex'>In Progress(Freelancer)</p>";
+                            } else if ($task_status == Data_Constants::DB_TASK_STATUS_COMPLETED) {
+                                if ($freelancer_id == $_SESSION['user_info']['id']) {
+                                    echo "<p class='mb-0 d-inline-flex'>You Completed</p>";
+                                } else {
+                                    echo "<p class='mb-0 d-inline-flex'>They Completed</p>";
+                                }
+                            }
                         }
 
                         echo "
@@ -1515,14 +1555,15 @@ class Web_Page
      * @param boolean $renderTrend
      *
      */
-    function renderFavrProfileRating($ratings, $renderTrend = true) {
+    function renderFavrProfileRating($ratings, $renderTrend = true)
+    {
         if (!empty($ratings)) {
             $count = count($ratings);
             $sum = array_sum($ratings);
             $trend = "<i style=\"position:relative;font-weight: lighter;font-size: medium;bottom:  1.2rem;left: .3rem;visibility: hidden\" class=\"material-icons\">
                         arrow_upward</i>";
             $avg = round($sum / $count, 3);
-            $digits = strlen((string) $avg);
+            $digits = strlen((string)$avg);
 
             if ($digits == 1) {
                 $avg .= ".000";
@@ -1571,57 +1612,49 @@ class Web_Page
                 echo "<i style=\"font-size: 20px!important;color: var(--dark)\" class=\"material-icons\">star_border</i>";
                 echo "<i style=\"font-size: 20px!important;color: var(--dark)\" class=\"material-icons\">star_border</i>";
                 echo "<i style=\"font-size: 20px!important;color: var(--dark)\" class=\"material-icons\">star_border</i>";
-            }
-            else if ($avg >= 1.5 && $avg < 2) {
+            } else if ($avg >= 1.5 && $avg < 2) {
                 echo "<i style=\"font-size: 20px!important;color: var(--yellow)\" class=\"material-icons\">star</i>";
                 echo "<i style=\"font-size: 20px!important;color: var(--yellow)\" class=\"material-icons\">star_half</i>";
                 echo "<i style=\"font-size: 20px!important;color: var(--dark)\" class=\"material-icons\">star_border</i>";
                 echo "<i style=\"font-size: 20px!important;color: var(--dark)\" class=\"material-icons\">star_border</i>";
                 echo "<i style=\"font-size: 20px!important;color: var(--dark)\" class=\"material-icons\">star_border</i>";
-            }
-            else if ($avg >= 2 && $avg < 2.5) {
+            } else if ($avg >= 2 && $avg < 2.5) {
                 echo "<i style=\"font-size: 20px!important;color: var(--yellow)\" class=\"material-icons\">star</i>";
                 echo "<i style=\"font-size: 20px!important;color: var(--yellow)\" class=\"material-icons\">star</i>";
                 echo "<i style=\"font-size: 20px!important;color: var(--dark)\" class=\"material-icons\">star_border</i>";
                 echo "<i style=\"font-size: 20px!important;color: var(--dark)\" class=\"material-icons\">star_border</i>";
                 echo "<i style=\"font-size: 20px!important;color: var(--dark)\" class=\"material-icons\">star_border</i>";
-            }
-            else if ($avg >= 2.5 && $avg < 3) {
+            } else if ($avg >= 2.5 && $avg < 3) {
                 echo "<i style=\"font-size: 20px!important;color: var(--yellow)\" class=\"material-icons\">star</i>";
                 echo "<i style=\"font-size: 20px!important;color: var(--yellow)\" class=\"material-icons\">star</i>";
                 echo "<i style=\"font-size: 20px!important;color: var(--yellow)\" class=\"material-icons\">star_half</i>";
                 echo "<i style=\"font-size: 20px!important;color: var(--dark)\" class=\"material-icons\">star_border</i>";
                 echo "<i style=\"font-size: 20px!important;color: var(--dark)\" class=\"material-icons\">star_border</i>";
-            }
-            else if ($avg >= 3 && $avg < 3.5) {
+            } else if ($avg >= 3 && $avg < 3.5) {
                 echo "<i style=\"font-size: 20px!important;color: var(--yellow)\" class=\"material-icons\">star</i>";
                 echo "<i style=\"font-size: 20px!important;color: var(--yellow)\" class=\"material-icons\">star</i>";
                 echo "<i style=\"font-size: 20px!important;color: var(--yellow)\" class=\"material-icons\">star</i>";
                 echo "<i style=\"font-size: 20px!important;color: var(--dark)\" class=\"material-icons\">star_border</i>";
                 echo "<i style=\"font-size: 20px!important;color: var(--dark)\" class=\"material-icons\">star_border</i>";
-            }
-            else if ($avg >= 3.5 && $avg < 4) {
+            } else if ($avg >= 3.5 && $avg < 4) {
                 echo "<i style=\"font-size: 20px!important;color: var(--yellow)\" class=\"material-icons\">star</i>";
                 echo "<i style=\"font-size: 20px!important;color: var(--yellow)\" class=\"material-icons\">star</i>";
                 echo "<i style=\"font-size: 20px!important;color: var(--yellow)\" class=\"material-icons\">star</i>";
                 echo "<i style=\"font-size: 20px!important;color: var(--yellow)\" class=\"material-icons\">star_half</i>";
                 echo "<i style=\"font-size: 20px!important;color: var(--dark)\" class=\"material-icons\">star_border</i>";
-            }
-            else if ($avg == 4 && $avg < 4.5) {
+            } else if ($avg == 4 && $avg < 4.5) {
                 echo "<i style=\"font-size: 20px!important;color: var(--yellow)\" class=\"material-icons\">star</i>";
                 echo "<i style=\"font-size: 20px!important;color: var(--yellow)\" class=\"material-icons\">star</i>";
                 echo "<i style=\"font-size: 20px!important;color: var(--yellow)\" class=\"material-icons\">star</i>";
                 echo "<i style=\"font-size: 20px!important;color: var(--yellow)\" class=\"material-icons\">star</i>";
                 echo "<i style=\"font-size: 20px!important;color: var(--dark)\" class=\"material-icons\">star_border</i>";
-            }
-            else if ($avg >= 4.5 && $avg < 5) {
+            } else if ($avg >= 4.5 && $avg < 5) {
                 echo "<i style=\"font-size: 20px!important;color: var(--yellow)\" class=\"material-icons\">star</i>";
                 echo "<i style=\"font-size: 20px!important;color: var(--yellow)\" class=\"material-icons\">star</i>";
                 echo "<i style=\"font-size: 20px!important;color: var(--yellow)\" class=\"material-icons\">star</i>";
                 echo "<i style=\"font-size: 20px!important;color: var(--yellow)\" class=\"material-icons\">star</i>";
                 echo "<i style=\"font-size: 20px!important;color: var(--yellow)\" class=\"material-icons\">star_half</i>";
-            }
-            else if ($avg == 5) {
+            } else if ($avg == 5) {
                 echo "<i style=\"font-size: 20px!important;color: var(--yellow)\" class=\"material-icons\">star</i>";
                 echo "<i style=\"font-size: 20px!important;color: var(--yellow)\" class=\"material-icons\">star</i>";
                 echo "<i style=\"font-size: 20px!important;color: var(--yellow)\" class=\"material-icons\">star</i>";
@@ -1641,7 +1674,8 @@ class Web_Page
      * @param int $friendID
      *
      */
-    function renderFavrProfile($userID, $friendID = null) {
+    function renderFavrProfile($userID, $friendID = null)
+    {
         if ($userID == $_SESSION['user_info']['id']) { // this user's profile
             $userInfo = $this->getUserInfo($userID);
             $id = md5($userID);
@@ -1661,7 +1695,7 @@ class Web_Page
                     </div>
                     <div class="col-md-4 text-center">
                         <?php
-                            echo " <div id='$id-profile-image' style='height: 4.5rem'>
+                        echo " <div id='$id-profile-image' style='height: 4.5rem'>
                                         <img id='$id-profile-img' style='cursor: pointer;bottom: 3.5rem;width: 7rem!important;height: 7rem!important;position: relative;' 
                                             src='data:image/svg+xml;charset=UTF-8,%3Csvg%20width%3D%22128%22%20height%3D%22128%22%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20viewBox%3D%220%200%20128%20128%22%20preserveAspectRatio%3D%22none%22%3E%3Cdefs%3E%3Cstyle%20type%3D%22text%2Fcss%22%3E%23holder_164a9f2d749%20text%20%7B%20fill%3A%23007bff%3Bfont-weight%3Abold%3Bfont-family%3AArial%2C%20Helvetica%2C%20Open%20Sans%2C%20sans-serif%2C%20monospace%3Bfont-size%3A6pt%20%7D%20%3C%2Fstyle%3E%3C%2Fdefs%3E%3Cg%20id%3D%22holder_164a9f2d749%22%3E%3Crect%20width%3D%22128%22%20height%3D%22128%22%20fill%3D%22%23007bff%22%3E%3C%2Frect%3E%3Cg%3E%3Ctext%20x%3D%2248.4296875%22%20y%3D%2266.7%22%3E128x128%3C%2Ftext%3E%3C%2Fg%3E%3C%2Fg%3E%3C%2Fsvg%3E' 
                                             onclick=\"
@@ -1707,7 +1741,7 @@ class Web_Page
                                             <label for='profileImage'>Upload a new profile picture</label>
                                             <input type='file' name='profile_image' class='form-control'>
                                             <br>
-                                            <textarea name='profile_description' class='form-control' placeholder='Describe yourself and what you do...'>". $userInfo['profile_description'] ."</textarea>
+                                            <textarea name='profile_description' class='form-control' placeholder='Describe yourself and what you do...'>" . $userInfo['profile_description'] . "</textarea>
                                           </div>
                                           <div class=\"modal-footer\">
                                             <button type=\"button\" class=\"btn btn-secondary\" data-dismiss=\"modal\">Close</button>
@@ -1730,7 +1764,7 @@ class Web_Page
                             echo $userInfo['first_name'] . " " . $userInfo['last_name'];
 
                             if ($userInfo['class'] == Data_Constants::DB_USER_CLASS_VERIFIED) {
-                                echo "<i class=\"material-icons text-primary\">check_circle</i>";
+                                echo " <i class=\"material-icons text-primary\">check_circle</i>";
                             }
                             ?>
                         </h3>
@@ -1904,14 +1938,14 @@ class Web_Page
                             echo $userInfo['first_name'] . " " . $userInfo['last_name'];
 
                             if ($userInfo['class'] == Data_Constants::DB_USER_CLASS_VERIFIED) {
-                                echo "<i class=\"material-icons text-primary\">check_circle</i>";
+                                echo " <i class=\"material-icons text-primary\">check_circle</i>";
                             }
                             ?>
                         </h3>
                         <?php
                         $ratings = unserialize($userInfo['rating']);
                         if ($userInfo['display_ratings'] == 1) {
-                            $this->renderFavrProfileRating($ratings,false);
+                            $this->renderFavrProfileRating($ratings, false);
                         } else {
                             $this->renderFavrProfileRating(array(), false);
                         }
@@ -1955,8 +1989,7 @@ class Web_Page
      */
     function renderMainNavigation($render_main_navigation = true, $render_back_button = false, $render_alt_nav = false)
     {
-        if ($render_main_navigation)
-        {
+        if ($render_main_navigation) {
             $active_home = "";
             $active_categories = "";
             $active_notifications = "";
@@ -2017,46 +2050,51 @@ class Web_Page
                     break;
             }
             ?>
-            <nav class="navbar navbar-mobile navbar-expand-md fixed-top navbar-dark bg-dark">
-                <?php
+            <nav class="navbar navbar-mobile navbar-expand-md fixed-top navbar-dark" style="background-color: #2b3035;">
+                <div class="row mobile-navbar ml-0 mr-0 p-0" style="width: 100%;flex-wrap: nowrap">
+                    <?php
                     if ($render_back_button) {
                         // back button
                         ?>
-                        <a id="leftItem" href="<?php echo $last_url; ?>" class="navbar-toggler pt-0 pb-2 border-0" style="height: 44px;">
+                        <a id="leftItem" href="<?php echo $last_url; ?>" class="navbar-toggler pt-0 pb-2 border-0"
+                           style="height: 44px;">
                             <span class="sr-only">Toggle back navigate</span>
                             <i class="material-icons text-light">arrow_back</i>
                         </a>
-                <?php
+                        <?php
                     } else {
-                ?>
-                        <button id="leftItem" class="navbar-toggler pb-2 border-0" type="button" data-toggle="offcanvas">
+                        ?>
+                        <button id="leftItem" class="navbar-toggler pb-2 border-0" type="button"
+                                data-toggle="offcanvas">
                             <span class="sr-only">Toggle navigation</span>
                             <span></span>
-                            <span></span>
+                            <span style="width: 20px;background-color: orange;"></span>
                             <span></span>
                         </button>
-                <?php
-                    }
-                ?>
-                <div id="logo" class="request-favr pt-0 pr-2 pb-0 mr-0">
-                    <?php
-                    if ($_SESSION['nav_scroller'] != "active_marketplace" || $_SESSION['navbar'] != "active_home") {
-                        echo "
-                            <a href=\"$this->root_path/home/?navbar=active_home&nav_scroller=active_marketplace\">
-                        ";
+                        <?php
                     }
                     ?>
-                    <img src="<?php echo $this->root_path; ?>/assets/brand/favr_logo_rd.png" height="21" width="70"
-                         class="navbar-brand mr-0" style="padding-top: 0; padding-bottom: 0" alt="Logo">
+                    <div class="col-md-11 text-center pt-1 pl-0 pr-0">
+                        <div id="logo" class="request-favr pt-1">
+                            <?php
+                            if ($_SESSION['nav_scroller'] != "active_marketplace" || $_SESSION['navbar'] != "active_home") {
+                                echo "
+                            <a href=\"$this->root_path/home/?navbar=active_home&nav_scroller=active_marketplace\">
+                        ";
+                            }
+                            ?>
+                            <img src="<?php echo $this->root_path; ?>/assets/brand/favr_logo_rd.png" height="21"
+                                 width="70"
+                                 class="navbar-brand mr-0" style="padding-top: 0; padding-bottom: 0" alt="Logo">
 
-                    <?php
-                    if ($_SESSION['nav_scroller'] != "active_marketplace" || $_SESSION['navbar'] != "active_home") {
-                        echo "
+                            <?php
+                            if ($_SESSION['nav_scroller'] != "active_marketplace" || $_SESSION['navbar'] != "active_home") {
+                                echo "
                             </a>
                         ";
-                    }
+                            }
 
-                    $this->addScript("<script>
+                            $this->addScript("<script>
                                                     function renderSearch() {
                                                       $('#logo').addClass('d-none');
                                                       $('#searchButton').addClass('d-none');
@@ -2071,25 +2109,67 @@ class Web_Page
                                                       $('#searchBar').addClass('d-none');
                                                     }
                                                 </script>");
-                    ?>
+                            ?>
+                        </div>
+                        <div id="searchBar" class="d-none pt-0 pl-0 pr-0 pb-0 mr-0 ml-0">
+                            <form action="<?php echo $this->root_path . '/home/results/?navbar=active_home' ?>">
+                                <input type="text" class="form-control" name="q" placeholder="Search for people..."
+                                       style="width: 95%;" aria-label="Search">
+                                <input type="submit" style="display:none"/>
+                            </form>
+                        </div>
+                    </div>
+                    <div class="col-md-1 pr-0 pt-1" style="max-width: 44px;">
+                        <button id="searchButton" class="profile-button small border-0 mr-0 pr-0 pb-0 float-right"
+                                style="left: .1rem;padding-bottom: .569rem;" type="button" onclick="renderSearch()">
+                            <i class="material-icons" style="color: var(--red)">search</i>
+                        </button>
+
+                        <button id="cancelSearch"
+                                class="d-none profile-button small border-0 mr-0 pr-0 pt-1 pb-0 float-right"
+                                style="color: var(--red);left: .1rem;" type="button" onclick="renderMainNavigation()">
+                            Cancel
+                        </button>
+                    </div>
                 </div>
-
-                <div id="searchBar" class="d-none pt-0 pl-0 pr-0 pb-0 mr-0 ml-0">
-                    <form action="<?php echo $this->root_path . '/home/results/?navbar=active_home' ?>">
-                        <input type="text" class="form-control" name="q" placeholder="Search for people..." style="width: 11rem;" aria-label="Search">
-                        <input type="submit" style="display:none"/>
-                    </form>
-                </div>
-
-                <button id="searchButton" class="profile-button small border-0 mr-0 pr-0 pb-0" style="left: .1rem;padding-bottom: .569rem;" type="button" onclick="renderSearch()">
-                    <i class="material-icons" style="color: var(--red)">search</i>
-                </button>
-
-                <button id="cancelSearch" class="d-none profile-button small border-0 mr-0 pr-0 pb-0" style="color: var(--red);left: .1rem;padding-bottom: .569rem;" type="button" onclick="renderMainNavigation()">
-                    Cancel
-                </button>
 
                 <div class="navbar-collapse offcanvas-collapse" id="navbarsExampleDefault">
+                    <div id="logo" class="request-favr request-favr-web pr-3">
+                        <?php
+                        if ($_SESSION['nav_scroller'] != "active_marketplace" || $_SESSION['navbar'] != "active_home") {
+                            echo "
+                            <a href=\"$this->root_path/home/?navbar=active_home&nav_scroller=active_marketplace\">
+                        ";
+                        }
+                        ?>
+                        <img src="<?php echo $this->root_path; ?>/assets/brand/favr_logo_rd.png" height="21" width="70"
+                             class="navbar-brand mr-0" style="padding-top: 0; padding-bottom: 0" alt="Logo">
+
+                        <?php
+                        if ($_SESSION['nav_scroller'] != "active_marketplace" || $_SESSION['navbar'] != "active_home") {
+                            echo "
+                            </a>
+                        ";
+                        }
+
+                        $this->addScript("<script>
+                                                    function renderSearch() {
+                                                      $('#logo').addClass('d-none');
+                                                      $('#searchButton').addClass('d-none');
+                                                      $('#cancelSearch').removeClass('d-none');
+                                                      $('#searchBar').removeClass('d-none');
+                                                    }
+                                                    
+                                                    function renderMainNavigation() {
+                                                      $('#logo').removeClass('d-none');
+                                                      $('#searchButton').removeClass('d-none');
+                                                      $('#cancelSearch').addClass('d-none');
+                                                      $('#searchBar').addClass('d-none');
+                                                    }
+                                                </script>");
+                        ?>
+                    </div>
+
                     <ul class="navbar-nav mr-auto">
                         <li class="mobile-footer nav-item text-center border-bottom pt-3 pb-3 <?php echo $active_profile; ?>">
                             <?php
@@ -2100,34 +2180,41 @@ class Web_Page
                                 $profile_img_name = $profile_image['name'];
                                 $profile_img_type = $profile_image['type'];
                                 ?>
-                                <button class="profile-button border-0 pl-0 mr-0 pr-0" style="left: .1rem;padding-bottom: .569rem;" type="button">
+                                <button class="profile-button border-0 pl-0 mr-0 pr-0"
+                                        style="left: .1rem;padding-bottom: .569rem;" type="button">
                                     <a href='<?php echo "$this->root_path/components/profile/?navbar=active_profile"; ?>'>
                                         <img src='data:image/svg+xml;charset=UTF-8,%3Csvg%20width%3D%22128%22%20height%3D%22128%22%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20viewBox%3D%220%200%20128%20128%22%20preserveAspectRatio%3D%22none%22%3E%3Cdefs%3E%3Cstyle%20type%3D%22text%2Fcss%22%3E%23holder_164a9f2d749%20text%20%7B%20fill%3A%23007bff%3Bfont-weight%3Abold%3Bfont-family%3AArial%2C%20Helvetica%2C%20Open%20Sans%2C%20sans-serif%2C%20monospace%3Bfont-size%3A6pt%20%7D%20%3C%2Fstyle%3E%3C%2Fdefs%3E%3Cg%20id%3D%22holder_164a9f2d749%22%3E%3Crect%20width%3D%22128%22%20height%3D%22128%22%20fill%3D%22%23007bff%22%3E%3C%2Frect%3E%3Cg%3E%3Ctext%20x%3D%2248.4296875%22%20y%3D%2266.7%22%3E128x128%3C%2Ftext%3E%3C%2Fg%3E%3C%2Fg%3E%3C%2Fsvg%3E'
-                                             data-src='<?php echo "$this->root_path/image.php?i=$profile_img_name&i_t=$profile_img_type&i_p=true"; ?>' height='80' width='80' alt='Profile Image'
+                                             data-src='<?php echo "$this->root_path/image.php?i=$profile_img_name&i_t=$profile_img_type&i_p=true"; ?>'
+                                             height='80' width='80' alt='Profile Image'
                                              style="border: 1px solid red;border-radius: 9rem;">
                                     </a>
                                 </button>
                                 <?php
-                                echo "<h5 class='text-light'>". $userInfo['first_name'] . " " . $userInfo['last_name'] . "</h5>";
-                                echo "<p class='text-muted'>@". $userInfo['username'] ."</p>";
                             } else {
                                 ?>
-                                <button class="profile-button border-0 pl-0 mr-0 pr-0" style="left: .1rem;padding-bottom: .569rem;" type="button">
+                                <button class="profile-button border-0 pl-0 mr-0 pr-0"
+                                        style="left: .1rem;padding-bottom: .569rem;" type="button">
                                     <a href='<?php echo "$this->root_path/components/profile/?navbar=active_profile"; ?>'>
                                         <img src='data:image/svg+xml;charset=UTF-8,%3Csvg%20width%3D%22128%22%20height%3D%22128%22%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20viewBox%3D%220%200%20128%20128%22%20preserveAspectRatio%3D%22none%22%3E%3Cdefs%3E%3Cstyle%20type%3D%22text%2Fcss%22%3E%23holder_164a9f2d749%20text%20%7B%20fill%3A%23007bff%3Bfont-weight%3Abold%3Bfont-family%3AArial%2C%20Helvetica%2C%20Open%20Sans%2C%20sans-serif%2C%20monospace%3Bfont-size%3A6pt%20%7D%20%3C%2Fstyle%3E%3C%2Fdefs%3E%3Cg%20id%3D%22holder_164a9f2d749%22%3E%3Crect%20width%3D%22128%22%20height%3D%22128%22%20fill%3D%22%23007bff%22%3E%3C%2Frect%3E%3Cg%3E%3Ctext%20x%3D%2248.4296875%22%20y%3D%2266.7%22%3E128x128%3C%2Ftext%3E%3C%2Fg%3E%3C%2Fg%3E%3C%2Fsvg%3E'
-                                             data-src='<?php echo "$this->root_path/image.php?i=&i_t=&i_p=true"; ?>' height='80' width='80' alt='Profile Image'
+                                             data-src='<?php echo "$this->root_path/image.php?i=&i_t=&i_p=true"; ?>'
+                                             height='80' width='80' alt='Profile Image'
                                              style="border: 1px solid red;border-radius: 9rem;">
                                     </a>
                                 </button>
                                 <?php
-                                echo "<h5 class='text-light'>". $userInfo['first_name'] . " " . $userInfo['last_name'] . "</h5>";
-                                echo "<p class='text-muted'>@". $userInfo['username'] ."</p>";
                             }
+                            echo "<h5 class='text-light'>" . $userInfo['first_name'] . " " . $userInfo['last_name'];
+                            if ($userInfo['class'] == Data_Constants::DB_USER_CLASS_VERIFIED) {
+                                echo " <i class=\"material-icons small text-white\" style='font-size: 16px;'>check_circle</i>";
+                            }
+                            echo "</h5>";
+                            echo "<p class='text-muted'>@" . $userInfo['username'] . "</p>";
                             ?>
 
                         </li>
                         <li class="nav-item <?php echo $active_home; ?>">
-                            <a class="nav-link d-inline-flex" href="<?php echo $this->root_path; ?>/home/?navbar=active_home&nav_scroller=active_marketplace">
+                            <a class="nav-link d-inline-flex"
+                               href="<?php echo $this->root_path; ?>/home/?navbar=active_home&nav_scroller=active_marketplace">
                                 <i class="material-icons">home</i>
                                 Home
                                 <?php
@@ -2138,7 +2225,8 @@ class Web_Page
                             </a>
                         </li>
                         <li class="nav-item <?php echo $active_notifications; ?>">
-                            <a class="nav-link d-inline-flex" href="<?php echo $this->root_path; ?>/components/notifications/?navbar=active_notifications">
+                            <a class="nav-link d-inline-flex"
+                               href="<?php echo $this->root_path; ?>/components/notifications/?navbar=active_notifications">
                                 <?php
                                 if (!empty($active_notifications)) {
                                     echo "<i class=\"material-icons\">notifications</i>";
@@ -2159,7 +2247,8 @@ class Web_Page
                             </a>
                         </li>
                         <li class="request-favr-web nav-item <?php echo $active_profile; ?>">
-                            <a class="nav-link d-inline-flex" href="<?php echo $this->root_path; ?>/components/profile/?navbar=active_profile">
+                            <a class="nav-link d-inline-flex"
+                               href="<?php echo $this->root_path; ?>/components/profile/?navbar=active_profile">
                                 <?php
                                 if (!empty($active_profile)) {
                                     echo "<i class=\"material-icons\">person</i>";
@@ -2175,29 +2264,23 @@ class Web_Page
                                 ?>
                             </a>
                         </li>
-                        <li class="mobile-search nav-item <?php echo $active_chat; ?>">
-                            <a class="nav-link d-inline-flex" href='<?php echo "$this->root_path/home/chat/?navbar=active_home&nav_scroller=active_chat"; ?>'>
-                                <i class="material-icons">chat</i>
-                                Chat
-                                <?php
-                                if (!empty($active_chat)) {
-                                    echo "<span class=\"sr-only\">(current)</span>";
-                                }
-                                ?>
-                            </a>
-                        </li>
                     </ul>
 
-<!--                     WEB ELEMENT ONLY-->
-                    <form class="web-search form-inline my-2 my-lg-0" action="<?php echo $this->root_path . '/home/results/?navbar=active_home' ?>">
-                        <input style="border-radius: 5px 0 0 5px" class="form-control mr-sm-0" type="text" name="q" placeholder="Search" aria-label="Search">
-                        <button style="border-radius: 0 5px 5px 0" class="btn btn-outline-danger my-2 my-sm-0" type="submit">Search</button>
+                    <!--                     WEB ELEMENT ONLY-->
+                    <form class="web-search form-inline my-2 my-lg-0"
+                          action="<?php echo $this->root_path . '/home/results/?navbar=active_home' ?>">
+                        <input style="border-radius: 5px 0 0 5px" class="form-control mr-sm-0" type="text" name="q"
+                               placeholder="Search" aria-label="Search">
+                        <button style="border-radius: 0 5px 5px 0" class="btn btn-outline-danger my-2 my-sm-0"
+                                type="submit">Search
+                        </button>
                     </form>
-<!--                     WEB ELEMENT ONLY-->
+                    <!--                     WEB ELEMENT ONLY-->
 
                     <ul class="navbar-nav ml-auto">
                         <li class="nav-item <?php echo $active_settings; ?>">
-                            <a class="nav-link d-inline-flex" href="<?php echo $this->root_path; ?>/components/settings/?navbar=active_settings">
+                            <a class="nav-link d-inline-flex"
+                               href="<?php echo $this->root_path; ?>/components/settings/?navbar=active_settings">
                                 <i class="material-icons">settings</i>
                                 Settings
                                 <?php
@@ -2208,7 +2291,8 @@ class Web_Page
                             </a>
                         </li>
                         <li class="nav-item">
-                            <a class="nav-link d-inline-flex" href="<?php echo $this->root_path; ?>/signin/?signout=true">
+                            <a class="nav-link d-inline-flex"
+                               href="<?php echo $this->root_path; ?>/signin/?signout=true">
                                 <i class="material-icons">exit_to_app</i>
                                 Sign out
                             </a>
@@ -2234,9 +2318,9 @@ class Web_Page
                     case "active_friends":
                         $active_friends = "active";
                         break;
-//                    case "active_chat":
-//                        $active_chat = "active";
-//                        break;
+                    case "active_chat":
+                        $active_chat = "active";
+                        break;
                     default:
                         // none active
                         break;
@@ -2272,15 +2356,15 @@ class Web_Page
                                     ?>
                                 </a>
                             </div>
-                            <div class="col-sm-2 request-favr-web pl-0 pr-0">
+                            <div class="col-sm-2 pl-0 pr-0">
                                 <a class="nav-link <?php echo $active_chat; ?>"
-                                   href="<?php echo $this->root_path; ?>/home/chat/?navbar=active_home&nav_scroller=active_chat">
+                                   href="<?php echo $this->root_path; ?>/home/chat/chat.php?navbar=active_home&nav_scroller=active_chat">
                                     Chat
                                     <?php
                                     if ($active_chat) {
                                         echo "<i class=\"material-icons\" style='color: var(--red);font-size: 15px; padding-left: 2px;position:relative;top:.1rem;'>chat</i>";
                                     } else {
-                                        echo "<i class=\"material-icons\" style='font-size: 15px; padding-left: 2px;position:relative;top:.1rem;'>chat</i>";
+                                        echo "<i class=\"material-icons\" style='font-size: 15px; padding-left: 2px;position:relative;top:.1rem;'>chat_outline</i>";
                                     }
                                     ?>
                                 </a>
@@ -2292,9 +2376,7 @@ class Web_Page
                     <?php
                 }
             }
-        }
-        else if ($render_alt_nav)
-        {
+        } else if ($render_alt_nav) {
             ?>
             <header class="fixed-top">
                 <div class="collapse bg-dark" id="navbarHeader">
@@ -2307,8 +2389,10 @@ class Web_Page
                             <div class="col-sm-4 offset-md-1 py-4">
                                 <h4 class="text-white">Contact</h4>
                                 <ul class="list-unstyled">
-                                    <li><a href="https://www.facebook.com/FAVR-1932902273417961/" class="text-white">Like on Facebook <i class="material-icons">thumb_up</i></a></li>
-                                    <li><a href="mailto:contact@askfavr.com" class="text-white">contact@askfavr.com</a></li>
+                                    <li><a href="https://www.facebook.com/FAVR-1932902273417961/" class="text-white">Like
+                                            on Facebook <i class="material-icons">thumb_up</i></a></li>
+                                    <li><a href="mailto:contact@askfavr.com" class="text-white">contact@askfavr.com</a>
+                                    </li>
                                 </ul>
                             </div>
                         </div>
@@ -2318,11 +2402,14 @@ class Web_Page
                     <div class="container d-flex justify-content-between">
                         <a href="#" class="navbar-brand d-flex align-items-center">
                             <strong>
-                                <img src="<?php echo $this->root_path; ?>/assets/brand/favr_logo_rd.png" height="21" width="70"
+                                <img src="<?php echo $this->root_path; ?>/assets/brand/favr_logo_rd.png" height="21"
+                                     width="70"
                                      class="navbar-brand mr-0" style="padding-top: 0; padding-bottom: 0" alt="Logo">
                             </strong>
                         </a>
-                        <button class="navbar-toggler border-0" type="button" data-toggle="collapse" data-target="#navbarHeader" aria-controls="navbarHeader" aria-expanded="false" aria-label="Toggle navigation">
+                        <button class="navbar-toggler border-0" type="button" data-toggle="collapse"
+                                data-target="#navbarHeader" aria-controls="navbarHeader" aria-expanded="false"
+                                aria-label="Toggle navigation">
                             <i class="material-icons text-danger">menu</i>
                         </button>
                     </div>
@@ -2361,6 +2448,8 @@ class Web_Page
     function renderMainNotifications($userInfo)
     {
         $userID = $userInfo['id'];
+        $paid = Data_Constants::DB_TASK_STATUS_PAID;
+        $inProgress = Data_Constants::DB_TASK_STATUS_IN_PROGRESS;
         $completed = Data_Constants::DB_TASK_STATUS_COMPLETED;
         $notifications_request_query = "
                                 SELECT *, mff.user_id AS mffuserid, mfr.id AS mfrid
@@ -2374,6 +2463,14 @@ class Web_Page
                                 OR mfr.customer_id = $userID 
                                 AND u.id = mfr.customer_id
                                 AND NOT mfr.task_status = '$completed'";
+
+        $notifications_multi_request_query = "
+                                SELECT *
+                                FROM marketplace_favr_requests mfr 
+                                WHERE mfr.task_freelancer_count > 1
+                                AND mfr.task_status = '$paid'
+                                OR mfr.task_freelancer_count > 1
+                                AND mfr.task_status = '$inProgress'";
 
         $notifications_friend_request_query = "
                 SELECT *, f.user_id as uid 
@@ -2399,17 +2496,19 @@ class Web_Page
         $result = $this->db->query($notifications_request_query);
         $result1 = $this->db->query($notifications_friend_request_query);
         $result2 = $this->db->query($notifications_friend_favr_request_query);
+        $result3 = $this->db->query($notifications_multi_request_query);
 
-        if (!$result || !$result1 || !$result2) {
+        if (!$result || !$result1 || !$result2 || !$result3) {
             // failed to render notifications
             return false;
         } else {
             $rows = $result->fetchAll(PDO::FETCH_ASSOC);
             $rows1 = $result1->fetchAll(PDO::FETCH_ASSOC);
             $rows2 = $result2->fetchAll(PDO::FETCH_ASSOC);
-            if (!empty($rows) || !empty($rows1) || !empty($rows2)) {
+            $rows3 = $result3->fetchAll(PDO::FETCH_ASSOC);
+            if (!empty($rows) || !empty($rows1) || !empty($rows2) || !empty($rows3)) {
                 // There are results
-                // request notifications
+                // favr request notifications
                 foreach ($rows as $row) {
                     $freelancer_id = $row['mffuserid'];
                     $id = md5($row['mfrid'] . "-$freelancer_id"); // div id
@@ -2456,6 +2555,10 @@ class Web_Page
                     $task3_img_name = $task3_img_data_array['name'];
                     $task3_img_type = $task3_img_data_array['type'];
 
+                    if ($task_status != Data_Constants::DB_TASK_STATUS_REQUESTED && $task_status != Data_Constants::DB_TASK_STATUS_PENDING_APPROVAL && $task_freelancer_count > 1 && $customer_id == $_SESSION['user_info']['id']) {
+                        break;
+                    }
+
                     // hide shrink button and non essential form information
 
                     echo "<div class=\"my-3 p-3 bg-white rounded box-shadow\">
@@ -2472,7 +2575,6 @@ class Web_Page
                     } else {
                         echo "<a href='$this->root_path/components/profile/profile.php?id=$customer_id'>@$customer_username</a>";
                     }
-
 
                     echo "</strong>
                             ";
@@ -2525,15 +2627,16 @@ class Web_Page
                         echo " </p>";
                         echo "</div>";
 
-                        $review = isset($_POST['review']) ? $_POST['review'] : null;
                         $stars = isset($_GET['stars']) ? $_GET['stars'] : 3;
                         // optional review preview
                         if (isset($_POST['review'])) {
-                            $review = $_POST['review'];
+                            $review = addslashes($_POST['review']);
                             echo "<div class='mt-1 text-center'>
                                     <p class='d-inline-flex text-lg-left'>$review</p> 
                                     <i class='material-icons text-muted text-lg-right'>format_quote</i> 
                                   </div>";
+                        } else {
+                            $review = null;
                         }
 
                         echo "<div class='mt-2 p-2 text-center'>";
@@ -2544,7 +2647,7 @@ class Web_Page
                                 
                                 <!-- Modal -->
                                 <div class=\"modal fade\" id=\"exampleModalCenter\" tabindex=\"-1\" role=\"dialog\" aria-labelledby=\"exampleModalCenterTitle\" aria-hidden=\"true\">
-                                  <form action='$this->root_path/components/notifications/?navbar=active_notifications&request_completed_id=$task_id&stars=$stars' method='post'>
+                                  <form action='$this->root_path/components/notifications/?navbar=active_notifications&completed_request_id=$task_id&stars=$stars' method='post'>
                                       <div class=\"modal-dialog\" role=\"document\">
                                         <div class=\"modal-content\">
                                           <div class=\"modal-header\">
@@ -2554,14 +2657,17 @@ class Web_Page
                                             </button>
                                           </div>
                                           <div class=\"modal-body\">
-                                            <textarea name='review' class='form-control' placeholder='Leave a review of your experience...'>$review</textarea>
+                                            <textarea name='request_review' class='form-control' placeholder='Leave a review of your experience...'>$review</textarea>
                                           </div>
                                           <div class=\"modal-footer\">
                                             <button type=\"button\" class=\"btn btn-secondary\" data-dismiss=\"modal\">Close</button>
-                                            <input type=\"submit\" name='submit' class=\"btn btn-primary\" value='Save Changes'>
+                                            <input type=\"submit\" name='complete_request' class=\"btn btn-primary\" value='Submit Review'>
                                           </div>
                                         </div>
                                       </div>
+                                        <input type='hidden' name='request_rating' value='$stars' required>
+                                        <input type='hidden' name='freelancer_id' value='$freelancer_id' required>
+                                        <input type='hidden' name='customer_id' value='$customer_id' required>
                                   </form>
                                 </div>";
 
@@ -2571,7 +2677,7 @@ class Web_Page
                                             <input type='hidden' name='request_rating' value='$stars' required>
                                             <input type='hidden' name='freelancer_id' value='$freelancer_id' required>
                                             <input type='hidden' name='customer_id' value='$customer_id' required>
-                                            <input type='hidden' name='request_review' value='$review'>
+                                            <input type='hidden' name='request_review' value=''>
                                             <input class='btn btn-sm btn-outline-success'
                                                 type='submit'
                                                 name='complete_request'
@@ -2584,11 +2690,11 @@ class Web_Page
 
                         if (isset($task_difficulty) && $customer_id != $_SESSION['user_info']['id']) {
                             if ($task_difficulty == Data_Constants::DB_TASK_INTENSITY_EASY) {
-                                echo "<button type=\"button\" class=\"ml-2 btn-sm btn btn-success p-1 rounded\" style='opacity: .9' value=\"Easy\" disabled>Easy 👌</button>";
+                                echo "<button type=\"button\" class=\"ml-2 btn-sm btn btn-success p-1 rounded\" style='font-size: .5rem;opacity: .9' value=\"Easy\" disabled>Easy 👌</button>";
                             } else if ($task_difficulty == Data_Constants::DB_TASK_INTENSITY_MEDIUM) {
-                                echo "<button type=\"button\" class=\"ml-2 btn-sm btn btn-warning p-1 rounded\" style='opacity: .9' value=\"Medium\" disabled>Medium 💪🏿</button>";
+                                echo "<button type=\"button\" class=\"ml-2 btn-sm btn btn-warning p-1 rounded\" style='font-size: .5rem;opacity: .9' value=\"Medium\" disabled>Medium 💪🏿</button>";
                             } else if ($task_difficulty == Data_Constants::DB_TASK_INTENSITY_HARD) {
-                                echo "<button type=\"button\" class=\"ml-2 btn-sm btn btn-danger p-1 rounded\" style='opacity: .9' value=\"Hard\" disabled>Hard 🔥</button>";
+                                echo "<button type=\"button\" class=\"ml-2 btn-sm btn btn-danger p-1 rounded\" style='font-size: .5rem;opacity: .9' value=\"Hard\" disabled>Hard 🔥</button>";
                             }
                         }
 
@@ -2600,7 +2706,7 @@ class Web_Page
 
                         echo "</div><div class=\"media text-muted pt-3\">
                         <div class='container'>
-                            <p id='$id' class=\"media-body text-dark mb-0 small lh-125\">
+                            <p id='$id' class=\"media-body text-dark mb-0 small lh-125\" style='padding-bottom: 1rem'>
                                 $task_description
                                 <div id='$id-location' class='pt-1 border-top small border-gray d-none'>
                                     <label for='location'>Location:</label>";
@@ -2615,7 +2721,7 @@ class Web_Page
                                   </div>";
                         } else {
                             echo "<!-- TODO: calculate location distance by zipcode -->
-                                    <p class='text-dark'>Rochester, MN</p>";
+                                    <p class='text-dark'>Rochester, MN</p>"; // TODO: bug spotted
                         }
 
                         echo "
@@ -2677,7 +2783,6 @@ class Web_Page
                                         <div id='$id-expand' class='text-info d-inline-flex'
                                              style='cursor: pointer'
                                              onclick=\"
-                                              $('#$id').animate({height: '4rem'});
                                               $('#$id-location').removeClass('d-none');
                                               $('#$id-freelancer-count').removeClass('d-none');
                                               $('#$id-collapse').removeClass('d-none');
@@ -2771,12 +2876,12 @@ class Web_Page
                             if ($freelancerAccepted) {
                                 if ($task_status == Data_Constants::DB_TASK_STATUS_PENDING_APPROVAL || $task_status == Data_Constants::DB_TASK_STATUS_REQUESTED) {
                                     echo "<div class='float-right d-inline'>
-                                    <p class='d-inline-flex mb-1'>
+                                    <p class='d-inline-flex small mb-1'>
                                     Status: You Accepted</p>
                                   </div>";
                                 } else {
                                     echo "<div class='float-right d-inline'>
-                                        <p class='d-inline-flex mb-1'>
+                                        <p class='d-inline-flex small mb-1'>
                                         ";
                                     // TODO: use class defined constants here to validate verified freelancers from regular customers
                                     if ($task_status == Data_Constants::DB_TASK_STATUS_PAID && $customer_id != $_SESSION['user_info']['id']) {
@@ -2789,7 +2894,12 @@ class Web_Page
                                       </div>";
                                 }
 
-                                if ($task_status == Data_Constants::DB_TASK_STATUS_PAID) {
+                                $select_freelancers_query = "SELECT * FROM marketplace_favr_freelancers mff WHERE mff.user_id = $freelancer_id";
+                                $result = $this->db->query($select_freelancers_query);
+                                $row = $result->fetch(PDO::FETCH_ASSOC);
+                                $arrived = $row['arrival_time'];
+
+                                if ($task_status == Data_Constants::DB_TASK_STATUS_PAID || ($arrived == null && $task_status == Data_Constants::DB_TASK_STATUS_IN_PROGRESS)) {
                                     echo "<div class='d-block mt-4 pt-2 border-gray border-top text-center'>
                                             <a href=\"$this->root_path/components/notifications/?navbar=active_notifications&freelancer_arrived=true&arrived_request_id=$task_id&ALERT_MESSAGE=You've arrived! Make sure you're at the correct location and that the customer is who they say they are!\" class='text-success'>
                                             Freelancer Arrived</a>
@@ -2823,7 +2933,7 @@ class Web_Page
                             if (!empty($row)) {
                                 if ($row['approved'] == 1) { // this user is approved
                                     echo "<div class='float-right d-inline'>
-                                        <p class='d-inline-flex mb-1'>
+                                        <p class='d-inline-flex small mb-1'>
                                         ";
                                     // TODO: use class defined constants here to validate verified freelancers from regular customers
                                     if ($task_status == Data_Constants::DB_TASK_STATUS_PAID && $customer_id == $_SESSION['user_info']['id']) {
@@ -2887,7 +2997,7 @@ class Web_Page
                                     //                        echo "<p>Respond</p>";
                                     echo "<!-- Button trigger modal -->
                                           <div class='float-right d-inline'>
-                                            <div style='cursor: pointer;' class='text-success d-inline' data-toggle=\"modal\" data-target=\"#acceptModal\">
+                                            <div style='cursor: pointer;' class='text-success d-inline' data-toggle=\"modal\" data-target=\"#acceptModal$freelancer_id\">
                                             Accept</div> | ";
                                     echo "<a href=\"$this->root_path/components/notifications/?navbar=active_notifications&reject_customer_request_id=$task_id&freelancer_id=$freelancer_id&ALERT_MESSAGE=You've rejected this freelancer for this task! They've been notified!\" class='text-danger'>
                                             Reject</a></div>";
@@ -2901,7 +3011,7 @@ class Web_Page
 
                                     echo "
                                     <!-- Modal -->
-                                    <div class=\"modal fade\" id=\"acceptModal\" tabindex=\"-1\" role=\"dialog\" aria-labelledby=\"acceptModalTitle\" aria-hidden=\"true\">
+                                    <div class=\"modal fade\" id=\"acceptModal$freelancer_id\" tabindex=\"-1\" role=\"dialog\" aria-labelledby=\"acceptModalTitle\" aria-hidden=\"true\">
                                       <div class=\"modal-dialog\" role=\"document\">
                                         <div class=\"modal-content\">
                                           <div class=\"modal-header\">
@@ -2932,6 +3042,480 @@ class Web_Page
                         </div>";
                     }
                     echo "</div>";
+                }
+
+                // favr requests sequence on multiple freelancers customer side ONLY
+                if ($customer_id == $_SESSION['user_info']['id']) {
+                    foreach ($rows3 as $row) {
+
+                        $customer_id = $row['customer_id'];
+                        $customerInfo = $this->getUserInfo($customer_id);
+                        $customer_username = $customerInfo['username'];
+                        $customer_first_name = $customerInfo['first_name'];
+                        $customer_phone = $customerInfo['phone'];
+
+                        $task_id = $row['id'];
+                        $task_description = $row['task_description'];
+                        $task_date = date("n/j/Y", strtotime($row['task_date']));
+                        $task_location = $row['task_location'];
+                        $task_time_to_accomplish = date('h:i A, l, n/j/Y', strtotime($row['task_date']));
+                        $task_price = $row['task_price'];
+                        $task_difficulty = $row['task_intensity'];
+                        $task_status = $row['task_status'];
+
+                        $profile_img_data_array = unserialize($customerInfo['profile_picture_path']);
+
+                        if (isset($profile_img_data_array['name'], $profile_img_data_array['type'])) {
+                            $profile_img_name = $profile_img_data_array['name'];
+                            $profile_img_type = $profile_img_data_array['type'];
+                        } else {
+                            $profile_img_name = "";
+                            $profile_img_type = "";
+                        }
+
+                        $task1_img_data_array = unserialize($row['task_picture_path_1']);
+                        $task1_img_name = $task1_img_data_array['name'];
+                        $task1_img_type = $task1_img_data_array['type'];
+
+                        $task2_img_data_array = unserialize($row['task_picture_path_2']);
+                        $task2_img_name = $task2_img_data_array['name'];
+                        $task2_img_type = $task2_img_data_array['type'];
+
+                        $task3_img_data_array = unserialize($row['task_picture_path_3']);
+                        $task3_img_name = $task3_img_data_array['name'];
+                        $task3_img_type = $task3_img_data_array['type'];
+
+                        // hide shrink button and non essential form information
+
+                        echo "<div class=\"my-3 p-3 bg-white rounded box-shadow\">
+                                <div class='pb-2 mb-0 border-bottom border-gray'>
+                                    <a href='$this->root_path/components/profile/profile.php?id=$customer_id'>
+                                        <img src=\"data:image/svg+xml;charset=UTF-8,%3Csvg%20width%3D%22128%22%20height%3D%22128%22%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20viewBox%3D%220%200%20128%20128%22%20preserveAspectRatio%3D%22none%22%3E%3Cdefs%3E%3Cstyle%20type%3D%22text%2Fcss%22%3E%23holder_164a9f2d749%20text%20%7B%20fill%3A%23007bff%3Bfont-weight%3Abold%3Bfont-family%3AArial%2C%20Helvetica%2C%20Open%20Sans%2C%20sans-serif%2C%20monospace%3Bfont-size%3A6pt%20%7D%20%3C%2Fstyle%3E%3C%2Fdefs%3E%3Cg%20id%3D%22holder_164a9f2d749%22%3E%3Crect%20width%3D%22128%22%20height%3D%22128%22%20fill%3D%22%23007bff%22%3E%3C%2Frect%3E%3Cg%3E%3Ctext%20x%3D%2248.4296875%22%20y%3D%2266.7%22%3E128x128%3C%2Ftext%3E%3C%2Fg%3E%3C%2Fg%3E%3C%2Fsvg%3E\" 
+                                        data-src=\"$this->root_path/image.php?i=$profile_img_name&i_t=$profile_img_type&i_p=true\" height='32' width='32' alt=\"Profile Image\" class=\"mr-2 rounded\">
+                                    </a>   
+                                    <strong style='font-size: 80%' class=\"d - block text - gray - dark\">";
+                        echo "<a href='$this->root_path/components/profile/profile.php?id=$customer_id'>@$customer_username</a>";
+                        echo "</strong>";
+                        if (isset($_GET['request_completed_id']) && $task_status == Data_Constants::DB_TASK_STATUS_IN_PROGRESS) {
+                            echo "</div>";
+                            echo "<div class='mt-3 text-center'>";
+                            echo "    <p class=\"small d-inline-flex\">";
+
+                            // rating system 1 - 5 stars + optional review
+                            if (isset($_GET['stars'])) {
+                                if ($_GET['stars'] == 1) {
+                                    echo "<i style=\"color: var(--yellow)\" class=\"material-icons\">star</i>";
+                                    echo "<a href='?navbar=active_notifications&request_completed_id=$task_id&stars=2'><i style=\"color: var(--dark)\" class=\"material-icons\">star_border</i></a>";
+                                    echo "<a href='?navbar=active_notifications&request_completed_id=$task_id&stars=3'><i style=\"color: var(--dark)\" class=\"material-icons\">star_border</i></a>";
+                                    echo "<a href='?navbar=active_notifications&request_completed_id=$task_id&stars=4'><i style=\"color: var(--dark)\" class=\"material-icons\">star_border</i></a>";
+                                    echo "<a href='?navbar=active_notifications&request_completed_id=$task_id&stars=5'><i style=\"color: var(--dark)\" class=\"material-icons\">star_border</i></a>";
+                                } else if ($_GET['stars'] == 2) {
+                                    echo "<a href='?navbar=active_notifications&request_completed_id=$task_id&stars=1'><i style=\"color: var(--yellow)\" class=\"material-icons\">star</i></a>";
+                                    echo "<i style=\"color: var(--yellow)\" class=\"material-icons\">star</i>";
+                                    echo "<a href='?navbar=active_notifications&request_completed_id=$task_id&stars=3'><i style=\"color: var(--dark)\" class=\"material-icons\">star_border</i></a>";
+                                    echo "<a href='?navbar=active_notifications&request_completed_id=$task_id&stars=4'><i style=\"color: var(--dark)\" class=\"material-icons\">star_border</i></a>";
+                                    echo "<a href='?navbar=active_notifications&request_completed_id=$task_id&stars=5'><i style=\"color: var(--dark)\" class=\"material-icons\">star_border</i></a>";
+                                } else if ($_GET['stars'] == 3) {
+                                    echo "<a href='?navbar=active_notifications&request_completed_id=$task_id&stars=1'><i style=\"color: var(--yellow)\" class=\"material-icons\">star</i></a>";
+                                    echo "<a href='?navbar=active_notifications&request_completed_id=$task_id&stars=2'><i style=\"color: var(--yellow)\" class=\"material-icons\">star</i></a>";
+                                    echo "<i style=\"color: var(--yellow)\" class=\"material-icons\">star</i>";
+                                    echo "<a href='?navbar=active_notifications&request_completed_id=$task_id&stars=4'><i style=\"color: var(--dark)\" class=\"material-icons\">star_border</i></a>";
+                                    echo "<a href='?navbar=active_notifications&request_completed_id=$task_id&stars=5'><i style=\"color: var(--dark)\" class=\"material-icons\">star_border</i></a>";
+                                } else if ($_GET['stars'] == 4) {
+                                    echo "<a href='?navbar=active_notifications&request_completed_id=$task_id&stars=1'><i style=\"color: var(--yellow)\" class=\"material-icons\">star</i></a>";
+                                    echo "<a href='?navbar=active_notifications&request_completed_id=$task_id&stars=2'><i style=\"color: var(--yellow)\" class=\"material-icons\">star</i></a>";
+                                    echo "<a href='?navbar=active_notifications&request_completed_id=$task_id&stars=3'><i style=\"color: var(--yellow)\" class=\"material-icons\">star</i></a>";
+                                    echo "<i style=\"color: var(--yellow)\" class=\"material-icons\">star</i>";
+                                    echo "<a href='?navbar=active_notifications&request_completed_id=$task_id&stars=5'><i style=\"color: var(--dark)\" class=\"material-icons\">star_border</i></a>";
+                                } else if ($_GET['stars'] == 5) {
+                                    echo "<a href='?navbar=active_notifications&request_completed_id=$task_id&stars=1'><i style=\"color: var(--yellow)\" class=\"material-icons\">star</i></a>";
+                                    echo "<a href='?navbar=active_notifications&request_completed_id=$task_id&stars=2'><i style=\"color: var(--yellow)\" class=\"material-icons\">star</i></a>";
+                                    echo "<a href='?navbar=active_notifications&request_completed_id=$task_id&stars=3'><i style=\"color: var(--yellow)\" class=\"material-icons\">star</i></a>";
+                                    echo "<a href='?navbar=active_notifications&request_completed_id=$task_id&stars=4'><i style=\"color: var(--yellow)\" class=\"material-icons\">star</i></a>";
+                                    echo "<i style=\"color: var(--yellow)\" class=\"material-icons\">star</i>";
+                                }
+                            } else {
+                                echo "<a href='?navbar=active_notifications&request_completed_id=$task_id&stars=1'><i style=\"color: var(--dark)\" class=\"material-icons\">star_border</i></a>";
+                                echo "<a href='?navbar=active_notifications&request_completed_id=$task_id&stars=2'><i style=\"color: var(--dark)\" class=\"material-icons\">star_border</i></a>";
+                                echo "<a href='?navbar=active_notifications&request_completed_id=$task_id&stars=3'><i style=\"color: var(--dark)\" class=\"material-icons\">star_border</i></a>";
+                                echo "<a href='?navbar=active_notifications&request_completed_id=$task_id&stars=4'><i style=\"color: var(--dark)\" class=\"material-icons\">star_border</i></a>";
+                                echo "<a href='?navbar=active_notifications&request_completed_id=$task_id&stars=5'><i style=\"color: var(--dark)\" class=\"material-icons\">star_border</i></a>";
+                            }
+
+                            echo " </p>";
+                            echo "</div>";
+
+                            $stars = isset($_GET['stars']) ? $_GET['stars'] : 3;
+                            // optional review preview
+                            if (isset($_POST['review'])) {
+                                $review = addslashes($_POST['review']);
+                                echo "<div class='mt-1 text-center'>
+                                    <p class='d-inline-flex text-lg-left'>$review</p> 
+                                    <i class='material-icons text-muted text-lg-right'>format_quote</i> 
+                                  </div>";
+                            } else {
+                                $review = null;
+                            }
+
+                            echo "<div class='mt-2 p-2 text-center'>";
+                            echo "<!-- Button trigger modal -->
+                                <button type=\"button\" class=\"btn btn-primary\" data-toggle=\"modal\" data-target=\"#exampleModalCenter$task_id\">
+                                  Leave an optional review
+                                </button>
+                                
+                                <!-- Modal -->
+                                <div class=\"modal fade\" id=\"exampleModalCenter$task_id\" tabindex=\"-1\" role=\"dialog\" aria-labelledby=\"exampleModalCenterTitle\" aria-hidden=\"true\">
+                                  <form action='$this->root_path/components/notifications/?navbar=active_notifications&completed_request_id=$task_id&stars=$stars' method='post'>
+                                      <div class=\"modal-dialog\" role=\"document\">
+                                        <div class=\"modal-content\">
+                                          <div class=\"modal-header\">
+                                            <h5 class=\"modal-title\" id=\"exampleModalLongTitle\">Leave a review for your freelancers</h5>
+                                            <button type=\"button\" class=\"close\" data-dismiss=\"modal\" aria-label=\"Close\">
+                                              <span aria-hidden=\"true\">&times;</span>
+                                            </button>
+                                          </div>
+                                          <div class=\"modal-body\">
+                                            <textarea name='request_review' class='form-control' placeholder='Leave a review of your experience...'>$review</textarea>
+                                          </div>
+                                          <div class=\"modal-footer\">
+                                            <button type=\"button\" class=\"btn btn-secondary\" data-dismiss=\"modal\">Close</button>
+                                            <input type=\"submit\" name='complete_request' class=\"btn btn-primary\" value='Submit Review'>
+                                          </div>
+                                        </div>
+                                      </div>
+                                        <input type='hidden' name='request_rating' value='$stars' required>
+                                        <input type='hidden' name='freelancer_id' value='$freelancer_id' required>
+                                        <input type='hidden' name='customer_id' value='$customer_id' required>
+                                  </form>
+                                </div>";
+
+                            echo "  <div class='mt-3 border-top border-gray pt-3'>
+                                    <div class='d-inline-flex text-center'>
+                                        <form action='$this->root_path/components/notifications/?navbar=active_notifications&completed_request_id=$task_id&stars=$stars' method='post'>
+                                            <input type='hidden' name='request_rating' value='$stars' required>
+                                            <input type='hidden' name='freelancer_id' value='$freelancer_id' required>
+                                            <input type='hidden' name='customer_id' value='$customer_id' required>
+                                            <input type='hidden' name='request_review' value='$review'>
+                                            <input class='btn btn-sm btn-outline-success'
+                                                type='submit'
+                                                name='complete_request'
+                                                value='Submit' />
+                                        </form>
+                                    </div>
+                                </div>";
+                            echo "</div>";
+                        } else {
+
+                            if (isset($task_difficulty)) {
+                                if ($task_difficulty == Data_Constants::DB_TASK_INTENSITY_EASY) {
+                                    echo "<button type=\"button\" class=\"ml-2 btn-sm btn btn-success p-1 rounded\" style='font-size: .5rem;opacity: .9' value=\"Easy\" disabled>Easy 👌</button>";
+                                } else if ($task_difficulty == Data_Constants::DB_TASK_INTENSITY_MEDIUM) {
+                                    echo "<button type=\"button\" class=\"ml-2 btn-sm btn btn-warning p-1 rounded\" style='font-size: .5rem;opacity: .9' value=\"Medium\" disabled>Medium 💪🏿</button>";
+                                } else if ($task_difficulty == Data_Constants::DB_TASK_INTENSITY_HARD) {
+                                    echo "<button type=\"button\" class=\"ml-2 btn-sm btn btn-danger p-1 rounded\" style='font-size: .5rem;opacity: .9' value=\"Hard\" disabled>Hard 🔥</button>";
+                                }
+                            }
+
+                            echo "<div class='float-right small' style='padding-top: .3rem;color: var(--red)'>- $" . ((($task_price * $task_freelancer_count) % 2 == 0) ? $task_price * $task_freelancer_count . ".00" : $task_price * $task_freelancer_count) . "</div>";
+
+                            echo "</div>
+                                    <div class=\"media text-muted pt-3\">
+                                        <div class='container'>
+                                        <p id='$id' class=\"media-body text-dark mb-0 small lh-125\" style='padding-bottom: 1rem'>";
+
+                            $id = $row['id'];
+                            $select_freelancers_query = "SELECT * FROM marketplace_favr_freelancers mff WHERE mff.request_id = $id AND NOT mff.arrival_time IS NULL";
+                            $result = $this->db->query($select_freelancers_query);
+                            if ($result) {
+                                $f_rows = $result->fetchAll(PDO::FETCH_ASSOC);
+                                if (count($f_rows) > 0) {
+                                    echo "<p class='text-center'>";
+                                    foreach ($f_rows as $f_row) {
+
+                                        $freelancerInfo = $this->getUserInfo($f_row['user_id']);
+                                        $freelancer_id = $freelancerInfo['id'];
+
+                                        $freelancer_profile_img = unserialize($freelancerInfo['profile_picture_path']);
+                                        if (!empty($freelancer_profile_img)) {
+                                            $freelancer_profile_img_name = $freelancer_profile_img['name'];
+                                            $freelancer_profile_img_type = $freelancer_profile_img['type'];
+                                        } else {
+                                            $freelancer_profile_img_name = "";
+                                            $freelancer_profile_img_type = "";
+                                        }
+
+                                        echo "<a href='$this->root_path/components/profile/profile.php?id=$freelancer_id'>
+                                                <img src=\"data:image/svg+xml;charset=UTF-8,%3Csvg%20width%3D%22128%22%20height%3D%22128%22%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20viewBox%3D%220%200%20128%20128%22%20preserveAspectRatio%3D%22none%22%3E%3Cdefs%3E%3Cstyle%20type%3D%22text%2Fcss%22%3E%23holder_164a9f2d749%20text%20%7B%20fill%3A%23007bff%3Bfont-weight%3Abold%3Bfont-family%3AArial%2C%20Helvetica%2C%20Open%20Sans%2C%20sans-serif%2C%20monospace%3Bfont-size%3A6pt%20%7D%20%3C%2Fstyle%3E%3C%2Fdefs%3E%3Cg%20id%3D%22holder_164a9f2d749%22%3E%3Crect%20width%3D%22128%22%20height%3D%22128%22%20fill%3D%22%23007bff%22%3E%3C%2Frect%3E%3Cg%3E%3Ctext%20x%3D%2248.4296875%22%20y%3D%2266.7%22%3E128x128%3C%2Ftext%3E%3C%2Fg%3E%3C%2Fg%3E%3C%2Fsvg%3E\"
+                                                     data-src=\"$this->root_path/image.php?i=$freelancer_profile_img_name&i_t=$freelancer_profile_img_type&i_p=true\" height='32' width='32' alt=\"Profile Image\" class=\"mr-2 rounded-circle\">
+                                              </a>";
+                                    }
+                                    echo "</p>";
+                                } else {
+                                    echo "$task_description";
+                                }
+                            } else {
+                                break; // error
+                            }
+
+                            echo "<div id='$id-location' class='pt-1 border-top small border-gray d-none'>
+                                    <label for='location'>Location:</label>";
+
+                            // TODO: add contact info for customer and freelancer
+                            // share location of customer to freelancer if task is in progress or paid for
+                            if ($task_status == Data_Constants::DB_TASK_STATUS_PAID || $task_status == Data_Constants::DB_TASK_STATUS_IN_PROGRESS) {
+                                echo "<p class='text-dark'>$task_location</p>";
+                                echo "<div class='pt-1 border-top border-bottom border-gray'>
+                                    <label for='contact'>Contact:</label>
+                                    <p class='text-dark'>$customer_phone</p>
+                                  </div>";
+                            } else {
+                                echo "<!-- TODO: calculate location distance by zipcode -->
+                                    <p class='text-dark'>Rochester, MN</p>"; // TODO: bug spotted
+                            }
+
+                            echo "
+                                    <div id='$id-completeby' class='pt-1 border-top border-bottom border-gray'>
+                                        <label for='completeby'>Complete FAVR by:</label>
+                                        <p class='text-dark'>$task_time_to_accomplish</p>
+                                    </div>
+                                </div>
+                                <div id='$id-freelancer-count' class='pt-1 small d-none'>
+                                    <label for='freelancer-count'>Amount of freelancer(s) wanted: (accepted/requested)</label>
+                                    <p class='text-dark'>$freelancer_accepted/$task_freelancer_count</p>
+                                </div>";
+                            echo "
+                                <div id='$id-image1' class='pt-1 border-top border-gray small d-none'>
+                                    <label for='image1'>Attached Image 1:</label>
+                                    <img id='$id-img1' style='cursor: pointer' src='data:image/svg+xml;charset=UTF-8,%3Csvg%20width%3D%22128%22%20height%3D%22128%22%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20viewBox%3D%220%200%20128%20128%22%20preserveAspectRatio%3D%22none%22%3E%3Cdefs%3E%3Cstyle%20type%3D%22text%2Fcss%22%3E%23holder_164a9f2d749%20text%20%7B%20fill%3A%23007bff%3Bfont-weight%3Abold%3Bfont-family%3AArial%2C%20Helvetica%2C%20Open%20Sans%2C%20sans-serif%2C%20monospace%3Bfont-size%3A6pt%20%7D%20%3C%2Fstyle%3E%3C%2Fdefs%3E%3Cg%20id%3D%22holder_164a9f2d749%22%3E%3Crect%20width%3D%22128%22%20height%3D%22128%22%20fill%3D%22%23007bff%22%3E%3C%2Frect%3E%3Cg%3E%3Ctext%20x%3D%2248.4296875%22%20y%3D%2266.7%22%3E128x128%3C%2Ftext%3E%3C%2Fg%3E%3C%2Fg%3E%3C%2Fsvg%3E' 
+                                        data-src='$this->root_path/image.php?i=$task1_img_name&i_t=$task1_img_type' height='30%' width='30%' alt='FAVR image 1'>
+                                </div>";
+                            // Image 1 modal
+                            echo "
+                            <div id=\"$id-image1-modal\" class=\"modal\">
+                              <span id='$id-close1' class=\"modal-close\">&times;</span>
+                              <img class=\"modal-content\" id=\"$id-image1-modal-content\">
+                              <div id=\"$id-caption1\" class='caption'></div>
+                            </div>";
+
+                            echo "
+                                <div id='$id-image2' class='pt-1 border-top border-gray small d-none'>
+                                    <label for='image2'>Attached Image 2:</label>
+                                    <img id='$id-img2' style='cursor: pointer' src='data:image/svg+xml;charset=UTF-8,%3Csvg%20width%3D%22128%22%20height%3D%22128%22%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20viewBox%3D%220%200%20128%20128%22%20preserveAspectRatio%3D%22none%22%3E%3Cdefs%3E%3Cstyle%20type%3D%22text%2Fcss%22%3E%23holder_164a9f2d749%20text%20%7B%20fill%3A%23007bff%3Bfont-weight%3Abold%3Bfont-family%3AArial%2C%20Helvetica%2C%20Open%20Sans%2C%20sans-serif%2C%20monospace%3Bfont-size%3A6pt%20%7D%20%3C%2Fstyle%3E%3C%2Fdefs%3E%3Cg%20id%3D%22holder_164a9f2d749%22%3E%3Crect%20width%3D%22128%22%20height%3D%22128%22%20fill%3D%22%23007bff%22%3E%3C%2Frect%3E%3Cg%3E%3Ctext%20x%3D%2248.4296875%22%20y%3D%2266.7%22%3E128x128%3C%2Ftext%3E%3C%2Fg%3E%3C%2Fg%3E%3C%2Fsvg%3E' 
+                                        data-src='$this->root_path/image.php?i=$task2_img_name&i_t=$task2_img_type' height='30%' width='30%' alt='FAVR image 2'>
+                                </div>";
+                            // Image 2 modal
+                            echo "
+                            <div id=\"$id-image2-modal\" class=\"modal\">
+                              <span id='$id-close2' class=\"modal-close\">&times;</span>
+                              <img class=\"modal-content\" id=\"$id-image2-modal-content\" alt='FAVR image 2'>
+                              <div id=\"$id-caption2\" class='caption'></div>
+                            </div>";
+
+                            echo "
+                                <div id='$id-image3' class='pt-1 border-top border-gray small d-none'>
+                                    <label for='image3'>Attached Image 3:</label>
+                                    <img id='$id-img3' style='cursor: pointer' src='data:image/svg+xml;charset=UTF-8,%3Csvg%20width%3D%22128%22%20height%3D%22128%22%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20viewBox%3D%220%200%20128%20128%22%20preserveAspectRatio%3D%22none%22%3E%3Cdefs%3E%3Cstyle%20type%3D%22text%2Fcss%22%3E%23holder_164a9f2d749%20text%20%7B%20fill%3A%23007bff%3Bfont-weight%3Abold%3Bfont-family%3AArial%2C%20Helvetica%2C%20Open%20Sans%2C%20sans-serif%2C%20monospace%3Bfont-size%3A6pt%20%7D%20%3C%2Fstyle%3E%3C%2Fdefs%3E%3Cg%20id%3D%22holder_164a9f2d749%22%3E%3Crect%20width%3D%22128%22%20height%3D%22128%22%20fill%3D%22%23007bff%22%3E%3C%2Frect%3E%3Cg%3E%3Ctext%20x%3D%2248.4296875%22%20y%3D%2266.7%22%3E128x128%3C%2Ftext%3E%3C%2Fg%3E%3C%2Fg%3E%3C%2Fsvg%3E' 
+                                    data-src='$this->root_path/image.php?i=$task3_img_name&i_t=$task3_img_type' height='30%' width='30%' alt='FAVR image 3'>
+                                </div>";
+                            // Image 3 modal
+                            echo "
+                            <div id=\"$id-image3-modal\" class=\"modal\">
+                              <span id='$id-close3' class=\"modal-close\">&times;</span>
+                              <img class=\"modal-content\" id=\"$id-image3-modal-content\">
+                              <div id=\"$id-caption3\" class='caption'></div>
+                            </div>";
+                            echo "
+                            </p>
+                            <div class='row p-0 border-top border-gray'>
+                                <div class='col-sm-12 small'>
+                                    <div class=\"float-left d-inline\">
+                                        <div id='$id-expand' class='text-info d-inline-flex'
+                                             style='cursor: pointer'
+                                             onclick=\"
+                                              $('#$id-location').removeClass('d-none');
+                                              $('#$id-freelancer-count').removeClass('d-none');
+                                              $('#$id-collapse').removeClass('d-none');
+                                              $('#$id-collapse').addClass('d-inline-flex');
+                                              $('#$id-expand').removeClass('d-inline-flex');
+                                              $('#$id-expand').addClass('d-none');";
+
+                            for ($i = 1; $i <= Data_Constants::MAXIMUM_IMAGE_UPLOAD_COUNT; $i++) {
+                                echo "
+                            var modal = document.getElementById('$id-image$i-modal');
+                            var img = document.getElementById('$id-img$i');
+                            var modalImg = document.getElementById('$id-image$i-modal-content');
+                            var captionText = document.getElementById('$id-caption$i');
+                            img.onclick = function(){
+                                modal.style.display = 'block';
+                                modalImg.src = this.src;
+                                captionText.innerHTML = this.alt;
+                            }
+                            var span = document.getElementById('$id-close$i');
+                            span.onclick = function() { 
+                                modal.style.display = 'none';
+                            }
+                         ";
+                            }
+
+                            if (!empty($task1_img_data_array)) {
+                                echo "$('#$id-image1').removeClass('d-none');";
+                            }
+
+                            if (!empty($task2_img_data_array)) {
+                                echo "$('#$id-image2').removeClass('d-none');";
+                            }
+
+                            if (!empty($task3_img_data_array)) {
+                                echo "$('#$id-image3').removeClass('d-none');";
+                            }
+
+                            echo "
+                                              
+                                        \">Details</div>
+                                         <div id='$id-collapse' class='text-info d-none'
+                                             style='cursor: pointer'
+                                             onclick=\"
+                                              $('#$id-location').addClass('d-none');
+                                              $('#$id-freelancer-count').addClass('d-none');
+                                              $('#$id').css({height: 'auto'});
+                                              $('#$id-collapse').removeClass('d-inline-flex');
+                                              $('#$id-collapse').addClass('d-none');
+                                              $('#$id-expand').removeClass('d-none');
+                                              $('#$id-expand').addClass('d-inline-flex');";
+
+                            if (!empty($task1_img_data_array)) {
+                                echo "$('#$id-image1').addClass('d-none');";
+                            }
+
+                            if (!empty($task2_img_data_array)) {
+                                echo "$('#$id-image2').addClass('d-none');";
+                            }
+
+                            if (!empty($task3_img_data_array)) {
+                                echo "$('#$id-image3').addClass('d-none');";
+                            }
+
+                            echo "
+                                        \">Collapse</div>
+                                        ";
+
+
+                            echo "
+                                    </div>
+                                       ";
+
+                            $select_freelancers_query = "SELECT * 
+                                                     FROM marketplace_favr_freelancers
+                                                     WHERE request_id = $task_id
+                                                     AND user_id = $freelancer_id";
+                            $result = $this->db->query($select_freelancers_query);
+                            $row = $result->fetch(PDO::FETCH_ASSOC);
+                            if (!empty($row)) {
+                                if ($row['approved'] == 1) { // this user is approved
+                                    echo "<div class='float-right d-inline'>
+                                        <p class='d-inline-flex small mb-1'>
+                                        ";
+                                    // TODO: use class defined constants here to validate verified freelancers from regular customers
+                                    if ($task_status == Data_Constants::DB_TASK_STATUS_PAID && $customer_id == $_SESSION['user_info']['id']) {
+                                        echo "Status: Help en-route";
+                                    } else {
+                                        echo "Status: $task_status";
+                                    }
+
+                                    echo "  </p>
+                                      </div>";
+
+                                    if ($task_status == Data_Constants::DB_TASK_STATUS_IN_PROGRESS) {
+                                        echo "<div class='d-block mt-4 pt-2 mb-0 pt-2 border-gray border-top text-center'>
+                                            <a href=\"$this->root_path/components/notifications/?navbar=active_notifications&request_completed_id=$task_id&ALERT_MESSAGE=You've marked this request as completed now please rate your experience!\" class='text-success'>
+                                                 Request Completed</a>
+                                          </div>
+                                    ";
+
+                                        echo "<div class='d-block mt-2 pt-2 border-gray border-top text-center'>";
+                                    } else {
+                                        echo "<div class='d-block mt-4 pt-2 border-gray border-top text-center'>";
+                                    }
+
+
+                                    if ($task_status == Data_Constants::DB_TASK_STATUS_REQUESTED || $task_status == Data_Constants::DB_TASK_STATUS_PENDING_APPROVAL) {
+                                        echo "<a href=\"$this->root_path/home/?navbar=active_home&d_request_id=$task_id&ALERT_MESSAGE=You've cancelled this request!\" class='mt-0 text-danger'>
+                                        Cancel Request</a>
+                                        ";
+                                    } else {
+                                        echo "<div style='cursor: pointer;' class='text-danger d-inline' data-toggle=\"modal\" data-target=\"#cancelInProgressModal$task_id\">
+                                            Cancel Request</div>
+                                        ";
+                                    }
+                                    echo "</div>";
+
+                                    echo "
+                                    <!-- Modal -->
+                                    <div class=\"modal fade\" id=\"cancelInProgressModal$task_id\" tabindex=\"-1\" role=\"dialog\" aria-labelledby=\"cancelInProgressTitle\" aria-hidden=\"true\">
+                                      <div class=\"modal-dialog\" role=\"document\">
+                                        <div class=\"modal-content\">
+                                          <div class=\"modal-header\">
+                                            <h5 class=\"modal-title\" id=\"exampleModalLongTitle\">You are canceling an in progress request</h5>
+                                            <button type=\"button\" class=\"close\" data-dismiss=\"modal\" aria-label=\"Close\">
+                                              <span aria-hidden=\"true\">&times;</span>
+                                            </button>
+                                          </div>
+                                          <div class=\"modal-body\">By canceling a request that is in progress you're aware that this will incur a $5 cancellation fee.
+                                                                Are you sure you wish to proceed with the cancellation of this request?
+                                          </div>
+                                          <div class=\"modal-footer\">
+                                            <button type=\"button\" class=\"btn btn-secondary\" data-dismiss=\"modal\">Close</button>
+                                            <a href=\"$this->root_path/home/?navbar=active_home&d_request_id=$task_id&ALERT_MESSAGE=You've cancelled this request!\"
+                                               class='btn btn-primary'>
+                                                Cancel Request
+                                            </a>
+                                          </div>
+                                        </div>
+                                      </div>
+                                    </div>";
+                                } else { // user has not been approved yet
+                                    //                        echo "<p>Respond</p>";
+                                    echo "<!-- Button trigger modal -->
+                                          <div class='float-right d-inline'>
+                                            <div style='cursor: pointer;' class='text-success d-inline' data-toggle=\"modal\" data-target=\"#acceptModal$freelancer_id\">
+                                            Accept</div> | ";
+                                    echo "<a href=\"$this->root_path/components/notifications/?navbar=active_notifications&reject_customer_request_id=$task_id&freelancer_id=$freelancer_id&ALERT_MESSAGE=You've rejected this freelancer for this task! They've been notified!\" class='text-danger'>
+                                            Reject</a></div>";
+
+                                    echo "<div class='d-block mt-4 pt-2 border-gray border-top text-center'>
+                                        <a href=\"$this->root_path/home/?navbar=active_home&d_request_id=$task_id&ALERT_MESSAGE=You've cancelled this request!\" class='mt-3 text-danger'>
+                                            Cancel Request</a>
+                                      </div>
+                                    ";
+                                    $url = "$this->root_path/components/notifications/?navbar=active_notifications%26accept_customer_request_id=$task_id%26freelancer_id=$freelancer_id%26ALERT_MESSAGE=You%27ve approved this freelancer for this task! They're on their way to complete your FAVR!";
+
+                                    echo "
+                                    <!-- Modal -->
+                                    <div class=\"modal fade\" id=\"acceptModal$freelancer_id\" tabindex=\"-1\" role=\"dialog\" aria-labelledby=\"acceptModalTitle\" aria-hidden=\"true\">
+                                      <div class=\"modal-dialog\" role=\"document\">
+                                        <div class=\"modal-content\">
+                                          <div class=\"modal-header\">
+                                            <h5 class=\"modal-title\" id=\"exampleModalLongTitle\">You are accepting $freelancer_first_name</h5>
+                                            <button type=\"button\" class=\"close\" data-dismiss=\"modal\" aria-label=\"Close\">
+                                              <span aria-hidden=\"true\">&times;</span>
+                                            </button>
+                                          </div>
+                                          <div class=\"modal-body\">By accepting this freelancer you are affirming that you have adequately reviewed their profile and qualifications. By accepting this freelancer you will also share sensitive information with them which may include location and contact information.</div>
+                                          <div class=\"modal-footer\">
+                                            <button type=\"button\" class=\"btn btn-secondary\" data-dismiss=\"modal\">Close</button>
+                                            <a href=\"$this->root_path/components/notifications/checkout.php?task_id=$task_id&url=$url\"
+                                               class='btn btn-primary'>
+                                                Accept Freelancer
+                                            </a>
+                                          </div>
+                                        </div>
+                                      </div>
+                                    </div>";
+                                }
+                            }
+                        }
+                        echo "</div>";
+                    }
                 }
 
                 // friend request notifications
@@ -3104,15 +3688,16 @@ class Web_Page
                         echo " </p>";
                         echo "</div>";
 
-                        $review = isset($_POST['review']) ? $_POST['review'] : null;
                         $stars = isset($_GET['stars']) ? $_GET['stars'] : 3;
                         // optional review preview
                         if (isset($_POST['review'])) {
-                            $review = $_POST['review'];
+                            $review = addslashes($_POST['review']);
                             echo "<div class='mt-1 text-center'>
                                     <p class='d-inline-flex text-lg-left'>$review</p> 
                                     <i class='material-icons text-muted text-lg-right'>format_quote</i> 
                                   </div>";
+                        } else {
+                            $review = null;
                         }
 
                         echo "<div class='mt-2 p-2 text-center'>";
@@ -3123,7 +3708,7 @@ class Web_Page
                                 
                                 <!-- Modal -->
                                 <div class=\"modal fade\" id=\"exampleModalCenter\" tabindex=\"-1\" role=\"dialog\" aria-labelledby=\"exampleModalCenterTitle\" aria-hidden=\"true\">
-                                  <form action='$this->root_path/components/notifications/?navbar=active_notifications&request_friend_completed_id=$task_id&stars=$stars' method='post'>
+                                  <form action='$this->root_path/components/notifications/?navbar=active_notifications&completed_request_id=$task_id&stars=$stars' method='post'>
                                       <div class=\"modal-dialog\" role=\"document\">
                                         <div class=\"modal-content\">
                                           <div class=\"modal-header\">
@@ -3133,14 +3718,17 @@ class Web_Page
                                             </button>
                                           </div>
                                           <div class=\"modal-body\">
-                                            <textarea name='review' class='form-control' placeholder='Leave a review of your experience...'>$review</textarea>
+                                            <textarea name='request_review' class='form-control' placeholder='Leave a review of your experience...'>$review</textarea>
                                           </div>
                                           <div class=\"modal-footer\">
                                             <button type=\"button\" class=\"btn btn-secondary\" data-dismiss=\"modal\">Close</button>
-                                            <input type=\"submit\" name='submit' class=\"btn btn-primary\" value='Save Changes'>
+                                            <input type=\"submit\" name='complete_request' class=\"btn btn-primary\" value='Submit Review'>
                                           </div>
                                         </div>
                                       </div>
+                                        <input type='hidden' name='request_rating' value='$stars' required>
+                                        <input type='hidden' name='freelancer_id' value='$freelancer_id' required>
+                                        <input type='hidden' name='customer_id' value='$customer_id' required>
                                   </form>
                                 </div>";
 
@@ -3163,11 +3751,11 @@ class Web_Page
 
                         if (isset($task_difficulty) && $customer_id != $_SESSION['user_info']['id']) {
                             if ($task_difficulty == Data_Constants::DB_TASK_INTENSITY_EASY) {
-                                echo "<button type=\"button\" class=\"ml-2 btn-sm btn btn-success p-1 rounded\" style='opacity: .9' value=\"Easy\" disabled>Easy 👌</button>";
+                                echo "<button type=\"button\" class=\"ml-2 btn-sm btn btn-success p-1 rounded\" style='font-size: .5rem;opacity: .9' value=\"Easy\" disabled>Easy 👌</button>";
                             } else if ($task_difficulty == Data_Constants::DB_TASK_INTENSITY_MEDIUM) {
-                                echo "<button type=\"button\" class=\"ml-2 btn-sm btn btn-warning p-1 rounded\" style='opacity: .9' value=\"Medium\" disabled>Medium 💪🏿</button>";
+                                echo "<button type=\"button\" class=\"ml-2 btn-sm btn btn-warning p-1 rounded\" style='font-size: .5rem;opacity: .9' value=\"Medium\" disabled>Medium 💪🏿</button>";
                             } else if ($task_difficulty == Data_Constants::DB_TASK_INTENSITY_HARD) {
-                                echo "<button type=\"button\" class=\"ml-2 btn-sm btn btn-danger p-1 rounded\" style='opacity: .9' value=\"Hard\" disabled>Hard 🔥</button>";
+                                echo "<button type=\"button\" class=\"ml-2 btn-sm btn btn-danger p-1 rounded\" style='font-size: .5rem;opacity: .9' value=\"Hard\" disabled>Hard 🔥</button>";
                             }
                         }
 
@@ -3179,7 +3767,7 @@ class Web_Page
 
                         echo "</div><div class=\"media text-muted pt-3\">
                         <div class='container'>
-                            <p id='$id' class=\"media-body text-dark mb-0 small lh-125\">
+                            <p id='$id' class=\"media-body text-dark mb-0 small lh-125\" style='padding-bottom: 1rem;'>
                                 $task_description
                                 <div id='$id-location' class='pt-1 border-top small border-gray d-none'>
                                     <label for='location'>Location:</label>";
@@ -3334,12 +3922,12 @@ class Web_Page
 
                             if ($task_status == Data_Constants::DB_TASK_STATUS_PENDING_APPROVAL || $task_status == Data_Constants::DB_TASK_STATUS_REQUESTED) {
                                 echo "<div class='float-right d-inline'>
-                                <p class='d-inline-flex mb-1'>
+                                <p class='d-inline-flex small mb-1'>
                                 Status: You Accepted</p>
                               </div>";
                             } else {
                                 echo "<div class='float-right d-inline'>
-                                    <p class='d-inline-flex mb-1'>
+                                    <p class='d-inline-flex small mb-1'>
                                     ";
                                 // TODO: use class defined constants here to validate verified freelancers from regular customers
                                 if ($task_status == Data_Constants::DB_TASK_STATUS_PAID && $customer_id != $_SESSION['user_info']['id']) {
@@ -3379,7 +3967,7 @@ class Web_Page
                             if (!empty($row2)) {
                                 if ($row2['approved'] == 1) { // this user is approved
                                     echo "<div class='float-right d-inline'>
-                                        <p class='d-inline-flex mb-1'>
+                                        <p class='d-inline-flex small mb-1'>
                                         ";
                                     // TODO: use class defined constants here to validate verified freelancers from regular customers
                                     if ($task_status == Data_Constants::DB_TASK_STATUS_PAID && $customer_id == $_SESSION['user_info']['id']) {
@@ -3497,23 +4085,30 @@ class Web_Page
 
     }
 
+    /**
+     * TODO: escape strings in input string
+     * TODO: use better naming scheme
+     * TODO: remove renderSearchResult() from process function
+     * @param $q
+     */
     function processSearch($q)
     {
+        $publicScope = Data_Constants::DB_SCOPE_PUBLIC;
         $results = $this->db->query("SELECT * 
                                                FROM users 
-                                               WHERE default_scope='Public' AND
+                                               WHERE default_scope='$publicScope' AND
                                                username LIKE '%$q%' 
                                                OR first_name LIKE '%$q%'
                                                OR last_name LIKE '%$q%'
                                                OR id LIKE '%$q%'");
         echo "<div class=\"my-3 p-3 bg-white rounded box-shadow\" style=\"width: 100%;\">
                     <h6 class=\"border-bottom border-gray pb-2 mb-0\">Search Results</h6>";
-        if(empty($results->fetch(PDO::FETCH_ASSOC))){
+        if (empty($results->fetch(PDO::FETCH_ASSOC))) {
             echo "<h6>No  Matches...</h6>";
         }
-        while($rows = $results->fetch(PDO::FETCH_ASSOC)){
+        while ($rows = $results->fetch(PDO::FETCH_ASSOC)) {
             $id = $rows['id'];
-            $name =  $rows['first_name'] . " " . $rows['last_name'];
+            $name = $rows['first_name'] . " " . $rows['last_name'];
             $username = $rows['username'];
             $image_path = unserialize($rows['profile_picture_path']);
             if (isset($image_path['name'], $image_path['type'])) {
@@ -3574,17 +4169,29 @@ class Web_Page
             }
             ?>
             <div class="p-3 text-center request-favr-web">
-                <button class="btn btn-lg btn-primary" id="request-favr-web">
+                <button class="btn btn-lg btn-primary" id="request-favr-web"
+                        style="justify-self: center!important;
+                                border-radius: .875rem;
+                                background-image: linear-gradient(to right, red, #ffaa00);
+                                border: 0px;
+                                box-shadow: 0 2px 2px 0 rgba(0, 0, 0, 0.14), 0 1px 5px 0 rgba(0, 0, 0, 0.12), 0 3px 1px -2px rgba(0, 0, 0, 0.2);">
                     <div class="d-inline-flex">
-                        <i class="mr-1 material-icons">build</i>
-                        Request <img class="mt-2 ml-2" src="<?php echo $this->root_path; ?>/assets/brand/favr_logo_blk.png" height="16" width="52.5">
+                        Request a FAVR
                     </div>
                 </button>
             </div>
 
-            <div class="favr-fab">
-                <a class="favr-fab-fab favr-fab-btn-large text-center" id="favr-fabBtn">
-                    <i style="padding: .8rem;background: transparent;color: var(--white);font-size: xx-large" class="material-icons">build</i>
+            <div class="favr-fab" style="justify-content: center!important;
+                                        width: 100%;
+                                        padding-right: 30px;">
+                <a class="favr-fab-fab favr-fab-btn-large text-center" id="favr-fabBtn"
+                   style=" width: inherit;
+                            justify-self: center!important;
+                            border-radius: 1rem;
+                            background-image: linear-gradient(to right, red, #ffaa00);">
+                    <h4 style="color: #fff;display: inline;">
+                        Request a FAVR
+                    </h4>
                 </a>
             </div>
 
@@ -3594,41 +4201,68 @@ class Web_Page
                     <div class="media text-muted pt-3">
                         <a href='<?php echo "$this->root_path/components/profile/profile.php?id=$userID"; ?>'>
                             <img src='data:image/svg+xml;charset=UTF-8,%3Csvg%20width%3D%22128%22%20height%3D%22128%22%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20viewBox%3D%220%200%20128%20128%22%20preserveAspectRatio%3D%22none%22%3E%3Cdefs%3E%3Cstyle%20type%3D%22text%2Fcss%22%3E%23holder_164a9f2d749%20text%20%7B%20fill%3A%23007bff%3Bfont-weight%3Abold%3Bfont-family%3AArial%2C%20Helvetica%2C%20Open%20Sans%2C%20sans-serif%2C%20monospace%3Bfont-size%3A6pt%20%7D%20%3C%2Fstyle%3E%3C%2Fdefs%3E%3Cg%20id%3D%22holder_164a9f2d749%22%3E%3Crect%20width%3D%22128%22%20height%3D%22128%22%20fill%3D%22%23007bff%22%3E%3C%2Frect%3E%3Cg%3E%3Ctext%20x%3D%2248.4296875%22%20y%3D%2266.7%22%3E128x128%3C%2Ftext%3E%3C%2Fg%3E%3C%2Fg%3E%3C%2Fsvg%3E'
-                                 data-src='<?php echo "$this->root_path/image.php?i=$profile_img_name&i_t=$profile_img_type&i_p=true"; ?>' height='32' width='32' alt='Profile Image' class='mr-2 rounded'>
+                                 data-src='<?php echo "$this->root_path/image.php?i=$profile_img_name&i_t=$profile_img_type&i_p=true"; ?>'
+                                 height='32' width='32' alt='Profile Image' class='mr-2 rounded'>
                         </a>
                         <div class="media-body pb-3 mb-0 small lh-125">
                             <strong class="d-block text-gray-dark">@<?php echo $_SESSION['user_info']['username']; ?></strong>
                             <div class="form-label-group">
-                                <textarea name="requestTaskDescription" class="form-control" placeholder="What is your task?"></textarea>
+                                <textarea name="requestTaskDescription" class="form-control"
+                                          placeholder="What is your task?"required></textarea>
                             </div>
                             <div class="form-label-group">
-                                <input type="number" pattern="\d*" step="1" min="1" max="5" name="requestFreelancerCount" id="inputCount"
+                                <input type="number" pattern="\d*" step="1" min="1" max="5"
+                                       name="requestFreelancerCount" id="inputCount"
                                        class="form-control"
-                                       placeholder="How many people do you need?" value="1" required="">
+                                       placeholder="How many people do you need?" value="1" required>
                                 <label for="inputCount">How many people do you need?</label>
                             </div>
                             <div class="form-label-group">
                                 <input type="datetime-local" name="requestDate" id="inputDate"
                                        class="form-control"
-                                       placeholder="When do you want your FAVR?" value="<?php echo date("Y-m-d\TH:i", time()); ?>" required="">
+                                       placeholder="When do you want your FAVR?"
+                                       value="<?php echo date("Y-m-d\TH:i", time()); ?>" required>
                                 <label for="inputDate">When do you want your FAVR?</label>
                             </div>
 
-<!--                            TODO: Add informational popup telling the user we won't share sensitive information until freelancer accepts request -->
-
+                            <!--                            TODO: Add informational popup telling the user we won't share sensitive information until freelancer accepts request -->
                             <div class="form-label-group">
                                 <input type="text" name="requestStreetAddress" id="inputStreetAddress"
                                        class="form-control"
                                        placeholder="What's your street address?"
-                                       value="<?php echo $_SESSION['user_info']['street'] . ", " . $_SESSION['user_info']['city'] . ", " . $_SESSION['user_info']['state_province'] . ", " . $_SESSION['user_info']['zip']; ?>"
-                                       required="">
+                                       value="<?php echo $_SESSION['user_info']['street']; ?>"
+                                       required>
                                 <label for="inputStreetAddress">What's your street address?</label>
+                            </div>
+                            <div class="form-label-group">
+                                <input type="text" name="requestCity" id="inputCity"
+                                       class="form-control"
+                                       placeholder="What's your city?"
+                                       value="<?php echo $_SESSION['user_info']['city']; ?>"
+                                       required>
+                                <label for="inputCity">What's your city?</label>
+                            </div>
+                            <div class="form-label-group">
+                                <input type="text" name="requestState" id="inputState"
+                                       class="form-control"
+                                       placeholder="What's your state?"
+                                       value="<?php echo $_SESSION['user_info']['state_province']; ?>"
+                                       required>
+                                <label for="inputState">What's your state?</label>
+                            </div>
+                            <div class="form-label-group">
+                                <input type="text" name="requestZip" id="inputZip"
+                                       class="form-control"
+                                       placeholder="What's your zip?"
+                                       value="<?php echo $_SESSION['user_info']['zip']; ?>"
+                                       required>
+                                <label for="inputZip">What's your zip code?</label>
                             </div>
                             <label for="inputCategory">What category do you want your FAVR listed?</label>
                             <div class="form-label-group">
                                 <select name="requestCategory" id="inputCategory"
                                         class="form-control"
-                                        required="">
+                                        required>
                                     <option value="General Request" selected>General Request</option>
                                     <option value="Home Improvement">Home Improvement</option>
                                     <option value="Yard Work">Yard Work</option>
@@ -3636,9 +4270,15 @@ class Web_Page
                             </div>
                             <label for="inputDifficulty">What difficulty is the task?</label>
                             <div class="form-label-group">
-                                <button id="easy-button" type="button" class="btn btn-success p-2 rounded" value="Easy">Easy 👌</button>
-                                <button id="medium-button" type="button" class="btn btn-warning p-2 rounded" value="Medium">Medium 💪🏿</button>
-                                <button id="hard-button" type="button" class="btn btn-danger p-2 rounded" value="Hard">Hard 🔥</button>
+                                <button id="easy-button" type="button" class="btn btn-success p-2 rounded" value="Easy">
+                                    Easy 👌
+                                </button>
+                                <button id="medium-button" type="button" class="btn btn-warning p-2 rounded"
+                                        value="Medium">Medium 💪🏿
+                                </button>
+                                <button id="hard-button" type="button" class="btn btn-danger p-2 rounded" value="Hard">
+                                    Hard 🔥
+                                </button>
                                 <input id="difficulty" type="hidden" name="requestDifficulty">
                             </div>
                             <label for="inputPricing">Price (for each freelancer)</label>
@@ -3649,7 +4289,7 @@ class Web_Page
                                 <input type="number" name="requestPrice" id="inputPricing"
                                        class="form-control"
                                        style="border-radius: 0 5px 5px 0"
-                                       placeholder="Set your price ..." min="0.50" max="250.00" step="0.01" required="">
+                                       placeholder="Set your price ..." min="0.50" max="250.00" step="0.01" required>
                             </div>
                             <label for="inputPictures">Only image files < 5 Mb can be attached</label>
                             <div class="form-label-group">
@@ -3659,7 +4299,7 @@ class Web_Page
                                 <label for="inputPictures">Attach picture(s): at most 3...</label>
                             </div>
                             <input type="submit" name="requestFavr" class="btn btn-lg btn-primary btn-block"
-                                   value="Request FAVR" onclick="alert("This will be posted publically")">
+                                   value="Request FAVR" onclick="alert(" This will be posted publicly")">
                         </div>
                     </div>
                 </div>
@@ -3702,23 +4342,28 @@ class Web_Page
                         $profile_img_type = "";
                     }
                     ?>
-                    <form action="<?php echo "$this->root_path/components/notifications/?navbar=active_notifications&ask_favr=true&id=$targetUserID"; ?>" method="post" enctype="multipart/form-data">
+                    <form action="<?php echo "$this->root_path/components/notifications/?navbar=active_notifications&ask_favr=true&id=$targetUserID"; ?>"
+                          method="post" enctype="multipart/form-data">
                         <div class="my-3 p-3 bg-white rounded box-shadow">
-                            <h6 class="border-bottom border-gray pb-2 mb-0">Asking <?php echo $friendFullName; ?> for a FAVR</h6>
+                            <h6 class="border-bottom border-gray pb-2 mb-0">Asking <?php echo $friendFullName; ?> for a
+                                FAVR</h6>
                             <div class="media text-muted pt-3">
                                 <a href='<?php echo "$this->root_path/components/profile/profile.php?id=$userID"; ?>'>
                                     <img src='data:image/svg+xml;charset=UTF-8,%3Csvg%20width%3D%22128%22%20height%3D%22128%22%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20viewBox%3D%220%200%20128%20128%22%20preserveAspectRatio%3D%22none%22%3E%3Cdefs%3E%3Cstyle%20type%3D%22text%2Fcss%22%3E%23holder_164a9f2d749%20text%20%7B%20fill%3A%23007bff%3Bfont-weight%3Abold%3Bfont-family%3AArial%2C%20Helvetica%2C%20Open%20Sans%2C%20sans-serif%2C%20monospace%3Bfont-size%3A6pt%20%7D%20%3C%2Fstyle%3E%3C%2Fdefs%3E%3Cg%20id%3D%22holder_164a9f2d749%22%3E%3Crect%20width%3D%22128%22%20height%3D%22128%22%20fill%3D%22%23007bff%22%3E%3C%2Frect%3E%3Cg%3E%3Ctext%20x%3D%2248.4296875%22%20y%3D%2266.7%22%3E128x128%3C%2Ftext%3E%3C%2Fg%3E%3C%2Fg%3E%3C%2Fsvg%3E'
-                                         data-src='<?php echo "$this->root_path/image.php?i=$profile_img_name&i_t=$profile_img_type&i_p=true"; ?>' height='32' width='32' alt='Profile Image' class='mr-2 rounded'>
+                                         data-src='<?php echo "$this->root_path/image.php?i=$profile_img_name&i_t=$profile_img_type&i_p=true"; ?>'
+                                         height='32' width='32' alt='Profile Image' class='mr-2 rounded'>
                                 </a>
                                 <div class="media-body pb-3 mb-0 small lh-125">
                                     <strong class="d-block text-gray-dark">@<?php echo $_SESSION['user_info']['username']; ?></strong>
                                     <div class="form-label-group">
-                                        <textarea name="requestTaskDescription" class="form-control" placeholder="What is your task?"></textarea>
+                                        <textarea name="requestTaskDescription" class="form-control"
+                                                  placeholder="What is your task?"></textarea>
                                     </div>
                                     <div class="form-label-group">
                                         <input type="datetime-local" name="requestDate" id="inputDate"
                                                class="form-control"
-                                               placeholder="When do you want your FAVR?" value="<?php echo date("Y-m-d\TH:i", time()); ?>" required="">
+                                               placeholder="When do you want your FAVR?"
+                                               value="<?php echo date("Y-m-d\TH:i", time()); ?>" required="">
                                         <label for="inputDate">When do you want your FAVR?</label>
                                     </div>
 
@@ -3744,9 +4389,15 @@ class Web_Page
                                     </div>
                                     <label for="inputDifficulty">What difficulty is the task?</label>
                                     <div class="form-label-group">
-                                        <button id="easy-button" type="button" class="btn btn-success p-2 rounded" value="Easy">Easy 👌</button>
-                                        <button id="medium-button" type="button" class="btn btn-warning p-2 rounded" value="Medium">Medium 💪🏿</button>
-                                        <button id="hard-button" type="button" class="btn btn-danger p-2 rounded" value="Hard">Hard 🔥</button>
+                                        <button id="easy-button" type="button" class="btn btn-success p-2 rounded"
+                                                value="Easy">Easy 👌
+                                        </button>
+                                        <button id="medium-button" type="button" class="btn btn-warning p-2 rounded"
+                                                value="Medium">Medium 💪🏿
+                                        </button>
+                                        <button id="hard-button" type="button" class="btn btn-danger p-2 rounded"
+                                                value="Hard">Hard 🔥
+                                        </button>
                                         <input id="difficulty" type="hidden" name="requestDifficulty">
                                     </div>
                                     <label for="inputPricing">Price (A future FAVR instead of cash 😉)</label>
@@ -3788,37 +4439,54 @@ class Web_Page
                 }
                 ?>
                 <div class="p-3 text-center request-favr-web">
-                    <button class="btn btn-lg btn-dark" id="request-favr-web">
+                    <button class="btn btn-lg btn-dark" id="request-favr-web"
+                            style="justify-self: center!important;
+                                    border-radius: .875rem;
+                                    background-image: linear-gradient(to left, red, #ffaa00);
+                                    border: 0px;
+                                    box-shadow: 0 2px 2px 0 rgba(0, 0, 0, 0.14), 0 1px 5px 0 rgba(0, 0, 0, 0.12), 0 3px 1px -2px rgba(0, 0, 0, 0.2);">
                         <div class="d-inline-flex">
-                            <i class="mr-1 material-icons">build</i>
-                            Request <img class="mt-2 ml-2" src="<?php echo $this->root_path; ?>/assets/brand/favr_logo_rd.png" height="16" width="52.5">
+                            Request a Friend FAVR
                         </div>
                     </button>
                 </div>
 
-                <div class="favr-fab">
-                    <a class="favr-fab-fab favr-fab-btn-large bg-dark text-center" id="favr-fabBtn">
-                        <i style="padding: .8rem;background: transparent;color: var(--white);font-size: xx-large" class="material-icons">build</i>
+                <div class="favr-fab" style="justify-content: center!important;
+                                        width: 100%;
+                                        padding-right: 30px;">
+                    <a class="favr-fab-fab favr-fab-btn-large text-center" id="favr-fabBtn" style="
+                            width: inherit;
+                            justify-self: center!important;
+                            border-radius: 1rem;
+                            background-image: linear-gradient(to right, orange, red);
+                            ">
+                        <h4 style="color: #fff;display: inline;font-weight: normal;">
+                            Request a Friend FAVR
+                        </h4>
                     </a>
                 </div>
 
-                <form id="favr-friends" class="request-favr-mobile" action="" method="post" enctype="multipart/form-data">
+                <form id="favr-friends" class="request-favr-mobile" action="" method="post"
+                      enctype="multipart/form-data">
                     <div class="my-3 p-3 bg-white rounded box-shadow">
                         <h6 class="border-bottom border-gray pb-2 mb-0">Post a FAVR request for help from Friends</h6>
                         <div class="media text-muted pt-3">
                             <a href='<?php echo "$this->root_path/components/profile/profile.php?id=$userID"; ?>'>
                                 <img src='data:image/svg+xml;charset=UTF-8,%3Csvg%20width%3D%22128%22%20height%3D%22128%22%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20viewBox%3D%220%200%20128%20128%22%20preserveAspectRatio%3D%22none%22%3E%3Cdefs%3E%3Cstyle%20type%3D%22text%2Fcss%22%3E%23holder_164a9f2d749%20text%20%7B%20fill%3A%23007bff%3Bfont-weight%3Abold%3Bfont-family%3AArial%2C%20Helvetica%2C%20Open%20Sans%2C%20sans-serif%2C%20monospace%3Bfont-size%3A6pt%20%7D%20%3C%2Fstyle%3E%3C%2Fdefs%3E%3Cg%20id%3D%22holder_164a9f2d749%22%3E%3Crect%20width%3D%22128%22%20height%3D%22128%22%20fill%3D%22%23007bff%22%3E%3C%2Frect%3E%3Cg%3E%3Ctext%20x%3D%2248.4296875%22%20y%3D%2266.7%22%3E128x128%3C%2Ftext%3E%3C%2Fg%3E%3C%2Fg%3E%3C%2Fsvg%3E'
-                                     data-src='<?php echo "$this->root_path/image.php?i=$profile_img_name&i_t=$profile_img_type&i_p=true"; ?>' height='32' width='32' alt='Profile Image' class='mr-2 rounded'>
+                                     data-src='<?php echo "$this->root_path/image.php?i=$profile_img_name&i_t=$profile_img_type&i_p=true"; ?>'
+                                     height='32' width='32' alt='Profile Image' class='mr-2 rounded'>
                             </a>
                             <div class="media-body pb-3 mb-0 small lh-125">
                                 <strong class="d-block text-gray-dark">@<?php echo $_SESSION['user_info']['username']; ?></strong>
                                 <div class="form-label-group">
-                                    <textarea name="requestTaskDescription" class="form-control" placeholder="What is your task?"></textarea>
+                                    <textarea name="requestTaskDescription" class="form-control"
+                                              placeholder="What is your task?"></textarea>
                                 </div>
                                 <div class="form-label-group">
                                     <input type="datetime-local" name="requestDate" id="inputDate"
                                            class="form-control"
-                                           placeholder="When do you want your FAVR?" value="<?php echo date("Y-m-d\TH:i", time()); ?>" required="">
+                                           placeholder="When do you want your FAVR?"
+                                           value="<?php echo date("Y-m-d\TH:i", time()); ?>" required="">
                                     <label for="inputDate">When do you want your FAVR?</label>
                                 </div>
 
@@ -3844,9 +4512,15 @@ class Web_Page
                                 </div>
                                 <label for="inputDifficulty">What difficulty is the task?</label>
                                 <div class="form-label-group">
-                                    <button id="easy-button" type="button" class="btn btn-success p-2 rounded" value="Easy">Easy 👌</button>
-                                    <button id="medium-button" type="button" class="btn btn-warning p-2 rounded" value="Medium">Medium 💪🏿</button>
-                                    <button id="hard-button" type="button" class="btn btn-danger p-2 rounded" value="Hard">Hard 🔥</button>
+                                    <button id="easy-button" type="button" class="btn btn-success p-2 rounded"
+                                            value="Easy">Easy 👌
+                                    </button>
+                                    <button id="medium-button" type="button" class="btn btn-warning p-2 rounded"
+                                            value="Medium">Medium 💪🏿
+                                    </button>
+                                    <button id="hard-button" type="button" class="btn btn-danger p-2 rounded"
+                                            value="Hard">Hard 🔥
+                                    </button>
                                     <input id="difficulty" type="hidden" name="requestDifficulty">
                                 </div>
                                 <label for="inputPricing">Price (A future FAVR instead of cash 😉)</label>
@@ -3867,7 +4541,7 @@ class Web_Page
                                     <label for="inputPictures">Attach picture(s): at most 3...</label>
                                 </div>
                                 <input type="submit" name="requestFavr" class="btn btn-lg btn-primary btn-block"
-                                       value="Request FAVR" onclick="alert("This will be posted publically")">
+                                       value="Request FAVR" onclick="alert(" This will be posted publically")">
                             </div>
                         </div>
                     </div>
@@ -3906,74 +4580,76 @@ class Web_Page
                             <p class="d-inline-flex small font-weight-light">(<?php echo $friend_count; ?>)</p>
                         </h6>
                         <?php
-                            foreach ($rows as $row) {
-                                $friend_id = $row['friend_id'];
-                                $friendInfo = $this->getUserInfo($friend_id);
-                                if (!empty($friendInfo)) {
-                                    $friendFullName = $friendInfo['first_name'] . " " . $friendInfo['last_name'];
-                                    $friendUsername = $friendInfo['username'];
-                                    $friendProfilePicture = unserialize($friendInfo['profile_picture_path']);
-                                    if (isset($friendProfilePicture['name'], $friendProfilePicture['type'])) {
-                                        $friendPictureName = $friendProfilePicture['name'];
-                                        $friendPictureType = $friendProfilePicture['type'];
-                                    } else {
-                                        $friendPictureName = "";
-                                        $friendPictureType = "";
-                                    }
+                        foreach ($rows as $row) {
+                            $friend_id = $row['friend_id'];
+                            $friendInfo = $this->getUserInfo($friend_id);
+                            if (!empty($friendInfo)) {
+                                $friendFullName = $friendInfo['first_name'] . " " . $friendInfo['last_name'];
+                                $friendUsername = $friendInfo['username'];
+                                $friendClass = $friendInfo['class'];
+                                $friendProfilePicture = unserialize($friendInfo['profile_picture_path']);
+                                if (isset($friendProfilePicture['name'], $friendProfilePicture['type'])) {
+                                    $friendPictureName = $friendProfilePicture['name'];
+                                    $friendPictureType = $friendProfilePicture['type'];
+                                } else {
+                                    $friendPictureName = "";
+                                    $friendPictureType = "";
+                                }
 
-                                    $check_friend_query = "SELECT given, received, COUNT(*)  
+                                $check_friend_query = "SELECT given, received, COUNT(*)  
                                                            FROM friends 
                                                            WHERE user_id = $friend_id
                                                            AND friend_id = $userId";
-                                    $result = $this->db->query($check_friend_query);
-                                    $crow = $result->fetch(PDO::FETCH_ASSOC);
-                                    ?>
-                                    <div class="media text-muted pt-3">
-                                        <a href="<?php echo "$this->root_path/components/profile/profile.php?id=$friend_id"; ?>">
-                                            <img src="data:image/svg+xml;charset=UTF-8,%3Csvg%20width%3D%22128%22%20height%3D%22128%22%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20viewBox%3D%220%200%20128%20128%22%20preserveAspectRatio%3D%22none%22%3E%3Cdefs%3E%3Cstyle%20type%3D%22text%2Fcss%22%3E%23holder_164a9f2d749%20text%20%7B%20fill%3A%23007bff%3Bfont-weight%3Abold%3Bfont-family%3AArial%2C%20Helvetica%2C%20Open%20Sans%2C%20sans-serif%2C%20monospace%3Bfont-size%3A6pt%20%7D%20%3C%2Fstyle%3E%3C%2Fdefs%3E%3Cg%20id%3D%22holder_164a9f2d749%22%3E%3Crect%20width%3D%22128%22%20height%3D%22128%22%20fill%3D%22%23007bff%22%3E%3C%2Frect%3E%3Cg%3E%3Ctext%20x%3D%2248.4296875%22%20y%3D%2266.7%22%3E128x128%3C%2Ftext%3E%3C%2Fg%3E%3C%2Fg%3E%3C%2Fsvg%3E"
-                                                 data-src="<?php echo "$this->root_path/image.php?i=$friendPictureName&i_t=$friendPictureType&i_p=true"; ?>" height="32" width="32" alt="" class="mr-2 rounded">
-                                        </a>
-                                        <div class="media-body pb-3 mr-0 mb-0 small lh-125 border-bottom border-gray">
-                                            <div class="d-flex justify-content-between align-items-center w-100">
-                                                <strong class="text-gray-dark"><?php echo $friendFullName; ?></strong>
-                                                <?php
-                                                    if ($crow['COUNT(*)'] != 0) {
-                                                        $userFavrGiven = $crow['given'];
-                                                        $userFavrReceived = $crow['received'];
+                                $result = $this->db->query($check_friend_query);
+                                $crow = $result->fetch(PDO::FETCH_ASSOC);
+                                ?>
+                                <div class="media text-muted pt-3">
+                                    <a href="<?php echo "$this->root_path/components/profile/profile.php?id=$friend_id"; ?>">
+                                        <img src="data:image/svg+xml;charset=UTF-8,%3Csvg%20width%3D%22128%22%20height%3D%22128%22%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20viewBox%3D%220%200%20128%20128%22%20preserveAspectRatio%3D%22none%22%3E%3Cdefs%3E%3Cstyle%20type%3D%22text%2Fcss%22%3E%23holder_164a9f2d749%20text%20%7B%20fill%3A%23007bff%3Bfont-weight%3Abold%3Bfont-family%3AArial%2C%20Helvetica%2C%20Open%20Sans%2C%20sans-serif%2C%20monospace%3Bfont-size%3A6pt%20%7D%20%3C%2Fstyle%3E%3C%2Fdefs%3E%3Cg%20id%3D%22holder_164a9f2d749%22%3E%3Crect%20width%3D%22128%22%20height%3D%22128%22%20fill%3D%22%23007bff%22%3E%3C%2Frect%3E%3Cg%3E%3Ctext%20x%3D%2248.4296875%22%20y%3D%2266.7%22%3E128x128%3C%2Ftext%3E%3C%2Fg%3E%3C%2Fg%3E%3C%2Fsvg%3E"
+                                             data-src="<?php echo "$this->root_path/image.php?i=$friendPictureName&i_t=$friendPictureType&i_p=true"; ?>"
+                                             height="32" width="32" alt="" class="mr-2 rounded">
+                                    </a>
+                                    <div class="media-body pb-3 mr-0 mb-0 small lh-125 border-bottom border-gray">
+                                        <div class="d-flex justify-content-between align-items-center w-100">
+                                            <strong class="text-gray-dark"><?php echo ($friendClass == Data_Constants::DB_USER_CLASS_VERIFIED) ? "$friendFullName <i class=\"material-icons small text-primary\" style='font-size: 13px'>check_circle</i>" : "$friendFullName"; ?></strong>
+                                            <?php
+                                            if ($crow['COUNT(*)'] != 0) {
+                                                $userFavrGiven = $crow['given'];
+                                                $userFavrReceived = $crow['received'];
 
-                                                        if ($userFavrGiven >= $userFavrReceived) {
-                                                            echo "<a href=\"$this->root_path/home/friends/?navbar=active_home&nav_scroller=active_friends&ask_favr=true&id=$friend_id\"
+                                                if ($userFavrGiven >= $userFavrReceived) {
+                                                    echo "<a href=\"$this->root_path/home/friends/?navbar=active_home&nav_scroller=active_friends&ask_favr=true&id=$friend_id\"
                                                                 class=\"float-right\">Ask FAVR</a>";
-                                                        }
-                                                    }
-                                                ?>
-                                            </div>
-                                            <a href="<?php echo "$this->root_path/components/profile/profile.php?id=$friend_id"; ?>">
-                                                <span class="d-block">@<?php echo $friendUsername; ?></span>
-                                            </a>
-                                            <br>
-                                            <div class="d-flex justify-content-center align-items-center w-100">
-                                                <?php
-                                                if ($crow['COUNT(*)'] != 0) {
-                                                    ?>
-<!--                                                    <a href="#"-->
-<!--                                                       class="text-info mr-1 pr-1">Block</a> |-->
-                                                    <a href="<?php echo "$this->root_path/home/friends/?friends_list=true&add_friend=false&id=$friend_id&ALERT_MESSAGE=You have unfriended!"; ?>"
-                                                       class="text-danger">Unfriend</a>
-                                                    <?php
-                                                } else {
-                                                    ?>
-                                                    <a href="<?php echo "$this->root_path/home/friends/?friends_list=true&add_friend=false&id=$friend_id&ALERT_MESSAGE=You have cancelled your friend request!"; ?>"
-                                                       class="text-danger">Cancel Friend Request</a>
-                                                    <?php
                                                 }
+                                            }
+                                            ?>
+                                        </div>
+                                        <a href="<?php echo "$this->root_path/components/profile/profile.php?id=$friend_id"; ?>">
+                                            <span class="d-block">@<?php echo $friendUsername; ?></span>
+                                        </a>
+                                        <br>
+                                        <div class="d-flex justify-content-center align-items-center w-100">
+                                            <?php
+                                            if ($crow['COUNT(*)'] != 0) {
                                                 ?>
-                                            </div>
+                                                <!--                                                    <a href="#"-->
+                                                <!--                                                       class="text-info mr-1 pr-1">Block</a> |-->
+                                                <a href="<?php echo "$this->root_path/home/friends/?friends_list=true&add_friend=false&id=$friend_id&ALERT_MESSAGE=You have unfriended!"; ?>"
+                                                   class="text-danger">Unfriend</a>
+                                                <?php
+                                            } else {
+                                                ?>
+                                                <a href="<?php echo "$this->root_path/home/friends/?friends_list=true&add_friend=false&id=$friend_id&ALERT_MESSAGE=You have cancelled your friend request!"; ?>"
+                                                   class="text-danger">Cancel Friend Request</a>
+                                                <?php
+                                            }
+                                            ?>
                                         </div>
                                     </div>
-                                    <?php
-                                }
+                                </div>
+                                <?php
                             }
+                        }
                         ?>
                     </div>
                     <?php
@@ -4003,78 +4679,90 @@ class Web_Page
             ?>
             <div class="my-3 p-3 bg-white rounded box-shadow" style="width: 100%;">
                 <h6 class="border-bottom border-gray pb-2 mb-0">Friendly Suggestions</h6>
-            <?php
-            $rows = $result->fetchAll(PDO::FETCH_ASSOC);
-            $count = count($rows);
-            if (!empty($rows) && $count > 5) {
-                foreach ($rows as $row) {
-                    $friend_id = $row['friend_id'];
-                    $select_friends_of_friend_query = "
+                <?php
+                $rows = $result->fetchAll(PDO::FETCH_ASSOC);
+                $count = count($rows);
+                if (!empty($rows) && $count > 5) {
+                    foreach ($rows as $row) {
+                        $friend_id = $row['friend_id'];
+                        $select_friends_of_friend_query = "
                                                  SELECT * 
                                                  FROM friends
                                                  WHERE friend_id = $friend_id
                                                  AND NOT user_id = $userId
                                                  ORDER BY RAND()
                                                  LIMIT 1";
-                    $result = $this->db->query($select_friends_of_friend_query);
-                    if ($result) {
-                        $ffrow = $result->fetch(PDO::FETCH_ASSOC);
-                        if (!empty($ffrow)) {
-                            $friend_of_friend_id = $ffrow['user_id'];
+                        $result = $this->db->query($select_friends_of_friend_query);
+                        if ($result) {
+                            $ffrow = $result->fetch(PDO::FETCH_ASSOC);
+                            if (!empty($ffrow)) {
+                                $friend_of_friend_id = $ffrow['user_id'];
 
-                            $check_friend_query = "SELECT COUNT(*) 
+                                $check_friend_query = "SELECT COUNT(*) 
                                                    FROM friends
                                                    WHERE user_id = $userId
                                                    AND friend_id = $friend_of_friend_id";
 
-                            $result = $this->db->query($check_friend_query);
-                            if ($result) {
-                                $crow = $result->fetch(PDO::FETCH_ASSOC);
-                                if ($crow['COUNT(*)'] == 0) {
-                                    // if these users are not already friends then suggest this friend
-                                    $friendOfFriendInfo = $this->getUserInfo($friend_of_friend_id);
-                                    $friendOfFriendFullName =  $friendOfFriendInfo['first_name'] . " " . $friendOfFriendInfo['last_name'];
-                                    $friendOfFriendUsername = $friendOfFriendInfo['username'];
-                                    $friendOfFriendProfilePicPath = $friendOfFriendInfo['profile_picture_path'];
-                                    if (isset($friendOfFriendProfilePicPath['name'], $friendOfFriendProfilePicPath['type'])) {
-                                        $picName = $friendOfFriendProfilePicPath['name'];
-                                        $picType = $friendOfFriendProfilePicPath['type'];
-                                    } else {
-                                        $picName = "";
-                                        $picType = "";
-                                    }
-                                    ?>
-                                    <div class="media text-muted pt-3">
-                                        <a href="<?php echo "$this->root_path/components/profile/profile.php?id=$friend_of_friend_id"; ?>">
-                                            <img src="data:image/svg+xml;charset=UTF-8,%3Csvg%20width%3D%22128%22%20height%3D%22128%22%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20viewBox%3D%220%200%20128%20128%22%20preserveAspectRatio%3D%22none%22%3E%3Cdefs%3E%3Cstyle%20type%3D%22text%2Fcss%22%3E%23holder_164a9f2d749%20text%20%7B%20fill%3A%23007bff%3Bfont-weight%3Abold%3Bfont-family%3AArial%2C%20Helvetica%2C%20Open%20Sans%2C%20sans-serif%2C%20monospace%3Bfont-size%3A6pt%20%7D%20%3C%2Fstyle%3E%3C%2Fdefs%3E%3Cg%20id%3D%22holder_164a9f2d749%22%3E%3Crect%20width%3D%22128%22%20height%3D%22128%22%20fill%3D%22%23007bff%22%3E%3C%2Frect%3E%3Cg%3E%3Ctext%20x%3D%2248.4296875%22%20y%3D%2266.7%22%3E128x128%3C%2Ftext%3E%3C%2Fg%3E%3C%2Fg%3E%3C%2Fsvg%3E"
-                                                 data-src="<?php echo "$this->root_path/image.php?i=$picName&i_t=$picType&i_p=true"; ?>" height="32" width="32" alt="" class="mr-2 rounded">
-                                        </a>
-                                        <div class="media-body pb-3 mb-0 small lh-125 border-bottom border-gray">
-                                            <div class="d-flex justify-content-between align-items-center w-100">
-                                                <strong class="text-gray-dark"><?php echo $friendOfFriendFullName; ?></strong>
-                                                <a href="#">Send Friend Request</a>
-                                            </div>
-                                            <span class="d-block">
+                                $result = $this->db->query($check_friend_query);
+                                if ($result) {
+                                    $crow = $result->fetch(PDO::FETCH_ASSOC);
+                                    if ($crow['COUNT(*)'] == 0) {
+                                        // if these users are not already friends then suggest this friend
+                                        $friendOfFriendInfo = $this->getUserInfo($friend_of_friend_id);
+                                        $friendOfFriendFullName = $friendOfFriendInfo['first_name'] . " " . $friendOfFriendInfo['last_name'];
+                                        $friendOfFriendUsername = $friendOfFriendInfo['username'];
+                                        $friendOfFriendProfilePicPath = $friendOfFriendInfo['profile_picture_path'];
+                                        $friendOfFriendClass = $friendOfFriendInfo['class'];
+                                        if (isset($friendOfFriendProfilePicPath['name'], $friendOfFriendProfilePicPath['type'])) {
+                                            $picName = $friendOfFriendProfilePicPath['name'];
+                                            $picType = $friendOfFriendProfilePicPath['type'];
+                                        } else {
+                                            $picName = "";
+                                            $picType = "";
+                                        }
+                                        ?>
+                                        <div class="media text-muted pt-3">
+                                            <a href="<?php echo "$this->root_path/components/profile/profile.php?id=$friend_of_friend_id"; ?>">
+                                                <img src="data:image/svg+xml;charset=UTF-8,%3Csvg%20width%3D%22128%22%20height%3D%22128%22%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20viewBox%3D%220%200%20128%20128%22%20preserveAspectRatio%3D%22none%22%3E%3Cdefs%3E%3Cstyle%20type%3D%22text%2Fcss%22%3E%23holder_164a9f2d749%20text%20%7B%20fill%3A%23007bff%3Bfont-weight%3Abold%3Bfont-family%3AArial%2C%20Helvetica%2C%20Open%20Sans%2C%20sans-serif%2C%20monospace%3Bfont-size%3A6pt%20%7D%20%3C%2Fstyle%3E%3C%2Fdefs%3E%3Cg%20id%3D%22holder_164a9f2d749%22%3E%3Crect%20width%3D%22128%22%20height%3D%22128%22%20fill%3D%22%23007bff%22%3E%3C%2Frect%3E%3Cg%3E%3Ctext%20x%3D%2248.4296875%22%20y%3D%2266.7%22%3E128x128%3C%2Ftext%3E%3C%2Fg%3E%3C%2Fg%3E%3C%2Fsvg%3E"
+                                                     data-src="<?php echo "$this->root_path/image.php?i=$picName&i_t=$picType&i_p=true"; ?>"
+                                                     height="32" width="32" alt="" class="mr-2 rounded">
+                                            </a>
+                                            <div class="media-body pb-3 mb-0 small lh-125 border-bottom border-gray">
+                                                <div class="d-flex justify-content-between align-items-center w-100">
+                                                    <strong class="text-gray-dark"><?php echo ($friendOfFriendClass == Data_Constants::DB_USER_CLASS_VERIFIED) ? "$friendOfFriendFullName <i class=\"material-icons small text-primary\" style='font-size: 13px'>check_circle</i>" : "$friendOfFriendFullName"; ?></strong>
+                                                    <div class="d-flex justify-content-between align-items-center w-100">
+                                                        <strong class="text-gray-dark"><?php echo $friendOfFriendFullName; ?></strong>
+                                                        <?php
+                                                        if ($_SESSION['navbar'] == "friends_list") {
+                                                            $last_url = "$this->root_path/home/friends/?friends_list=true&add_friend=true&id=$friend_of_friend_id&ALERT_MESSAGE=Your friend request has been sent!";
+                                                        } else {
+                                                            $last_url = "$this->root_path/home/friends/?navbar=active_home&nav_scroller=active_friends&add_friend=true&id=$friend_of_friend_id&ALERT_MESSAGE=Your friend request has been sent!";
+                                                        }
+                                                        ?>
+                                                        <a href="<?php echo $last_url; ?>">Send Friend Request</a>
+                                                    </div>
+                                                </div>
+                                                <span class="d-block">
                                                 <a href="<?php echo "$this->root_path/components/profile/profile.php?id=$friend_of_friend_id"; ?>">
                                                     @<?php echo $friendOfFriendUsername; ?>
                                                 </a>
                                             </span>
+                                            </div>
                                         </div>
-                                    </div>
-                                    <?php
+                                        <?php
+                                    }
                                 }
                             }
                         }
                     }
-                }
-            } else {
-                // No matches for friends were found or user has no friends suggest friends within same zip code hints for using favr
-                $userInfo = $this->getUserInfo($userId);
-                $userZip = $userInfo['zip'];
-                // only public users are discoverable
-                $public = Data_Constants::DB_SCOPE_PUBLIC;
+                } else {
+                    // No matches for friends were found or user has no friends suggest friends within same zip code hints for using favr
+                    $userInfo = $this->getUserInfo($userId);
+                    $userZip = $userInfo['zip'];
+                    // only public users are discoverable
+                    $public = Data_Constants::DB_SCOPE_PUBLIC;
 
-                $select_friends_query = "SELECT *, u.id as uid
+                    $select_friends_query = "SELECT *, u.id as uid
                                          FROM users u
                                          WHERE zip = '$userZip'
                                          AND NOT id = $userId
@@ -4082,74 +4770,76 @@ class Web_Page
                                          ORDER BY RAND()
                                          LIMIT 3
                                          ";
-                $result = $this->db->query($select_friends_query);
-                if ($result) {
-                    $rows = $result->fetchAll(PDO::FETCH_ASSOC);
-                    if (empty($rows)) {
-                        ?>
-                        <p>
-                            You can trade FAVRs with friends instead of paying cash!
-                        </p>
-                        <?php
-                    } else {
-                        foreach ($rows as $row) {
-                            // if these users are not already friends then suggest this friend
-                            $friend_of_friend_id = $row['uid'];
+                    $result = $this->db->query($select_friends_query);
+                    if ($result) {
+                        $rows = $result->fetchAll(PDO::FETCH_ASSOC);
+                        if (empty($rows)) {
+                            ?>
+                            <p>
+                                You can trade FAVRs with friends instead of paying cash!
+                            </p>
+                            <?php
+                        } else {
+                            foreach ($rows as $row) {
+                                // if these users are not already friends then suggest this friend
+                                $friend_of_friend_id = $row['uid'];
 
-                            $check_friend_query = "SELECT COUNT(*) 
+                                $check_friend_query = "SELECT COUNT(*) 
                                                FROM friends
                                                WHERE user_id = $userId
                                                AND friend_id = $friend_of_friend_id
                                                OR user_id = $friend_of_friend_id
                                                AND friend_id = $userId";
 
-                            $result = $this->db->query($check_friend_query);
-                            if ($result) {
-                                $crow = $result->fetch(PDO::FETCH_ASSOC);
-                                if ($crow['COUNT(*)'] == 0) {
-                                    $friendOfFriendFullName =  $row['first_name'] . " " . $row['last_name'];
-                                    $friendOfFriendUsername = $row['username'];
-                                    $friendOfFriendProfilePicPath = unserialize($row['profile_picture_path']);
-                                    if (isset($friendOfFriendProfilePicPath['name'], $friendOfFriendProfilePicPath['type'])) {
-                                        $picName = $friendOfFriendProfilePicPath['name'];
-                                        $picType = $friendOfFriendProfilePicPath['type'];
-                                    } else {
-                                        $picName = "";
-                                        $picType = "";
-                                    }
-                                    ?>
-                                    <div class="media text-muted pt-3">
-                                        <a href="<?php echo "$this->root_path/components/profile/profile.php?id=$friend_of_friend_id"; ?>">
-                                            <img src="data:image/svg+xml;charset=UTF-8,%3Csvg%20width%3D%22128%22%20height%3D%22128%22%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20viewBox%3D%220%200%20128%20128%22%20preserveAspectRatio%3D%22none%22%3E%3Cdefs%3E%3Cstyle%20type%3D%22text%2Fcss%22%3E%23holder_164a9f2d749%20text%20%7B%20fill%3A%23007bff%3Bfont-weight%3Abold%3Bfont-family%3AArial%2C%20Helvetica%2C%20Open%20Sans%2C%20sans-serif%2C%20monospace%3Bfont-size%3A6pt%20%7D%20%3C%2Fstyle%3E%3C%2Fdefs%3E%3Cg%20id%3D%22holder_164a9f2d749%22%3E%3Crect%20width%3D%22128%22%20height%3D%22128%22%20fill%3D%22%23007bff%22%3E%3C%2Frect%3E%3Cg%3E%3Ctext%20x%3D%2248.4296875%22%20y%3D%2266.7%22%3E128x128%3C%2Ftext%3E%3C%2Fg%3E%3C%2Fg%3E%3C%2Fsvg%3E"
-                                                 data-src="<?php echo "$this->root_path/image.php?i=$picName&i_t=$picType&i_p=true"; ?>" height="32" width="32" alt="" class="mr-2 rounded">
-                                        </a>
-                                        <div class="media-body pb-3 mb-0 small lh-125 border-bottom border-gray">
-                                            <div class="d-flex justify-content-between align-items-center w-100">
-                                                <strong class="text-gray-dark"><?php echo $friendOfFriendFullName; ?></strong>
-                                                <?php
+                                $result = $this->db->query($check_friend_query);
+                                if ($result) {
+                                    $crow = $result->fetch(PDO::FETCH_ASSOC);
+                                    if ($crow['COUNT(*)'] == 0) {
+                                        $friendOfFriendFullName = $row['first_name'] . " " . $row['last_name'];
+                                        $friendOfFriendUsername = $row['username'];
+                                        $friendOfFriendClass = $row['class'];
+                                        $friendOfFriendProfilePicPath = unserialize($row['profile_picture_path']);
+                                        if (isset($friendOfFriendProfilePicPath['name'], $friendOfFriendProfilePicPath['type'])) {
+                                            $picName = $friendOfFriendProfilePicPath['name'];
+                                            $picType = $friendOfFriendProfilePicPath['type'];
+                                        } else {
+                                            $picName = "";
+                                            $picType = "";
+                                        }
+                                        ?>
+                                        <div class="media text-muted pt-3">
+                                            <a href="<?php echo "$this->root_path/components/profile/profile.php?id=$friend_of_friend_id"; ?>">
+                                                <img src="data:image/svg+xml;charset=UTF-8,%3Csvg%20width%3D%22128%22%20height%3D%22128%22%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20viewBox%3D%220%200%20128%20128%22%20preserveAspectRatio%3D%22none%22%3E%3Cdefs%3E%3Cstyle%20type%3D%22text%2Fcss%22%3E%23holder_164a9f2d749%20text%20%7B%20fill%3A%23007bff%3Bfont-weight%3Abold%3Bfont-family%3AArial%2C%20Helvetica%2C%20Open%20Sans%2C%20sans-serif%2C%20monospace%3Bfont-size%3A6pt%20%7D%20%3C%2Fstyle%3E%3C%2Fdefs%3E%3Cg%20id%3D%22holder_164a9f2d749%22%3E%3Crect%20width%3D%22128%22%20height%3D%22128%22%20fill%3D%22%23007bff%22%3E%3C%2Frect%3E%3Cg%3E%3Ctext%20x%3D%2248.4296875%22%20y%3D%2266.7%22%3E128x128%3C%2Ftext%3E%3C%2Fg%3E%3C%2Fg%3E%3C%2Fsvg%3E"
+                                                     data-src="<?php echo "$this->root_path/image.php?i=$picName&i_t=$picType&i_p=true"; ?>"
+                                                     height="32" width="32" alt="" class="mr-2 rounded">
+                                            </a>
+                                            <div class="media-body pb-3 mb-0 small lh-125 border-bottom border-gray">
+                                                <div class="d-flex justify-content-between align-items-center w-100">
+                                                    <strong class="text-gray-dark"><?php echo ($friendOfFriendClass == Data_Constants::DB_USER_CLASS_VERIFIED) ? "$friendOfFriendFullName <i class=\"material-icons small text-primary\" style='font-size: 13px'>check_circle</i>" : "$friendOfFriendFullName"; ?></strong>
+                                                    <?php
                                                     if ($_SESSION['navbar'] == "friends_list") {
                                                         $last_url = "$this->root_path/home/friends/?friends_list=true&add_friend=true&id=$friend_of_friend_id&ALERT_MESSAGE=Your friend request has been sent!";
                                                     } else {
                                                         $last_url = "$this->root_path/home/friends/?navbar=active_home&nav_scroller=active_friends&add_friend=true&id=$friend_of_friend_id&ALERT_MESSAGE=Your friend request has been sent!";
                                                     }
-                                                ?>
-                                                <a href="<?php echo $last_url; ?>">Send Friend Request</a>
-                                            </div>
-                                            <span class="d-block">
+                                                    ?>
+                                                    <a href="<?php echo $last_url; ?>">Send Friend Request</a>
+                                                </div>
+                                                <span class="d-block">
                                                 <a href="<?php echo "$this->root_path/components/profile/profile.php?id=$friend_of_friend_id"; ?>">
                                                     @<?php echo $friendOfFriendUsername; ?>
                                                 </a>
                                             </span>
+                                            </div>
                                         </div>
-                                    </div>
-                                    <?php
+                                        <?php
+                                    }
                                 }
                             }
                         }
                     }
                 }
-            }
-            ?>
+                ?>
             </div>
             <?php
         }
@@ -4165,7 +4855,7 @@ class Web_Page
      *
      * @return boolean
      */
-    function renderFavrFriendsMarketplace($scope="global", $orderBy = "task_date", $orientation = "DESC", $limit="LIMIT 3")
+    function renderFavrFriendsMarketplace($scope = "global", $orderBy = "task_date", $orientation = "DESC", $limit = "LIMIT 3")
     {
         if ($scope == $_SESSION['user_info']['id']) {
             $requested = Data_Constants::DB_TASK_STATUS_REQUESTED;
@@ -4261,11 +4951,11 @@ class Web_Page
 
                         if (isset($task_difficulty)) {
                             if ($task_difficulty == Data_Constants::DB_TASK_INTENSITY_EASY) {
-                                echo "<button type=\"button\" class=\"ml-2 btn-sm btn btn-success p-1 rounded\" style='opacity: .9' value=\"Easy\" disabled>Easy 👌</button>";
+                                echo "<button type=\"button\" class=\"ml-2 btn-sm btn btn-success p-1 rounded\" style='font-size: .5rem;opacity: .9' value=\"Easy\" disabled>Easy 👌</button>";
                             } else if ($task_difficulty == Data_Constants::DB_TASK_INTENSITY_MEDIUM) {
-                                echo "<button type=\"button\" class=\"ml-2 btn-sm btn btn-warning p-1 rounded\" style='opacity: .9' value=\"Medium\" disabled>Medium 💪🏿</button>";
+                                echo "<button type=\"button\" class=\"ml-2 btn-sm btn btn-warning p-1 rounded\" style='font-size: .5rem;opacity: .9' value=\"Medium\" disabled>Medium 💪🏿</button>";
                             } else if ($task_difficulty == Data_Constants::DB_TASK_INTENSITY_HARD) {
-                                echo "<button type=\"button\" class=\"ml-2 btn-sm btn btn-danger p-1 rounded\" style='opacity: .9' value=\"Hard\" disabled>Hard 🔥</button>";
+                                echo "<button type=\"button\" class=\"ml-2 btn-sm btn btn-danger p-1 rounded\" style='font-size: .5rem;opacity: .9' value=\"Hard\" disabled>Hard 🔥</button>";
                             }
                         }
 
@@ -4277,7 +4967,7 @@ class Web_Page
 
                         echo "</div><div class=\"media text-muted pt-3\">
                         <div class='container'>
-                            <p id='$id' class=\"media-body text-dark mb-0 small lh-125\">
+                            <p id='$id' class=\"media-body text-dark mb-0 small lh-125\" style='padding-bottom: 1rem'>
                                 $task_description
                                 <div id='$id-location' class='pt-1 border-top small border-gray d-none'>
                                     <label for='location'>Location:</label>
@@ -4455,7 +5145,7 @@ class Web_Page
      *
      * @return boolean
      */
-    function renderFavrMarketplace($scope="global", $orderBy = "task_date", $orientation = "DESC", $limit="LIMIT 3")
+    function renderFavrMarketplace($scope = "global", $orderBy = "task_date", $orientation = "DESC", $limit = "LIMIT 3")
     {
         if ($scope == $_SESSION['user_info']['id']) {
 
@@ -4551,11 +5241,11 @@ class Web_Page
 
                     if (isset($task_difficulty)) {
                         if ($task_difficulty == Data_Constants::DB_TASK_INTENSITY_EASY) {
-                            echo "<button type=\"button\" class=\"ml-2 btn-sm btn btn-success p-1 rounded\" style='opacity: .9' value=\"Easy\" disabled>Easy 👌</button>";
+                            echo "<button type=\"button\" class=\"ml-2 btn-sm btn btn-success p-1 rounded\" style='font-size: .5rem;opacity: .9' value=\"Easy\" disabled>Easy 👌</button>";
                         } else if ($task_difficulty == Data_Constants::DB_TASK_INTENSITY_MEDIUM) {
-                            echo "<button type=\"button\" class=\"ml-2 btn-sm btn btn-warning p-1 rounded\" style='opacity: .9' value=\"Medium\" disabled>Medium 💪🏿</button>";
+                            echo "<button type=\"button\" class=\"ml-2 btn-sm btn btn-warning p-1 rounded\" style='font-size: .5rem;opacity: .9' value=\"Medium\" disabled>Medium 💪🏿</button>";
                         } else if ($task_difficulty == Data_Constants::DB_TASK_INTENSITY_HARD) {
-                            echo "<button type=\"button\" class=\"ml-2 btn-sm btn btn-danger p-1 rounded\" style='opacity: .9' value=\"Hard\" disabled>Hard 🔥</button>";
+                            echo "<button type=\"button\" class=\"ml-2 btn-sm btn btn-danger p-1 rounded\" style='font-size: .5rem;opacity: .9' value=\"Hard\" disabled>Hard 🔥</button>";
                         }
                     }
 
@@ -4567,7 +5257,7 @@ class Web_Page
 
                     echo "</div><div class=\"media text-muted pt-3\">
                         <div class='container'>
-                            <p id='$id' class=\"media-body text-dark mb-0 small lh-125\">
+                            <p id='$id' class=\"media-body text-dark mb-0 small lh-125\" style='padding-bottom: 1rem'>
                                 $task_description
                                 <div id='$id-location' class='pt-1 border-top small border-gray d-none'>
                                     <label for='location'>Location:</label>
@@ -4764,7 +5454,8 @@ class Web_Page
      * @param int $userID
      *
      */
-    function renderSettings($userID) {
+    function renderSettings($userID)
+    {
         $userInfo = $this->getUserInfo($userID);
 
         if ($userInfo['display_ratings'] == 1) {
@@ -4830,7 +5521,7 @@ class Web_Page
                             <span class="float-right switch switch-sm">
                                 <input type="checkbox"
                                        name="display_ratings"
-                                       <?php echo $displayMyRating; ?> class="switch" id="rating">
+                                    <?php echo $displayMyRating; ?> class="switch" id="rating">
                                 <label for="rating"></label>
                             </span>
                         </div>
@@ -4852,7 +5543,7 @@ class Web_Page
                             <span class="float-right switch switch-sm">
                                 <input type="checkbox"
                                        name="display_description"
-                                       <?php echo $displayMyDescription; ?> class="switch" id="description">
+                                    <?php echo $displayMyDescription; ?> class="switch" id="description">
                                 <label for="description"></label>
                             </span>
                         </div>
@@ -4889,7 +5580,8 @@ class Web_Page
                             <select name="default_scope" class="form-control">
                                 <option value="Private" <?php echo $private; ?>>Only me</option>
                                 <option value="Friends" <?php echo $friends; ?>>Friends</option>
-                                <option value="Friends of Friends" <?php echo $friendsOfFriends; ?>>Friends of friends</option>
+                                <option value="Friends of Friends" <?php echo $friendsOfFriends; ?>>Friends of friends
+                                </option>
                                 <option value="Public" <?php echo $public; ?>>Public</option>
                             </select>
                         </div>
@@ -4900,18 +5592,18 @@ class Web_Page
                     <div class="col-md-12">
                         <label class="small text-left pb-0">Default Location</label>
                         <div class="form-label-group">
-                                <input type="text"
-                                       name="street"
-                                       value="<?php echo $street;?>"
-                                       class="form-control" id="street" placeholder="Street Address">
-                                <label for="street">Street Address</label>
+                            <input type="text"
+                                   name="street"
+                                   value="<?php echo $street; ?>"
+                                   class="form-control" id="street" placeholder="Street Address">
+                            <label for="street">Street Address</label>
                         </div>
                     </div>
                     <div class="col-md-6">
                         <div class="form-label-group">
                             <input type="text"
                                    name="city"
-                                   value="<?php echo $city;?>"
+                                   value="<?php echo $city; ?>"
                                    class="form-control" id="city">
                             <label for="city">City</label>
                         </div>
@@ -4920,7 +5612,7 @@ class Web_Page
                         <div class="form-label-group">
                             <input type="text"
                                    name="state"
-                                   value="<?php echo $state;?>"
+                                   value="<?php echo $state; ?>"
                                    class="form-control" id="state">
                             <label for="state">State</label>
                         </div>
@@ -4929,7 +5621,7 @@ class Web_Page
                         <div class="form-label-group">
                             <input type="text"
                                    name="zip"
-                                   value="<?php echo $zip;?>"
+                                   value="<?php echo $zip; ?>"
                                    class="form-control" id="zip">
                             <label for="zip">Zip</label>
                         </div>
@@ -4940,9 +5632,9 @@ class Web_Page
                     <div class="col-md-4 p-2">
                         <a href="<?php echo "$this->root_path/home/payments/"; ?>">
                             <?php
-                            if(!empty($_SESSION['user_info']['payment_id'])) {
+                            if (!empty($_SESSION['user_info']['payment_id'])) {
                                 echo 'View Payments';
-                            }elseif(($_SESSION['user_info']['class'] == 'Verified Freelancer') && (empty($_SESSION['user_info']['payment_id']) || is_null($_SESSION['user_info']['payment_id']))){
+                            } elseif (($_SESSION['user_info']['class'] == 'Verified Freelancer') && (empty($_SESSION['user_info']['payment_id']) || is_null($_SESSION['user_info']['payment_id']))) {
                                 echo 'Set up payments';
                             }
                             ?>
@@ -4953,11 +5645,13 @@ class Web_Page
                         <a href="terms.html">Terms of Service and Conditions
                             <i class="mobile-footer float-right text-muted material-icons">chevron_right</i>
                         </a>
-                        <div class="modal fade" id="deleteProductModal" tabindex="-1" role="dialog" aria-labelledby="deleteProductModalLabel" aria-hidden="true">
+                        <div class="modal fade" id="deleteProductModal" tabindex="-1" role="dialog"
+                             aria-labelledby="deleteProductModalLabel" aria-hidden="true">
                             <div class="modal-dialog">
                                 <div class="modal-content">
                                     <div class="modal-header">
-                                        <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">×</span></button>
+                                        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                                            <span aria-hidden="true">×</span></button>
                                         <h4 class="modal-title" id="deleteProductModalLabel">Confirm Delete</h4>
                                     </div>
                                     <div class="modal-body">
@@ -4987,10 +5681,13 @@ class Web_Page
             <div class="row pb-1 mb-0">
                 <div class="col-lg-12 text-center">
                     <button class="btn btn-outline-danger" data-toggle="modal" data-target="#deleteModal">
-                        Delete my account</button>
+                        Delete my account
+                    </button>
 
-                     <div class="modal fade" id="deleteModal" tabindex="-1" role="dialog" aria-labelledby="deleteAccountTitle" aria-hidden="true">
-                        <form action='<?php echo "$this->root_path/components/settings/?navbar=active_settings"; ?>' method='post'>
+                    <div class="modal fade" id="deleteModal" tabindex="-1" role="dialog"
+                         aria-labelledby="deleteAccountTitle" aria-hidden="true">
+                        <form action='<?php echo "$this->root_path/components/settings/?navbar=active_settings"; ?>'
+                              method='post'>
                             <div class="modal-dialog" role="document">
                                 <div class="modal-content">
                                     <div class="modal-header">
@@ -5001,16 +5698,19 @@ class Web_Page
                                     </div>
                                     <div class="modal-body">
                                         <label for='exitReview'>Reason(s) for leaving</label>
-                                        <textarea name='delete_review' class='form-control' placeholder="Please tell us why you are choosing to leave FAVR..."></textarea>
+                                        <textarea name='delete_review' class='form-control'
+                                                  placeholder="Please tell us why you are choosing to leave FAVR..."></textarea>
                                     </div>
                                     <div class="modal-footer">
-                                        <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
-                                        <input type="submit" name='submit_delete' class="btn btn-primary" value='Delete my account'>
+                                        <button type="button" class="btn btn-secondary" data-dismiss="modal">Close
+                                        </button>
+                                        <input type="submit" name='submit_delete' class="btn btn-primary"
+                                               value='Delete my account'>
                                     </div>
                                 </div>
                             </div>
                         </form>
-                     </div>
+                    </div>
                 </div>
             </div>
         </div>
@@ -5031,9 +5731,9 @@ class Web_Page
     {
         ?>
         </main>
-        <?php
-            if ($setFooter) {
-        ?>
+    <?php
+    if ($setFooter) {
+    ?>
         <!-- FOOTER -->
         <footer class="container ml-5 pl-5" style="position: relative; float: bottom; max-width: 90%">
             <hr>
@@ -5042,9 +5742,9 @@ class Web_Page
                 <p class="col-md-2 float-right text-muted">v<?php echo $this->product_version; ?> Beta</p>
             </div>
         </footer>
-        <?php
-            }
-        ?>
+    <?php
+    }
+    ?>
         <!-- Loader -->
         <script>
             var timeOut;
@@ -5053,9 +5753,9 @@ class Web_Page
                 timeOut = setTimeout(showPage, 1500);
             }
 
-            window.addEventListener('load', function(){
-                var allimages= document.getElementsByTagName('img');
-                for (var i=0; i<allimages.length; i++) {
+            window.addEventListener('load', function () {
+                var allimages = document.getElementsByTagName('img');
+                for (var i = 0; i < allimages.length; i++) {
                     if (allimages[i].getAttribute('data-src')) {
                         allimages[i].setAttribute('src', allimages[i].getAttribute('data-src'));
                     }
@@ -5097,7 +5797,7 @@ class Web_Page
             // feather.replace();
 
             focusNoScrollMethod = function getFocusWithoutScrolling() {
-                document.getElementById("suggestions").focus({preventScroll:true});
+                document.getElementById("suggestions").focus({preventScroll: true});
             }
 
             function openRequestFromMobile() {
@@ -5135,7 +5835,8 @@ class Web_Page
      * @param $sms_notifications_enabled
      * @return bool
      */
-    function processSettings($display_ratings, $display_receipts, $display_description, $default_scope, $email_notifications_enabled, $sms_notifications_enabled, $street, $city, $state, $zip) {
+    function processSettings($display_ratings, $display_receipts, $display_description, $default_scope, $email_notifications_enabled, $sms_notifications_enabled, $street, $city, $state, $zip)
+    {
 //        die(print_r($display_ratings));
         $userID = $_SESSION['user_info']['id'];
         $update_settings_query = "UPDATE users 
@@ -5219,7 +5920,7 @@ class Web_Page
                 } else if (!empty($row1) && empty($row2)) {
                     // requester is accepting a friend request sent to them
                     if ($add_friend == true) {
-                        $timestamp = date("Y-m-d h:i:s" , time());
+                        $timestamp = date("Y-m-d h:i:s", time());
                         $update_friend_query = "UPDATE friends 
                                             SET user_id = $userID,
                                                 friend_id = $requesterID,
@@ -5319,11 +6020,13 @@ class Web_Page
      * @return boolean // successful process or not print error
      *
      */
-    function processFavrRequestToDB($userInfo, $inputDate, $inputCategory, $inputTaskDetails, $inputPricing, $inputFreelancerCount, $inputLocation, $inputDifficulty,  $inputPictures, $inputScope="public")
+    function processFavrRequestToDB($userInfo, $inputDate, $inputCategory, $inputTaskDetails, $inputPricing, $inputFreelancerCount, $inputLocation, $inputDifficulty, $inputPictures, $inputScope = "public")
     {
         if (isset($userInfo, $inputDate, $inputFreelancerCount, $inputCategory, $inputTaskDetails, $inputPricing, $inputScope)) {
             $userId = $userInfo['id'];
-            $address = $inputLocation;
+            $inputTaskDetails = addslashes($inputTaskDetails);
+            $inputCategory =addslashes($inputCategory);
+            $address = addslashes($inputLocation);
 
             $insert_request_query = "INSERT INTO `marketplace_favr_requests`
                                   (
@@ -5373,7 +6076,7 @@ class Web_Page
                     if ($result) {
                         $row = $result->fetch(PDO::FETCH_ASSOC);
                         $task_id = $row['id'];
-                        //include '../libraries/Api/Sendgrid/vendor/autoload.php';
+                        include '../../libraries/Api/Sendgrid/vendor/autoload.php';
                         $notify = new Web_Notification();
                         $notify->emailAllFreelancers($task_id);
                         $notify->smsAllFreelancers($task_id);
@@ -5383,7 +6086,7 @@ class Web_Page
                                 // validate file is an image of type jpeg or png
                                 if ($inputPictures['type'][$i] == "image/jpeg" || $inputPictures['type'][$i] == "image/png") {
                                     // continue validating file size is below allowed size of 5 MB
-                                    if ($inputPictures['size'][$i] <=  Data_Constants::MAXIMUM_IMAGE_UPLOAD_SIZE) {
+                                    if ($inputPictures['size'][$i] <= Data_Constants::MAXIMUM_IMAGE_UPLOAD_SIZE) {
                                         // validate temp_name exists
                                         if (!empty($inputPictures['tmp_name'][$i])) {
                                             // validate no file errors were detected
@@ -5397,19 +6100,19 @@ class Web_Page
                                                 }
                                                 $imageFileType = $inputPictures['type'][$i];
 
-                                                $imageFilePath =  Data_Constants::IMAGE_UPLOAD_FILE_PATH . "$imageFileName";
+                                                $imageFilePath = Data_Constants::IMAGE_UPLOAD_FILE_PATH . "$imageFileName";
 
                                                 // copy image into backend and execute update query on request to update file paths
                                                 if (copy($inputPictures['tmp_name'][$i], $imageFilePath)) {
-    //                                                    echo "<pre>";
-    //                                                    die(print_r($inputPictures));
+                                                    //                                                    echo "<pre>";
+                                                    //                                                    die(print_r($inputPictures));
                                                     // file copied to destination
                                                     $x = $i + 1;
                                                     $task_picture_path_x = "task_picture_path_$x";
                                                     $imageDataArray = array('name' => "$imageFileName",
-                                                                            'type' => "$imageFileType",
-                                                                            'size' => $inputPictures['size'][$i],
-                                                                            'task_id' => $task_id);
+                                                        'type' => "$imageFileType",
+                                                        'size' => $inputPictures['size'][$i],
+                                                        'task_id' => $task_id);
 
                                                     $imageDataArray = serialize($imageDataArray);
 
@@ -5477,7 +6180,7 @@ class Web_Page
      * @return boolean // successful process or not print error
      *
      */
-    function processFavrFriendRequestToDB($userInfo, $inputDate, $inputCategory, $inputTaskDetails, $inputPricing, $inputFreelancerCount, $inputLocation, $inputDifficulty,  $inputPictures, $inputScope="public", $friend_id = null)
+    function processFavrFriendRequestToDB($userInfo, $inputDate, $inputCategory, $inputTaskDetails, $inputPricing, $inputFreelancerCount, $inputLocation, $inputDifficulty, $inputPictures, $inputScope = "public", $friend_id = null)
     {
         if (isset($userInfo, $inputDate, $inputFreelancerCount, $inputCategory, $inputTaskDetails, $inputPricing, $inputScope)) {
             $userId = $userInfo['id'];
@@ -5569,7 +6272,7 @@ class Web_Page
                                 // validate file is an image of type jpeg or png
                                 if ($inputPictures['type'][$i] == "image/jpeg" || $inputPictures['type'][$i] == "image/png") {
                                     // continue validating file size is below allowed size of 5 MB
-                                    if ($inputPictures['size'][$i] <=  Data_Constants::MAXIMUM_IMAGE_UPLOAD_SIZE) {
+                                    if ($inputPictures['size'][$i] <= Data_Constants::MAXIMUM_IMAGE_UPLOAD_SIZE) {
                                         // validate temp_name exists
                                         if (!empty($inputPictures['tmp_name'][$i])) {
                                             // validate no file errors were detected
@@ -5583,7 +6286,7 @@ class Web_Page
                                                 }
                                                 $imageFileType = $inputPictures['type'][$i];
 
-                                                $imageFilePath =  Data_Constants::IMAGE_UPLOAD_FILE_PATH . "$imageFileName";
+                                                $imageFilePath = Data_Constants::IMAGE_UPLOAD_FILE_PATH . "$imageFileName";
 
                                                 // copy image into backend and execute update query on request to update file paths
                                                 if (copy($inputPictures['tmp_name'][$i], $imageFilePath)) {
@@ -5655,7 +6358,7 @@ class Web_Page
      *
      * @return boolean
      */
-    function processCancelPendingRequest($requestID,  $freelancerID = null, $customerID = null)
+    function processCancelPendingRequest($requestID, $freelancerID = null, $customerID = null)
     {
         if (isset($requestID) && ($freelancerID != null || $customerID != null)) {
             $select_task_query = "SELECT freelancer_id, task_freelancer_accepted 
@@ -5722,14 +6425,12 @@ class Web_Page
     }
 
     /**
-     * Process freelancer arrival and log the time
-     *
-     * @param boolean $freelancerArrived
-     * @param int $timestamp
-     * @param int $requestID
-     * @param int $freelancerID // this user!
-     *
-     * @return mixed // timestamp of arrival or false
+     * @param $freelancerArrived
+     * @param $timestamp
+     * @param $requestID
+     * @param $freelancerID
+     * @return bool
+     * @throws \Twilio\Exceptions\ConfigurationException
      */
     function processFreelancerArrived($freelancerArrived, $timestamp, $requestID, $freelancerID)
     {
@@ -5758,6 +6459,7 @@ class Web_Page
                     $row = $getCustomerNumber->fetch(PDO::FETCH_ASSOC);
                     $customerNumber = $row['phone'];
                     $customerName = $row['first_name'];
+                    include($_SERVER['DOCUMENT_ROOT'] . "/libraries/Api/Twilio/twilio-php-master/Twilio/autoload.php");
                     $this->sms->sendNotification($customerNumber, "Hey $customerName, your freelancer has arrived!");
                     header("Refresh:2; url=$this->root_path/home");
                     if ($result) {
@@ -5793,7 +6495,7 @@ class Web_Page
         if (isset($requestID, $customerID, $freelancerID, $requestRating, $timestamp)) {
             // complete request
             $complete = Data_Constants::DB_TASK_STATUS_COMPLETED;
-            $requestReview = addslashes($requestReview);
+
             $update_request_query = "UPDATE marketplace_favr_requests 
                                      SET task_status = '$complete',
                                          task_rating = '$requestRating',
@@ -5810,17 +6512,6 @@ class Web_Page
 
                 $result = $this->db->query($select_freelancers_query);
                 $rows = $result->fetchAll(PDO::FETCH_ASSOC);
-                //Send Invoice to Customer
-                $this->invoice->sendCustomerInvoice($requestID)->sendFreelancerInvoice($requestID);
-                //Send Pay out to Freelancer
-                $this->payout->payoutFunds(
-                    $this->payout->selectPrice($requestID),
-                    $this->payout->selectStripeToken($requestID),
-                    $this->payout->selectStripeAccount(
-                        $this->payout->selectFreelancer($requestID)
-                    )
-                );
-                header("Refresh:2; url=$this->root_path/home");
                 foreach ($rows as $row) {
                     $userID = $row['user_id'];
                     $select_user_query = "SELECT rating
@@ -5969,7 +6660,7 @@ class Web_Page
      */
     function processFreelancerAcceptRequest($requestID, $freelancerID)
     {
-        if(!empty($_SESSION['user_info']['payment_id'])) {
+        if (!empty($_SESSION['user_info']['payment_id'])) {
             if (isset($requestID, $freelancerID)) {
                 // freelancer has accepted
                 $select_request_query = "SELECT * 
@@ -6007,6 +6698,7 @@ class Web_Page
                                                  WHERE id = $request_id";
 
                             $result = $this->db->query($update_request_query);
+                            include($_SERVER['DOCUMENT_ROOT'] . '/favr-pwa/libraries/Api/Twilio/twilio-php-master/Twilio/autoload.php');
                             $this->sms->processCustomerSmsNotification($request_id);
 //                        die(print_r($result));
                             if (!$result) {
@@ -6044,7 +6736,7 @@ class Web_Page
                 // not set
                 return false;
             }
-        }else{
+        } else {
             $connect_site = Data_Constants::STRIPE_CONNECT;
             echo "<script> 
                     alert('You Have to Setup Your Payments Before Accepting A Job!'); 
@@ -6068,7 +6760,8 @@ class Web_Page
             // customer has approved of freelancer
             $select_request_query = "SELECT * 
                                      FROM marketplace_favr_requests
-                                     WHERE id = $requestID";
+                                     WHERE id = $requestID
+                                     AND customer_id = $customerID";
             $result = $this->db->query($select_request_query);
             if ($result) {
                 $row = $result->fetch(PDO::FETCH_ASSOC);
@@ -6090,6 +6783,7 @@ class Web_Page
                     if ($result) {
                         // set status of task to paid if enough help has been found and approved
                         if ($freelancer_accepted == $freelancer_count) {
+
                             $select_freelancer_query = "SELECT COUNT(*)
                                                         FROM marketplace_favr_freelancers
                                                         WHERE request_id = $requestID
@@ -6307,7 +7001,7 @@ class Web_Page
      *
      * @return boolean
      */
-    function processFriendCancelPendingRequest($requestID,  $freelancerID = null, $customerID = null)
+    function processFriendCancelPendingRequest($requestID, $freelancerID = null, $customerID = null)
     {
         if (isset($requestID) && ($freelancerID != null || $customerID != null)) {
             $select_task_query = "SELECT friend_id, task_freelancer_accepted 

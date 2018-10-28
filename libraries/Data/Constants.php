@@ -20,7 +20,7 @@ class Data_Constants
     const DB_PASSWORD = "Nomolos.99";
 
     // Root path
-    const ROOT_PATH = "https://test.askfavr.com";
+    const ROOT_PATH = "https://test.askfavr.com/favr-pwa";
 
     // image upload constants
     const MAXIMUM_IMAGE_UPLOAD_COUNT = 3;
@@ -64,7 +64,7 @@ class Data_Constants
     //Stipe API
     const STRIPE_PUBLIC = 'pk_test_WRhN4BKmkqctL2nrjCPJCTXi';
     const STRIPE_SECRET = 'sk_test_AfPrHBd85yRDmJmdW4uK3a9Y';
-    const STRIPE_CONNECT = 'https://connect.stripe.com/express/oauth/authorize?redirect_uri=https://test.askfavr.com/home/payments&client_id=ca_C2CK5GZpN8ODaBRV1pKZCnA2yTEMjKsu&state=true';
+    const STRIPE_CONNECT = 'https://connect.stripe.com/express/oauth/authorize?redirect_uri=https://test.askfavr.com/home/payments/favr-pwa/home/payments/&client_id=ca_C2CKbfLxpwpxjuTp9xdtuBcL5zSws9mN&state=true';
 
     //Twilio
     const TWILIO_SID = 'AC67883f19920b3894df25adca46a047f4';
