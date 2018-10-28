@@ -8,10 +8,10 @@
  * @author haronarama
  * @author Solomon Antoine
  */
-error_reporting(-1);
-//include '../../libraries/Api/Twilio/twilio-php-master/Twilio/autoload.php';
-//include '../../libraries/Api/Sendgrid/vendor/autoload.php';
-//include '../../libraries/Api/Stripe/init.php';
+//error_reporting(-1);
+include_once($_SERVER['DOCUMENT_ROOT'] .'/favr-pwa/libraries/Api/Twilio/twilio-php-master/Twilio/autoload.php');
+include_once($_SERVER['DOCUMENT_ROOT'] .'/favr-pwa/libraries/Api/Sendgrid/vendor/autoload.php');
+include($_SERVER['DOCUMENT_ROOT'] .'/favr-pwa/libraries/Api/Stripe/init.php');
 
 class Web_Page
 {
