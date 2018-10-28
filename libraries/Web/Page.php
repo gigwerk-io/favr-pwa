@@ -2859,6 +2859,7 @@ class Web_Page
                         if ($customer_id != $_SESSION['user_info']['id']) { // if not this user
                             $freelancerAccepted = false;
                             $freelancer_id = null;
+                            $arrived = null;
                             $user_id = $_SESSION['user_info']['id'];
                             $select_freelancers_query = "SELECT * 
                                                      FROM marketplace_favr_freelancers
@@ -2870,6 +2871,7 @@ class Web_Page
                                 if (!empty($row)) {
                                     $freelancerAccepted = true;
                                     $freelancer_id = $row['user_id'];
+                                    $arrived = $row['arrival_time'];
                                 }
                             }
 
@@ -2893,11 +2895,6 @@ class Web_Page
                                     echo "  </p>
                                       </div>";
                                 }
-
-                                $select_freelancers_query = "SELECT * FROM marketplace_favr_freelancers mff WHERE mff.user_id = $freelancer_id";
-                                $result = $this->db->query($select_freelancers_query);
-                                $row = $result->fetch(PDO::FETCH_ASSOC);
-                                $arrived = $row['arrival_time'];
 
                                 if ($task_status == Data_Constants::DB_TASK_STATUS_PAID || ($arrived == null && $task_status == Data_Constants::DB_TASK_STATUS_IN_PROGRESS)) {
                                     echo "<div class='d-block mt-4 pt-2 border-gray border-top text-center'>
