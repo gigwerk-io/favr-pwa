@@ -8,8 +8,8 @@
 error_reporting(-1);
 session_start();
 include($_SERVER['DOCUMENT_ROOT'] . "/favr-pwa/include/autoload.php");
-include_once($_SERVER['DOCUMENT_ROOT'] .'favr-pwa/libraries/Api/Twilio/twilio-php-master/Twilio/autoload.php');
-include '../../libraries/Api/Sendgrid/vendor/autoload.php';
+include_once($_SERVER['DOCUMENT_ROOT'] .'/favr-pwa/libraries/Api/Twilio/twilio-php-master/Twilio/autoload.php');
+include_once($_SERVER['DOCUMENT_ROOT'] .'/favr-pwa/libraries/Api/Sendgrid/vendor/autoload.php');
 
 // component constants
 $USER = "";
