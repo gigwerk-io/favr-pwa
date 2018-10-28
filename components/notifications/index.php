@@ -5,7 +5,7 @@
  * Date: 7/13/18
  * Time: 12:48 PM
  */
-
+error_reporting(-1);
 session_start();
 include($_SERVER['DOCUMENT_ROOT'] . "/favr-pwa/include/autoload.php");
 include_once($_SERVER['DOCUMENT_ROOT'] .'favr-pwa/libraries/Api/Twilio/twilio-php-master/Twilio/autoload.php');

@@ -6,6 +6,7 @@
  * Time: 8:25 PM
  */
 
+error_reporting(-1);
 session_start();
 include($_SERVER['DOCUMENT_ROOT'] . "/favr-pwa/include/autoload.php");
 
