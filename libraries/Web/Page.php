@@ -9,9 +9,9 @@
  * @author Solomon Antoine
  */
 //error_reporting(-1);
-include_once($_SERVER['DOCUMENT_ROOT'] .'/favr-pwa/libraries/Api/Twilio/twilio-php-master/Twilio/autoload.php');
-include_once($_SERVER['DOCUMENT_ROOT'] .'/favr-pwa/libraries/Api/Sendgrid/vendor/autoload.php');
-include_once($_SERVER['DOCUMENT_ROOT'] .'/favr-pwa/libraries/Api/Stripe/init.php');
+//include_once($_SERVER['DOCUMENT_ROOT'] .'/favr-pwa/libraries/Api/Twilio/twilio-php-master/Twilio/autoload.php');
+//include_once($_SERVER['DOCUMENT_ROOT'] .'/favr-pwa/libraries/Api/Sendgrid/vendor/autoload.php');
+//include_once($_SERVER['DOCUMENT_ROOT'] .'/favr-pwa/libraries/Api/Stripe/init.php');
 
 class Web_Page
 {
@@ -6459,8 +6459,8 @@ class Web_Page
                     $row = $getCustomerNumber->fetch(PDO::FETCH_ASSOC);
                     $customerNumber = $row['phone'];
                     $customerName = $row['first_name'];
-                    include($_SERVER['DOCUMENT_ROOT'] . "/libraries/Api/Twilio/twilio-php-master/Twilio/autoload.php");
-                    $this->sms->sendNotification($customerNumber, "Hey $customerName, your freelancer has arrived!");
+                    //include($_SERVER['DOCUMENT_ROOT'] . "/libraries/Api/Twilio/twilio-php-master/Twilio/autoload.php");
+                    //$this->sms->sendNotification($customerNumber, "Hey $customerName, your freelancer has arrived!");
                     header("Refresh:2; url=$this->root_path/home");
                     if ($result) {
                         return $timestamp;
@@ -6806,7 +6806,7 @@ class Web_Page
                                         //Send SMS Notification
                                         $freelancerPhoneNumber = $res['phone'];
                                         $freelancerName = $res['first_name'];
-                                        $this->sms->sendNotification($freelancerPhoneNumber, "Hey $freelancerName, the FAVR your proposed to complete has been paid. Please check your notifications within the app to see necessary details to complete");
+                                        //$this->sms->sendNotification($freelancerPhoneNumber, "Hey $freelancerName, the FAVR your proposed to complete has been paid. Please check your notifications within the app to see necessary details to complete");
                                         header("Refresh:2; url=$this->root_path/home");
                                         return $customerID;
                                     } else {
