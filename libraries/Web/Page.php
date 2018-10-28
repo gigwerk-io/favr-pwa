@@ -8,7 +8,7 @@
  * @author haronarama
  * @author Solomon Antoine
  */
-error_reporting(E_ERROR);
+error_reporting(-1);
 //include '../../libraries/Api/Twilio/twilio-php-master/Twilio/autoload.php';
 //include '../../libraries/Api/Sendgrid/vendor/autoload.php';
 //include '../../libraries/Api/Stripe/init.php';
