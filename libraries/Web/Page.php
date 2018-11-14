@@ -328,71 +328,42 @@ class Web_Page
      *
      * @author haronarama
      */
-//    function signUpUser($signUpUsername, $signUpEmail, $signUpPhone, $signUpFirstName, $signUpLastName, $signUpPass, $signUpPassConfirm, $signUpSource)
-//    {
-//        if ($signUpPass != $signUpPassConfirm) {
-//            // error passwords don't match
-//            return false;
-//        } else {
-//            // success
-//            $signUpPassConfirm = password_hash($signUpPassConfirm, PASSWORD_DEFAULT);
-//            $insert_sign_up_query = "INSERT INTO users
-//                                    (username,
-//                                     password,
-//                                     first_name,
-//                                     last_name,
-//                                     email,
-//                                     phone,
-//                                     affiliate_id)
-//                                 VALUES
-//                                    ('$signUpUsername',
-//                                     '$signUpPassConfirm',
-//                                     '$signUpFirstName',
-//                                     '$signUpLastName',
-//                                     '$signUpEmail',
-//                                     '$signUpPhone',
-//                                     '$signUpSource'
-//                                     )
-//            ";
-//
-//            $this->db->query($insert_sign_up_query);
-//            include '../libraries/Api/Sendgrid/vendor/autoload.php';
-//            $confirm = new Web_Confirm();
-//            $confirm->sendConfirmationEmail($signUpEmail, $signUpPass);
-//            return true;
-//        }
-//    }
+   function signUpUser($signUpUsername, $signUpEmail, $signUpPhone, $signUpFirstName, $signUpLastName, $signUpPass, $signUpPassConfirm, $signUpSource)
+   {
+       if ($signUpPass != $signUpPassConfirm) {
+           // error passwords don't match
+           return false;
+       } else {
+           // success
+           $signUpPassConfirm = password_hash($signUpPassConfirm, PASSWORD_DEFAULT);
+           $insert_sign_up_query = "INSERT INTO users
+                                   (username,
+                                    password,
+                                    first_name,
+                                    last_name,
+                                    email,
+                                    phone,
+                                    affiliate_id)
+                                VALUES
+                                   ('$signUpUsername',
+                                    '$signUpPassConfirm',
+                                    '$signUpFirstName',
+                                    '$signUpLastName',
+                                    '$signUpEmail',
+                                    '$signUpPhone',
+                                    '$signUpSource'
+                                    )
+           ";
 
-    public function signUpUser($signUpUsername, $signUpEmail, $signUpPhone, $signUpFirstName, $signUpLastName, $signUpPass, $signUpPassConfirm, $signUpSource)
-    {
-        $curl = curl_init();
+           $this->db->query($insert_sign_up_query);
+           include '../libraries/Api/Sendgrid/vendor/autoload.php';
+           $confirm = new Web_Confirm();
+           $confirm->sendConfirmationEmail($signUpEmail, $signUpPass);
+           return true;
+       }
+   }
 
-        curl_setopt_array($curl, array(
-            CURLOPT_URL => "https://api.askfavr.com/api/user/signup",
-            CURLOPT_RETURNTRANSFER => true,
-            CURLOPT_ENCODING => "",
-            CURLOPT_MAXREDIRS => 10,
-            CURLOPT_TIMEOUT => 30,
-            CURLOPT_HTTP_VERSION => CURL_HTTP_VERSION_1_1,
-            CURLOPT_CUSTOMREQUEST => "POST",
-            CURLOPT_POSTFIELDS => "------WebKitFormBoundary7MA4YWxkTrZu0gW\r\nContent-Disposition: form-data; name=\"first_name\"\r\n\r\n$signUpFirstName\r\n------WebKitFormBoundary7MA4YWxkTrZu0gW\r\nContent-Disposition: form-data; name=\"last_name\"\r\n\r\n$signUpLastName\r\n------WebKitFormBoundary7MA4YWxkTrZu0gW\r\nContent-Disposition: form-data; name=\"username\"\r\n\r\n$signUpUsername\r\n------WebKitFormBoundary7MA4YWxkTrZu0gW\r\nContent-Disposition: form-data; name=\"email\"\r\n\r\n$signUpEmail\r\n------WebKitFormBoundary7MA4YWxkTrZu0gW\r\nContent-Disposition: form-data; name=\"phone\"\r\n\r\n$signUpPhone\r\n------WebKitFormBoundary7MA4YWxkTrZu0gW\r\nContent-Disposition: form-data; name=\"password\"\r\n\r\n$signUpPass\r\n------WebKitFormBoundary7MA4YWxkTrZu0gW\r\nContent-Disposition: form-data; name=\"confirm_password\"\r\n\r\n$signUpPassConfirm\r\n------WebKitFormBoundary7MA4YWxkTrZu0gW--",
-            CURLOPT_HTTPHEADER => array(
-                "Postman-Token: c9e97585-1952-4279-b2b7-159092d79665",
-                "cache-control: no-cache",
-                "content-type: multipart/form-data; boundary=----WebKitFormBoundary7MA4YWxkTrZu0gW"
-            ),
-        ));
-
-        $response = curl_exec($curl);
-        $err = curl_error($curl);
-
-        curl_close($curl);
-        if ($err) {
-            return "cURL Error #:" . $err;
-        } else {
-            return json_decode($response);
-        }
-    }
+   
 
     /**
      * @param $action
