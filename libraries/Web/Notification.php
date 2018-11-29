@@ -63,15 +63,19 @@ class Web_Notification
         $phone = "+1" . str_replace("-", "", $phone);
         $client = new Client(Data_Constants::TWILIO_SID, Data_Constants::TWILIO_API);
         //send message to customer
-        $client->messages->create(
-            $phone,
-            $arr = array(
-                //trial number
-                'from' => '+15074734314',
-                'body' => $message,
-            )
-        );
-        return $arr;
+        try{
+            $client->messages->create(
+                $phone,
+                $arr = array(
+                    //trial number
+                    'from' => '+15074734314',
+                    'body' => $message,
+                )
+            );
+            return $arr;
+        }catch(\Exception $e){
+            return;
+        }
     }
 
     public function emailAllFreelancers($request_id)
