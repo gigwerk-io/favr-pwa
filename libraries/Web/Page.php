@@ -9,9 +9,9 @@
  * @author Solomon Antoine
  */
 //error_reporting(E_ERROR);
-//include '../../libraries/Api/Twilio/twilio-php-master/Twilio/autoload.php';
-//include '../../libraries/Api/Sendgrid/vendor/autoload.php';
-//include '../../libraries/Api/Stripe/init.php';
+include '../../libraries/Api/Twilio/twilio-php-master/Twilio/autoload.php';
+include '../../libraries/Api/Sendgrid/vendor/autoload.php';
+include '../../libraries/Api/Stripe/init.php';
 
 class Web_Page
 {
